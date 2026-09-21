@@ -36,8 +36,9 @@ def connect(settings: Neo4jSettings) -> Driver:
 
 
 def server_version(driver: Driver, database: str) -> str:
+    """Return the Neo4j server version, e.g. `5.26.30`."""
     records, _, _ = driver.execute_query(
         "CALL dbms.components() YIELD versions RETURN versions[0] AS version",
         database_=database,
     )
-    return records[0]["version"]
+    return str(records[0]["version"])
