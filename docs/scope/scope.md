@@ -16,7 +16,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | # | Feature | Phase | Status |
 | --- | --- | --- | --- |
 | 1 | Stack & architecture | Foundation | done |
-| 2 | Coding standards & tooling | Foundation | in-progress |
+| 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | planned |
 | 4 | Data model | Foundation | planned |
 | 5 | First traced chain | Slice 1 | planned |
@@ -37,7 +37,7 @@ spec [0001](../specs/0001-stack-and-architecture/index.md) · code in `src/trace
 ### 2. Coding standards & tooling
 Record conventions and tooling from the real scaffolded project, then install them. This includes the two standing rules above.
 **Done when:** root `AGENTS.md` reflects the real stack, the standing rules, the git workflow, and the test choice (runner or typecheck gate); lint, format, and typecheck run clean, locally and in CI on push.
-- [ ] Capture conventions + tooling choices: `/audit`
+- [x] Capture conventions + tooling choices: `/audit`
 - [x] Install the tooling: `/develop tooling`
 
 ### 3. Corpus snapshot & eval set
