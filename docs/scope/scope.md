@@ -17,7 +17,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | --- | --- | --- | --- |
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
-| 3 | Corpus snapshot & eval set | Foundation | planned |
+| 3 | Corpus snapshot & eval set | Foundation | done |
 | 4 | Data model | Foundation | planned |
 | 5 | First traced chain | Slice 1 | planned |
 | 6 | Eval runner | Slice 2 | planned |
@@ -43,7 +43,8 @@ Record conventions and tooling from the real scaffolded project, then install th
 ### 3. Corpus snapshot & eval set
 Bring in JobHunt's `docs/` pinned at `2e40bcf`, and the finished eval file (five why questions with verified expected chains). Bring both in as they are. Nothing gets regenerated.
 **Done when:** the snapshot and eval file are in the repo, the snapshot's commit is recorded next to it, and each expected chain cites records that exist in the snapshot.
-- [ ] Bring them in: `/develop corpus snapshot & eval set`
+code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `tests/test_corpus.py`
+- [x] Bring them in: `/develop corpus snapshot & eval set`
 
 ### 4. Data model · needs a decision
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
