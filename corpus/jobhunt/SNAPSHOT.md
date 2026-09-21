@@ -2,7 +2,7 @@
 
 The `docs/` folder beside this file is an exact copy of JobHunt's `docs/` at one pinned commit. It is read only input. Never edit it.
 
-It is gitignored, so it stays on your machine and never reaches GitHub. Only this file is committed. On a fresh clone, recreate it with the command below.
+It is tracked in git, so every clone and CI run has it.
 
 - **Repo**: https://github.com/ghalynho10/JobHunt
 - **Commit**: `2e40bcfe1078cc93ab2f951e6c7c708e4825aa1b`
@@ -20,4 +20,4 @@ Each file's `git hash-object` matched its blob at `2e40bcf` when copied, so the 
 
 ## What reads it
 
-The eval set in `eval/linked-records-research.json` was read against this same commit. Every file its expected chains cite is in this snapshot (checked by `tests/test_corpus.py`, which skips those checks when the snapshot is absent, as in CI).
+The eval set in `eval/linked-records-research.json` was read against this same commit. Every file its expected chains cite is in this snapshot (checked by `tests/test_corpus.py`, which fails if the snapshot is missing).
