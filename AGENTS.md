@@ -19,11 +19,13 @@ A terminal tool that answers "why was this built this way?" by walking a chain a
 
 ```bash
 uv sync                          # install
+uv run pre-commit install        # once per clone: enables the commit hook
 docker compose up -d             # start Neo4j (Browser: http://localhost:7474)
 uv run tracepath status          # run the CLI
-uv run ruff check . && uv run ruff format --check .   # lint + format   (after /develop tooling)
-uv run mypy                      # typecheck, strict                    (after /develop tooling)
-uv run pytest                    # tests, needs Neo4j up for integration (after /develop tooling)
+uv run ruff check . && uv run ruff format --check .   # lint + format
+uv run mypy                      # typecheck, strict
+uv run pytest                    # tests, needs Neo4j up for integration
+uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 ```
 
 ## Specs
@@ -50,6 +52,7 @@ Chosen here, installed by `/develop tooling`.
 - **Lint + format**: Ruff. **Typecheck**: mypy `--strict`. **Before commit**: pre-commit hook runs all three.
 - **Tests**: pytest, `tests/test_*.py`. Pure functions need no mocks. Integration tests run real Cypher against real Neo4j (docker compose locally, a service container in CI); never mock the driver.
 - **CI**: GitHub Actions on push runs lint, format check, typecheck, and tests.
+- **Config lives in**: `pyproject.toml` (Ruff, mypy, pytest markers), `.pre-commit-config.yaml` (runs the locked versions via `uv run`), `.github/workflows/ci.yml`.
 
 ## Git
 
@@ -68,6 +71,7 @@ Chosen here, installed by `/develop tooling`.
 - claude-api: `anthropics/skills`, bundled with Claude Code (not in the project skills dir), Anthropic SDK and structured outputs
 
 MCP servers: Neo4j MCP `neo4j/mcp` (recommended, connect once real Cypher work starts)
+Declined: skills for Ruff, mypy, pytest, pre-commit
 
 ## Circuit breaker
 
