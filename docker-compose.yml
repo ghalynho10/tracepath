@@ -1,0 +1,10 @@
+# Neo4j graph store. The graph is derived from the JSON run artifacts and
+# rebuilt on demand, so no volume: the container is disposable.
+services:
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474" # Browser
+      - "7687:7687" # Bolt
+    environment:
+      NEO4J_AUTH: ${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in .env}

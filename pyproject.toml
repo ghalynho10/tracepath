@@ -1,0 +1,22 @@
+[project]
+name = "tracepath"
+version = "0.1.0"
+description = "Answers \"why was this built this way?\" from a project's decision records"
+readme = "README.md"
+authors = [
+    { name = "Ghaly Nicolas Jules", email = "mghalynho@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "neo4j>=6.3.1",
+    "python-dotenv>=1.2.3",
+    "rich>=15.0.0",
+    "typer>=0.27.2",
+]
+
+[project.scripts]
+tracepath = "tracepath.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.11.32,<0.12.0"]
+build-backend = "uv_build"
