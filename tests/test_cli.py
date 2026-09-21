@@ -4,7 +4,7 @@ import pytest
 from typer.testing import CliRunner
 
 from tests.conftest import UNREACHABLE_URI
-from tracepath import __version__
+from tracepath import __version__, config
 from tracepath.cli import app
 from tracepath.config import Neo4jSettings
 
@@ -35,6 +35,20 @@ def test_unknown_command_is_rejected() -> None:
 
     assert result.exit_code == 2
     assert "No such command" in result.output
+
+
+def test_status_without_a_password_names_the_missing_variable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Keep the developer's real .env from supplying the password.
+    monkeypatch.setattr(config, "load_dotenv", lambda: False)
+
+    result = runner.invoke(app, ["status"], env={"NEO4J_PASSWORD": None})
+
+    assert result.exit_code == 1
+    assert "NEO4J_PASSWORD" in flat(result.stderr)
+    assert "Traceback" not in result.output
+    assert result.stdout == ""
 
 
 def test_status_when_neo4j_is_down_explains_how_to_start_it() -> None:

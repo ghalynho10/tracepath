@@ -6,7 +6,7 @@ import typer
 from rich.console import Console
 
 from tracepath import __version__
-from tracepath.config import load_neo4j_settings
+from tracepath.config import SettingsInvalid, load_neo4j_settings
 from tracepath.graph import GraphUnavailable, connect, server_version
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
@@ -37,10 +37,10 @@ def main(
 @app.command()
 def status() -> None:
     """Check that the Neo4j graph store is reachable."""
-    settings = load_neo4j_settings()
     try:
+        settings = load_neo4j_settings()
         driver = connect(settings)
-    except GraphUnavailable as exc:
+    except (SettingsInvalid, GraphUnavailable) as exc:
         err_console.print(f"[red]✗[/red] {exc}")
         raise typer.Exit(code=1) from None
     with driver:
