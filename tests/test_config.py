@@ -1,7 +1,7 @@
 import pytest
 
 from tracepath import config
-from tracepath.config import Neo4jSettings, load_neo4j_settings
+from tracepath.config import Neo4jSettings, SettingsInvalid, load_neo4j_settings
 
 NEO4J_VARS = ("NEO4J_URI", "NEO4J_USERNAME", "NEO4J_PASSWORD", "NEO4J_DATABASE")
 
@@ -29,6 +29,7 @@ def test_uses_local_defaults_for_uri_username_and_database(
     monkeypatch.setattr(config, "load_dotenv", lambda: False)
     for name in NEO4J_VARS:
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("NEO4J_PASSWORD", "s3cret-pass")
 
     settings = load_neo4j_settings()
 
@@ -37,6 +38,26 @@ def test_uses_local_defaults_for_uri_username_and_database(
         "neo4j",
         "neo4j",
     )
+
+
+def test_missing_password_raises_settings_invalid_naming_the_variable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(config, "load_dotenv", lambda: False)
+    monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
+
+    with pytest.raises(SettingsInvalid, match="NEO4J_PASSWORD") as caught:
+        load_neo4j_settings()
+
+    assert ".env" in str(caught.value)
+
+
+def test_empty_password_raises_settings_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(config, "load_dotenv", lambda: False)
+    monkeypatch.setenv("NEO4J_PASSWORD", "")
+
+    with pytest.raises(SettingsInvalid, match="NEO4J_PASSWORD"):
+        load_neo4j_settings()
 
 
 def test_settings_are_immutable() -> None:
