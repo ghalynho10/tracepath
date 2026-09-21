@@ -36,5 +36,4 @@ jobs:
       - name: Typecheck
         run: uv run mypy
       - name: Test
-        # Exit code 5 means "no tests collected". Allowed until /test writes the first suite.
-        run: uv run pytest || [ $? -eq 5 ]
+        run: uv run pytest
