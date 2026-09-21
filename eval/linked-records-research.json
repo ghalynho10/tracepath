@@ -1,0 +1,216 @@
+{
+  "repo": "jobhunt",
+  "read_at": "2026-09-18",
+  "commit": "2e40bcf",
+  "working_tree_clean": true,
+  "entries": [
+    {
+      "shape": "exactly_two_records",
+      "question": "Why does the landing rule's profile existence read (src/lib/landing-rule.ts) have its own dedicated query instead of reusing readOwnProfile(), which already reads the same row?",
+      "why_multiple_records": "Spec 0008 says not to reuse it and names the consequence, but the reason readOwnProfile() reports a missing row is a deliberate decision recorded in spec 0003. Reading 0008 alone, that behaviour looks like an accident rather than a contract.",
+      "trace": [
+        {
+          "record": "spec 0008 AC-7",
+          "file": "docs/specs/0008-app-shell-and-navigation/index.md",
+          "line": 54,
+          "quote": "The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed. A first time sign in is the expected case and must not move the failure ratio feature 9 will alert on."
+        },
+        {
+          "record": "spec 0003 AC-14",
+          "file": "docs/specs/0003-data-model/index.md",
+          "line": 34,
+          "quote": "The health page reads the caller's own `profile` through the real server client under a real policy. Each of the two seeded development users with a profile sees only their own row, and a third seeded user, deliberately given no profile row, sees a visible expected failure naming the missing profile rather than an empty page."
+        }
+      ],
+      "corroboration": {
+        "record": "spec 0007 Consequences",
+        "file": "docs/specs/0007-auth-and-per-user-isolation/index.md",
+        "line": 307,
+        "quote": "They land on `/health` and see the `record_not_found` that spec 0003 **AC-14** exists to prove."
+      },
+      "answer": "readOwnProfile() reports a missing row on purpose (0003 AC-14: the health page must never show an empty page that reads like success), and a first sign in always has a missing row, so a second read treating absence as a plain false was needed to keep the alert ratio honest (0008 AC-7).",
+      "confidence": "high",
+      "confidence_note": "Both quotes read directly; the 0007 line 307 cross reference confirms both records describe the same failure path. Did not open src/features/profile/queries.ts; the question was about the records."
+    },
+    {
+      "shape": "four_records",
+      "question": "Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?",
+      "why_multiple_records": "The budget at stake is in spec 0011, the measured bug is in spec 0014, the fix is specified in spec 0008, and the constraint on how the fix may be written is spec 0001 binding rule 6 and its amendment. Each assumes the previous one.",
+      "trace": [
+        {
+          "record": "spec 0011 AC-12",
+          "file": "docs/specs/0011-usage-gating-and-kill-switch/index.md",
+          "line": 37,
+          "quote": "The three cap values (25 per account per week, 66 app wide per day, 2000 app wide per month, for `job_search`) live in a database configuration table editable with no deploy, not as a literal in code, matching the kill switch's own no deploy operating model."
+        },
+        {
+          "record": "spec 0014 Decision item 2 and AC-20a",
+          "file": "docs/specs/0014-apply-redirect-and-application-record/index.md",
+          "line": 69,
+          "quote": "A cookie mutated during the action's request. This is the one nobody writes on purpose, and revision 3 found only half of it. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a.",
+          "also": {
+            "line": 51,
+            "quote": "`src/proxy.ts` **withholds the refreshed session cookie from the response of a Server Action request**, while still handing the refreshed value to that request's own code through `request.cookies.set()`, so `recordApplication` can verify its caller. The branch keys on the presence of Next's `next-action` request header, never on the route, so binding rule 6's mechanical guard is untouched: the proxy still cannot tell a protected path from a public one. This is the criterion the 25 weekly Adzuna calls actually rest on."
+          }
+        },
+        {
+          "record": "spec 0008 AC-10b",
+          "file": "docs/specs/0008-app-shell-and-navigation/index.md",
+          "line": 62,
+          "quote": "**On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. Added 2026-09-05 by spec [0014] AC-20a, after a measured bug [...] The branch keys on Next's `next-action` request header, **never on the route**, so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination."
+        },
+        {
+          "record": "spec 0001 binding rule 6 and amendment item Three",
+          "file": "docs/specs/0001-stack-and-architecture/index.md",
+          "line": 133,
+          "quote": "**6. Authorisation is never decided in the proxy.** The proxy (`src/proxy.ts`, the file Next.js called `middleware.ts` before 16) refreshes the Supabase session cookie and does nothing else.",
+          "also": {
+            "line": 143,
+            "quote": "**Three, added 2026-09-05 by spec [0014] AC-20a [...] \"Refreshes the Supabase session cookie\" now carries one exception about where the refresh lands.** [...] The reason is not authorisation, it is cost: a cookie mutated during an action makes Next re-render the current route into the action's response, and on `/search` that re-render re-runs the Adzuna search and spends one of the 25 weekly calls spec [0011] rations. **The substance of this rule is untouched, and the same mechanical test decides it.** The branch keys on Next's `next-action` request header, never on the path, so the proxy still reads no session for a decision, still holds no list of routes, and still cannot tell a protected path from a public one. `src/proxy.test.ts` lines 49 to 62 and 64 to 70 both still pass unmodified"
+          }
+        }
+      ],
+      "answer": "An apply on /search was measured spending an Adzuna call because the proxy's cookie refresh on the action POST forced a re-render (0014); the proxy now withholds that cookie from action responses (0008 AC-10b); it must recognise an action by request kind and never by path because binding rule 6 forbids the proxy from knowing routes, with two unmodified proxy.test.ts assertions as the mechanical guard (0001).",
+      "confidence": "high",
+      "confidence_note": "Chain and quotes read directly. Did not open src/proxy.ts or src/proxy.test.ts to confirm lines 49 to 62 still hold the assertions three records claim; check that file if you need the chain proved live."
+    },
+    {
+      "shape": "superseded_criterion",
+      "question": "Why is password sign in impossible on production?",
+      "why_multiple_records": "Spec 0002 AC-10 gives a complete, confident and now wrong answer (the enabling variable is absent and two guards fail closed). Neither guard exists any more. The correct answer needs the strike-through and the note that replaces it.",
+      "trace": [
+        {
+          "record": "spec 0002 AC-10 (struck)",
+          "file": "docs/specs/0002-deployment-and-environments/index.md",
+          "line": 31,
+          "quote": "~~Password sign in is impossible on production, in both places it is guarded: the sign in page does not render and the Server Action refuses to run. The enabling variable is absent there, both guards fail closed, and neither depends any longer on how a build labels `NODE_ENV`.~~ · **SUPERSEDED 2026-08-30 by spec [0007].** Kept rather than deleted, because it was met as written and the reason it stopped applying is worth reading. Feature 7 deleted the password path outright, page and action alike, so password sign in is now impossible in EVERY environment rather than blocked in one, and there are no two guards left to fail closed. [...] What survives from it is the fail closed default itself, which is now the session mint's guarantee (spec 0007 **AC-13**)."
+        },
+        {
+          "record": "spec 0007 AC-12 and key invariant 1",
+          "file": "docs/specs/0007-auth-and-per-user-isolation/index.md",
+          "line": 35,
+          "quote": "`src/features/dev-session/` no longer exists, `signInWithDevPassword` no longer exists, `src/lib/supabase/browser.ts` no longer exists, and `/sign-in` renders the real page in every environment rather than a 404 outside development.",
+          "also": {
+            "line": 142,
+            "quote": "**No password path exists anywhere in the product.** Not disabled, not flagged, absent. The only remaining credential path is the test mint, which lives outside `src/` and is guarded by `DEV_SESSION_ENABLED`."
+          }
+        },
+        {
+          "record": "spec 0007 AC-13",
+          "file": "docs/specs/0007-auth-and-per-user-isolation/index.md",
+          "line": 36,
+          "quote": "`DEV_SESSION_ENABLED` survives with exactly one remaining job, guarding the test mint in `test/helpers/admin.ts`. It is no longer set on Vercel Preview, `src/env.ts`'s comment about it says so, and spec 0002's configuration table matches."
+        },
+        {
+          "record": "spec 0002 test scenario (struck)",
+          "file": "docs/specs/0002-deployment-and-environments/index.md",
+          "line": 232,
+          "quote": "~~a POST to the sign in action on production is refused because `DEV_SESSION_ENABLED` is absent, verifies **AC-10**~~ · **UNRUNNABLE SINCE 2026-08-30**, and see AC-10 above. Spec [0007] deleted the Server Action this scenario posts to, so there is nothing left to refuse. Struck rather than rewritten because the property it tested, that no environment can accept a password, stopped being a guard and became structural: the code path does not exist. Spec 0007's own `verify.md` greps for its absence instead."
+        }
+      ],
+      "answer": "Not because an environment variable is unset on production (true until 2026-08-30, and what spec 0002 AC-10 still says if you skip the strike-through), but because feature 7 deleted the password page and action entirely, so the property holds in every environment and is proved by grepping for absence; DEV_SESSION_ENABLED now guards only the test mint.",
+      "confidence": "high",
+      "confidence_note": "Supersession marked in three places in spec 0002 (lines 31, 161, 194, 232) and all were read; they agree with spec 0007. Amendment dates differ between line 31/161 (2026-08-30) and line 194 (2026-08-29); wording inconsistency only."
+    },
+    {
+      "shape": "no_documented_connection",
+      "question": "Why is the return path cookie's max age 10 minutes? Is it matched to the lifetime of the PKCE code verifier cookie Supabase writes on the same sign in action, or to the session policy spec 0007 AC-19 records?",
+      "why_it_sounds_connected": "Both cookies are written during the same provider Server Action and both exist only to survive the round trip to the provider and back to /auth/callback; spec 0007 AC-4 describes the verifier cookie's host scoping in detail, so a matched lifetime would be the natural design.",
+      "checked": [
+        {
+          "where": "docs/specs/0008-app-shell-and-navigation/index.md line 67 (AC-14)",
+          "found": "states 'with a max age of 10 minutes', no derivation"
+        },
+        {
+          "where": "docs/specs/0008-app-shell-and-navigation/index.md line 162",
+          "found": "'10 minute max age, and `Path` scoped to the callback so it is not carried on ordinary navigation.' SameSite=Lax on the same line gets a reason; the 10 minutes does not"
+        },
+        {
+          "where": "docs/specs/0008-app-shell-and-navigation/rationale.md",
+          "found": "grep -n -i 'max age|maxAge|ten minute|10 min' returns no match"
+        },
+        {
+          "where": "docs/specs/0007-auth-and-per-user-isolation/index.md AC-4 (lines 25-27) and AC-19 session policy table (lines 197-213)",
+          "found": "AC-4 calls the verifier 'a **host only** cookie written on whichever host served the action' and says nothing about lifetime; AC-19's table has access token expiry 3600, timebox, inactivity, reuse interval, and no row for the verifier or any value near 600 seconds"
+        },
+        {
+          "where": "grep -rn -i 'pkce' docs/specs/0007-*/ docs/specs/0008-*/ | grep -i 'minute|lifetime|expir|max'",
+          "found": "no output"
+        },
+        {
+          "where": "grep -rn -i 'ten minute|10 minute|10-minute|max age of 10|maxAge: 600|verifier.*lifetime|verifier.*expir|code_verifier' docs/ src/features/auth src/lib/return-path.ts src/proxy.ts",
+          "found": "exactly four hits: the two spec 0008 lines above, src/features/auth/actions.test.ts:528 (asserts maxAge: 600, no reason), src/lib/return-path.ts:58"
+        },
+        {
+          "where": "src/lib/return-path.ts lines 58-61",
+          "found": "'Ten minutes, in seconds. Long enough for a provider consent screen and a password manager, short enough that a stale value cannot sit around.' A human timescale reason; no mention of the verifier, the session policy or Supabase"
+        },
+        {
+          "where": "docs/specs/0009-terms-and-privacy-notices/index.md line 286",
+          "found": "uses '10 minutes' as an example lifetime string for the cookie registry added 2026-09-18; records the value for disclosure, derives nothing"
+        },
+        {
+          "where": "docs/reviews/2026-08-31-spec-0008-app-shell-and-navigation.md",
+          "found": "discusses the cookie's Path and the length cap (line 241); does not question the 10 minutes"
+        }
+      ],
+      "conclusion": "The number and one human-scale reason for it are documented, but nothing in docs/ or the auth code links it to the PKCE verifier's lifetime or to spec 0007's session policy. As far as the record shows the two lifetimes are independent choices that coexist on one request.",
+      "confidence": "high that the connection is undocumented",
+      "confidence_note": "The greps listed are the exact commands run and cover every spec, review and the three source files involved. Did not check Supabase's own documentation for the verifier lifetime, so cannot say whether the two numbers happen to be equal in practice, only that the repo never says."
+    },
+    {
+      "shape": "own_pick_scheduling_blocked_on_external_meter",
+      "what_makes_it_different": "Not an amendment to a mechanism or a superseded criterion. A scheduling decision forced by a counter outside the repo (Google's lifetime OAuth user cap), discovered while building an unrelated feature (7), and recorded across a spec follow-up, a /scope edit, the scope's Resolved list and a new spec's summary because spec 0007 was not permitted to edit feature 21's row. Blocked-on in both directions: feature 21 blocked on the custom domain; Google's publish step blocked on feature 21.",
+      "question": "Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?",
+      "trace": [
+        {
+          "record": "spec 0007 Consequences",
+          "file": "docs/specs/0007-auth-and-per-user-isolation/index.md",
+          "line": 313,
+          "quote": "**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \"over the entire lifetime of the app\", so it never goes back down. [...] **Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32, precisely because a meter counted over the app's lifetime is not something to leave until launch readiness."
+        },
+        {
+          "record": "spec 0007 Follow-up",
+          "file": "docs/specs/0007-auth-and-per-user-isolation/index.md",
+          "line": 335,
+          "quote": "**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`. That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one.",
+          "also": {
+            "line": 336,
+            "quote": "[x] **Feature 21 and feature 7 depend on each other and neither scope row says so.** [...] Recording it on feature 21's row is a `/scope` edit, since `/architect` may not edit another feature's contents. · **Done 2026-08-31.** Feature 21's row now carries the dependency in both directions [...] It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32, because the cap is counted over the app's whole lifetime and every sign in before those pages exist spends a slot permanently."
+          }
+        },
+        {
+          "record": "scope.md feature 21 row",
+          "file": "docs/scope/scope.md",
+          "line": 179,
+          "quote": "_Moved here from Slice 5 on 2026-08-31, to build after feature 32. **The reason is a meter that only runs one way.** This feature is what lifts Google's 100 user cap [...] Every person who signs in before these pages exist spends one of those slots permanently, which is why waiting until launch readiness was the wrong place for it. The pages must be served from `usejobhunt.dev`, because Google will not accept a `vercel.app` address as an authorised domain. Publishing is also the remaining fix for the consent screen naming a Supabase host instead of JobHunt._",
+          "also": {
+            "line": 180,
+            "quote": "_Depends on feature 7, both ways, recorded from spec [0007] on 2026-08-31. Feature 7 is what makes these notices load bearing rather than paperwork: the privacy notice must describe what arrives from the provider into `auth.users`, meaning the email address, the display name and the avatar URL._"
+          }
+        },
+        {
+          "record": "scope.md Resolved, custom domain",
+          "file": "docs/scope/scope.md",
+          "line": 516,
+          "quote": "**Custom domain**: **done 2026-08-30.** The production origin moved from `https://usejobhunt.vercel.app` to `https://usejobhunt.dev`. [...] **What it did not fix, and what since did**: Google's consent screen read the Supabase host, because that is the OAuth redirect host and the domain move did not touch it. **Closed on 2026-09-01 by feature 21**, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \"to continue to JobHunt\"."
+        },
+        {
+          "record": "spec 0009 Summary",
+          "file": "docs/specs/0009-terms-and-privacy-notices/index.md",
+          "line": 17,
+          "quote": "Two public pages, `/terms` and `/privacy`, written against what this codebase actually stores and actually sends to other companies, rather than from a template. They exist to be true, and they exist to unblock Google: the OAuth app is stuck in Testing because the console's privacy policy and terms fields are empty, and Testing is capped at 100 users counted over the app's whole lifetime."
+        }
+      ],
+      "answer": "Google's Testing mode caps the app at 100 users counted over its whole lifetime and never resets, so every sign in before the privacy and terms pages exist permanently spends a slot and the pages could not wait for launch readiness; they also could not be served from vercel.app, so the custom domain (resolved 2026-08-30) had to precede them; the chain is spread across two documents because spec 0007 was not permitted to edit feature 21's row itself.",
+      "confidence": "high",
+      "confidence_note": "Every quoted step read directly. scope.md line 176 tags the feature 'Alpha' while its prose and spec 0009 say it was built in Foundation after feature 32; did not chase what 'Alpha' means in the scope legend."
+    }
+  ],
+  "method_notes": [
+    "Every quote was read from the named file at the named line in this session; nothing is from memory.",
+    "Working tree was clean at read time (git status --short empty), so all quotes are committed content at 2e40bcf.",
+    "The session's initial git snapshot listed spec 0009's index.md and rationale.md as modified; by read time they were committed (2e40bcf, 2026-09-18). No quote depends on an uncommitted edit.",
+    "No code built, nothing in the repo changed."
+  ]
+}
