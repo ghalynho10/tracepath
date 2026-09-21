@@ -11,12 +11,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT_DIR = REPO_ROOT / "corpus" / "jobhunt"
 EVAL_FILE = REPO_ROOT / "eval" / "linked-records-research.json"
 
-# The snapshot's docs are gitignored (local only), so CI's checkout has none to check.
-needs_snapshot = pytest.mark.skipif(
-    not (SNAPSHOT_DIR / "docs").is_dir(),
-    reason="corpus snapshot not present; recreate it per corpus/jobhunt/SNAPSHOT.md",
-)
-
 
 class Passage(TypedDict):
     line: int
@@ -97,7 +91,6 @@ def test_snapshot_records_the_commit_the_eval_set_was_read_at() -> None:
     assert match.group(1).startswith(load_eval()["commit"])
 
 
-@needs_snapshot
 @pytest.mark.parametrize("citation", citations(load_eval()), ids=lambda c: c["record"])
 def test_cited_passage_exists_in_the_snapshot_at_its_line(citation: Citation) -> None:
     path = SNAPSHOT_DIR / citation["file"]
@@ -114,7 +107,6 @@ def test_cited_passage_exists_in_the_snapshot_at_its_line(citation: Citation) ->
     assert pieces[0][:30] in near
 
 
-@needs_snapshot
 def test_docs_checked_for_the_no_connection_question_exist_in_the_snapshot() -> None:
     checked = [c for e in load_eval()["entries"] for c in e.get("checked", [])]
     docs_paths = [m.group(1) for c in checked if (m := re.match(r"(docs/\S+)", c["where"]))]

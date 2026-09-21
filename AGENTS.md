@@ -34,8 +34,8 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 
 ## Corpus and eval
 
-- `corpus/jobhunt/docs/`: JobHunt's `docs/` at `2e40bcf`, a read only snapshot. Never edit or regenerate it. It is gitignored (local only); `corpus/jobhunt/SNAPSHOT.md` records the commit and the command to recreate it on a fresh clone.
-- `eval/linked-records-research.json` (plus its `.md` twin): the five eval questions with expected chains, read at the same commit. Bring in as is, never regenerate. `tests/test_corpus.py` checks every cited passage exists in the snapshot and skips those checks when the snapshot is absent (as in CI).
+- `corpus/jobhunt/docs/`: JobHunt's `docs/` at `2e40bcf`, a read only snapshot. Never edit or regenerate it. It is tracked in git, so CI checks against it; `corpus/jobhunt/SNAPSHOT.md` records the commit and the command that made it.
+- `eval/linked-records-research.json` (plus its `.md` twin): the five eval questions with expected chains, read at the same commit. Bring in as is, never regenerate. `tests/test_corpus.py` checks every cited passage exists in the snapshot; a missing snapshot fails the test.
 
 ## Rules
 
