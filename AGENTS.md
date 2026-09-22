@@ -28,6 +28,13 @@ uv run pytest                    # tests, needs Neo4j up for integration
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 ```
 
+## Layout
+
+- `docs/`: the scope (`docs/scope/`), specs (`docs/specs/`), and standing rules (`docs/reflexes.md`).
+- `corpus/`: the pinned JobHunt snapshot, tracked in git.
+- `eval/`: the eval set, tracked in git.
+- `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
+
 ## Specs
 
 Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationale.md`, `verify.md`). Scope: `docs/scope/scope.md`.
