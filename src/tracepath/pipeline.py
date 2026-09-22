@@ -76,6 +76,7 @@ def run_unit(
                 commit=commit,
                 extracted_at=extracted_at,
                 max_output_tokens=MAX_TOKENS,
+                effort=settings.effort or "default",
             )
         )
         identified.append(assign_ids(locate_output(unit, output), unit.record_id, section_slug))

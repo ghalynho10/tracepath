@@ -40,6 +40,7 @@ class RunArtifact:
     commit: str
     extracted_at: str
     max_output_tokens: int
+    effort: str
     output: ExtractionOutput
 
 
@@ -58,6 +59,7 @@ def build_artifact(
     commit: str,
     extracted_at: str,
     max_output_tokens: int,
+    effort: str,
 ) -> RunArtifact:
     """Assemble one run artifact. Pure: every value is given, none is looked up."""
     return RunArtifact(
@@ -72,6 +74,7 @@ def build_artifact(
         commit=commit,
         extracted_at=extracted_at,
         max_output_tokens=max_output_tokens,
+        effort=effort,
         output=output,
     )
 
@@ -90,6 +93,7 @@ def artifact_payload(artifact: RunArtifact) -> dict[str, Any]:
         "commit": artifact.commit,
         "extracted_at": artifact.extracted_at,
         "max_output_tokens": artifact.max_output_tokens,
+        "effort": artifact.effort,
         "output": artifact.output.model_dump(mode="json"),
     }
 
@@ -122,6 +126,7 @@ def read_run(path: Path) -> RunArtifact:
         commit=payload["commit"],
         extracted_at=payload["extracted_at"],
         max_output_tokens=payload["max_output_tokens"],
+        effort=payload["effort"],
         output=ExtractionOutput.model_validate(payload["output"]),
     )
 

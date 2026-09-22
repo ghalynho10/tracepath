@@ -9,6 +9,7 @@ Run from the repository root:  uv run python experiments/0001-ac14-type-stabilit
 
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 from tracepath.artifacts import (
@@ -19,7 +20,7 @@ from tracepath.artifacts import (
     write_run,
 )
 from tracepath.config import load_anthropic_settings, load_neo4j_settings
-from tracepath.extract.client import PROMPT_VERSION, build_client
+from tracepath.extract.client import MAX_TOKENS, PROMPT_VERSION, build_client
 from tracepath.extract.ids import section_slugs
 from tracepath.extract.records import Record, read_commit, scope_document_record, spec_record
 from tracepath.extract.records import feature_record as build_feature_record
@@ -28,6 +29,11 @@ from tracepath.graph import connect
 from tracepath.graph.model import Provenance
 from tracepath.graph.schema import clear, create_constraints
 from tracepath.pipeline import UnitResult, load, resolve_accepted, run_unit
+
+#: The decided effort for this run. Chosen by measurement, not by default: see this
+#: experiment's README and `data/effort-*-calibration.json`. Thinking is billed as
+#: output, so this is the pipeline's real cost dial.
+EFFORT = "medium"
 
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
@@ -120,7 +126,7 @@ def describe(label: str, result: UnitResult) -> dict[str, object]:
 def main() -> int:
     """Run both phases, write the artifacts, load the graph, record the measurements."""
     commit = read_commit((ROOT / "corpus" / "jobhunt" / "SNAPSHOT.md").read_text())
-    settings = load_anthropic_settings()
+    settings = replace(load_anthropic_settings(), effort=EFFORT)
     neo4j = load_neo4j_settings()
     client = build_client(settings)
     extracted_at = now_utc()
@@ -191,6 +197,8 @@ def main() -> int:
         "corpus_commit": commit,
         "model": settings.model,
         "runs_per_unit": settings.runs_per_unit,
+        "effort": EFFORT,
+        "max_output_tokens": MAX_TOKENS,
         "prompt_version": PROMPT_VERSION,
         "extracted_at": extracted_at,
         "sections": report,
