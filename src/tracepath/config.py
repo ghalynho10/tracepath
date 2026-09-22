@@ -5,6 +5,14 @@ from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
+#: The model spec 0001 chose for extraction. Its judgement heavy calls are what the
+#: known trap flags exist to catch, so a smaller model is not a drop in swap.
+DEFAULT_MODEL = "claude-sonnet-5"
+
+#: Runs per unit, from spec 0001's run policy. The run comparator's whole signal is
+#: the variation between these, so there is no point running fewer.
+RUNS_PER_UNIT = 3
+
 
 class SettingsInvalid(Exception):
     """A required setting is missing or empty."""
@@ -18,6 +26,37 @@ class Neo4jSettings:
     username: str
     password: str
     database: str
+
+
+@dataclass(frozen=True)
+class AnthropicSettings:
+    """Settings for the model calls extraction makes."""
+
+    api_key: str
+    model: str
+    runs_per_unit: int
+
+
+def load_anthropic_settings() -> AnthropicSettings:
+    """Read the Anthropic settings from the environment, after loading `.env`.
+
+    Checked at startup rather than at the first call, so a missing key fails before
+    any work starts instead of part way through a run.
+
+    Raises:
+        SettingsInvalid: ANTHROPIC_API_KEY is unset or empty.
+    """
+    load_dotenv()
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        raise SettingsInvalid(
+            "ANTHROPIC_API_KEY is not set. Add it to `.env` (see `.env.example`)."
+        )
+    return AnthropicSettings(
+        api_key=api_key,
+        model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
+        runs_per_unit=RUNS_PER_UNIT,
+    )
 
 
 def load_neo4j_settings() -> Neo4jSettings:
