@@ -285,24 +285,53 @@ def test_a_local_endpoint_naming_no_entity_in_the_output_is_rejected() -> None:
     assert "derived:9" in str(caught.value)
 
 
-def test_two_entities_may_not_share_an_id() -> None:
+def test_two_entities_may_not_share_a_placeholder_id() -> None:
     with pytest.raises(ValidationError):
         ExtractionOutput.model_validate(
             {
                 "entities": [
                     {
-                        "id": "AC-1",
-                        "id_source": "verbatim",
-                        "type": "AcceptanceCriterion",
+                        "id": "derived:1",
+                        "id_source": "derived",
+                        "type": "Constraint",
                         "span": "a",
                     },
                     {
-                        "id": "AC-1",
-                        "id_source": "verbatim",
-                        "type": "AcceptanceCriterion",
+                        "id": "derived:1",
+                        "id_source": "derived",
+                        "type": "Constraint",
                         "span": "b",
                     },
                 ],
                 "relationships": [],
             }
         )
+
+
+def test_one_verbatim_id_may_carry_both_a_struck_and_an_unstruck_version() -> None:
+    """AC-5 needs this shape, so the schema must not reject it.
+
+    Which of the two keeps the verbatim id is code's call, not the model's, and it is
+    made in `assign_ids()` once the pre-check has said which one is struck.
+    """
+    output = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "AC-2",
+                    "id_source": "verbatim",
+                    "type": "AcceptanceCriterion",
+                    "span": "the old version, struck in the source",
+                },
+                {
+                    "id": "AC-2",
+                    "id_source": "verbatim",
+                    "type": "AcceptanceCriterion",
+                    "span": "the replacement that stands",
+                },
+            ],
+            "relationships": [],
+        }
+    )
+
+    assert len(output.entities) == 2

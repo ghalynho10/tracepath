@@ -187,11 +187,17 @@ class ExtractionOutput(_Frozen):
     relationships: tuple[ExtractedRelationship, ...] = ()
 
     @model_validator(mode="after")
-    def _check_ids_are_unique(self) -> Self:
-        seen = [entity.id for entity in self.entities]
-        duplicates = sorted({entity_id for entity_id in seen if seen.count(entity_id) > 1})
+    def _check_placeholder_ids_are_unique(self) -> Self:
+        """A placeholder has to name one entity, because endpoints point at it.
+
+        A verbatim id may repeat: one `AC-2` can carry both a struck old version and
+        its unstruck replacement (AC-5). Code, not the model, decides which of those
+        keeps the verbatim id.
+        """
+        placeholders = [e.id for e in self.entities if e.id_source is IdSource.DERIVED]
+        duplicates = sorted({p for p in placeholders if placeholders.count(p) > 1})
         if duplicates:
-            raise ValueError(f"two entities share an id: {', '.join(duplicates)}")
+            raise ValueError(f"two entities share a placeholder id: {', '.join(duplicates)}")
         return self
 
     @model_validator(mode="after")

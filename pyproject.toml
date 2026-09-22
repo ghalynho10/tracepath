@@ -54,4 +54,7 @@ files = ["src", "tests"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--strict-markers"]
-markers = ["integration: needs a running Neo4j (docker compose up -d)"]
+markers = [
+    "integration: needs a running Neo4j (docker compose up -d)",
+    "slow: a measurement over the whole corpus; skip with -m \"not slow\"",
+]
