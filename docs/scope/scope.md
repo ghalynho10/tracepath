@@ -18,12 +18,13 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | done |
-| 4 | Data model | Foundation | planned |
+| 4 | Data model | Foundation | in-progress |
 | 5 | First traced chain | Slice 1 | planned |
 | 6 | Eval runner | Slice 2 | planned |
 | 7 | Name resolution | Slice 3 | planned |
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
+| 10 | Rationale extraction and alternatives | Slice 6 | planned |
 
 ## Foundations
 
@@ -46,10 +47,19 @@ Bring in JobHunt's `docs/` pinned at `2e40bcf`, and the finished eval file (five
 code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `tests/test_corpus.py`
 - [x] Bring them in: `/develop corpus snapshot & eval set`
 
-### 4. Data model · needs a decision
+### 4. Data model
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
-- [ ] Design it (spec): `/architect data model`
+spec [0002](../specs/0002-data-model/index.md)
+- [x] Design it (spec): `/architect data model`
+- [ ] Build it: `/develop data model`
+  - [ ] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
+  - [ ] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
+  - [ ] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11)
+  - [ ] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
+  - [ ] Real runs: the thin thread, then endpoint resolution, review routing and the six section kinds (AC-7, AC-10, AC-14)
+- [ ] Verify it: `/check verify data model`
+- [ ] Test it: `/test data model`
 
 ## Slice 1: First traced chain
 
@@ -85,6 +95,13 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run.
 **Done when:** the full snapshot is ingested in one rebuild, all five eval questions pass, and relationships that fit no named type appear as unclassified, not dropped.
 - [ ] Build it: `/develop whole corpus`
+
+## Slice 6: Rationale and alternatives
+
+### 10. Rationale extraction and alternatives · needs a decision · from spec 0002
+Widen extraction to each spec's `rationale.md`, with an `Alternative` entity type for an option a spec weighed: what it was, whether it was chosen, and the reason. A census inside spec 0002 found that 9 of 20 plausible questions across four specs need `rationale.md`, and every one of them asked about an alternative the spec rejected. Two limits to settle here rather than assume: an outcome is not only chosen or rejected (spec 0012's rationale says "Anthropic is parked, not rejected"), and `Alternative` answers "why this one over that one" but not "what was the decision before, and why did it change" (0012's vendor pick was re-decided in place and the old version is kept nowhere else). That second shape stays open alongside a `Claim` type.
+**Done when:** a "why not X" question returns a chain that reaches the rejected option and its reason, each link citing its record, and an option whose outcome fits neither chosen nor rejected is visible as such rather than forced into one.
+- [ ] Design it (spec): `/architect rationale extraction`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
