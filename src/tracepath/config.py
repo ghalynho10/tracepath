@@ -13,6 +13,11 @@ DEFAULT_MODEL = "claude-sonnet-5"
 #: the variation between these, so there is no point running fewer.
 RUNS_PER_UNIT = 3
 
+#: The effort levels this model accepts. Left unset means the model's own default,
+#: which is `high`; spec 0001 never decided one, so it is recorded per run rather than
+#: assumed. Thinking is billed as output, so this is the main cost dial.
+EFFORT_LEVELS = frozenset({"low", "medium", "high", "xhigh", "max"})
+
 
 class SettingsInvalid(Exception):
     """A required setting is missing or empty."""
@@ -35,6 +40,7 @@ class AnthropicSettings:
     api_key: str
     model: str
     runs_per_unit: int
+    effort: str | None
 
 
 def load_anthropic_settings() -> AnthropicSettings:
@@ -52,10 +58,16 @@ def load_anthropic_settings() -> AnthropicSettings:
         raise SettingsInvalid(
             "ANTHROPIC_API_KEY is not set. Add it to `.env` (see `.env.example`)."
         )
+    effort = os.getenv("ANTHROPIC_EFFORT", "").strip().lower()
+    if effort and effort not in EFFORT_LEVELS:
+        raise SettingsInvalid(
+            f"ANTHROPIC_EFFORT is {effort!r}. Use one of: {', '.join(sorted(EFFORT_LEVELS))}."
+        )
     return AnthropicSettings(
         api_key=api_key,
         model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
         runs_per_unit=RUNS_PER_UNIT,
+        effort=effort or None,
     )
 
 

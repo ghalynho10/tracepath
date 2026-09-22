@@ -167,6 +167,10 @@ def split_units(path: str, text: str) -> tuple[Unit, ...]:
 
     units: list[Unit] = []
     starts = [b.line_index for b in boundaries]
+    # A Preamble is emitted for the scope document too, not just a spec. AC-2 names the
+    # Preamble only for a spec's `index.md`, which would leave the scope document's title
+    # and opening notes in no unit at all and break AC-2's own byte coverage rule. Owed as
+    # an amendment to AC-2, confirmed 2026-09-22, to be written by `/architect data model`.
     if not boundaries or boundaries[0].line_index > 0:
         end = starts[0] if starts else len(lines)
         units.append(
