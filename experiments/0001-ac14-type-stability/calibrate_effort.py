@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from run import find
 
+from tracepath.artifacts import build_artifact, now_utc, write_run
 from tracepath.config import load_anthropic_settings
 from tracepath.extract.client import (
     MAX_TOKENS,
@@ -32,6 +33,7 @@ from tracepath.extract.ids import assign_ids, locate_output
 
 DATA = Path(__file__).parent / "data"
 RECORD, SECTION = "0012", "Consequences"
+COMMIT = "2e40bcf"
 
 
 def main(level: str) -> int:
@@ -44,10 +46,27 @@ def main(level: str) -> int:
 
     identified, rows = [], []
     started = time.time()
+    started_at = now_utc()
     for run in range(1, settings.runs_per_unit + 1):
         at = time.time()
         result = run_with_retry(client, settings, unit, run)
         seconds = time.time() - at
+        # Written under the experiment's own data/, never into `artifacts/`: these are a
+        # calibration's output, and overwriting the committed production run would
+        # destroy the evidence it stands on.
+        artifact = build_artifact(
+            unit=unit,
+            section_slug=slug,
+            run=run,
+            output=result.output,
+            model=settings.model,
+            prompt_version=PROMPT_VERSION,
+            commit=COMMIT,
+            extracted_at=started_at,
+            max_output_tokens=MAX_TOKENS,
+            effort=level,
+        )
+        write_run(DATA / f"effort-{level}", artifact)
         ids = assign_ids(locate_output(unit, result.output), unit.record_id, slug)
         identified.append(ids)
         types = Counter(str(e.entity.type) for e in ids.entities)
