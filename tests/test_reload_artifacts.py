@@ -98,9 +98,18 @@ def _needed(results: list[UnitResult], seen: set[str]) -> set[str]:
     return needed & seen
 
 
-def test_the_committed_artifacts_are_still_there() -> None:
-    """A rebuild claims the artifacts are the source of truth; check they exist."""
-    assert len(list(RUNS.glob("*/*/run-*.json"))) == 21
+def test_every_committed_unit_has_all_three_of_its_runs() -> None:
+    """A rebuild claims the artifacts are the source of truth, so none may be missing.
+
+    Counted per unit rather than as one total, so adding a unit does not need this
+    number changed, while a unit that lost a run still fails.
+    """
+    per_unit: dict[str, int] = {}
+    for path in RUNS.glob("*/*/run-*.json"):
+        per_unit[str(path.parent)] = per_unit.get(str(path.parent), 0) + 1
+
+    assert per_unit, "no run artifacts found"
+    assert set(per_unit.values()) == {3}, f"a unit is missing runs: {per_unit}"
 
 
 def test_no_accepted_link_points_at_an_entity_that_was_not_accepted() -> None:

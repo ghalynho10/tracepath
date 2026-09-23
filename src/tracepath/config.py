@@ -13,10 +13,16 @@ DEFAULT_MODEL = "claude-sonnet-5"
 #: the variation between these, so there is no point running fewer.
 RUNS_PER_UNIT = 3
 
-#: The effort levels this model accepts. Left unset means the model's own default,
-#: which is `high`; spec 0001 never decided one, so it is recorded per run rather than
-#: assumed. Thinking is billed as output, so this is the main cost dial.
+#: The effort levels this model accepts. Thinking is billed as output, so this is the
+#: main cost dial.
 EFFORT_LEVELS = frozenset({"low", "medium", "high", "xhigh", "max"})
+
+#: The decided effort (spec 0001, run policy row, amended 2026-09-23). Chosen on
+#: fidelity, not cost: at `low`, 2 of 3 runs merged a correction into the span of the
+#: claim it replaced and stored the whole thing marked struck, filing the current fact
+#: as obsolete. Unset used to mean the model's own default, `high`, which is how the
+#: first runs came to use `high` by accident rather than by choice.
+DEFAULT_EFFORT = "medium"
 
 
 class SettingsInvalid(Exception):
@@ -67,7 +73,7 @@ def load_anthropic_settings() -> AnthropicSettings:
         api_key=api_key,
         model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
         runs_per_unit=RUNS_PER_UNIT,
-        effort=effort or None,
+        effort=effort or DEFAULT_EFFORT,
     )
 
 
