@@ -26,6 +26,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
+| 12 | Extraction stability on heterogeneous units | before feature 11 | planned |
 
 ## Foundations
 
@@ -108,6 +109,8 @@ How much the routing rules should hold back, decided on logged evidence rather t
 1. **Tune the routing.** The queue is the right mechanism and its thresholds are wrong. Measure the ratio per unit kind, loosen where the evidence says it over flags, keep a person in the loop.
 2. **Question whether the queue belongs here at all.** This project's standing rule is "no verification layer, because the visible chain is the check", and a human queue of this size is a verification layer. It came from the reference pipeline, which was hand run in a learning workspace at a scale where a person really could rule on every row, rather than from this project's own rules. The alternative to weigh is writing items with their confidence recorded and letting a chain display a disputed step, which is exactly how `unclassified`, `:Unresolved` and `UNCLASSIFIED` links already work: uncertainty is visible in the chain instead of blocking it. Note the tension to resolve either way, spec 0001 currently lists the review queue as _matching_ the visible chain rule, but does so on the grounds that its files are plain diffable JSON, which is a claim about the file format and not about whether a person must clear a queue before a chain can be read.
 
+**Feature 12 comes first.** 340 of these 403 rows are `runs_disagree`, and feature 12 tests whether that rate is an artifact of an exampleless prompt and an over broad unit definition rather than a property of the corpus. Setting a policy before that answer risks tuning thresholds around a defect, so weigh this one knowing whether the disagreement is fixable at source.
+
 **Decided on eval evidence, not on argument.** Both framings are arguable from first principles and neither wins that way, so the tie breaker is what the eval actually returns. This needs feature 6 first: once the eval runner exists, run the five eval questions under **both** policies, review gated and write everything with its status recorded, and record which chains break under each and how. A chain that is right under one and wrong or absent under the other is the evidence; a chain that is identical under both says the queue is not what decides that answer. Run it before writing the spec, not after, so the spec records a measurement rather than a preference.
 
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
@@ -119,6 +122,34 @@ How much the routing rules should hold back, decided on logged evidence rather t
 Widen extraction to each spec's `rationale.md`, with an `Alternative` entity type for an option a spec weighed: what it was, whether it was chosen, and the reason. A census inside spec 0002 found that 9 of 20 plausible questions across four specs need `rationale.md`, and every one of them asked about an alternative the spec rejected. Two limits to settle here rather than assume: an outcome is not only chosen or rejected (spec 0012's rationale says "Anthropic is parked, not rejected"), and `Alternative` answers "why this one over that one" but not "what was the decision before, and why did it change" (0012's vendor pick was re-decided in place and the old version is kept nowhere else). That second shape stays open alongside a `Claim` type.
 **Done when:** a "why not X" question returns a chain that reaches the rejected option and its reason, each link citing its record, and an option whose outcome fits neither chosen nor rejected is visible as such rather than forced into one.
 - [ ] Design it (spec): `/architect rationale extraction`
+
+### 12. Extraction stability on heterogeneous units · needs a decision · from spec 0002
+Whether the run to run disagreement is a fact about the corpus or a fixable defect in how units are cut and prompted. It is the single largest cost in the pipeline: 340 of the 403 queue rows are `runs_disagree`.
+
+**The split is sharp.** Some units are near perfectly repeatable: `0012 ## Requirements` returns 14 / 14 / 14 entities, `0012 ## Follow-up` 9 / 9 / 9, and `TestScenario` in `0006 ## Feature design` returns 16 / 16 / 16 against exactly 16 `**Critical test scenarios**` bullets in the source, a count that is exact three times over rather than approximately right. Others swing wildly: `0006 ## Feature design` 36 / 46 / 35, the `feature-21` scope row 15 / 38 / 14, `0008 ## Preamble` 16 / 17 / 27.
+
+**Two candidate causes, both testable, and the evidence already narrows the second.**
+
+1. **The prompt has no worked examples at all.** Not "examples drawn from the wrong unit kind", none: `PROMPT_VERSION` `0002.2` is 1,961 characters of rules with zero examples, for any of the seven unit kinds. Spec 0002's Consequences said the tested pipeline's prompt and its few shot examples "must be rewritten from the enums rather than reused as they are"; the rewrite dropped them rather than rewriting them, and nothing since has put any back. So the model is asked to apply an eight type vocabulary with no demonstration of what a `Consequence` looks like against a `Constraint`, which is exactly the boundary the unstable units are full of.
+2. **Heterogeneity, which is not the same as size, and the committed data separates them.** Sorting the 8 extracted units by character count against their entity spread shows size does not predict instability:
+
+   | chars | spread | counts | unit |
+   |---|---|---|---|
+   | 4,040 | **11** | 16 / 17 / 27 | `0008 ## Preamble` |
+   | 4,462 | 0 | 14 / 14 / 14 | `0012 ## Requirements` |
+   | 5,344 | 0 | 9 / 9 / 9 | `0012 ## Follow-up` |
+   | 5,925 | 1 | 15 / 16 / 15 | `0012 ## Consequences` |
+   | 6,548 | 1 | 9 / 9 / 10 | `0012 ## Build plan` |
+   | 7,385 | **24** | 15 / 38 / 14 | `feature-21` scope row |
+   | 12,447 | 2 | 19 / 21 / 21 | `0021 ## Requirements` |
+   | 14,311 | **11** | 36 / 46 / 35 | `0006 ## Feature design` |
+
+   The smallest unit in the set is the third least stable, and the second largest is nearly stable. What the three unstable units share is not length but **mixture**: each holds several kinds of claim at once, while every stable one is a uniform list of a single kind. `0006 ## Feature design` carries 13 bold sub labels, so it is not one section but thirteen glued together. That points at **AC-2's unit definition**, specifically whether a bold sub label inside a section should start a new unit, rather than at unit size or at the schema. Test heterogeneity directly; splitting a large homogeneous section would be effort spent on the wrong variable.
+
+**Ordering: this runs before feature 11 decides.** Feature 11 is choosing a policy for a disagreement rate whose cause is unknown, and the two answers differ. If the rate is largely an artifact of an exampleless prompt and an over broad unit, the honest fix is at source and the policy question shrinks with it; if the rate survives both fixes, it is a real property of the corpus and feature 11 is choosing how to live with it. Deciding the policy first would risk tuning thresholds around a defect. This feature needs no eval runner, so it is not blocked behind feature 6 the way feature 11 is, and it can start now.
+
+**Done when:** both causes are tested against a real re-run of one unstable unit, with a before and after table in `experiments/`, and the result either changes the prompt, changes AC-2's unit definition, or is recorded as not the cause. Spends API money: budget roughly $0.70 per three run configuration at `medium` on `0006 ## Feature design`, measured, so confirm the number of configurations before running.
+- [ ] Design it (spec): `/architect extraction stability on heterogeneous units`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
