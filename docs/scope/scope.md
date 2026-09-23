@@ -25,7 +25,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
-| 11 | Review volume and routing policy | before Slice 5 | planned |
+| 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
 
 ## Foundations
 
@@ -108,8 +108,10 @@ How much the routing rules should hold back, decided on logged evidence rather t
 1. **Tune the routing.** The queue is the right mechanism and its thresholds are wrong. Measure the ratio per unit kind, loosen where the evidence says it over flags, keep a person in the loop.
 2. **Question whether the queue belongs here at all.** This project's standing rule is "no verification layer, because the visible chain is the check", and a human queue of this size is a verification layer. It came from the reference pipeline, which was hand run in a learning workspace at a scale where a person really could rule on every row, rather than from this project's own rules. The alternative to weigh is writing items with their confidence recorded and letting a chain display a disputed step, which is exactly how `unclassified`, `:Unresolved` and `UNCLASSIFIED` links already work: uncertainty is visible in the chain instead of blocking it. Note the tension to resolve either way, spec 0001 currently lists the review queue as _matching_ the visible chain rule, but does so on the grounds that its files are plain diffable JSON, which is a claim about the file format and not about whether a person must clear a queue before a chain can be read.
 
-**Done when:** the accept to review ratio is measured per unit kind, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
-- [ ] Design it (spec): `/architect review volume and routing policy`
+**Decided on eval evidence, not on argument.** Both framings are arguable from first principles and neither wins that way, so the tie breaker is what the eval actually returns. This needs feature 6 first: once the eval runner exists, run the five eval questions under **both** policies, review gated and write everything with its status recorded, and record which chains break under each and how. A chain that is right under one and wrong or absent under the other is the evidence; a chain that is identical under both says the queue is not what decides that answer. Run it before writing the spec, not after, so the spec records a measurement rather than a preference.
+
+**Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
+- [ ] Design it (spec): `/architect review volume and routing policy` · blocked until feature 6 ships, because the eval runner is what produces the evidence this decision rests on
 
 ## Slice 6: Rationale and alternatives
 
