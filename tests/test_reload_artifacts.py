@@ -17,16 +17,14 @@ from pathlib import Path
 
 import pytest
 
-from tracepath.artifacts import RunArtifact, read_run
 from tracepath.config import load_neo4j_settings
-from tracepath.extract.compare import route_runs
-from tracepath.extract.ids import assign_ids, locate_output
-from tracepath.extract.records import Record, records_for
-from tracepath.extract.units import Unit, split_units
+from tracepath.extract.records import Record
 from tracepath.graph.connection import connect
 from tracepath.graph.model import Provenance
 from tracepath.graph.schema import clear, create_constraints
 from tracepath.pipeline import UnitResult, load, resolve_accepted
+from tracepath.rebuild import committed_units as rebuild_units
+from tracepath.rebuild import records_for_units
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
@@ -36,66 +34,14 @@ COMMIT = "2e40bcf"
 pytestmark = pytest.mark.integration
 
 
-def unit_for(artifact: RunArtifact) -> Unit:
-    """Find the unit an artifact came from, in the pinned snapshot."""
-    path = SNAPSHOT / artifact.file
-    units = split_units(artifact.file, path.read_text())
-    return next(
-        u for u in units if u.record_id == artifact.record and u.section == artifact.section
-    )
-
-
 def committed_units() -> list[UnitResult]:
-    """Every committed unit, re-identified from its artifacts. No API calls."""
-    by_unit: dict[tuple[str, str], list[RunArtifact]] = {}
-    for path in sorted(RUNS.glob("*/*/run-*.json")):
-        artifact = read_run(path)
-        by_unit.setdefault((artifact.record, artifact.section_slug), []).append(artifact)
-
-    results: list[UnitResult] = []
-    for artifacts in by_unit.values():
-        ordered = sorted(artifacts, key=lambda a: a.run)
-        unit = unit_for(ordered[0])
-        identified = tuple(
-            assign_ids(locate_output(unit, a.output), unit.record_id, a.section_slug)
-            for a in ordered
-        )
-        results.append(
-            UnitResult(
-                unit=unit,
-                section_slug=ordered[0].section_slug,
-                artifacts=tuple(ordered),
-                identified=identified,
-                routed=route_runs(identified),
-                input_tokens=0,
-                output_tokens=0,
-            )
-        )
-    return results
+    """Every committed unit, rebuilt through the real rebuild path. No API calls."""
+    return list(rebuild_units(ROOT, SNAPSHOT))
 
 
 def records_for_all(results: list[UnitResult]) -> list[Record]:
-    """Every Record the loaded entities hang from, one pass per source document."""
-    paths = list(dict.fromkeys(result.unit.path for result in results))
-    records: list[Record] = []
-    seen: set[str] = set()
-    for path in paths:
-        text = (SNAPSHOT / path).read_text()
-        # `records_for` needs the document's whole unit list to find its feature rows.
-        every = split_units(path, text)
-        for record in records_for(every, text, COMMIT):
-            if record.canonical_id not in seen:
-                seen.add(record.canonical_id)
-                records.append(record)
-    return [r for r in records if r.canonical_id in _needed(results, seen)]
-
-
-def _needed(results: list[UnitResult], seen: set[str]) -> set[str]:
-    """The records these units actually produced entities for, plus the scope document."""
-    needed = {r.unit.record_id for r in results}
-    if any(r.unit.record_id.startswith("feature-") for r in results):
-        needed.add("scope")
-    return needed & seen
+    """Every Record the rebuilt entities hang from."""
+    return list(records_for_units(tuple(results), SNAPSHOT, COMMIT))
 
 
 def test_every_committed_unit_has_all_three_of_its_runs() -> None:

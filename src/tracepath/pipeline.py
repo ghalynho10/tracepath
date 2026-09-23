@@ -8,13 +8,20 @@ reach the graph.
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any
 
 import anthropic
 from neo4j import Driver
 
-from tracepath.artifacts import RunArtifact, build_artifact
+from tracepath.artifacts import RunArtifact, build_artifact, review_entry
 from tracepath.config import AnthropicSettings
-from tracepath.extract.client import MAX_TOKENS, PROMPT_VERSION, run_with_retry
+from tracepath.extract.client import (
+    MAX_TOKENS,
+    PROMPT_VERSION,
+    Attempt,
+    ExtractionFailed,
+    run_with_retry,
+)
 from tracepath.extract.compare import (
     ReviewItem,
     ReviewReason,
@@ -76,6 +83,20 @@ class UnitResult:
     output_tokens: int
 
 
+class UnitFailed(Exception):
+    """A unit could not be extracted, and here is everything it spent trying.
+
+    The artifacts are carried out of the failure rather than lost with it, so the shell
+    can still write them. A unit that dies without writing what its calls cost is the
+    defect spec 0001's artifact storage amendment exists to close.
+    """
+
+    def __init__(self, message: str, artifacts: tuple[RunArtifact, ...]) -> None:
+        """Record the failure and every artifact built before it."""
+        super().__init__(message)
+        self.artifacts = artifacts
+
+
 def run_unit(
     client: anthropic.Anthropic,
     settings: AnthropicSettings,
@@ -84,31 +105,55 @@ def run_unit(
     commit: str,
     extracted_at: str,
 ) -> UnitResult:
-    """Run one unit the run policy's number of times and settle what it produced."""
+    """Run one unit the run policy's number of times and settle what it produced.
+
+    One artifact per **attempt**, not per run: a failed attempt gets its own, carrying
+    its usage and no output, so the cost of a retry is written down beside the call
+    that replaced it (spec 0001).
+
+    Raises:
+        UnitFailed: a run failed again after its retry. The exception carries every
+            artifact built so far, the failed attempts included.
+    """
     artifacts: list[RunArtifact] = []
     identified: list[IdentifiedOutput] = []
     input_tokens = 0
     output_tokens = 0
-    for run in range(1, settings.runs_per_unit + 1):
-        call = run_with_retry(client, settings, unit, run)
-        output = call.output
-        input_tokens += call.input_tokens
-        output_tokens += call.output_tokens
+
+    def record(run: int, attempt: Attempt) -> None:
         artifacts.append(
             build_artifact(
                 unit=unit,
                 section_slug=section_slug,
                 run=run,
-                output=output,
+                attempt=attempt.number,
+                output=attempt.output,
                 model=settings.model,
                 prompt_version=PROMPT_VERSION,
                 commit=commit,
                 extracted_at=extracted_at,
                 max_output_tokens=MAX_TOKENS,
                 effort=settings.effort or "default",
+                input_tokens=attempt.input_tokens,
+                output_tokens=attempt.output_tokens,
+                error=attempt.error,
             )
         )
-        identified.append(assign_ids(locate_output(unit, output), unit.record_id, section_slug))
+
+    for run in range(1, settings.runs_per_unit + 1):
+        try:
+            outcome = run_with_retry(client, settings, unit, run)
+        except ExtractionFailed as exc:
+            for attempt in exc.attempts:
+                record(run, attempt)
+            raise UnitFailed(str(exc), tuple(artifacts)) from exc
+        for attempt in outcome.attempts:
+            record(run, attempt)
+            input_tokens += attempt.input_tokens
+            output_tokens += attempt.output_tokens
+        identified.append(
+            assign_ids(locate_output(unit, outcome.output), unit.record_id, section_slug)
+        )
     return UnitResult(
         unit=unit,
         section_slug=section_slug,
@@ -197,6 +242,44 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
         resolution=resolve_endpoints(pairs, accepted_ids, known_records),
         held=tuple(held),
     )
+
+
+def review_rows(
+    results: Sequence[UnitResult],
+    held: Sequence[HeldLink],
+    model: str,
+    queued_at: str,
+) -> tuple[dict[str, Any], ...]:
+    """Every item a corpus run held back, as the rows of `artifacts/review-queue.json`.
+
+    Two kinds of held item meet here, and both belong in the one file AC-11c names.
+    Routing holds an item within its unit, which covers the three within unit reasons
+    and a link whose endpoint its own unit did not accept. `resolve_accepted()` holds a
+    link whose endpoint sits in another unit, which routing cannot see. Leaving either
+    out would make AC-11c's promise, that a held link sits in a file tracked in git,
+    false for half the held links.
+
+    Rows keep each unit's own order, which `route_runs()` already sorted by lowest
+    located offset (AC-11b), and a unit's cross unit held links follow its routed rows,
+    ordered by signature so the file is stable from one run to the next.
+    """
+    by_unit: dict[tuple[str, str], list[HeldLink]] = {}
+    for link in held:
+        by_unit.setdefault((link.record, link.section), []).append(link)
+
+    rows: list[dict[str, Any]] = []
+    for result in results:
+        key = (result.unit.record_id, result.unit.section)
+        for item in result.routed.review:
+            rows.append(review_entry(key[0], key[1], item, model, queued_at))
+        for link in sorted(by_unit.pop(key, []), key=lambda h: str(h.item.signature)):
+            rows.append(review_entry(link.record, link.section, link.item, model, queued_at))
+
+    # A held link whose unit is not among the results would otherwise vanish silently.
+    for (record, section), links in sorted(by_unit.items()):
+        for link in sorted(links, key=lambda h: str(h.item.signature)):
+            rows.append(review_entry(record, section, link.item, model, queued_at))
+    return tuple(rows)
 
 
 def load(

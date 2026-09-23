@@ -13,9 +13,8 @@ from dataclasses import replace
 from pathlib import Path
 
 from tracepath.artifacts import (
+    ensure_review_log,
     now_utc,
-    review_entry,
-    write_review_log,
     write_review_queue,
     write_run,
 )
@@ -28,7 +27,7 @@ from tracepath.extract.units import Unit, UnitKind, split_units
 from tracepath.graph import connect
 from tracepath.graph.model import Provenance
 from tracepath.graph.schema import clear, create_constraints
-from tracepath.pipeline import UnitResult, load, resolve_accepted, run_unit
+from tracepath.pipeline import UnitResult, load, resolve_accepted, review_rows, run_unit
 
 #: The decided effort for this run. Chosen by measurement, not by default: see this
 #: experiment's README and `data/effort-*-calibration.json`. Thinking is billed as
@@ -152,7 +151,7 @@ def main() -> int:
             )
 
     records = records_for_units([r.unit for r in results], commit)
-    resolution = resolve_accepted(results, records)
+    corpus = resolve_accepted(results, records)
 
     with connect(neo4j) as driver:
         clear(driver, neo4j.database)
@@ -162,7 +161,7 @@ def main() -> int:
             neo4j.database,
             records,
             results,
-            resolution,
+            corpus.resolution,
             commit,
             Provenance(
                 model=settings.model,
@@ -176,13 +175,11 @@ def main() -> int:
         )
         live = {", ".join(sorted(r["labels"])): r["n"] for r in counts}
 
-    queue = [
-        review_entry(r.unit.record_id, r.unit.section, item, settings.model, extracted_at)
-        for r in results
-        for item in r.routed.review
-    ]
+    # Both kinds of held item, or AC-11c's promise covers only half of them: the ones
+    # routing held inside a unit, and the ones `resolve_accepted()` held across units.
+    queue = list(review_rows(results, corpus.held, settings.model, extracted_at))
     write_review_queue(ROOT, queue)
-    write_review_log(ROOT, [])
+    ensure_review_log(ROOT)
 
     totals = {
         "input_tokens": sum(r.input_tokens for r in results),
