@@ -55,9 +55,10 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
 - [ ] Build it: `/develop data model`
   - [x] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
   - [x] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
-  - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11)
+  - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11) · AC-3 and AC-4 stand; the AC-11 part was built against the criterion as it read before the 2026-09-23 amendment and is reopened by the milestone below
   - [x] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
   - [ ] Real runs: the thin thread, then endpoint resolution, review routing and the six section kinds (AC-7, AC-10, AC-14) · endpoint resolution and review routing are built and tested; the real runs need `ANTHROPIC_API_KEY`, so AC-14 is not met yet
+  - [ ] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
 - [ ] Verify it: `/check verify data model`
 - [ ] Test it: `/test data model`
 
@@ -87,6 +88,7 @@ Match records that name the same thing by number, nickname, or file name, so a c
 ### 8. History aware traversal · needs a decision
 Follow supersession, amendment, and correction correctly. A fact that was later replaced must never come back as current.
 **Done when:** a chain that crosses a superseded or corrected record shows the replacement as current and marks the older one as history.
+**Known risk, recorded 2026-09-23 from the first real extraction runs:** extraction can keep a struck claim and lose its replacement, storing both as one span marked struck, so the current fact arrives already labelled obsolete. Measured on bullet 3 of spec 0012's `## Consequences`, 1 of 3 runs at `medium` effort and 2 of 3 at `low`. Only run disagreement caught it, which is not a guarantee. This row's Done when must hold against that input, not just against a correctly split one. See spec [0002](../specs/0002-data-model/index.md) `## Consequences` and [experiment 0002](../../experiments/0002-effort-low-fidelity/README.md).
 - [ ] Design it (spec): `/architect history aware traversal`
 
 ## Slice 5: Whole corpus
