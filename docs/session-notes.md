@@ -5,9 +5,8 @@ In session residue that no spec, scope row, or `AGENTS.md` owns. Written by `/ch
 ## Open threads
 
 - Branch state, verified 2026-09-23: `main` is deliberately parked at `ee2e264` so feature 4's closing steps keep `/test`'s last commit fallback. `experiment/0002-effort-low-fidelity` carries the spec amendments and the build; `docs/merge-after-closing-steps` and `experiment/low-effort-calibration` are also unmerged. All three merge after `/check verify` and `/test`, not before.
-- The merge timing rule above is **not written down anywhere in the repo**. `docs/reflexes.md` holds only the `Co-Authored-By` rule and `AGENTS.md`'s `## Git` section has no merge policy. Run `/reflex` to make it durable, or it gets re-litigated every session.
-- Agreed ordering: finish feature 4, then feature 12 (prompt examples), then re-run AC-14 if the prompt changed, then feature 11 (queue policy, needs feature 6 for eval evidence), then feature 5 onward, with the whole corpus run (feature 9) last.
-- Feature 12's At a glance row, and the "feature 12 comes first" pointer on feature 11, were removed from `docs/scope/scope.md` on disk after commit `427d900` added them. Feature 12's own section survives. Unclear whether that was deliberate. Until it is settled, the ordering line above is the only remaining record of that dependency.
+- The merge timing rule is already a reflex, and it lives on the `docs/merge-after-closing-steps` branch, which is itself deliberately unmerged. So `docs/reflexes.md` on any other branch shows one rule and looks as though the merge rule were missing. It is not. Check that branch before concluding a reflex is absent.
+- Agreed ordering: finish feature 4, then feature 12 (prompt examples), then re-run AC-14 if the prompt changed, then feature 11 (queue policy, needs feature 6 for eval evidence), then feature 5 onward, with the whole corpus run (feature 9) last. The scope carries this too, on feature 12's At a glance row and the "feature 12 comes first" pointer under feature 11.
 
 ## Ruled out
 
@@ -19,5 +18,5 @@ Each of these is already decided in a spec. Listed here as pointers so a fresh s
 
 ## Standing instructions
 
-- Cost sensitive. Stop and flag before anything that spends API credit, with a measured estimate, and wait for a go ahead rather than proceeding on a plausible sounding number. About $6.50 spent so far. This reads as durable rather than session scoped, so it belongs in `docs/reflexes.md` via `/reflex`; it is recorded here meanwhile.
+- Cost sensitive. Stop and flag before anything that spends API credit, with a measured estimate, and wait for a go ahead rather than proceeding on a plausible sounding number. About $6.50 spent so far. Now a reflex on the `docs/merge-after-closing-steps` branch; kept here only for the running total.
 - Cost figures to hand, all measured: $0.1268 per call at `medium`, about $0.2198 per call on `0006 ## Feature design` (the largest unit extracted so far), about $3.30 to re-run AC-14's 8 unit coverage set, and about $35 for a batched whole corpus run against about $70 unbatched.
