@@ -5,6 +5,7 @@
 **Code commit**: `ab8c2ea`
 **Spec**: [0002, AC-14](../../docs/specs/0002-data-model/index.md)
 **Note**: Agreement figures here were measured under the comparator as it stood before the 2026-09-23 AC-11 amendment (flags in the signature, set comparison), and are not comparable with anything measured after it. See [spec 0002 AC-11](../../docs/specs/0002-data-model/index.md).
+**Also measured under prompt `0002.2`, which carries no worked examples.** Scope feature 12 is testing whether adding examples is what fixes the run to run instability on heterogeneous units. If it does, `PROMPT_VERSION` bumps and AC-14's verdict below has to be re-earned under the new prompt, because every type stability figure here is a fact about the exampleless prompt and not about the vocabulary on its own. That re-run lands as its own experiment and this file is **not** edited to match: it is the before half of that comparison, and rewriting its numbers would destroy the only record of what the old prompt did.
 
 ## Question
 
