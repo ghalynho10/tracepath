@@ -59,6 +59,7 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
   - [x] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
   - [x] Real runs: the thin thread, then endpoint resolution, review routing and the seven section kinds (AC-7, AC-10, AC-14) · 24 calls over 8 units, all four new entity types exercised in a section that is about them
   - [x] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
+  - [x] Spec 0001's artifact storage row, the two surfaces it requires that the build had not built: token usage per attempt on every run artifact, failures included, and `artifacts/review-queue.json` plus `artifacts/review-log.json` written by the pipeline and tracked in git, so the 97 held links have somewhere durable to live (AC-11c, spec 0001 artifact storage) · found by `/check verify`
 - [ ] Verify it: `/check verify data model`
 - [ ] Test it: `/test data model`
 
