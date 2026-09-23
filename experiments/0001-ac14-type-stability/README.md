@@ -109,6 +109,8 @@ Data: [effort-default-calibration.json](data/effort-default-calibration.json),
 halves cost and time: about $2.67 and 32 minutes against about $5.65 and 76 minutes
 over the full set.
 
+This conclusion was extended by [experiment 0002](../0002-effort-low-fidelity/README.md), which measured `low` with spans persisted and confirmed medium on fidelity grounds.
+
 Two honest qualifications on that table:
 
 1. **Medium's lower differing signature count (5 against 8) largely reflects fewer

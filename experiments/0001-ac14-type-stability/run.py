@@ -30,9 +30,12 @@ from tracepath.graph.model import Provenance
 from tracepath.graph.schema import clear, create_constraints
 from tracepath.pipeline import UnitResult, load, resolve_accepted, run_unit
 
-#: The decided effort for this run. Chosen by measurement, not by default: see this
-#: experiment's README and `data/effort-*-calibration.json`. Thinking is billed as
-#: output, so this is the pipeline's real cost dial.
+#: The decided effort. Chosen by measurement, not by default: thinking is billed as
+#: output, so this is the pipeline's real cost dial, and `low` is cheaper still. It is
+#: not used, because `low` loses content where it matters most. On a bullet holding a
+#: struck claim and its replacement, two of three `low` runs merged the replacement into
+#: a span marked struck, filing the current fact as obsolete, which is the failure the
+#: tool exists to prevent. See experiment 0002 and `data/effort-*-calibration.json`.
 EFFORT = "medium"
 
 ROOT = Path(__file__).resolve().parents[2]

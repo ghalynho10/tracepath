@@ -1,12 +1,11 @@
-"""Calibrate one effort level on a single section, three runs, like for like.
+"""Calibrate one effort level on a single section, three runs, with spans persisted.
 
 Thinking is billed as output, so effort is this pipeline's real cost dial. Spec 0001
 never decided a level, which meant the first runs used the model's default (`high`) by
 accident rather than by choice. This measures one level so the choice can be made on
 numbers.
 
-    uv run python experiments/0001-ac14-type-stability/calibrate_effort.py medium
-    uv run python experiments/0001-ac14-type-stability/calibrate_effort.py default
+    uv run python experiments/0002-effort-low-fidelity/calibrate_effort.py low
 """
 
 import json
@@ -16,10 +15,11 @@ from collections import Counter
 from dataclasses import replace
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "0001-ac14-type-stability"))
 
 from run import find
 
+from tracepath.artifacts import build_artifact, now_utc, write_run
 from tracepath.config import load_anthropic_settings
 from tracepath.extract.client import (
     MAX_TOKENS,
@@ -32,6 +32,7 @@ from tracepath.extract.ids import assign_ids, locate_output
 
 DATA = Path(__file__).parent / "data"
 RECORD, SECTION = "0012", "Consequences"
+COMMIT = "2e40bcf"
 
 
 def main(level: str) -> int:
@@ -44,10 +45,27 @@ def main(level: str) -> int:
 
     identified, rows = [], []
     started = time.time()
+    started_at = now_utc()
     for run in range(1, settings.runs_per_unit + 1):
         at = time.time()
         result = run_with_retry(client, settings, unit, run)
         seconds = time.time() - at
+        # Written under the experiment's own data/, never into `artifacts/`: these are a
+        # calibration's output, and overwriting the committed production run would
+        # destroy the evidence it stands on.
+        artifact = build_artifact(
+            unit=unit,
+            section_slug=slug,
+            run=run,
+            output=result.output,
+            model=settings.model,
+            prompt_version=PROMPT_VERSION,
+            commit=COMMIT,
+            extracted_at=started_at,
+            max_output_tokens=MAX_TOKENS,
+            effort=level,
+        )
+        write_run(DATA / f"effort-{level}", artifact)
         ids = assign_ids(locate_output(unit, result.output), unit.record_id, slug)
         identified.append(ids)
         types = Counter(str(e.entity.type) for e in ids.entities)
