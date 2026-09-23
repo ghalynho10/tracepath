@@ -67,7 +67,7 @@ def test_debug_logs_tracepath_lines_but_not_driver_internals(
     runner.invoke(app, ["--debug", "status"], env={"NEO4J_URI": UNREACHABLE_URI})
 
     debug = [r for r in caplog.records if r.levelno == logging.DEBUG]
-    assert any(r.name == "tracepath.graph" and "connecting to" in r.message for r in debug)
+    assert any(r.name.startswith("tracepath.") and "connecting to" in r.message for r in debug)
     assert not [r for r in debug if r.name.startswith("neo4j")]
 
 

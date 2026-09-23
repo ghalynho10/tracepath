@@ -1,0 +1,76 @@
+{
+  "effort": "default",
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "max_output_tokens": 64000,
+  "record": "0012",
+  "section": "Consequences",
+  "runs": [
+    {
+      "run": 1,
+      "seconds": 247,
+      "input_tokens": 5834,
+      "output_tokens": 29603,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 18,
+      "relationships": 15,
+      "types": {
+        "Consequence": 16,
+        "Constraint": 2
+      },
+      "flags": {
+        "rationale_boundary_call": 5,
+        "embedded_second_claim": 4,
+        "granularity_boundary_call": 2
+      }
+    },
+    {
+      "run": 2,
+      "seconds": 226,
+      "input_tokens": 5834,
+      "output_tokens": 26599,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 16,
+      "relationships": 18,
+      "types": {
+        "Consequence": 15,
+        "Constraint": 1
+      },
+      "flags": {
+        "multi_condition_split": 1,
+        "rationale_boundary_call": 7,
+        "embedded_second_claim": 3,
+        "granularity_boundary_call": 1
+      }
+    },
+    {
+      "run": 3,
+      "seconds": 185,
+      "input_tokens": 5834,
+      "output_tokens": 20945,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 17,
+      "relationships": 12,
+      "types": {
+        "Consequence": 15,
+        "Constraint": 2
+      },
+      "flags": {
+        "granularity_boundary_call": 2,
+        "embedded_second_claim": 3,
+        "rationale_boundary_call": 6
+      }
+    }
+  ],
+  "wall_clock_seconds": 659,
+  "runs_agree": false,
+  "differing_entity_signatures": 8,
+  "accepted_entities": 9,
+  "review_items": 32,
+  "total_input_tokens": 17502,
+  "total_output_tokens": 77147,
+  "cost_usd": 0.8065
+}

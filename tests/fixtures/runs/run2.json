@@ -1,0 +1,13 @@
+{
+    "entities": [
+        {
+            "id": "AC-1",
+            "id_source": "verbatim",
+            "type": "AcceptanceCriterion",
+            "span": "A job_search call attempt is decided by one atomic database function that checks three windows together in the same call: the caller's own weekly count, the app wide daily count, and the app wide monthly count, Proven atomic under concurrent calls against a real database connection, not a mock",
+            "rejected_spans": [],
+            "known_trap_flags": ["multi_condition_split"]
+        }
+    ],
+    "relationships": []
+}

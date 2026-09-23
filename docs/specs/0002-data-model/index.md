@@ -1,7 +1,7 @@
 # 0002. Data model for decision records
 
 **Date**: 2026-09-22
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

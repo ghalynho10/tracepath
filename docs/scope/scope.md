@@ -50,14 +50,14 @@ code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `t
 ### 4. Data model
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
-spec [0002](../specs/0002-data-model/index.md)
+spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
 - [x] Design it (spec): `/architect data model`
 - [ ] Build it: `/develop data model`
-  - [ ] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
-  - [ ] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
-  - [ ] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11)
-  - [ ] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
-  - [ ] Real runs: the thin thread, then endpoint resolution, review routing and the six section kinds (AC-7, AC-10, AC-14)
+  - [x] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
+  - [x] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
+  - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11)
+  - [x] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
+  - [ ] Real runs: the thin thread, then endpoint resolution, review routing and the six section kinds (AC-7, AC-10, AC-14) · endpoint resolution and review routing are built and tested; the real runs need `ANTHROPIC_API_KEY`, so AC-14 is not met yet
 - [ ] Verify it: `/check verify data model`
 - [ ] Test it: `/test data model`
 
@@ -109,6 +109,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Visual UI**: a graphical view of chains · needs a decision
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
+- **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
 
 ## Legend
 
