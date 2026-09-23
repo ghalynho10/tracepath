@@ -1,0 +1,71 @@
+{
+  "effort": "low",
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "max_output_tokens": 64000,
+  "record": "0012",
+  "section": "Consequences",
+  "runs": [
+    {
+      "run": 1,
+      "seconds": 40,
+      "input_tokens": 5834,
+      "output_tokens": 4905,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 11,
+      "relationships": 13,
+      "types": {
+        "Consequence": 10,
+        "Constraint": 1
+      },
+      "flags": {
+        "embedded_second_claim": 2,
+        "granularity_boundary_call": 1
+      }
+    },
+    {
+      "run": 2,
+      "seconds": 41,
+      "input_tokens": 5834,
+      "output_tokens": 5070,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 11,
+      "relationships": 7,
+      "types": {
+        "Consequence": 10,
+        "Constraint": 1
+      },
+      "flags": {
+        "granularity_boundary_call": 2,
+        "embedded_second_claim": 2
+      }
+    },
+    {
+      "run": 3,
+      "seconds": 54,
+      "input_tokens": 5834,
+      "output_tokens": 7330,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 11,
+      "relationships": 7,
+      "types": {
+        "Consequence": 11
+      },
+      "flags": {
+        "rationale_boundary_call": 5,
+        "granularity_boundary_call": 1
+      }
+    }
+  ],
+  "wall_clock_seconds": 136,
+  "runs_agree": false,
+  "differing_entity_signatures": 4,
+  "accepted_entities": 8,
+  "review_items": 14,
+  "total_input_tokens": 17502,
+  "total_output_tokens": 17305,
+  "cost_usd": 0.2081
+}
