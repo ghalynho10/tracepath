@@ -25,6 +25,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
+| 11 | Review volume and routing policy | before Slice 5 | planned |
 
 ## Foundations
 
@@ -52,13 +53,14 @@ Entities and relationships for decision records: what a record, a claim, and a l
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
 spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
 - [x] Design it (spec): `/architect data model`
-- [x] Build it: `/develop data model`
+- [ ] Build it: `/develop data model` · unticked 2026-09-23: AC-11(d) added one more milestone below. Everything above it is built
   - [x] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
   - [x] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
   - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11) · AC-3 and AC-4 stand; the AC-11 part was built against the criterion as it read before the 2026-09-23 amendment and is reopened by the milestone below
   - [x] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
   - [x] Real runs: the thin thread, then endpoint resolution, review routing and the seven section kinds (AC-7, AC-10, AC-14) · 24 calls over 8 units, all four new entity types exercised in a section that is about them
   - [x] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
+  - [ ] AC-11(d), from measurement over the committed artifacts: a derived entity whose `line` is null routes to review under `span_not_located` instead of accepting on its signature's count alone. Both routing paths, including the leftovers branch. Adds no queue rows today (all 26 already route under `runs_disagree`); it makes the rule hold by construction rather than by luck (AC-11, AC-4) · spec 0002 build plan task 15
   - [x] Spec 0001's artifact storage row, the two surfaces it requires that the build had not built: token usage per attempt on every run artifact, failures included, and `artifacts/review-queue.json` plus `artifacts/review-log.json` written by the pipeline and tracked in git, so the 97 held links have somewhere durable to live (AC-11c, spec 0001 artifact storage) · found by `/check verify`
 - [ ] Verify it: `/check verify data model`
 - [ ] Test it: `/test data model`
@@ -97,7 +99,17 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 ### 9. Whole corpus
 Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run.
 **Done when:** the full snapshot is ingested in one rebuild, all five eval questions pass, and relationships that fit no named type appear as unclassified, not dropped.
-- [ ] Build it: `/develop whole corpus`
+- [ ] Build it: `/develop whole corpus` · blocked until feature 11 decides the routing policy, because a whole corpus run at the current accept to review ratio would queue thousands of rows for one reviewer
+
+### 11. Review volume and routing policy · needs a decision · from spec 0002
+How much the routing rules should hold back, decided on logged evidence rather than on feel. Measured over the 8 units extracted so far: **403 queue rows against 71 accepted entities**, by reason `runs_disagree` 340, `endpoint_not_accepted` 98, `known_trap_flag` 77, `unclassified_type` 1, and concentrated in the heterogeneous units (0012 122, feature-21 114, 0021 76, 0006 53, 0008 38). Extrapolated across 188 sections that is thousands of rows with one reviewer, which is not a workable review step. HANDOFF's own plan was always to loosen routing once logged review decisions showed where it over flags; `artifacts/review-log.json` now exists and is empty, so that evidence can finally start accumulating. Measure the accept to review ratio **per unit kind**, since the counts above say the problem is concentrated rather than uniform, then decide a loosening policy. Two things this must not do: loosen the comparison itself, which spec 0002 names as the one change that would put unverified items into the graph, and treat near duplicate queue entries from AC-11a's line sensitivity as extraction defects. Spec 0002's AC-11(d) adds no rows today and is not the cause.
+**Two candidate framings, both open.** Weigh them against each other rather than starting from the first.
+
+1. **Tune the routing.** The queue is the right mechanism and its thresholds are wrong. Measure the ratio per unit kind, loosen where the evidence says it over flags, keep a person in the loop.
+2. **Question whether the queue belongs here at all.** This project's standing rule is "no verification layer, because the visible chain is the check", and a human queue of this size is a verification layer. It came from the reference pipeline, which was hand run in a learning workspace at a scale where a person really could rule on every row, rather than from this project's own rules. The alternative to weigh is writing items with their confidence recorded and letting a chain display a disputed step, which is exactly how `unclassified`, `:Unresolved` and `UNCLASSIFIED` links already work: uncertainty is visible in the chain instead of blocking it. Note the tension to resolve either way, spec 0001 currently lists the review queue as _matching_ the visible chain rule, but does so on the grounds that its files are plain diffable JSON, which is a claim about the file format and not about whether a person must clear a queue before a chain can be read.
+
+**Done when:** the accept to review ratio is measured per unit kind, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
+- [ ] Design it (spec): `/architect review volume and routing policy`
 
 ## Slice 6: Rationale and alternatives
 
