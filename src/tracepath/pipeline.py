@@ -15,10 +15,18 @@ from neo4j import Driver
 from tracepath.artifacts import RunArtifact, build_artifact
 from tracepath.config import AnthropicSettings
 from tracepath.extract.client import MAX_TOKENS, PROMPT_VERSION, run_with_retry
-from tracepath.extract.compare import RoutedUnit, route_runs
+from tracepath.extract.compare import (
+    ReviewItem,
+    ReviewReason,
+    ReviewReasonName,
+    RoutedUnit,
+    identities_of,
+    relationship_signature,
+    route_runs,
+)
 from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
 from tracepath.extract.records import Record
-from tracepath.extract.schema import EntityType
+from tracepath.extract.schema import EntityType, ExtractedRelationship, LocalEndpoint
 from tracepath.extract.units import Unit
 from tracepath.graph.load import (
     by_link_type,
@@ -32,6 +40,27 @@ from tracepath.graph.model import Provenance, entity_row, link_row, record_row, 
 from tracepath.resolve.endpoints import LinkContext, Resolution, resolve_endpoints
 
 log = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class HeldLink:
+    """One relationship held because an endpoint entity was not accepted (AC-11c).
+
+    It is not dropped: it goes to the review queue beside the entity it waits on, and
+    the review step releases it when that entity is accepted.
+    """
+
+    record: str
+    section: str
+    item: ReviewItem
+
+
+@dataclass(frozen=True)
+class CorpusResolution:
+    """Every accepted link resolved, and every link held for an unaccepted endpoint."""
+
+    resolution: Resolution
+    held: tuple[HeldLink, ...]
 
 
 @dataclass(frozen=True)
@@ -91,26 +120,83 @@ def run_unit(
     )
 
 
-def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -> Resolution:
-    """Resolve every accepted relationship against everything the corpus loaded."""
-    known_entities = frozenset(
+def _waiting_on(
+    relationship: ExtractedRelationship,
+    accepted_ids: frozenset[str],
+    known_ids: frozenset[str],
+) -> str | None:
+    """The entity a relationship is waiting on, if either endpoint was not accepted.
+
+    An endpoint naming an entity the corpus holds but review has not released is a
+    held link, never an `:Unresolved` node: the target is named, so drawing a gap
+    there would break AC-10 and key invariant 8. An endpoint naming nothing the
+    corpus holds is a different case entirely, and AC-7's fallback covers it.
+    """
+    for endpoint in (relationship.source, relationship.target):
+        if isinstance(endpoint, LocalEndpoint):
+            qualified = endpoint.id
+        elif endpoint.record is not None and endpoint.id is not None:
+            qualified = f"{endpoint.record}/{endpoint.id}"
+        else:
+            continue
+        if qualified in known_ids and qualified not in accepted_ids:
+            return qualified
+    return None
+
+
+def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -> CorpusResolution:
+    """Resolve every accepted relationship against everything the corpus loaded.
+
+    Holding is decided here, before resolution, so `resolve_endpoints()` never sees a
+    link whose endpoint was held and its `:Unresolved` fallback keeps meaning exactly
+    what AC-7 says it means. This is the contract the first full load lacked, which is
+    why it failed with `asked to write 7 but the database wrote 2` (AC-11c).
+    """
+    accepted_ids = frozenset(
         entity.canonical_id for result in results for entity in result.routed.accepted_entities
     )
-    known_records = frozenset(record.canonical_id for record in records)
-    pairs = [
-        (
-            relationship,
-            LinkContext(
-                source_record=result.unit.record_id,
-                file=result.unit.path,
-                section=result.unit.section,
-                line=result.unit.start_line,
-            ),
-        )
+    known_ids = frozenset(
+        entity.canonical_id
         for result in results
-        for relationship in result.routed.accepted_relationships
-    ]
-    return resolve_endpoints(pairs, known_entities, known_records)
+        for entity in result.identified[0].entities
+        if result.identified
+    )
+    known_records = frozenset(record.canonical_id for record in records)
+
+    pairs: list[tuple[ExtractedRelationship, LinkContext]] = []
+    held: list[HeldLink] = []
+    for result in results:
+        identities = identities_of(result.identified[0])
+        context = LinkContext(
+            source_record=result.unit.record_id,
+            file=result.unit.path,
+            section=result.unit.section,
+            line=result.unit.start_line,
+        )
+        for relationship in result.routed.accepted_relationships:
+            waiting = _waiting_on(relationship, accepted_ids, known_ids)
+            if waiting is not None:
+                held.append(
+                    HeldLink(
+                        record=result.unit.record_id,
+                        section=result.unit.section,
+                        item=ReviewItem(
+                            signature=relationship_signature(relationship, identities),
+                            reasons=(
+                                ReviewReason(
+                                    ReviewReasonName.ENDPOINT_NOT_ACCEPTED, detail=waiting
+                                ),
+                            ),
+                        ),
+                    )
+                )
+                continue
+            pairs.append((relationship, context))
+
+    return CorpusResolution(
+        resolution=resolve_endpoints(pairs, accepted_ids, known_records),
+        held=tuple(held),
+    )
 
 
 def load(

@@ -5,6 +5,7 @@ from typing import Any
 
 import pytest
 
+from tracepath.artifacts import review_entry
 from tracepath.extract.compare import (
     COLLAPSED,
     LINE_PREFIX,
@@ -696,3 +697,90 @@ def test_a_count_that_differs_holds_every_copy_not_just_the_surplus() -> None:
     assert comparison.entity_counts == ((("line:1", "Constraint"), (2, 1, 1)),)
     assert not routed.accepted_entities, "every copy is held, not just the surplus"
     assert len(routed.review) == 2
+
+
+# AC-11c: a link whose endpoint entity was not accepted is held, added 2026-09-23.
+
+
+TWO_LINES = (
+    "- **AC-9**: alpha claim about caching, and beta claim about retries.\n"
+    "- **AC-10**: a separate rule about the retry budget entirely.\n"
+)
+
+
+def _linked_output() -> ExtractionOutput:
+    """One accepted entity, one that will be held, and a link between them."""
+    return ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "derived:1",
+                    "id_source": "derived",
+                    "type": "Constraint",
+                    "span": "a separate rule about the retry budget entirely",
+                },
+                {
+                    "id": "derived:2",
+                    "id_source": "derived",
+                    "type": "unclassified",
+                    "span": "alpha claim about caching",
+                    "unclassified_note": "fits none of the named types",
+                },
+            ],
+            "relationships": [
+                {
+                    "type": "blocked-by",
+                    "source": {"kind": "local", "id": "derived:1"},
+                    "target": {"kind": "local", "id": "derived:2"},
+                    "phrase": "blocked until",
+                }
+            ],
+        }
+    )
+
+
+def test_a_link_pointing_at_a_held_entity_is_held_too() -> None:
+    """AC-11c: the link waits with its endpoint rather than being written or dropped.
+
+    This is the rule the first full load lacked, which is why it failed with
+    `UNCLASSIFIED links: asked to write 7 but the database wrote 2`.
+    """
+    unit = unit_of(TWO_LINES)
+    outputs = [
+        assign_ids(locate_output(unit, _linked_output()), "0012", "requirements") for _ in range(3)
+    ]
+
+    routed = route_runs(outputs)
+
+    # Derived ordinals follow located offset (AC-3): the line 1 span is :1, line 2 is :2.
+    assert [e.canonical_id for e in routed.accepted_entities] == ["0012#requirements:2"]
+    assert not routed.accepted_relationships, "the link waits on its endpoint"
+
+    held = [i for i in routed.review if i.canonical_id is None]
+    assert len(held) == 1, "the held link is one queue row"
+    assert held[0].reasons == (
+        ReviewReason(ReviewReasonName.ENDPOINT_NOT_ACCEPTED, detail="0012#requirements:1"),
+    )
+    assert held[0].signature[0] == "blocked-by"
+
+
+def test_a_held_link_names_the_entity_it_waits_on_in_the_queue() -> None:
+    """AC-11c plus the review queue entry shape: a reviewer can see what to rule first."""
+    unit = unit_of(TWO_LINES)
+    outputs = [
+        assign_ids(locate_output(unit, _linked_output()), "0012", "requirements") for _ in range(3)
+    ]
+
+    routed = route_runs(outputs)
+    entries = [
+        review_entry("0012", "Requirements", item, "claude-sonnet-5", "2026-09-23T00:00:00+00:00")
+        for item in routed.review
+    ]
+
+    link_row = next(e for e in entries if e["canonical_id"] is None)
+    assert link_row["reasons"] == [
+        {"name": "endpoint_not_accepted", "detail": "0012#requirements:1"}
+    ]
+    entity_row = next(e for e in entries if e["canonical_id"] == "0012#requirements:1")
+    assert entity_row["line"] == 1
+    assert {"name": "unclassified_type", "detail": None} in entity_row["reasons"]
