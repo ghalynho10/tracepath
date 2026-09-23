@@ -898,3 +898,102 @@ def test_a_relationship_signature_never_takes_the_entity_rule() -> None:
     """A triple is a relationship, and AC-11c already covers its held endpoints."""
     assert not is_unlocated_derived(("satisfies", COLLAPSED, "ref:0012/AC-1"))
     assert is_unlocated_derived((COLLAPSED, "Constraint"))
+
+
+# AC-11: the order of the queue, which spec 0002 states and nothing else pins.
+#
+# The stability test in `test_review_queue.py` proves the file does not reorder itself
+# between rebuilds. Determinism is not the same claim as order: a change that sorted
+# the queue some other stable way would keep that test green and still break the thing
+# the order exists for, which is that a reviewer reads a unit's rows in document order.
+
+THREE_RULES = (
+    "- **AC-1**: the first rule, about how the cache is warmed on boot.\n"
+    "- **AC-2**: the second rule, about the retry budget per provider.\n"
+    "- **AC-3**: the third rule, about falling back to the secondary.\n"
+)
+
+#: A span belonging to another document, so it cannot be located in this unit.
+ELSEWHERE = "Every seeded listing carries an obviously fake company name."
+
+
+def unsure(span: str, n: int, type_name: str = "unclassified") -> dict[str, Any]:
+    """One entity that always routes to review, so ordering is what is left to observe."""
+    entity: dict[str, Any] = {
+        "id": f"derived:{n}",
+        "id_source": "derived",
+        "type": type_name,
+        "span": span,
+    }
+    if type_name == "unclassified":
+        entity["unclassified_note"] = "fits none of the named types"
+    return entity
+
+
+def test_the_queue_puts_located_rows_in_document_order_with_unlocatable_ones_behind() -> None:
+    """Spec 0002: located rows read in document order, and a row with no offset sorts
+    behind all of them, because there is no document position to place it at.
+
+    The runs are given the rows out of order on purpose. If the queue ever echoed the
+    model's output order instead of the located offset, this is what would catch it.
+    """
+    unit = unit_of(THREE_RULES)
+    raw = [
+        unsure("the third rule, about falling back to the secondary", 1),
+        unsure(ELSEWHERE, 2),
+        unsure("the first rule, about how the cache is warmed on boot", 3),
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+
+    routed = route_runs(runs)
+
+    assert [item.line for item in routed.review] == [1, 3, None]
+
+
+def test_the_unlocatable_tail_is_ordered_by_signature_not_by_arrival() -> None:
+    """The tail has no offset to sort by, so it sorts by signature to stay stable.
+
+    Without a second key the tail would keep the order routing happened to produce,
+    which is how a file tracked in git starts reordering itself between runs.
+    """
+    unit = unit_of(THREE_RULES)
+    raw = [
+        unsure(ELSEWHERE, 1, "Feature"),
+        unsure(ELSEWHERE + " It is never a real employer.", 2, "Constraint"),
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+
+    routed = route_runs(runs)
+
+    assert all(item.line is None for item in routed.review), "neither span may locate here"
+    assert [item.signature for item in routed.review] == [
+        (COLLAPSED, "Constraint"),
+        (COLLAPSED, "Feature"),
+    ]
+
+
+def test_a_held_link_sorts_into_the_tail_beside_the_spans_that_would_not_place() -> None:
+    """A relationship has no offset of its own, so it belongs in the same tail.
+
+    Routing already emits entities before relationships, so a link trailing a located
+    entity proves nothing on its own; what has to hold is that the *located* entity
+    climbs past an unlocatable one that routing produced first, while the link stays
+    behind both. That is the whole rule in one row order.
+    """
+    unit = unit_of(TWO_LINES)
+    raw = _linked_output().model_dump()
+    raw["entities"] = [unsure(ELSEWHERE, 9), *raw["entities"]]
+    outputs = [
+        assign_ids(
+            locate_output(unit, ExtractionOutput.model_validate(raw)), "0012", "requirements"
+        )
+        for _ in range(3)
+    ]
+
+    review = route_runs(outputs).review
+    kinds = [
+        "located" if item.line is not None else ("link" if len(item.signature) == 3 else "unplaced")
+        for item in review
+    ]
+
+    assert kinds == ["located", "unplaced", "link"]

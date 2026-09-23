@@ -1,7 +1,7 @@
 # 0002. Data model for decision records
 
 **Date**: 2026-09-22
-**Status**: In Progress
+**Status**: Accepted
 **Amended**: 2026-09-23 by the first real extraction runs, a 21 call run at `medium` effort plus three effort calibrations, against the build merged at `ee2e264`. Five amendments, each marked inline below: **AC-2** (the `Preamble` unit covers the scope document too), **AC-11** (flags leave the agreement signature and the comparison counts items rather than setting them), **AC-7 against AC-11** (a link whose endpoint entity was not accepted is held, not written and not turned into a gap node), **AC-14** (`## Feature design` joins the coverage set, so `TestScenario` is reachable), and one known failure mode recorded in `## Consequences`. The evidence is [experiment 0001](../../../experiments/0001-ac14-type-stability/README.md) and [experiment 0002](../../../experiments/0002-effort-low-fidelity/README.md), both with committed artifacts, and the run artifacts under `artifacts/runs/`. Spec [0001](../0001-stack-and-architecture/index.md) is amended on the same date from the same runs.
 **Amended**: 2026-09-23 by measurement over the committed artifacts, with no API call. Two amendments, each marked inline below: **AC-11(d)** (a derived entity whose `line` is null routes to review, rather than accepting on its count alone), and the `## Consequences` entry on the null `line` rate, which was wrong by a factor of ten. The evidence is the 24 run artifacts under `artifacts/runs/`, re-identified against the pinned snapshot. Spec [0001](../0001-stack-and-architecture/index.md) is amended on the same date by the same build.
 

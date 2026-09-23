@@ -18,7 +18,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | done |
-| 4 | Data model | Foundation | in-progress |
+| 4 | Data model | Foundation | done |
 | 5 | First traced chain | Slice 1 | planned |
 | 6 | Eval runner | Slice 2 | planned |
 | 7 | Name resolution | Slice 3 | planned |
@@ -49,7 +49,7 @@ Bring in JobHunt's `docs/` pinned at `2e40bcf`, and the finished eval file (five
 code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `tests/test_corpus.py`
 - [x] Bring them in: `/develop corpus snapshot & eval set`
 
-### 4. Data model
+### 4. Data model · done
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
 spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
@@ -63,8 +63,8 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
   - [x] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
   - [x] AC-11(d), from measurement over the committed artifacts: a derived entity whose `line` is null routes to review under `span_not_located` instead of accepting on its signature's count alone. Both routing paths, including the leftovers branch. Adds no queue rows today (all 26 already route under `runs_disagree`); it makes the rule hold by construction rather than by luck (AC-11, AC-4) · spec 0002 build plan task 15 · built: accepted entities stay 71 and queue rows stay 403, with 10 rows newly labelled, 6 from the first run path and 4 from the leftovers branch
   - [x] Spec 0001's artifact storage row, the two surfaces it requires that the build had not built: token usage per attempt on every run artifact, failures included, and `artifacts/review-queue.json` plus `artifacts/review-log.json` written by the pipeline and tracked in git, so the 97 held links have somewhere durable to live (AC-11c, spec 0001 artifact storage) · found by `/check verify`
-- [ ] Verify it: `/check verify data model`
-- [ ] Test it: `/test data model`
+- [x] Verify it: `/check verify data model`
+- [x] Test it: `/test data model`
 
 ## Slice 1: First traced chain
 

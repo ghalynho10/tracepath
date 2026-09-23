@@ -142,3 +142,55 @@ def test_a_unit_that_fails_after_its_retry_still_hands_back_its_artifacts(
         "failed-run-1-attempt-2.json",
     ]
     assert all(json.loads(p.read_text())["output"] is None for p in written)
+
+
+def test_every_artifact_a_successful_run_writes_carries_integer_token_counts(
+    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
+) -> None:
+    """Null means unmeasured, and the pipeline never writes one.
+
+    The 24 committed artifacts read back as null because they predate the field, which
+    spec 0001 states outright. That is a fact about files written before the field
+    existed, not a licence for the writer. The tests above pin particular numbers on
+    particular attempts; this pins the invariant underneath them, so a future path that
+    forgets to carry usage fails here rather than going unnoticed until a run's cost is
+    needed and gone.
+    """
+    scripted(
+        monkeypatch,
+        [
+            failure(1, 500, 64000),
+            Attempt(number=2, input_tokens=511, output_tokens=9000, output=an_output()),
+            Attempt(number=1, input_tokens=522, output_tokens=9100, output=an_output()),
+            Attempt(number=1, input_tokens=533, output_tokens=9200, output=an_output()),
+        ],
+    )
+
+    result = run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
+    written = [json.loads(write_run(tmp_path, a).read_text()) for a in result.artifacts]
+
+    assert len(written) == 4, "three settled runs and the attempt that failed"
+    assert all(isinstance(p["input_tokens"], int) for p in written)
+    assert all(isinstance(p["output_tokens"], int) for p in written)
+
+
+def test_a_unit_that_fails_outright_still_measures_every_attempt(
+    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
+) -> None:
+    """The failure path is the one that lost the first 21 call run's cost.
+
+    The test above it sums the two attempts, which a null would slip through as a zero.
+    This asserts the field itself, because "the run failed" and "the run cost nothing"
+    are different claims and only one of them is true.
+    """
+    scripted(monkeypatch, [failure(1, 500, 64000), failure(2, 500, 63000)])
+
+    with pytest.raises(UnitFailed) as caught:
+        run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
+
+    written = [json.loads(write_run(tmp_path, a).read_text()) for a in caught.value.artifacts]
+
+    assert [p["output"] for p in written] == [None, None], "neither attempt produced output"
+    assert all(isinstance(p["input_tokens"], int) for p in written)
+    assert all(isinstance(p["output_tokens"], int) for p in written)
+    assert all(p["error"] for p in written), "a failed artifact says why, or it is a blank"
