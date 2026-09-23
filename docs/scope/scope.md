@@ -54,14 +54,14 @@ Entities and relationships for decision records: what a record, a claim, and a l
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
 spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
 - [x] Design it (spec): `/architect data model`
-- [ ] Build it: `/develop data model` · unticked 2026-09-23: AC-11(d) added one more milestone below. Everything above it is built
+- [x] Build it: `/develop data model`
   - [x] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
   - [x] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
   - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11) · AC-3 and AC-4 stand; the AC-11 part was built against the criterion as it read before the 2026-09-23 amendment and is reopened by the milestone below
   - [x] Graph load: constraints, `MERGE` upserts, a counter assertion on every write (AC-9, AC-13)
   - [x] Real runs: the thin thread, then endpoint resolution, review routing and the seven section kinds (AC-7, AC-10, AC-14) · 24 calls over 8 units, all four new entity types exercised in a section that is about them
   - [x] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
-  - [ ] AC-11(d), from measurement over the committed artifacts: a derived entity whose `line` is null routes to review under `span_not_located` instead of accepting on its signature's count alone. Both routing paths, including the leftovers branch. Adds no queue rows today (all 26 already route under `runs_disagree`); it makes the rule hold by construction rather than by luck (AC-11, AC-4) · spec 0002 build plan task 15
+  - [x] AC-11(d), from measurement over the committed artifacts: a derived entity whose `line` is null routes to review under `span_not_located` instead of accepting on its signature's count alone. Both routing paths, including the leftovers branch. Adds no queue rows today (all 26 already route under `runs_disagree`); it makes the rule hold by construction rather than by luck (AC-11, AC-4) · spec 0002 build plan task 15 · built: accepted entities stay 71 and queue rows stay 403, with 10 rows newly labelled, 6 from the first run path and 4 from the leftovers branch
   - [x] Spec 0001's artifact storage row, the two surfaces it requires that the build had not built: token usage per attempt on every run artifact, failures included, and `artifacts/review-queue.json` plus `artifacts/review-log.json` written by the pipeline and tracked in git, so the 97 held links have somewhere durable to live (AC-11c, spec 0001 artifact storage) · found by `/check verify`
 - [ ] Verify it: `/check verify data model`
 - [ ] Test it: `/test data model`
