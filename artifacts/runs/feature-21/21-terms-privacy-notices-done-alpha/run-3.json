@@ -1,0 +1,379 @@
+{
+  "record": "feature-21",
+  "section": "21. Terms & privacy notices \u00b7 done \u00b7 Alpha",
+  "section_slug": "21-terms-privacy-notices-done-alpha",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 3,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A plain terms page and a privacy notice saying what is stored, why, and how to have it deleted.",
+        "rejected_spans": [
+          "Owed the day the first person other than the author signs in, because real resumes and personal details are in the database from Slice 1 onward.",
+          "Written against the actual data model rather than from a template, so it is accurate."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "both pages exist and are linked from the entry page and from sign in, the privacy notice names the real stored fields and the real third parties data reaches, and a user can find out how to request deletion.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Done when"
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect terms & privacy notices` \u00b7 written 2026-09-01, 23 acceptance criteria.",
+        "rejected_spans": [
+          "This box did not exist before today, although the legend says every feature carries exactly one, which is why nothing flagged that a spec was owed when `/develop` was run against this row.",
+          "The spec is written from the code rather than a template: the field list comes from the applied migration, the Sentry claim from the running configuration, and the deletion procedure from the actual cascade direction, which corrected the plan we started from.",
+          "A cross check on a different model confirmed all five factual claims against the repo and found six gaps, all folded in; the load bearing one was that the stored field list had no drift guard while the recipient list did"
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "BuildStep",
+        "span": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test \u00b7 AC-4, AC-5, AC-6, AC-23, and the enforcement half of AC-14.",
+        "rejected_spans": [
+          "Each guard was proved to fail on real drift before being trusted: an unaccounted `src/env.ts` key, an unnamed column, a new unclassified table, a flipped Sentry `userInfo`, and an analytics dependency each fail the suite.",
+          "One deviation from the spec's invariant 2, recorded in `recipients.ts`: three env keys reach no third party at all, so they are classified in a named `ENV_KEYS_WITH_NO_RECIPIENT` list with a reason each, rather than forced under a company, which would have put a false sentence on the page. The forcing function is unchanged"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "BuildStep",
+        "span": "The two routes under `(marketing)`, indexable, with their own metadata, linked from the entry page footer's reserved slot and from a static line under the provider forms on `/sign-in` \u00b7 AC-1, AC-17, AC-18, AC-19, AC-20.",
+        "rejected_spans": [
+          "Both build as static prerenders (`\u25cb` in the build output) and a source level test holds the no client JavaScript rule across both routes plus `/sign-in`.",
+          "Two spec 0006 footer assertions changed shape here rather than being deleted: AC-13 protected the reserved centre slot by forbidding everything in it, which stopped being possible once something belonged there"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "BuildStep",
+        "span": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies \u00b7 AC-2, AC-3, AC-7, AC-8, AC-10, AC-11, AC-12, AC-13, AC-14.",
+        "rejected_spans": [
+          "Both lists are rendered from the registries, and the page test fails if a field the registry names is not printed, so a current registry cannot sit behind a page that says nothing"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "BuildStep",
+        "span": "The terms content and effective dates, then the mail delivery check and the Google console work: authorized domain, both URLs, publish out of Testing, submit brand verification \u00b7 AC-15, AC-16, AC-9, AC-21, AC-22.",
+        "rejected_spans": [
+          "The terms content and both effective dates landed with the code; mail delivery and all four console steps were done by the engineer on 2026-09-01, after the merge.",
+          "The console half is confirmed from outside Google's console rather than taken on trust, by starting a real sign in against production with no Google session: the screen reads \"to continue to JobHunt\" with the JobHunt mark beside it, not the Supabase host, which closes the finding spec 0007 recorded on 2026-08-30 (AC-22); and Google itself surfaces \"you can review JobHunt's Privacy Policy and Terms of Service\" linking `https://usejobhunt.dev/privacy` and `https://usejobhunt.dev/terms`, which is the console's two URL fields read back out (AC-21).",
+          "The requested scope is `email profile` and nothing more, which is also why the notice carries no Limited Use affirmation.",
+          "Both pages return 200 on the apex domain with no `x-robots-tag` header overriding their index metadata"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Verify it: `/check verify terms & privacy notices` \u00b7 run 2026-09-01, PASS, all 23 acceptance criteria met, 48 of 50 steps ticked in verify.md.",
+        "rejected_spans": [
+          "The six drift guards were each broken on purpose and confirmed to fail by name, so none of them is a test that cannot fail.",
+          "The deletion cascade was proved on the real database rather than read off the migration: one throwaway account with a row in all six tables, delete the `auth.users` row alone, all six go.",
+          "AC-21 and AC-22 were confirmed from outside Google's console, by starting a real sign in against production.",
+          "The two unticked steps are recorded there and neither is an acceptance criterion failure; one of them surfaced a separate, pre existing issue belonging to feature 7, that the committed `database.types.ts` is missing `before_user_created_hook` and `provider_display_name` in its generated `Functions` block, while the `Tables` block this feature depends on is byte identical to the applied schema"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This feature is what lifts Google's 100 user cap: the Publish app button is greyed because the privacy policy and terms links are empty, and these pages are what fills them. Until then the app stays in Testing, capped at 100 users, and Google counts that cap over the app's whole lifetime, so it never resets. Every person who signs in before these pages exist spends one of those slots permanently, which is why waiting until launch readiness was the wrong place for it.",
+        "rejected_spans": [
+          "The reason is a meter that only runs one way."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The pages must be served from `usejobhunt.dev`",
+        "rejected_spans": [
+          "because Google will not accept a `vercel.app` address as an authorised domain."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Publishing is also the remaining fix for the consent screen naming a Supabase host instead of JobHunt.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Building it early means the third party list is incomplete on the day it ships, and that is accepted rather than overlooked. At this point in the build the real third parties are Supabase, Vercel, Sentry, Google and GitHub.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Adzuna arrives at feature 11 and the model providers at features 13 and 14, so each of those features must add itself to the notice as part of its own build.",
+        "rejected_spans": [
+          "A privacy notice that silently stops matching where data actually goes is worse than one written later, so the revisit is named here rather than left to be noticed."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "one of them surfaced a separate, pre existing issue belonging to feature 7, that the committed `database.types.ts` is missing `before_user_created_hook` and `provider_display_name` in its generated `Functions` block",
+        "rejected_spans": [
+          "while the `Tables` block this feature depends on is byte identical to the applied schema"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 32",
+          "id": null,
+          "mention": "to build after feature 32"
+        },
+        "phrase": null,
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "mention": "Depends on feature 7, both ways, recorded from spec [0007]"
+        },
+        "phrase": "Depends on feature 7, both ways",
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "Slice 5",
+          "id": null,
+          "mention": "Moved here from Slice 5"
+        },
+        "phrase": "Moved here from",
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": null,
+          "mention": "spec [0009]"
+        },
+        "phrase": "spec",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "mention": "Two spec 0006 footer assertions changed shape here rather than being deleted"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "phrase": "changed shape here rather than being deleted",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "mention": "closes the finding spec 0007 recorded on 2026-08-30"
+        },
+        "phrase": "closes the finding",
+        "date": "2026-08-30",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "mention": "Adzuna arrives at feature 11"
+        },
+        "phrase": "arrives at",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 13",
+          "id": null,
+          "mention": "the model providers at features 13"
+        },
+        "phrase": "the model providers at",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "mention": "and 14"
+        },
+        "phrase": "and",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 7",
+          "id": null,
+          "mention": "belonging to feature 7"
+        },
+        "phrase": "belonging to",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "phrase": "all 23 acceptance criteria met",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

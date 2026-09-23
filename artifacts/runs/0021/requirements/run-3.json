@@ -1,0 +1,912 @@
+{
+  "record": "0021",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a visitor who has not signed up, I want to see real listings scored for real against a stated candidate",
+        "rejected_spans": [
+          "so that I can judge whether the ranking actually works, not just whether it looks plausible."
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "visitor user story"
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the engineer, I want the page to cost nothing on render and never be corruptible by a visitor, while still reflecting real data that nobody hand picked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "engineer user story"
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A visitor reaches `/demo` and sees a list of results with no sign in, no redirect, and no account required.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~The page makes no external paid call on any render: no Adzuna search, no AI scoring call. Every value shown was prepared in advance.~~ \u00b7 **SUPERSEDED 2026-09-14.** The page still makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna searches, revised 2026-09-15, then one `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for a real search) now happens only inside the refresh described in AC-17, gated exactly like every other real call in this app, never inside a page render.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~Every seeded value (company name, title, description, location) reads as obviously fictional, not as a real employer or a real posting.~~ \u00b7 **SUPERSEDED 2026-09-14.** The opposite is now true on purpose: every listing (company name, title, description, location) is real, exactly as Adzuna returned it, including a real employer's name on a `weak_match` or `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and they are shown on the page in full (AC-14).",
+        "rejected_spans": [
+          "as the disclosure that makes this honest."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~No control on the page writes to the database. There is no code path by which one visitor's visit changes what the next visitor sees.~~ \u00b7 **SUPERSEDED 2026-09-14.** No visitor facing control writes to the database, and a visitor's own visit still cannot change what the next visitor sees. What is no longer true is the absolute second sentence: the refresh (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind anything a visitor's browser can reach.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The page offers exactly two example candidate profiles, `backend-engineer` (\"Backend engineer\", the default) and `frontend-engineer` (\"Frontend engineer\"), switchable through a `?persona=` link. Any value that is not exactly one of those two slugs (absent, unrecognized, empty, or a repeated query param) shows the default profile rather than erroring.",
+        "rejected_spans": [
+          "*(Slug changed 2026-09-14: `product-designer` is replaced by `frontend-engineer`, since the personas are now scored for real and a contrasting-stack pair of engineers gives a cleaner signal than an engineer against a designer; see `rationale.md`.)*"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~Exactly two seeded listings (the same title and company each time) appear under both profiles, each with a different band, different matched and not mentioned skills, and different written reasoning per profile. Their exact content is named in **Seed content** below.~~ \u00b7 **SUPERSEDED 2026-09-14.** Every kept listing (AC-17) appears under both profiles now, not just two of them, drawn from both searches (revised 2026-09-15). Each listing's band, matched skills, not mentioned skills, ungrounded skills, and reasoning are computed independently per persona by the real scorer and the real grounding check, and are expected to differ, but nothing in the build may select or discard a listing based on whether they actually do, and a refresh that returns fewer than the target count (**Feature design**, \"The kept listing count\") is still published as is, never padded or retried to reach it, as long as it kept at least one listing; a refresh that kept zero aborts (**Feature design**, \"Refresh outcomes\", recorded 2026-09-15).",
+        "rejected_spans": [
+          "because both personas are scored against the same ~~one search's results~~ kept set,"
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Within one profile, listings are ordered best band first, ties broken by ~~Adzuna's own returned rank for that search~~ the order the kept walk kept each listing, which interleaves the two searches' own Adzuna order (revised 2026-09-15; **Feature design**, \"The kept listing count\") (stored as `sort_order`), the same band ordering rule `/search` already uses.",
+        "rejected_spans": [
+          "*(Tiebreak source changed 2026-09-14: a hand seeded display order is replaced by Adzuna's own order, since there is no longer a hand authored order to seed.)*"
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Each card shows title, company, location when present, a stated or predicted salary on some listings, a description snippet, the band, matched skills, not mentioned skills, the written reasoning, and (AC-16) a compact line naming the other persona's band for the same listing. A matched skill the grounding check flagged as ungrounded is removed from the displayed matched list and the same two sentences the real card shows appear here too (**Feature design**, \"Ungrounded skills\"). It carries no real \"view posting\" link and no working apply control, only a plain text line where the real apply control would sit, never a disabled button.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~The page shows no Adzuna attribution and no salary prediction attribution, since nothing on it came from either vendor.~~ \u00b7 **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders. The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.",
+        "rejected_spans": [
+          "because the two must never come apart (`salaryText()`'s own doc comment)."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "~~A visible line on the page states plainly that this is sample data, not live postings.~~ \u00b7 **SUPERSEDED 2026-09-14.** That claim is now false and reversed: a visible line states plainly that the listings are real, live Adzuna results, refreshed periodically, and that the two candidate profiles judged against them are fictional (AC-14 names what else that line shows). Every other place on the page or in its code that asserted the old claim (page metadata, heading, intro copy, the demo card's own doc comment, the not mentioned skills caption's justification) is corrected in the same pass (**Build plan**, \"the wording pass\").",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The page is not indexed by search engines.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "If the seeded data cannot be read because of a genuine fault (the database is unreachable, or a row fails to parse), the page answers a normal 200 and shows a visible failure state rather than an empty, broken looking, or server error page. This is a different case from AC-15, and the two must render distinguishable copy.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The entry page's hero carries a real, working link to `/demo`, and the \"what's real today\" status card moves \"a no sign in demo account\" from planned to working. ~~**Deliberately not built by this spec.** Recorded in `docs/scope/scope.md` on 2026-09-14: wiring this while the page still showed fabricated data would have advertised a demo already decided to be insufficient, and that reasoning holds unchanged for the real data version until it ships.~~ **Built 2026-09-17**, once its own stated condition was met: the real data version shipped in pull request #135 and the first production refresh ran 2026-09-16, so `/demo` shows real scored postings rather than the fabricated set this was waiting out.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The page shows ~~the search query the current results answer (the title and, when set, the location the refresh searched)~~ both search queries the current results answer (both titles, and the shared location when one is set; revised 2026-09-15) and when the data was last refreshed, both read from the single `demo_refresh` row (**Feature design**). It also shows both persona profiles' full content (summary, skills, experience, preferences) somewhere on the page, which is the disclosure AC-3 now depends on.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "If no refresh has ever run since the current schema was deployed (`demo_refresh.refreshed_at is null`), the page shows a visible \"results are not available yet\" state, worded distinctly from AC-12's failure state (the first is expected and temporary, the second is a fault), never a blank or partially rendered page. This is a normal, successful read of an empty state, not a `Failure`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Each card additionally names the other persona's band for the same listing, in a compact line separate from the active persona's full result. The paired row is always present by construction (AC-17's transaction writes both personas' rows for every kept listing together), so this line has no \"missing\" case to design for; it is not defensively hidden.",
+        "rejected_spans": [
+          "so a reader sees both scores without switching `?persona=`"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A refresh, triggered as described in AC-18, runs ~~exactly one real Adzuna search using the fixed query in **Feature design**, de-duplicates the results by Adzuna's own listing id (first occurrence wins) and keeps up to a fixed count of what remains in Adzuna's own returned order~~ exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Unlike `/search`, where the check is best effort, the refresh has no reader waiting on it and a previous, fully checked run to fall back to, so an unfinished check is treated the same as an unfinished score rather than silently written as if it had passed. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of ~~either call type~~ any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built.",
+        "rejected_spans": [
+          "because a real search must still render something,",
+          "since it is the budget working as designed."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "multi_condition_split",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-18",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The refresh is reachable only via a `POST` to a dedicated route handler, authorized by hashing the caller supplied secret (from an `Authorization: Bearer` header) and the configured `env.DEMO_REFRESH_SECRET` with SHA-256 and comparing the two digests; no other path triggers it. To spend real `job_search` and `ai_scoring`/`ai_check` budget through the existing gate (which requires a verified session, **Feature design**), the refresh authenticates as a dedicated, permanent internal identity that holds no `profile` or `application` row and is never reachable by a real visitor. That identity's own weekly account scope budget is therefore always separate from any real signed in user's.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-19",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A real employer's name and a real listing's content render exactly as returned, whatever band either persona receives, including `weak_match` and `not_a_match`. Nothing on the page is hidden, blurred, or altered based on a score.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "revised 2026-09-15"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-19"
+        },
+        "phrase": "including a real employer's name on a `weak_match` or `not_a_match` row (AC-19)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "phrase": "they are shown on the page in full (AC-14)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "phrase": "the refresh (AC-17) is a code path that deliberately changes what every visitor sees",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-18"
+        },
+        "phrase": "It runs behind a secret only the engineer holds (AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "Slug changed 2026-09-14"
+        },
+        "phrase": "Slug changed 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "see `rationale.md`"
+        },
+        "phrase": "see `rationale.md`",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "revised 2026-09-15"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "phrase": "Every kept listing (AC-17) appears under both profiles now",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**, \"The kept listing count\""
+        },
+        "phrase": "**Feature design**, \"The kept listing count\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**, \"Refresh outcomes\""
+        },
+        "phrase": "**Feature design**, \"Refresh outcomes\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "Tiebreak source changed 2026-09-14"
+        },
+        "phrase": "Tiebreak source changed 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "revised 2026-09-15"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**, \"The kept listing count\""
+        },
+        "phrase": "**Feature design**, \"The kept listing count\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-16"
+        },
+        "phrase": "(AC-16) a compact line naming the other persona's band for the same listing",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**, \"Ungrounded skills\""
+        },
+        "phrase": "**Feature design**, \"Ungrounded skills\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "mention": "reusing `AdzunaAttribution` from spec 0013 unchanged"
+        },
+        "phrase": "reusing `AdzunaAttribution` from spec 0013 unchanged",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "reusing the same pairing `src/features/search/result-card.tsx` already renders"
+        },
+        "phrase": "reusing the same pairing `src/features/search/result-card.tsx` already renders",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "`salaryText()`'s own doc comment"
+        },
+        "phrase": "`salaryText()`'s own doc comment",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "SUPERSEDED 2026-09-14"
+        },
+        "phrase": "SUPERSEDED 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Build plan**, \"the wording pass\""
+        },
+        "phrase": "**Build plan**, \"the wording pass\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "phrase": "(AC-14 names what else that line shows)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "phrase": "This is a different case from AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "scope",
+          "id": null,
+          "mention": "Recorded in `docs/scope/scope.md` on 2026-09-14"
+        },
+        "phrase": "Recorded in `docs/scope/scope.md` on 2026-09-14",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "pull request #135"
+        },
+        "phrase": "shipped in pull request #135",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "Built 2026-09-17"
+        },
+        "phrase": "Built 2026-09-17",
+        "date": "2026-09-17",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**"
+        },
+        "phrase": "both read from the single `demo_refresh` row (**Feature design**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "phrase": "which is the disclosure AC-3 now depends on",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "revised 2026-09-15"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-16"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "phrase": "AC-17's transaction writes both personas' rows for every kept listing together",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "the fixed queries in **Feature design**"
+        },
+        "phrase": "the fixed queries in **Feature design**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "phrase": "exactly as `scoreListings()` already does for a real search (AC-2)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-18"
+        },
+        "phrase": "triggered as described in AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "revised 2026-09-15"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**, \"Refresh outcomes\""
+        },
+        "phrase": "**Feature design**, \"Refresh outcomes\", states the exact shape of each outcome",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "mention": "**Feature design**"
+        },
+        "phrase": "the existing gate (which requires a verified session, **Feature design**)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
