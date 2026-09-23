@@ -15,6 +15,10 @@ Two rules here are easy to "simplify" back into bugs, so both are stated:
 * Runs are compared by **count**, not as sets, and where a count differs every copy of
   that signature is held, not just the surplus. Accepting the first `min(counts)` would
   assert a correspondence the runs never established (AC-11b).
+* A derived entity whose span could not be located never accepts on its count. Its
+  identity collapses to `COLLAPSED`, so three runs each finding two unlocatable claims
+  of one type would otherwise read as agreement while holding six unrelated claims
+  (AC-11d). Removing this trades a visible queue row for an invisible wrong node.
 """
 
 from collections.abc import Mapping, Sequence
@@ -54,6 +58,7 @@ class ReviewReasonName(StrEnum):
     KNOWN_TRAP_FLAG = "known_trap_flag"
     UNCLASSIFIED_TYPE = "unclassified_type"
     ENDPOINT_NOT_ACCEPTED = "endpoint_not_accepted"
+    SPAN_NOT_LOCATED = "span_not_located"
 
 
 @dataclass(frozen=True)
@@ -61,7 +66,7 @@ class ReviewReason:
     """One reason an item was held, with the detail that reason needs.
 
     `ENDPOINT_NOT_ACCEPTED` carries the canonical id of the entity the link is waiting
-    on, so a reviewer can see what to rule on first. The other three carry nothing.
+    on, so a reviewer can see what to rule on first. The other four carry nothing.
     """
 
     name: ReviewReasonName
@@ -132,6 +137,19 @@ def entity_identity(entity: IdentifiedEntity) -> str:
 def entity_signature(entity: IdentifiedEntity) -> EntitySignature:
     """The tuple agreement is decided on, and nothing else."""
     return (entity_identity(entity), str(entity.entity.type))
+
+
+def is_unlocated_derived(signature: EntitySignature | RelationshipSignature) -> bool:
+    """Whether a signature is a derived entity whose span could not be located (AC-11d).
+
+    Decided from the signature alone, because the leftover branch of `route_runs()`
+    has nothing else: a signature only a later run produced has no first run entity to
+    read a location off. A relationship signature is a triple and never qualifies; a
+    verbatim entity keeps its own canonical id as its identity whatever its line, so it
+    never qualifies either. Only `COLLAPSED` means "a derived entity with no line", and
+    that is exactly the case with no identity to compare on.
+    """
+    return len(signature) == 2 and signature[0] == COLLAPSED
 
 
 def _endpoint_signature(
@@ -237,6 +255,8 @@ def _entity_reasons(
         reasons.append(ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG))
     if entity.entity.type is EntityType.UNCLASSIFIED:
         reasons.append(ReviewReason(ReviewReasonName.UNCLASSIFIED_TYPE))
+    if is_unlocated_derived(entity_signature(entity)):
+        reasons.append(ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED))
     return tuple(reasons)
 
 
@@ -334,12 +354,14 @@ def route_runs(outputs: Sequence[IdentifiedOutput]) -> RoutedUnit:
     )
     for leftover in leftovers:
         if str(leftover) not in seen:
-            review.append(
-                ReviewItem(
-                    signature=leftover,
-                    reasons=(ReviewReason(ReviewReasonName.RUNS_DISAGREE),),
-                )
-            )
+            # A leftover carries `SPAN_NOT_LOCATED` on the same rule as a first run
+            # entity. Without this, two structurally identical unlocatable items would
+            # get different reasons depending only on which run happened to find one
+            # first, and the committed queue already holds such rows (AC-11d).
+            reasons = (ReviewReason(ReviewReasonName.RUNS_DISAGREE),)
+            if is_unlocated_derived(leftover):
+                reasons += (ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED),)
+            review.append(ReviewItem(signature=leftover, reasons=reasons))
             seen.add(str(leftover))
 
     return RoutedUnit(

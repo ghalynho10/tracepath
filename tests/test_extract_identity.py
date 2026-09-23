@@ -15,6 +15,7 @@ from tracepath.extract.compare import (
     compare_runs,
     entity_identity,
     entity_signature,
+    is_unlocated_derived,
     route_runs,
 )
 from tracepath.extract.ids import (
@@ -784,3 +785,116 @@ def test_a_held_link_names_the_entity_it_waits_on_in_the_queue() -> None:
     entity_row = next(e for e in entries if e["canonical_id"] == "0012#requirements:1")
     assert entity_row["line"] == 1
     assert {"name": "unclassified_type", "detail": None} in entity_row["reasons"]
+
+
+# AC-11(d): a derived entity with no located line never accepts on its count alone.
+
+
+def unlocatable(type_name: str, span: str, n: int) -> dict[str, Any]:
+    """One entity whose span belongs to another document, so it cannot be located."""
+    return {"id": f"derived:{n}", "id_source": "derived", "type": type_name, "span": span}
+
+
+def runs_of(unit: Unit, *per_run: list[dict[str, Any]]) -> list[Any]:
+    """Identify several raw runs of one unit, so route_runs can compare them."""
+    return [
+        assign_ids(
+            locate_output(
+                unit, ExtractionOutput.model_validate({"entities": ents, "relationships": []})
+            ),
+            "0012",
+            "requirements",
+        )
+        for ents in per_run
+    ]
+
+
+def test_a_derived_entity_with_no_line_is_held_even_when_the_counts_agree() -> None:
+    """The regression this exists to prevent.
+
+    All three runs find two unlocatable Constraints, so the multiset counts match and
+    the old rule accepted every one. Nothing says they are the same two claims: the
+    signature is (`<derived>`, Constraint) for all six, which is the absence of an
+    identity rather than a weak one.
+    """
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    far = "Every seeded listing carries an obviously fake company name."
+    other = "The router falls back to the secondary provider after two failures."
+    runs = runs_of(
+        unit,
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+    )
+
+    assert runs[0].entities[0].location is None, "the span must not locate for this test"
+    routed = route_runs(runs)
+
+    assert routed.comparison.agree, "counts match, so this is agreement under AC-11b"
+    assert routed.accepted_entities == (), "but agreeing on a count is not agreeing on an item"
+    assert all(
+        ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED) in item.reasons for item in routed.review
+    )
+
+
+def test_a_verbatim_entity_with_no_located_line_is_not_held_for_that_reason() -> None:
+    """AC-11d is about identity, not citations. A verbatim id is its own identity."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = [
+        {
+            "id": "AC-9",
+            "id_source": "verbatim",
+            "type": "AcceptanceCriterion",
+            "span": "Every seeded listing carries an obviously fake company name.",
+        }
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+    entity = runs[0].entities[0]
+
+    assert entity.location is None, "AC-9 is not defined in this unit, so it has no line"
+    assert entity_identity(entity) == "0012/AC-9"
+    assert not is_unlocated_derived(entity_signature(entity))
+    assert route_runs(runs).accepted_entities, "a verbatim id still accepts on its own identity"
+
+
+def test_the_leftovers_branch_labels_an_unlocatable_span_too() -> None:
+    """A signature the first run never produced takes the same reason (AC-11d).
+
+    Without this the reason would depend on which run happened to find an item first,
+    and the committed queue already holds four such rows.
+    """
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    far = "Every seeded listing carries an obviously fake company name."
+    runs = runs_of(unit, [], [unlocatable("Constraint", far, 1)], [])
+
+    routed = route_runs(runs)
+    held = [item for item in routed.review if item.signature == (COLLAPSED, "Constraint")]
+
+    assert held, "the leftover signature must reach the queue"
+    assert held[0].canonical_id is None, "a leftover has no first run entity to take an id from"
+    assert ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED) in held[0].reasons
+
+
+def test_a_located_derived_entity_is_untouched_by_the_rule() -> None:
+    """The rule must not widen to every derived entity, only the unlocatable ones."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = [
+        {
+            "id": "derived:1",
+            "id_source": "derived",
+            "type": "Constraint",
+            "span": "a plain criterion with nothing ambiguous about it",
+        }
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+    entity = runs[0].entities[0]
+
+    assert entity.location is not None, "this span is in the unit and should locate"
+    assert not is_unlocated_derived(entity_signature(entity))
+    assert route_runs(runs).accepted_entities, "a located derived entity still accepts"
+
+
+def test_a_relationship_signature_never_takes_the_entity_rule() -> None:
+    """A triple is a relationship, and AC-11c already covers its held endpoints."""
+    assert not is_unlocated_derived(("satisfies", COLLAPSED, "ref:0012/AC-1"))
+    assert is_unlocated_derived((COLLAPSED, "Constraint"))
