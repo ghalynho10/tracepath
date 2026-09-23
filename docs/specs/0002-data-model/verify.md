@@ -32,7 +32,20 @@ breaks if it is undone.
 - [x] `hold a link` → a held link's queue row carries `reasons[].name == "endpoint_not_accepted"` and a `detail` naming the entity it waits on. A reviewer can read which entity to rule on first → **AC-11c**
 - [x] Review queue entry shape → an entity row carries a non null `canonical_id` and its `line`; a relationship row carries `canonical_id: null` and is identified by its `signature`. Rows are ordered by lowest located offset → **AC-11**
 - [x] `extract a unit` → `effort` in every run artifact reads `medium`, never null and never `high`. Unset used to fall through to the model's own default, `high`, which is how the first runs measured the wrong configuration → spec **0001** run policy
-- [ ] Token usage → every run artifact carries `input_tokens` and `output_tokens` as integers, per attempt, so a run's cost is recoverable after the process exits → spec **0001** artifact storage
+- [ ] Token usage → every run artifact carries `input_tokens` and `output_tokens` as integers, per attempt, so a run's cost is recoverable after the process exits → spec **0001** artifact storage · the pipeline now writes both on every attempt (`tests/test_run_unit_usage.py`), but the 24 artifacts written before the field read as null, meaning unmeasured, and their numbers cannot be recovered without re-calling the model. This step stays unticked until spec 0001's "both required" wording gains the clause that covers them, which is owed to `/architect`
+
+## Artifact storage, built 2026-09-23
+
+Each of these guards a way the cost or the held items could go missing again.
+
+- [x] Usage counts one attempt, never a running total: a retried run writes the retry's own numbers, and the failed attempt's sit beside them rather than added into them → spec **0001** artifact storage (`test_a_retried_run_writes_both_attempts_with_their_own_numbers`)
+- [x] A call that raises still produces an artifact, carrying its usage, its error and a null `output` → spec **0001** artifact storage (`test_a_call_that_raises_still_produces_an_artifact_carrying_its_usage`)
+- [x] A failed attempt lands at `failed-run-N-attempt-M.json`, which the `run-*.json` glob does not match, so a rebuild never reads a failure as a fourth run and the three-runs-per-unit count stays true. Only the settled run takes `run-N.json` → spec **0001** artifact storage (`test_a_failed_attempt_is_not_read_back_as_a_fourth_run`)
+- [x] A unit that fails after its retry hands its artifacts back through `UnitFailed` instead of losing them with the exception. This is the case that made the first 21 call run's cost unrecoverable → spec **0001** artifact storage (`test_a_unit_that_fails_after_its_retry_still_hands_back_its_artifacts`)
+- [x] `uv run tracepath review-queue` rebuilds `artifacts/review-queue.json` from the committed artifacts alone, no API call and no graph, and the committed file matches what it produces → **AC-11c** (`test_the_committed_queue_matches_what_the_committed_artifacts_produce`)
+- [x] The queue holds **both** kinds of held item: the ones routing holds inside a unit and the ones `resolve_accepted()` holds across units. Holding only the first would make AC-11c's promise true for 97 links and false for the one that crosses a unit boundary → **AC-7**, **AC-11c** (`test_a_cross_unit_held_link_is_not_lost_between_routing_and_resolution`)
+- [x] The queue is byte stable from one rebuild to the next, so a file tracked in git does not reorder itself on every run → **AC-11** (`test_the_queue_is_stable_from_one_rebuild_to_the_next`)
+- [x] `artifacts/review-log.json` is created once and never overwritten by a pipeline run. A run rules on nothing, so writing `[]` over a reviewer's work would erase it → **AC-11c** (`test_the_review_log_is_never_overwritten_by_a_later_run`)
 
 ## Spends money (skip unless re-measuring)
 
