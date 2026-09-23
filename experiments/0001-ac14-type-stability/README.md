@@ -4,6 +4,7 @@
 **Corpus commit**: `2e40bcf` (JobHunt `docs/`, pinned)
 **Code commit**: `ab8c2ea`
 **Spec**: [0002, AC-14](../../docs/specs/0002-data-model/index.md)
+**Note**: Agreement figures here were measured under the comparator as it stood before the 2026-09-23 AC-11 amendment (flags in the signature, set comparison), and are not comparable with anything measured after it. See [spec 0002 AC-11](../../docs/specs/0002-data-model/index.md).
 
 ## Question
 
