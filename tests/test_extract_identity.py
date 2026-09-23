@@ -7,9 +7,12 @@ import pytest
 
 from tracepath.extract.compare import (
     COLLAPSED,
+    LINE_PREFIX,
     ComparisonError,
     ReviewReason,
+    ReviewReasonName,
     compare_runs,
+    entity_identity,
     entity_signature,
     route_runs,
 )
@@ -477,14 +480,46 @@ def test_the_split_run_reads_as_a_disagreement() -> None:
     assert comparison.differing_entities
 
 
-def test_a_derived_id_is_collapsed_before_comparison() -> None:
+def test_a_derived_entity_is_identified_by_its_located_line() -> None:
+    """AC-11a: a verbatim id stands as it is, a derived one becomes its located line.
+
+    The line is what keeps agreement honest once flags leave the signature. Without
+    it every derived entity of one type would share the tuple (`<derived>`, type), so
+    three runs could extract entirely different spans and still read as agreeing.
+    """
     unit = unit_named("0011", "Requirements")
     split = identified("run_split", unit)
 
     signatures = {entity_signature(e)[0] for e in split.entities}
 
-    assert COLLAPSED in signatures
     assert "0011/AC-1" in signatures
+    assert any(s.startswith(LINE_PREFIX) for s in signatures)
+    assert COLLAPSED not in signatures
+
+
+def test_a_derived_entity_whose_span_cannot_be_located_collapses() -> None:
+    """AC-11a's fallback: `<derived>` survives only for an unlocatable span."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "derived:1",
+                    "id_source": "derived",
+                    "type": "Constraint",
+                    "span": "Every seeded listing carries an obviously fake company name.",
+                }
+            ],
+            "relationships": [],
+        }
+    )
+
+    output = assign_ids(locate_output(unit, raw), "0012", "requirements")
+    entity = output.entities[0]
+
+    assert entity.location is None, "this span should not locate in this unit"
+    assert entity_identity(entity) == COLLAPSED
+    assert entity_signature(entity) == (COLLAPSED, "Constraint")
 
 
 def test_comparing_fewer_than_two_runs_raises() -> None:
@@ -504,7 +539,7 @@ def test_an_item_carrying_a_known_trap_flag_is_held_for_review() -> None:
     routed = route_runs(outputs)
 
     assert not routed.accepted_entities
-    assert ReviewReason.KNOWN_TRAP_FLAG in routed.review[0].reasons
+    assert ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG) in routed.review[0].reasons
 
 
 def test_an_unflagged_agreed_entity_is_accepted() -> None:
@@ -571,7 +606,7 @@ def test_an_unclassified_entity_is_held_back_but_an_unclassified_link_goes_strai
     assert [e.canonical_id for e in routed.accepted_entities] == ["0012/AC-1"]
     assert len(routed.accepted_relationships) == 1
     assert routed.accepted_relationships[0].phrase == "already seeded by"
-    assert routed.review[0].reasons == (ReviewReason.UNCLASSIFIED_TYPE,)
+    assert routed.review[0].reasons == (ReviewReason(ReviewReasonName.UNCLASSIFIED_TYPE),)
 
 
 def test_a_signature_only_some_runs_produced_is_held_for_review() -> None:
@@ -580,5 +615,84 @@ def test_a_signature_only_some_runs_produced_is_held_for_review() -> None:
 
     routed = route_runs(outputs)
 
-    assert any(ReviewReason.RUNS_DISAGREE in item.reasons for item in routed.review)
+    assert any(
+        ReviewReason(ReviewReasonName.RUNS_DISAGREE) in item.reasons for item in routed.review
+    )
     assert not routed.accepted_entities
+
+
+# AC-11a/b: the amended comparator, added 2026-09-23.
+
+
+def _output(entities: list[dict[str, Any]], flags: tuple[str, ...] = ()) -> ExtractionOutput:
+    return ExtractionOutput.model_validate(
+        {
+            "entities": [{**e, "known_trap_flags": list(flags)} for e in entities],
+            "relationships": [],
+        }
+    )
+
+
+ALPHA = {
+    "id": "derived:1",
+    "id_source": "derived",
+    "type": "Constraint",
+    "span": "alpha claim about caching",
+}
+BETA = {
+    "id": "derived:2",
+    "id_source": "derived",
+    "type": "Constraint",
+    "span": "beta claim about retries",
+}
+ONE_LINE = "- **AC-9**: alpha claim about caching, and beta claim about retries.\n"
+
+
+def test_flag_churn_alone_no_longer_breaks_agreement() -> None:
+    """AC-11a: runs agreeing on identity and type agree, however the flags move.
+
+    The flagged item still routes to review on its own trigger, which is the point:
+    the flag was being counted twice, and the second count marked *neighbours* as
+    disagreements.
+    """
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(locate_output(unit, _output([ALPHA], flags=flags)), "0012", "requirements")
+        for flags in (("rationale_boundary_call",), (), ("multi_condition_split",))
+    ]
+
+    comparison = compare_runs(outputs)
+    routed = route_runs(outputs)
+
+    assert comparison.agree, "identical identity and type should agree whatever the flags do"
+    assert not comparison.differing_entities
+    assert not routed.accepted_entities, "the flag still holds it back on its own trigger"
+    assert routed.review[0].reasons == (ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG),)
+    assert routed.review[0].canonical_id == "0012#requirements:1"
+    assert routed.review[0].line == 1
+
+
+def test_a_count_that_differs_holds_every_copy_not_just_the_surplus() -> None:
+    """AC-11b: two entities share a signature in one run and one in the others.
+
+    Accepting the first `min(counts)` would assert a correspondence the runs never
+    established, so every copy of that signature is held.
+    """
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(locate_output(unit, _output(entities)), "0012", "requirements")
+        for entities in ([ALPHA, BETA], [ALPHA], [ALPHA])
+    ]
+
+    comparison = compare_runs(outputs)
+    routed = route_runs(outputs)
+
+    assert {e.entity.span for e in outputs[0].entities} == {ALPHA["span"], BETA["span"]}
+    assert [entity_signature(e) for e in outputs[0].entities] == [
+        ("line:1", "Constraint"),
+        ("line:1", "Constraint"),
+    ], "both spans sit on the same line, so they share one signature"
+    assert not comparison.agree
+    assert comparison.entity_counts == ((("line:1", "Constraint"), (2, 1, 1)),)
+    assert not routed.accepted_entities, "every copy is held, not just the surplus"
+    assert len(routed.review) == 2

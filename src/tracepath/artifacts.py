@@ -134,12 +134,20 @@ def read_run(path: Path) -> RunArtifact:
 def review_entry(
     record: str, section: str, item: ReviewItem, model: str, extracted_at: str
 ) -> dict[str, Any]:
-    """One item held back from the graph, and every reason it was held."""
+    """One item held back from the graph, and every reason it was held.
+
+    `canonical_id` is null for a relationship, which has no id of its own; its
+    `signature` already carries its type and both endpoints. A reason is a name plus
+    an optional detail, because `endpoint_not_accepted` must name the entity the link
+    is waiting on, and a bare word cannot carry it.
+    """
     return {
         "record": record,
         "section": section,
+        "canonical_id": item.canonical_id,
+        "line": item.line,
         "signature": list(item.signature),
-        "reasons": [str(reason) for reason in item.reasons],
+        "reasons": [{"name": str(reason.name), "detail": reason.detail} for reason in item.reasons],
         "model": model,
         "queued_at": extracted_at,
     }

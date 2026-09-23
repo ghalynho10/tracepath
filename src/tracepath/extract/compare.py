@@ -1,12 +1,23 @@
 """Comparing the runs of one unit, and routing what is not settled to review.
 
-Agreement is decided on a stated signature and nothing else: an entity's collapsed
-canonical id, its type and its sorted flags. Span text, rationale spans, citations and
-provenance are ignored, and so are `struck` and `followup_status`, which code sets
-identically for every run. Only accepted items are written to the graph (AC-11).
+Agreement is decided on a stated signature and nothing else: an entity's identity
+(its verbatim canonical id, else the line its span was located to) and its type. Span
+text, rationale spans, citations, provenance and flags are ignored, and so are `struck`
+and `followup_status`, which code sets identically for every run. Only accepted items
+are written to the graph (AC-11).
+
+Two rules here are easy to "simplify" back into bugs, so both are stated:
+
+* The signature carries no flags. Flags are the least stable thing the model produces,
+  and this module already routes any flagged item to review on its own trigger, so
+  keeping them in the signature counted them twice and marked *unflagged* neighbours
+  as disagreements (AC-11a).
+* Runs are compared by **count**, not as sets, and where a count differs every copy of
+  that signature is held, not just the surplus. Accepting the first `min(counts)` would
+  assert a correspondence the runs never established (AC-11b).
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -14,48 +25,81 @@ from tracepath.extract.ids import IdentifiedEntity, IdentifiedOutput
 from tracepath.extract.schema import (
     EntityType,
     ExtractedRelationship,
-    IdSource,
     LocalEndpoint,
     ReferenceEndpoint,
 )
 
-#: What every derived id collapses to before comparison, because a derived ordinal is
-#: not a stability guarantee: an unlocatable span can take a different `n` per run.
+#: What a derived id collapses to when its span could not be located. A derived
+#: ordinal is not a stability guarantee, because an unlocatable span can take a
+#: different `n` per run (AC-3). A located line is stable, so only the unlocatable
+#: ones fall back to this.
 COLLAPSED = "<derived>"
 
-EntitySignature = tuple[str, str, tuple[str, ...]]
-RelationshipSignature = tuple[str, str, str, tuple[str, ...]]
+#: How a located line is written into a signature, so the identity component stays a
+#: single string and can never collide with a verbatim id like `0021/AC-2`.
+LINE_PREFIX = "line:"
+
+EntitySignature = tuple[str, str]
+RelationshipSignature = tuple[str, str, str]
 
 
 class ComparisonError(Exception):
     """A comparison was asked for that cannot be made."""
 
 
-class ReviewReason(StrEnum):
+class ReviewReasonName(StrEnum):
     """Why an item is held back from the graph until a person rules on it."""
 
     RUNS_DISAGREE = "runs_disagree"
     KNOWN_TRAP_FLAG = "known_trap_flag"
     UNCLASSIFIED_TYPE = "unclassified_type"
+    ENDPOINT_NOT_ACCEPTED = "endpoint_not_accepted"
+
+
+@dataclass(frozen=True)
+class ReviewReason:
+    """One reason an item was held, with the detail that reason needs.
+
+    `ENDPOINT_NOT_ACCEPTED` carries the canonical id of the entity the link is waiting
+    on, so a reviewer can see what to rule on first. The other three carry nothing.
+    """
+
+    name: ReviewReasonName
+    detail: str | None = None
 
 
 @dataclass(frozen=True)
 class RunComparison:
-    """Whether the runs of one unit agree, and which signatures they differ on."""
+    """Whether the runs of one unit agree, and how they differ.
+
+    `entity_counts` and `relationship_counts` map each signature to how many times
+    each run produced it, in run order. A set cannot express that, which is why the
+    comparison keeps counts (AC-11b).
+    """
 
     agree: bool
     shared_entities: frozenset[EntitySignature]
     differing_entities: frozenset[EntitySignature]
     shared_relationships: frozenset[RelationshipSignature]
     differing_relationships: frozenset[RelationshipSignature]
+    entity_counts: tuple[tuple[EntitySignature, tuple[int, ...]], ...]
+    relationship_counts: tuple[tuple[RelationshipSignature, tuple[int, ...]], ...]
 
 
 @dataclass(frozen=True)
 class ReviewItem:
-    """One item held back, with every reason it was held."""
+    """One item held back, with every reason it was held.
+
+    `canonical_id` is null for a relationship, which has no id of its own; a held link
+    is identified by its `signature`, which already carries its type and both
+    endpoints. `offset` orders the queue and is not part of the signature.
+    """
 
     signature: EntitySignature | RelationshipSignature
     reasons: tuple[ReviewReason, ...]
+    canonical_id: str | None = None
+    line: int | None = None
+    offset: int | None = None
 
 
 @dataclass(frozen=True)
@@ -68,41 +112,88 @@ class RoutedUnit:
     review: tuple[ReviewItem, ...]
 
 
-def collapse(canonical_id: str) -> str:
-    """Collapse a derived canonical id, leaving a verbatim one as it is."""
-    return COLLAPSED if "#" in canonical_id else canonical_id
+def entity_identity(entity: IdentifiedEntity) -> str:
+    """The identity half of an entity's signature (AC-11a).
+
+    A verbatim canonical id stands as it is. Everything else is identified by the line
+    its span was located to, which is a property of the source text rather than of the
+    run, and so does not shift when two runs find different numbers of spans. The
+    canonical id's own shape decides this, not `id_source`: where one verbatim id
+    carries both struck and unstruck text, the struck twin keeps `id_source` verbatim
+    while taking a derived canonical id (AC-5).
+    """
+    if "#" not in entity.canonical_id:
+        return entity.canonical_id
+    if entity.location is not None:
+        return f"{LINE_PREFIX}{entity.location.line}"
+    return COLLAPSED
 
 
 def entity_signature(entity: IdentifiedEntity) -> EntitySignature:
     """The tuple agreement is decided on, and nothing else."""
-    collapsed = (
-        COLLAPSED if entity.entity.id_source is IdSource.DERIVED else collapse(entity.canonical_id)
-    )
-    return (
-        collapsed,
-        str(entity.entity.type),
-        tuple(sorted(str(f) for f in entity.entity.known_trap_flags)),
-    )
+    return (entity_identity(entity), str(entity.entity.type))
 
 
-def _endpoint_signature(endpoint: LocalEndpoint | ReferenceEndpoint) -> str:
+def _endpoint_signature(
+    endpoint: LocalEndpoint | ReferenceEndpoint, identities: Mapping[str, str]
+) -> str:
     """An endpoint reduced for comparison.
 
-    A reference's verbatim mention is text, so it is ignored the same way span text is.
+    A local endpoint names an entity in this same output, so it takes that entity's
+    identity, the same rule the entity itself is compared by. A reference points
+    outside the unit and has no local line to use, so it keeps its record and id; its
+    verbatim mention is text, and is ignored the way span text is.
     """
     if isinstance(endpoint, LocalEndpoint):
-        return collapse(endpoint.id)
+        return identities.get(endpoint.id, COLLAPSED)
     return f"ref:{endpoint.record or ''}/{endpoint.id or ''}"
 
 
-def relationship_signature(relationship: ExtractedRelationship) -> RelationshipSignature:
+def relationship_signature(
+    relationship: ExtractedRelationship, identities: Mapping[str, str]
+) -> RelationshipSignature:
     """The tuple a relationship's agreement is decided on."""
     return (
         str(relationship.type),
-        _endpoint_signature(relationship.source),
-        _endpoint_signature(relationship.target),
-        tuple(sorted(str(f) for f in relationship.known_trap_flags)),
+        _endpoint_signature(relationship.source, identities),
+        _endpoint_signature(relationship.target, identities),
     )
+
+
+def identities_of(output: IdentifiedOutput) -> Mapping[str, str]:
+    """Each entity's canonical id mapped to the identity its signature uses."""
+    return {entity.canonical_id: entity_identity(entity) for entity in output.entities}
+
+
+def _counts(values: Sequence[str]) -> dict[str, int]:
+    counted: dict[str, int] = {}
+    for value in values:
+        counted[value] = counted.get(value, 0) + 1
+    return counted
+
+
+def _tally[S: (EntitySignature, RelationshipSignature)](
+    per_run: Sequence[Sequence[S]],
+) -> tuple[frozenset[S], frozenset[S], tuple[tuple[S, tuple[int, ...]], ...]]:
+    """Split signatures into agreed and differing, by count across the runs.
+
+    A signature is shared only when every run produced it the same number of times.
+    Where the count differs at all, the whole signature differs, so every copy of it
+    routes to review rather than the surplus alone (AC-11b).
+    """
+    counted = [_counts([str(s) for s in run]) for run in per_run]
+    by_key: dict[str, S] = {str(s): s for run in per_run for s in run}
+    shared: set[S] = set()
+    differing: set[S] = set()
+    tallies: list[tuple[S, tuple[int, ...]]] = []
+    for key, signature in by_key.items():
+        counts = tuple(run.get(key, 0) for run in counted)
+        tallies.append((signature, counts))
+        if len(set(counts)) == 1:
+            shared.add(signature)
+        else:
+            differing.add(signature)
+    return frozenset(shared), frozenset(differing), tuple(sorted(tallies, key=lambda t: str(t[0])))
 
 
 def compare_runs(outputs: Sequence[IdentifiedOutput]) -> RunComparison:
@@ -115,20 +206,24 @@ def compare_runs(outputs: Sequence[IdentifiedOutput]) -> RunComparison:
         raise ComparisonError(
             f"comparing runs needs at least two outputs, {len(outputs)} was given"
         )
-    entity_sets = [{entity_signature(e) for e in output.entities} for output in outputs]
-    link_sets = [{relationship_signature(r) for r in output.relationships} for output in outputs]
+    per_run_identities = [identities_of(output) for output in outputs]
+    entity_runs = [[entity_signature(e) for e in output.entities] for output in outputs]
+    link_runs = [
+        [relationship_signature(r, identities) for r in output.relationships]
+        for output, identities in zip(outputs, per_run_identities, strict=True)
+    ]
 
-    shared_entities = frozenset.intersection(*(frozenset(s) for s in entity_sets))
-    all_entities = frozenset.union(*(frozenset(s) for s in entity_sets))
-    shared_links = frozenset.intersection(*(frozenset(s) for s in link_sets))
-    all_links = frozenset.union(*(frozenset(s) for s in link_sets))
+    shared_entities, differing_entities, entity_counts = _tally(entity_runs)
+    shared_links, differing_links, link_counts = _tally(link_runs)
 
     return RunComparison(
-        agree=all_entities == shared_entities and all_links == shared_links,
+        agree=not differing_entities and not differing_links,
         shared_entities=shared_entities,
-        differing_entities=all_entities - shared_entities,
+        differing_entities=differing_entities,
         shared_relationships=shared_links,
-        differing_relationships=all_links - shared_links,
+        differing_relationships=differing_links,
+        entity_counts=entity_counts,
+        relationship_counts=link_counts,
     )
 
 
@@ -137,70 +232,119 @@ def _entity_reasons(
 ) -> tuple[ReviewReason, ...]:
     reasons: list[ReviewReason] = []
     if entity_signature(entity) not in comparison.shared_entities:
-        reasons.append(ReviewReason.RUNS_DISAGREE)
+        reasons.append(ReviewReason(ReviewReasonName.RUNS_DISAGREE))
     if entity.entity.known_trap_flags:
-        reasons.append(ReviewReason.KNOWN_TRAP_FLAG)
+        reasons.append(ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG))
     if entity.entity.type is EntityType.UNCLASSIFIED:
-        reasons.append(ReviewReason.UNCLASSIFIED_TYPE)
+        reasons.append(ReviewReason(ReviewReasonName.UNCLASSIFIED_TYPE))
     return tuple(reasons)
 
 
 def _relationship_reasons(
-    relationship: ExtractedRelationship, comparison: RunComparison
+    relationship: ExtractedRelationship,
+    comparison: RunComparison,
+    identities: Mapping[str, str],
+    accepted_ids: frozenset[str],
+    known_ids: frozenset[str],
 ) -> tuple[ReviewReason, ...]:
-    """An unclassified relationship alone never routes to review.
+    """Why a relationship is held.
 
-    It enters the graph carrying its phrase, so the uncertainty is visible in the
-    chain rather than hidden in a queue.
+    An unclassified relationship alone never routes to review: it enters the graph
+    carrying its phrase, so the uncertainty is visible in the chain rather than hidden
+    in a queue. A local endpoint naming an entity that exists in this unit but was not
+    accepted does hold the link, under `ENDPOINT_NOT_ACCEPTED`, naming that entity
+    (AC-11c). An endpoint naming nothing the unit holds is not this case: it is a
+    reference, and AC-7's `:Unresolved` fallback covers it at resolution time.
     """
     reasons: list[ReviewReason] = []
-    if relationship_signature(relationship) not in comparison.shared_relationships:
-        reasons.append(ReviewReason.RUNS_DISAGREE)
+    if relationship_signature(relationship, identities) not in comparison.shared_relationships:
+        reasons.append(ReviewReason(ReviewReasonName.RUNS_DISAGREE))
     if relationship.known_trap_flags:
-        reasons.append(ReviewReason.KNOWN_TRAP_FLAG)
+        reasons.append(ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG))
+    for endpoint in (relationship.source, relationship.target):
+        if not isinstance(endpoint, LocalEndpoint):
+            continue
+        if endpoint.id in known_ids and endpoint.id not in accepted_ids:
+            reasons.append(ReviewReason(ReviewReasonName.ENDPOINT_NOT_ACCEPTED, detail=endpoint.id))
     return tuple(reasons)
+
+
+def _item_for(entity: IdentifiedEntity, reasons: tuple[ReviewReason, ...]) -> ReviewItem:
+    return ReviewItem(
+        signature=entity_signature(entity),
+        reasons=reasons,
+        canonical_id=entity.canonical_id,
+        line=entity.location.line if entity.location else None,
+        offset=entity.location.offset if entity.location else None,
+    )
+
+
+def _queue_key(item: ReviewItem) -> tuple[int, int, str]:
+    """Lowest located offset first, unlocatable items behind, then by signature."""
+    if item.offset is None:
+        return (1, 0, str(item.signature))
+    return (0, item.offset, str(item.signature))
 
 
 def route_runs(outputs: Sequence[IdentifiedOutput]) -> RoutedUnit:
     """Compare the runs of one unit and split it into what is accepted and what waits.
 
     The first run supplies the accepted items, since every accepted signature is one
-    all the runs agreed on.
+    all the runs produced the same number of times. Entities are settled before
+    relationships, because whether a link is held depends on whether its endpoint was
+    accepted (AC-11c).
 
     Raises:
         ComparisonError: fewer than two outputs were given.
     """
     comparison = compare_runs(outputs)
     first = outputs[0]
+    identities = identities_of(first)
 
     accepted_entities: list[IdentifiedEntity] = []
-    accepted_links: list[ExtractedRelationship] = []
-    review: dict[EntitySignature | RelationshipSignature, tuple[ReviewReason, ...]] = {}
+    review: list[ReviewItem] = []
+    seen: set[str] = set()
 
     for entity in first.entities:
         reasons = _entity_reasons(entity, comparison)
         if reasons:
-            review[entity_signature(entity)] = reasons
+            review.append(_item_for(entity, reasons))
+            seen.add(str(entity_signature(entity)))
         else:
             accepted_entities.append(entity)
 
+    accepted_ids = frozenset(entity.canonical_id for entity in accepted_entities)
+    known_ids = frozenset(entity.canonical_id for entity in first.entities)
+
+    accepted_links: list[ExtractedRelationship] = []
     for relationship in first.relationships:
-        reasons = _relationship_reasons(relationship, comparison)
+        reasons = _relationship_reasons(
+            relationship, comparison, identities, accepted_ids, known_ids
+        )
         if reasons:
-            review[relationship_signature(relationship)] = reasons
+            signature = relationship_signature(relationship, identities)
+            review.append(ReviewItem(signature=signature, reasons=reasons))
+            seen.add(str(signature))
         else:
             accepted_links.append(relationship)
 
     # A signature only some runs produced never reaches the first run's lists.
-    for signature in comparison.differing_entities | comparison.differing_relationships:
-        review.setdefault(signature, (ReviewReason.RUNS_DISAGREE,))
+    leftovers: frozenset[EntitySignature | RelationshipSignature] = (
+        comparison.differing_entities | comparison.differing_relationships
+    )
+    for leftover in leftovers:
+        if str(leftover) not in seen:
+            review.append(
+                ReviewItem(
+                    signature=leftover,
+                    reasons=(ReviewReason(ReviewReasonName.RUNS_DISAGREE),),
+                )
+            )
+            seen.add(str(leftover))
 
     return RoutedUnit(
         comparison=comparison,
         accepted_entities=tuple(accepted_entities),
         accepted_relationships=tuple(accepted_links),
-        review=tuple(
-            ReviewItem(signature=signature, reasons=reasons)
-            for signature, reasons in sorted(review.items(), key=lambda item: str(item[0]))
-        ),
+        review=tuple(sorted(review, key=_queue_key)),
     )
