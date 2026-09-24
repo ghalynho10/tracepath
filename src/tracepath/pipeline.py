@@ -200,17 +200,25 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
     accepted_ids = frozenset(
         entity.canonical_id for result in results for entity in result.routed.accepted_entities
     )
+    # The `if` sits before the clause that indexes, not after it. A comprehension
+    # evaluates its clauses left to right, so a trailing guard runs only once
+    # `result.identified[0]` has already been read and has already raised.
     known_ids = frozenset(
         entity.canonical_id
         for result in results
-        for entity in result.identified[0].entities
         if result.identified
+        for entity in result.identified[0].entities
     )
     known_records = frozenset(record.canonical_id for record in records)
 
     pairs: list[tuple[ExtractedRelationship, LinkContext]] = []
     held: list[HeldLink] = []
     for result in results:
+        # A unit that identified nothing has no entities to name and no links to
+        # resolve, so it contributes nothing here. Skipping it is what the guard on
+        # `known_ids` above means, applied to the same unit.
+        if not result.identified:
+            continue
         identities = identities_of(result.identified[0])
         context = LinkContext(
             source_record=result.unit.record_id,

@@ -23,7 +23,7 @@ from tracepath.config import load_anthropic_settings
 from tracepath.extract.ids import section_slugs
 from tracepath.extract.schema import EntityType
 from tracepath.extract.units import Unit, UnitKind, split_units
-from tracepath.pipeline import UnitResult, run_unit
+from tracepath.pipeline import UnitFailed, UnitResult, run_unit
 
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
@@ -82,7 +82,15 @@ def main() -> None:
 
     print(f"{RECORD} / {SECTION}: {len(unit.text)} chars, effort={settings.effort}")
     client = anthropic.Anthropic(api_key=settings.api_key)
-    result = run_unit(client, settings, unit, slug, COMMIT, extracted_at)
+    try:
+        result = run_unit(client, settings, unit, slug, COMMIT, extracted_at)
+    except UnitFailed as exc:
+        # The artifacts ride out of the failure rather than dying with it, so a run
+        # that produced nothing still leaves its cost on disk. Writing them here is
+        # what makes that carrying worth anything (spec 0001 artifact storage).
+        for artifact in exc.artifacts:
+            print("  wrote", write_run(ROOT, artifact).relative_to(ROOT))
+        raise
 
     for artifact in result.artifacts:
         print("  wrote", write_run(ROOT, artifact).relative_to(ROOT))

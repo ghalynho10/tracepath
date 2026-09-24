@@ -239,3 +239,17 @@ levels, and on this run's own committed artifacts.
 `experiments/README.md` now carries the rule that came out of that mistake: artifacts
 are evidence, never delete them to make a set clean, move them and commit before any
 run that clears them.
+
+## A note on this experiment's runner
+
+`run.py` here calls `run_unit()` without catching `UnitFailed`. A unit that failed
+after its retry would therefore have lost the artifacts the exception carries out, and
+with them the record of what those calls cost, which is the same unrecoverable spend
+spec 0001's artifact storage row exists to close.
+
+The bug is real and it is left in place on purpose. This experiment is frozen: its
+script records what actually ran on the day, and editing it now would make the record
+say something that was never true. The fix lives in the two scripts that are still
+live, `0002-effort-low-fidelity/calibrate_effort.py` and
+`0003-feature-design-testscenario/run.py`, and `tests/test_experiment_scripts.py`
+holds it there. Found by `/check review`, 2026-09-23.

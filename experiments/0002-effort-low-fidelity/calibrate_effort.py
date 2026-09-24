@@ -24,6 +24,8 @@ from tracepath.config import load_anthropic_settings
 from tracepath.extract.client import (
     MAX_TOKENS,
     PROMPT_VERSION,
+    Attempt,
+    ExtractionFailed,
     build_client,
     run_with_retry,
 )
@@ -46,26 +48,52 @@ def main(level: str) -> int:
     identified, rows = [], []
     started = time.time()
     started_at = now_utc()
+
+    def record(run: int, attempt: Attempt) -> None:
+        """Write one artifact per **attempt**, the failed ones included (spec 0001).
+
+        The same rule `run_unit()`'s own `record()` follows: usage counts this attempt
+        alone, so a retry's cost sits beside the call it replaced rather than folded
+        into it, and a call that raised still leaves a record of what it spent.
+
+        Written under the experiment's own data/, never into `artifacts/`: these are a
+        calibration's output, and overwriting the committed production run would
+        destroy the evidence it stands on.
+        """
+        write_run(
+            DATA / f"effort-{level}",
+            build_artifact(
+                unit=unit,
+                section_slug=slug,
+                run=run,
+                attempt=attempt.number,
+                output=attempt.output,
+                model=settings.model,
+                prompt_version=PROMPT_VERSION,
+                commit=COMMIT,
+                extracted_at=started_at,
+                max_output_tokens=MAX_TOKENS,
+                effort=level,
+                input_tokens=attempt.input_tokens,
+                output_tokens=attempt.output_tokens,
+                error=attempt.error,
+            ),
+        )
+
     for run in range(1, settings.runs_per_unit + 1):
         at = time.time()
-        result = run_with_retry(client, settings, unit, run)
+        try:
+            result = run_with_retry(client, settings, unit, run)
+        except ExtractionFailed as exc:
+            # The attempts ride out of the failure rather than dying with it. A
+            # calibration that crashes without writing what it spent is the same
+            # unrecoverable cost spec 0001's artifact storage row exists to close.
+            for attempt in exc.attempts:
+                record(run, attempt)
+            raise
         seconds = time.time() - at
-        # Written under the experiment's own data/, never into `artifacts/`: these are a
-        # calibration's output, and overwriting the committed production run would
-        # destroy the evidence it stands on.
-        artifact = build_artifact(
-            unit=unit,
-            section_slug=slug,
-            run=run,
-            output=result.output,
-            model=settings.model,
-            prompt_version=PROMPT_VERSION,
-            commit=COMMIT,
-            extracted_at=started_at,
-            max_output_tokens=MAX_TOKENS,
-            effort=level,
-        )
-        write_run(DATA / f"effort-{level}", artifact)
+        for attempt in result.attempts:
+            record(run, attempt)
         ids = assign_ids(locate_output(unit, result.output), unit.record_id, slug)
         identified.append(ids)
         types = Counter(str(e.entity.type) for e in ids.entities)
