@@ -1,0 +1,67 @@
+{
+  "effort": "low",
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "max_output_tokens": 64000,
+  "record": "0012",
+  "section": "Consequences",
+  "runs": [
+    {
+      "run": 1,
+      "seconds": 47,
+      "input_tokens": 5834,
+      "output_tokens": 5866,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 12,
+      "relationships": 12,
+      "types": {
+        "Consequence": 12
+      },
+      "flags": {
+        "granularity_boundary_call": 1,
+        "multi_condition_split": 2
+      }
+    },
+    {
+      "run": 2,
+      "seconds": 41,
+      "input_tokens": 5834,
+      "output_tokens": 5068,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 11,
+      "relationships": 10,
+      "types": {
+        "Consequence": 11
+      },
+      "flags": {
+        "granularity_boundary_call": 1
+      }
+    },
+    {
+      "run": 3,
+      "seconds": 27,
+      "input_tokens": 5834,
+      "output_tokens": 3550,
+      "wasted_input_tokens": 0,
+      "wasted_output_tokens": 0,
+      "entities": 13,
+      "relationships": 6,
+      "types": {
+        "Consequence": 13
+      },
+      "flags": {
+        "granularity_boundary_call": 1
+      }
+    }
+  ],
+  "wall_clock_seconds": 116,
+  "runs_agree": false,
+  "differing_entity_signatures": 1,
+  "accepted_entities": 9,
+  "review_items": 15,
+  "total_input_tokens": 17502,
+  "total_output_tokens": 14484,
+  "cost_usd": 0.1798
+}

@@ -1,0 +1,244 @@
+{
+  "section": "0012 Consequences",
+  "source_bullets": 11,
+  "low": [
+    {
+      "run": 1,
+      "total": 12,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 2,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (usage_cap, checkUsageGate) merges into main. Resolved 2026-09-04: feature 10 merged to main at 5b01b4c (pull request 86), spec 0011 is Accepted, and usage_cap, check_usage_gate, and src/lib/usage-gating/ all exist on main. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "New 2026-09-06: gpt-5.6-luna is an alias, not a pinned snapshot, the same shape of risk claude-haiku-4-5 carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git. Separately, gpt-5.6-luna is a reasoning model: at the fixed reasoningEffort: \"medium\" this spec sets, the OpenAI API rejects an explicit temperature: 0 with an HTTP 400, so ai_scoring's temperature is left unset rather than fixed, meaning this tier's output is not deterministic the way ai_check's is."
+        },
+        {
+          "struck": false,
+          "span": "This was a decision, not an accepted side effect: the alternative, reasoning.effort: \"none\" with temperature: 0, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's ai_scoring pick actually rests on, that figure was measured at \"medium\", not \"none\". Instead, feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band."
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "total": 11,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (`usage_cap`, `checkUsageGate`) merges into `main`; it currently exists only on `feat/usage-gating-kill-switch`. Resolved 2026-09-04: feature 10 merged to `main` at `5b01b4c` (pull request 86), spec 0011 is Accepted, and `usage_cap`, `check_usage_gate`, and `src/lib/usage-gating/` all exist on `main`. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is an alias, not a pinned snapshot, the same shape of risk `claude-haiku-4-5` carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it (unchanged in kind from the original Haiku follow-up, just moved to the new vendor). Separately, `gpt-5.6-luna` is a reasoning model: at the fixed `reasoningEffort: \"medium\"` this spec sets, the OpenAI API rejects an explicit `temperature: 0` with an HTTP 400, so `ai_scoring`'s `temperature` is left unset rather than fixed, meaning this tier's output is not deterministic the way `ai_check`'s is. This was a decision, not an accepted side effect: the alternative, `reasoning.effort: \"none\"` with `temperature: 0`, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's `ai_scoring` pick actually rests on, that figure was measured at \"medium\", not \"none\". Instead, feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band; see `rationale.md`'s \"The determinism decision\" for the full reasoning and for how this narrows Follow-up 119's alias-pin trigger (a single boundary flip is not that trigger; a multi-band miss or a reproducing flip is). Reasoning tokens are also billed as output tokens and are not visible in the returned object, which is why `maxOutputTokens` for `ai_scoring` is now 2048 rather than a plain non-reasoning estimate, and why the dollar figures above use a larger, less certain output token placeholder for this tier than for `ai_check`."
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "total": 13,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 2,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (`usage_cap`, `checkUsageGate`) merges into `main`; it currently exists only on `feat/usage-gating-kill-switch`."
+        },
+        {
+          "struck": false,
+          "span": "feature 10 merged to `main` at `5b01b4c` (pull request 86), spec 0011 is Accepted, and `usage_cap`, `check_usage_gate`, and `src/lib/usage-gating/` all exist on `main`. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is an alias, not a pinned snapshot, the same shape of risk `claude-haiku-4-5` carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git. Separately, `gpt-5.6-luna` is a reasoning model: at the fixed `reasoningEffort: \"medium\"` this spec sets, the OpenAI API rejects an explicit `temperature: 0` with an HTTP 400, so `ai_scoring`'s `temperature` is left unset rather than fixed, meaning this tier's output is not deterministic the way `ai_check`'s is."
+        },
+        {
+          "struck": false,
+          "span": "This was a decision, not an accepted side effect: the alternative, `reasoning.effort: \"none\"` with `temperature: 0`, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's `ai_scoring` pick actually rests on, that figure was measured at `\"medium\"`, not `\"none\"`. Instead, feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band."
+        }
+      ]
+    }
+  ],
+  "medium": [
+    {
+      "run": 1,
+      "total": 15,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 5,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (`usage_cap`, `checkUsageGate`) merges into `main`; it currently exists only on `feat/usage-gating-kill-switch`. Resolved 2026-09-04: feature 10 merged to `main` at `5b01b4c` (pull request 86), spec 0011 is Accepted, and `usage_cap`, `check_usage_gate`, and `src/lib/usage-gating/` all exist on `main`. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is an alias, not a pinned snapshot, the same shape of risk `claude-haiku-4-5` carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it (unchanged in kind from the original Haiku follow-up, just moved to the new vendor)."
+        },
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is a reasoning model: at the fixed `reasoningEffort: \"medium\"` this spec sets, the OpenAI API rejects an explicit `temperature: 0` with an HTTP 400, so `ai_scoring`'s `temperature` is left unset rather than fixed, meaning this tier's output is not deterministic the way `ai_check`'s is."
+        },
+        {
+          "struck": false,
+          "span": "This was a decision, not an accepted side effect: the alternative, `reasoning.effort: \"none\"` with `temperature: 0`, was rejected."
+        },
+        {
+          "struck": false,
+          "span": "Feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band; see `rationale.md`'s \"The determinism decision\" for the full reasoning and for how this narrows Follow-up 119's alias-pin trigger (a single boundary flip is not that trigger; a multi-band miss or a reproducing flip is)."
+        },
+        {
+          "struck": false,
+          "span": "Reasoning tokens are also billed as output tokens and are not visible in the returned object, which is why `maxOutputTokens` for `ai_scoring` is now 2048 rather than a plain non-reasoning estimate, and why the dollar figures above use a larger, less certain output token placeholder for this tier than for `ai_check`."
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "total": 16,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 5,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (`usage_cap`, `checkUsageGate`) merges into `main`; it currently exists only on `feat/usage-gating-kill-switch`."
+        },
+        {
+          "struck": false,
+          "span": "feature 10 merged to `main` at `5b01b4c` (pull request 86), spec 0011 is Accepted, and `usage_cap`, `check_usage_gate`, and `src/lib/usage-gating/` all exist on `main`. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is an alias, not a pinned snapshot, the same shape of risk `claude-haiku-4-5` carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it (unchanged in kind from the original Haiku follow-up, just moved to the new vendor)."
+        },
+        {
+          "struck": false,
+          "span": "`gpt-5.6-luna` is a reasoning model: at the fixed `reasoningEffort: \"medium\"` this spec sets, the OpenAI API rejects an explicit `temperature: 0` with an HTTP 400, so `ai_scoring`'s `temperature` is left unset rather than fixed, meaning this tier's output is not deterministic the way `ai_check`'s is."
+        },
+        {
+          "struck": false,
+          "span": "This was a decision, not an accepted side effect: the alternative, `reasoning.effort: \"none\"` with `temperature: 0`, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's `ai_scoring` pick actually rests on, that figure was measured at `\"medium\"`, not `\"none\"`."
+        },
+        {
+          "struck": false,
+          "span": "feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band."
+        },
+        {
+          "struck": false,
+          "span": "Reasoning tokens are also billed as output tokens and are not visible in the returned object, which is why `maxOutputTokens` for `ai_scoring` is now 2048 rather than a plain non-reasoning estimate, and why the dollar figures above use a larger, less certain output token placeholder for this tier than for `ai_check`."
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "total": 15,
+      "per_bullet": {
+        "1": 1,
+        "2": 1,
+        "3": 2,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 4,
+        "10": 1,
+        "11": 1
+      },
+      "bullet3": [
+        {
+          "struck": true,
+          "span": "This feature's migration and its integration tests cannot run until feature 10 (usage_cap, checkUsageGate) merges into main; it currently exists only on feat/usage-gating-kill-switch."
+        },
+        {
+          "struck": false,
+          "span": "feature 10 merged to main at 5b01b4c (pull request 86), spec 0011 is Accepted, and usage_cap, check_usage_gate, and src/lib/usage-gating/ all exist on main. This feature's build, migration included, is unblocked."
+        }
+      ],
+      "bullet9": [
+        {
+          "struck": false,
+          "span": "gpt-5.6-luna is an alias, not a pinned snapshot, the same shape of risk claude-haiku-4-5 carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it (unchanged in kind from the original Haiku follow-up, just moved to the new vendor)."
+        },
+        {
+          "struck": false,
+          "span": "gpt-5.6-luna is a reasoning model: at the fixed reasoningEffort: \"medium\" this spec sets, the OpenAI API rejects an explicit temperature: 0 with an HTTP 400, so ai_scoring's temperature is left unset rather than fixed, meaning this tier's output is not deterministic the way ai_check's is."
+        },
+        {
+          "struck": false,
+          "span": "This was a decision, not an accepted side effect: the alternative, reasoning.effort: \"none\" with temperature: 0, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's ai_scoring pick actually rests on, that figure was measured at \"medium\", not \"none\". Instead, feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band."
+        },
+        {
+          "struck": false,
+          "span": "Reasoning tokens are also billed as output tokens and are not visible in the returned object, which is why maxOutputTokens for ai_scoring is now 2048 rather than a plain non-reasoning estimate, and why the dollar figures above use a larger, less certain output token placeholder for this tier than for ai_check."
+        }
+      ]
+    }
+  ]
+}
