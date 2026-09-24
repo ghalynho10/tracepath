@@ -18,7 +18,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | done |
-| 4 | Data model | Foundation | done |
+| 4 | Data model | Foundation | in-progress |
 | 5 | First traced chain | Slice 1 | planned |
 | 6 | Eval runner | Slice 2 | planned |
 | 7 | Name resolution | Slice 3 | planned |
@@ -49,12 +49,12 @@ Bring in JobHunt's `docs/` pinned at `2e40bcf`, and the finished eval file (five
 code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `tests/test_corpus.py`
 - [x] Bring them in: `/develop corpus snapshot & eval set`
 
-### 4. Data model · done
+### 4. Data model · in-progress
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
 spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
 - [x] Design it (spec): `/architect data model`
-- [x] Build it: `/develop data model`
+- [ ] Build it: `/develop data model` · reopened 2026-09-23: spec 0002 build plan tasks 16 and 17 are unbuilt code, added by the same day's AC-7 `label` amendment
   - [x] Pydantic schema and the five fixture runs copied fresh into `tests/` (AC-1, AC-12)
   - [x] Unit splitting (preamble, sections, scope rows and intros) plus the deterministic pre-checks for struck ranges and checkboxes (AC-2, AC-5, AC-6)
   - [x] Identity, citations and run comparison: verbatim and derived ids, line location, `compare_runs()` (AC-3, AC-4, AC-11) · AC-3 and AC-4 stand; the AC-11 part was built against the criterion as it read before the 2026-09-23 amendment and is reopened by the milestone below
@@ -63,6 +63,7 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
   - [x] Amendments from the first real runs, 2026-09-23: the agreement signature (located line, no flags, counts not sets), the review queue entry shape, the held link rule that unblocked the graph load, and a `## Feature design` run for `TestScenario` (AC-7, AC-11, AC-14) · spec 0002 build plan tasks 11 to 14
   - [x] AC-11(d), from measurement over the committed artifacts: a derived entity whose `line` is null routes to review under `span_not_located` instead of accepting on its signature's count alone. Both routing paths, including the leftovers branch. Adds no queue rows today (all 26 already route under `runs_disagree`); it makes the rule hold by construction rather than by luck (AC-11, AC-4) · spec 0002 build plan task 15 · built: accepted entities stay 71 and queue rows stay 403, with 10 rows newly labelled, 6 from the first run path and 4 from the leftovers branch
   - [x] Spec 0001's artifact storage row, the two surfaces it requires that the build had not built: token usage per attempt on every run artifact, failures included, and `artifacts/review-queue.json` plus `artifacts/review-log.json` written by the pipeline and tracked in git, so the 97 held links have somewhere durable to live (AC-11c, spec 0001 artifact storage) · found by `/check verify`
+  - [ ] A `label` on a reference endpoint: the comparison signature gains it (AC-11e), `ReferenceEndpoint` and `resolve_endpoints()` gain the label match path with the held entity, struck exclusion, and id precedence rules, and the prompt gains its first worked example (AC-7, AC-10, AC-11c) · spec 0002 build plan tasks 16 and 17 · needs a real run against spec 0001's `## Binding rules` section and 0008's `Preamble` before it can be marked built
 - [x] Verify it: `/check verify data model`
 - [x] Test it: `/test data model`
 
@@ -103,7 +104,7 @@ Extend extraction from the hand picked records to every record in the snapshot, 
 - [ ] Build it: `/develop whole corpus` · blocked until feature 11 decides the routing policy, because a whole corpus run at the current accept to review ratio would queue thousands of rows for one reviewer
 
 ### 11. Review volume and routing policy · needs a decision · from spec 0002
-How much the routing rules should hold back, decided on logged evidence rather than on feel. Measured over the 8 units extracted so far: **403 queue rows against 71 accepted entities**, by reason `runs_disagree` 340, `endpoint_not_accepted` 98, `known_trap_flag` 77, `unclassified_type` 1, and concentrated in the heterogeneous units (0012 122, feature-21 114, 0021 76, 0006 53, 0008 38). Extrapolated across 188 sections that is thousands of rows with one reviewer, which is not a workable review step. HANDOFF's own plan was always to loosen routing once logged review decisions showed where it over flags; `artifacts/review-log.json` now exists and is empty, so that evidence can finally start accumulating. Measure the accept to review ratio **per unit kind**, since the counts above say the problem is concentrated rather than uniform, then decide a loosening policy. Two things this must not do: loosen the comparison itself, which spec 0002 names as the one change that would put unverified items into the graph, and treat near duplicate queue entries from AC-11a's line sensitivity as extraction defects. Spec 0002's AC-11(d) adds no rows today and is not the cause.
+How much the routing rules should hold back, decided on logged evidence rather than on feel. Measured over the 8 units extracted so far: **403 queue rows against 71 accepted entities**, by reason `runs_disagree` 340, `endpoint_not_accepted` 98, `known_trap_flag` 77, `unclassified_type` 1, and concentrated in the heterogeneous units (0012 122, feature-21 114, 0021 76, 0006 53, 0008 38). Extrapolated across 188 sections that is thousands of rows with one reviewer, which is not a workable review step. HANDOFF's own plan was always to loosen routing once logged review decisions showed where it over flags; `artifacts/review-log.json` now exists and is empty, so that evidence can finally start accumulating. Measure the accept to review ratio **per unit kind**, since the counts above say the problem is concentrated rather than uniform, then decide a loosening policy. Two things this must not do: loosen the comparison itself, which spec 0002 names as the one change that would put unverified items into the graph, and treat near duplicate queue entries from AC-11a's line sensitivity as extraction defects. Spec 0002's AC-11(d) adds no rows today and is not the cause. **Added 2026-09-23**: neither is AC-11(e), but it is not nothing either. Spec 0002's AC-7 amendment puts a `label` into the comparison signature, model produced text and a new source of run to run disagreement the same way flags were; the 403 against 71 count above was measured before that lands (feature 4's build plan tasks 16 and 17, unbuilt). Re measure after those land, not before, or this feature's per unit kind ratio is measuring a signature that no longer exists.
 **Two candidate framings, both open.** Weigh them against each other rather than starting from the first.
 
 1. **Tune the routing.** The queue is the right mechanism and its thresholds are wrong. Measure the ratio per unit kind, loosen where the evidence says it over flags, keep a person in the loop.
@@ -124,7 +125,7 @@ Widen extraction to each spec's `rationale.md`, with an `Alternative` entity typ
 - [ ] Design it (spec): `/architect rationale extraction`
 
 ### 12. Extraction stability on heterogeneous units · needs a decision · from spec 0002
-Whether the run to run disagreement is a fact about the corpus or a fixable defect in how units are cut and prompted. It is the single largest cost in the pipeline: 340 of the 403 queue rows are `runs_disagree`.
+Whether the run to run disagreement is a fact about the corpus or a fixable defect in how units are cut and prompted. It is the single largest cost in the pipeline: 340 of the 403 queue rows are `runs_disagree`. **Added 2026-09-23**: that count predates spec 0002's AC-7 amendment, which puts a `label` into the comparison signature (AC-11e), a new source of run to run disagreement (feature 4's build plan tasks 16 and 17, unbuilt). Run the prompt examples experiment this feature is built on after those land, not against the current 340, or it will be diagnosing a signature that no longer exists.
 
 **The split is sharp.** Some units are near perfectly repeatable: `0012 ## Requirements` returns 14 / 14 / 14 entities, `0012 ## Follow-up` 9 / 9 / 9, and `TestScenario` in `0006 ## Feature design` returns 16 / 16 / 16 against exactly 16 `**Critical test scenarios**` bullets in the source, a count that is exact three times over rather than approximately right. Others swing wildly: `0006 ## Feature design` 36 / 46 / 35, the `feature-21` scope row 15 / 38 / 14, `0008 ## Preamble` 16 / 17 / 27.
 
