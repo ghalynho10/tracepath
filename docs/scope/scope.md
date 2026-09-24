@@ -26,7 +26,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
-| 12 | Extraction stability on heterogeneous units | before feature 11 | planned |
+| 12 | Extraction stability on heterogeneous units | before feature 11 | in-progress |
 
 ## Foundations
 
@@ -124,7 +124,7 @@ Widen extraction to each spec's `rationale.md`, with an `Alternative` entity typ
 **Done when:** a "why not X" question returns a chain that reaches the rejected option and its reason, each link citing its record, and an option whose outcome fits neither chosen nor rejected is visible as such rather than forced into one.
 - [ ] Design it (spec): `/architect rationale extraction`
 
-### 12. Extraction stability on heterogeneous units · needs a decision · from spec 0002
+### 12. Extraction stability on heterogeneous units · from spec 0002
 **Two questions now, not one.** Whether the run to run disagreement is a fact about the corpus or a fixable defect in how units are cut and prompted, and whether a worked example fixes the AC-7 labelled reference path specifically, since [experiment 0004](../../experiments/0004-label-round-trip/README.md) found a concrete, separate cause for that one: `SYSTEM_PROMPT` (`client.py` lines 65 to 66) mentions `label` only from the reference side, "the same `label` you would give that item as an entity", which assumes an entity labelling instruction that exists nowhere in the prompt. That is why a real run of spec 0001's binding rule 6 and its reference from `0008`'s preamble never matched: the reference wrote `label: "binding rule 6"` stably three times, the entity that is binding rule 6 never wrote a `label` at all.
 
 It is the single largest cost in the pipeline: 340 of the 403 queue rows were `runs_disagree`, before feature 4's build plan tasks 16 and 17 landed. **Added 2026-09-23**: those tasks are built, `AC-11e` now puts a `label` into the comparison signature, and the queue stands at **464 rows across 9 units** (`artifacts/review-queue.json`, rebuilt the same day). Run the prompt examples experiment this feature is built on against the current 464, not the pre amendment 403; the earlier figure was recorded under a signature that no longer exists.
@@ -169,7 +169,17 @@ It is the single largest cost in the pipeline: 340 of the 403 queue rows were `r
 **If examples change the prompt, AC-14's verdict has to be re-earned.** `PROMPT_VERSION` bumps from `0002.2`, and every agreement figure behind AC-14 was measured under the no examples prompt, so it says nothing about the new one. Re-run AC-14's coverage set under the new prompt to confirm the four new types (`Consequence`, `FollowUp`, `BuildStep`, `TestScenario`) still come back stably. Budget **about $3.30**, not the $2.70 the older figure suggests: the coverage set is 8 units and 24 calls since `## Feature design` joined it in the 2026-09-23 amendment, and that unit costs about $0.22 per call against $0.1268 for the rest (21 calls at $0.1268 is $2.66, plus 3 at $0.2198 is $0.66). Record the result as a new experiment with a forward pointer added to experiment 0001, never by editing experiment 0001's own numbers: it is the record of what the old prompt did, and overwriting it would destroy the only before half of the comparison.
 
 **Done when:** both causes are tested against a real second run of one unstable unit, with a before and after table in `experiments/`, and the result either changes the prompt, changes AC-2's unit definition, or is recorded as not the cause. If the prompt changed, AC-14's coverage set has been run again under the new `PROMPT_VERSION` and the four new types still come back stably, **and** spec 0001's `## Binding rules` section and `0008`'s `Preamble` have been run again and the labelled reference now resolves to the entity, with the result recorded against experiment 0004's evidence rather than as a fresh, disconnected measurement. Spends API money: roughly $0.70 per three run configuration at `medium` on `0006 ## Feature design`, measured, plus about $3.30 if the AC-14 set is run again, plus about $1 for the label round trip check, plus the prompt caching setup cost noted above, so confirm the number of configurations before running.
-- [ ] Design it (spec): `/architect extraction stability on heterogeneous units`
+
+> **AMENDED, 2026-09-24, by spec [0003](../specs/0003-extraction-stability-heterogeneous-units/index.md).** Kept in full above rather than rewritten, since it recorded real evidence at the time. Two things changed once the spec was actually designed. First, the labelled reference defect turned out not to be a missing worked example at all: binding rule 6 carries no verbatim self label anywhere in its own text, so AC-7 (spec 0002) was missing a rule, not the prompt missing a demonstration. The fix is a deterministic pre check, proven by rebuilding the committed `0002.3` artifacts, no paid re-run of spec 0001's `## Binding rules` section and `0008`'s Preamble needed for that part. Second, the AC-2 heterogeneity cause is now conditional rather than unconditionally run: spec 0003 tests it only if the heterogeneous held out unit's after run entity count spread exceeds 2 (the widest spread any stable committed unit showed); at or below that, the experiment README records the prompt fix as sufficient, with the numbers, and AC-2's unit definition is not touched by this feature. Spec 0003's own `verify.md` carries the current, formula based cost estimate; the dollar figures above are what was known before design, not a live number to run against.
+- [x] Design it (spec): `/architect extraction stability on heterogeneous units` · spec [0003](../specs/0003-extraction-stability-heterogeneous-units/index.md)
+- [ ] Build it: `/develop extraction stability on heterogeneous units`
+  - [ ] Label pre check for `## Binding rules`, proven with no paid call, spec 0002 amended (AC-1 to AC-5, AC-12)
+  - [ ] Prompt content: schema sample fix, stale caveat removed, rules lifted and assembled, few shot block wired, `PROMPT_VERSION` bumped, example validation test, 1 hour cache breakpoint (AC-6 to AC-11, AC-19)
+  - [ ] Fresh `0021` baseline, the run manifest cost confirmed, held out before/after runs (AC-13, AC-14, AC-15, AC-20)
+  - [ ] Label invention check, engineer accuracy ruling, AC-2 heterogeneity trigger decided (AC-16, AC-17)
+  - [ ] Type coverage set re run, graph and review queue rebuilt (AC-18)
+- [ ] Verify it: `/check verify extraction stability on heterogeneous units`
+- [ ] Test it: `/test extraction stability on heterogeneous units`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
