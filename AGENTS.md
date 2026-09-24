@@ -34,6 +34,7 @@ uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 - `corpus/`: the pinned JobHunt snapshot, tracked in git.
 - `eval/`: the eval set, tracked in git.
 - `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
+- `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `SYSTEM_PROMPT` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`.
 
 ## Specs
 
