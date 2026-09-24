@@ -322,6 +322,30 @@ def test_a_label_with_no_record_falls_to_unresolved_like_any_other_unnameable_re
     assert resolution.unresolved[0].record is None
 
 
+def test_build_label_index_maps_the_single_unstruck_entity_carrying_a_label() -> None:
+    """The plain case: one entity, one label, one mapping. The two tests below cover
+    the exclusion branches (struck, tied); this is the baseline they exclude from."""
+
+    def entity(canonical_id: str, label: str) -> IdentifiedEntity:
+        return IdentifiedEntity(
+            canonical_id=canonical_id,
+            entity=ExtractedEntity(
+                id="derived:1",
+                id_source=IdSource.DERIVED,
+                type=EntityType.CONSTRAINT,
+                span="x",
+                label=label,
+            ),
+            location=None,
+            struck=False,
+            followup_status=None,
+        )
+
+    index = build_label_index([entity("0001#binding-rules:6", "binding rule 6")])
+
+    assert index == {("0001", "binding rule 6"): "0001#binding-rules:6"}
+
+
 def test_a_struck_entity_is_never_a_label_match_target() -> None:
     """`build_label_index()` excludes it; the current, unstruck version is what a
     reference to the label should reach, never a version AC-5 already marked struck."""

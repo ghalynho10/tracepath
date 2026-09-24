@@ -1,4 +1,4 @@
-# Verify: data model · spec 0002 · updated 2026-09-23
+# Verify: data model · spec 0002 · updated 2026-09-24
 
 _Steps derived from spec 0002 acceptance criteria. `/check verify` runs these; `/test` locks the durable ones._
 
@@ -48,6 +48,61 @@ Each of these guards a way the cost or the held items could go missing again.
 - [x] The queue is byte stable from one rebuild to the next, so a file tracked in git does not reorder itself on every run → **AC-11** (`test_the_queue_is_stable_from_one_rebuild_to_the_next`)
 - [x] `artifacts/review-log.json` is created once and never overwritten by a pipeline run. A run rules on nothing, so writing `[]` over a reviewer's work would erase it → **AC-11c** (`test_the_review_log_is_never_overwritten_by_a_later_run`)
 
+## The label extension, AC-7 / AC-10 / AC-11(e), built 2026-09-23
+
+Spec 0002 build plan tasks 16 and 17: a reference endpoint gains `label`, resolving to
+a named but unnumbered item. Six matching rules, each with its own regression test; all
+six ran clean tonight (2026-09-24) as part of the full suite.
+
+- [x] Exact match: a `{record, label}` reference resolves to the unstruck entity in that
+  record whose own `label` normalizes to the same string → **AC-7** (`test_a_labeled_reference_resolves_to_the_entity_carrying_that_label`, `test_a_labeled_reference_normalizes_before_matching`)
+- [x] Held under `endpoint_not_accepted`, never `:Unresolved`: a labeled reference to an
+  entity that exists but was held for review holds the whole link instead of guessing →
+  **AC-7**, **AC-11c** (`test_a_labeled_reference_to_a_held_entity_holds_the_link_not_unresolved`)
+- [x] `:Unresolved` on no match or a tie: no entity anywhere carries the label, or two
+  unstruck entities share it, so the index excludes it and the reference falls through →
+  **AC-7**, **AC-10** (`test_a_labeled_reference_with_no_match_becomes_unresolved_never_the_record`, `test_a_labeled_reference_with_no_matching_entity_at_all_becomes_unresolved`, `test_two_unstruck_entities_sharing_a_label_are_excluded_not_picked`)
+- [x] `id` wins over `label`: both set, `id` resolves and `label` is never consulted →
+  **AC-7** (`test_an_id_and_a_label_both_set_lets_id_win`)
+- [x] `label` with no `record`: falls to `:Unresolved` like any other unnameable
+  reference, not a special case → **AC-7** (`test_a_label_with_no_record_falls_to_unresolved_like_any_other_unnameable_reference`)
+- [x] Struck exclusion: `build_label_index()` never offers a struck entity as a match
+  target, only the current, unstruck version → **AC-7**, **AC-5** (`test_a_struck_entity_is_never_a_label_match_target`)
+
+AC-10, the `:Unresolved` node carries what it knew, not only prose:
+
+- [x] A held reference's `:Unresolved` node carries structured `record` and `label`,
+  not only `mention`, both when named and when the record alone is missing → **AC-10**
+  (`test_a_labeled_reference_with_no_match_becomes_unresolved_never_the_record`, `test_a_label_with_no_record_falls_to_unresolved_like_any_other_unnameable_reference`, `test_a_labeled_reference_with_no_matching_entity_at_all_becomes_unresolved`)
+
+AC-11(e), the label joins both comparison signatures:
+
+- [x] An entity's own `label`, normalized, joins its identity signature; two runs
+  agreeing on everything else but differing only on `label` disagree → **AC-11e**
+  (`test_a_labeled_entity_carries_its_label_in_the_signature`, `test_two_runs_agreeing_on_identity_but_differing_only_on_label_disagree`, `test_a_label_is_normalized_before_it_joins_the_signature`)
+- [x] A `COLLAPSED` identity (unlocatable derived entity) stays exactly `COLLAPSED`
+  whatever its `label`, so the label can never defeat AC-11(d)'s collapse rule →
+  **AC-11e**, **AC-11d** (`test_an_unlocated_derived_entitys_label_does_not_defeat_the_collapsed_check`)
+- [x] A reference endpoint's `label`, normalized, joins the relationship signature too →
+  **AC-11e** (`test_a_reference_endpoints_label_joins_the_relationship_signature`)
+
+- [ ] **Owed**: a successful label match against real model output. All six matching
+  rules above are proven by unit tests on synthetic data, and the held/hold-not-guess
+  path is separately proven live (below); none has been observed end to end against a
+  real extraction, because no entity anywhere in the real corpus has ever written a
+  `label` at all. [Experiment 0004](../../../experiments/0004-label-round-trip/README.md)
+  found this with a real run against `0001 ## Binding rules` and `0008`'s `Preamble`
+  ($1.0185, six calls): the reference side wrote `label: "binding rule 6"` stably three
+  times, the entity side never wrote a `label` once. `/check verify` on 2026-09-24
+  confirmed this still holds live: querying the graph after a full reload of every
+  committed artifact found 0 `Entity` or `:Unresolved` nodes carrying `label`, and the
+  committed review queue (464 rows) holds the `0008` reference under
+  `endpoint_not_accepted`, the held path, never the match path. This is scoped to
+  feature 12, not a defect here: the fix (an explicit entity-label instruction in
+  `SYSTEM_PROMPT`, plus the worked examples already drafted under `examples/`) is
+  feature 12's, and the exact-match rule cannot be marked verified against real data
+  until it lands.
+
 ## Spends money (skip unless re-measuring)
 
 - [ ] `uv run python experiments/0003-feature-design-testscenario/run.py` → about $0.66, three calls at `medium`. Expect `TestScenario` 16 / 16 / 16 against the 16 `**Critical test scenarios**` bullets in `0006 ## Feature design`, and no collapse to `unclassified` → **AC-14**
@@ -60,10 +115,10 @@ Each of these guards a way the cost or the held items could go missing again.
 - **AC-4** a line is located or null, never guessed · threshold re-derived over the corpus
 - **AC-5** struck ranges come from the pre-check · `tests/test_extract_precheck.py`
 - **AC-6** checkbox state comes from the pre-check · `tests/test_extract_precheck.py`
-- **AC-7** no link dropped for an unnameable endpoint; a held endpoint is a different case · reload test
+- **AC-7** no link dropped for an unnameable endpoint; a held endpoint is a different case · reload test; the `label` extension (six matching rules) · see "The label extension" above, exact-match still owed against real data
 - **AC-9** one uniqueness constraint per node kind · integration tests
-- **AC-10** the three uncertainties stay distinct, and holding is not a fourth · reload test
-- **AC-11** agreement rests on the stated signature; only accepted items are written · comparator tests + reload test
+- **AC-10** the three uncertainties stay distinct, and holding is not a fourth · reload test; `:Unresolved`'s structured `record`/`label` · see "The label extension" above
+- **AC-11** agreement rests on the stated signature; only accepted items are written · comparator tests + reload test; **(e)** `label` joins both signatures · see "The label extension" above
 - **AC-12** the schema accepts the four valid fixtures and rejects the invalid one · `tests/test_extract_schema.py`
 - **AC-13** every write asserts its counters · integration tests + reload test
 - **AC-14** seven section kinds, all four new types exercised where they live · experiments 0001 and 0003
