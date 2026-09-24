@@ -11,7 +11,7 @@ so leaving them off is both what the spec asked for and the only thing that work
 
 import logging
 from collections.abc import Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Literal, cast
 
 import anthropic
@@ -73,33 +73,79 @@ read from the characters by code.
 """
 
 
-class ExtractionFailed(Exception):
-    """A unit could not be extracted after its retry.
+@dataclass(frozen=True)
+class Attempt:
+    """One call to the model: what it cost, and what it produced.
 
-    Carries what the failed call cost, so a run that produced no data still reports
-    its spend instead of quietly leaving it out of the total.
+    `output` is null when the call raised, and the usage is recorded all the same.
+    That is the whole point of the record: spec 0001's artifact storage row exists
+    because a failure that hides its own cost made the first 21 call run permanently
+    unmeasured. Usage counts **this attempt alone**, never a running total.
     """
 
-    def __init__(self, message: str, input_tokens: int = 0, output_tokens: int = 0) -> None:
-        """Record the failure and what the call that produced it cost."""
+    number: int
+    input_tokens: int
+    output_tokens: int
+    output: ExtractionOutput | None = None
+    error: str | None = None
+
+
+class ExtractionFailed(Exception):
+    """A call, or a whole run, could not be extracted.
+
+    Carries every attempt it made, each with what that attempt cost, so a run that
+    produced no data still reports its spend instead of quietly leaving it out of the
+    total, and so the caller can still write an artifact for each one.
+    """
+
+    def __init__(self, message: str, attempts: tuple[Attempt, ...] = ()) -> None:
+        """Record the failure and every attempt behind it."""
         super().__init__(message)
-        self.input_tokens = input_tokens
-        self.output_tokens = output_tokens
+        self.attempts = attempts
 
 
 @dataclass(frozen=True)
-class CallResult:
-    """One call's validated output, and what it cost to make.
+class RunOutcome:
+    """Every attempt one run made, in order, the last being the one that settled it.
 
-    `wasted_*` carries the spend of any attempt that failed before this one, so the
-    cost of a retry is never invisible.
+    The token properties read the settling attempt alone, and `wasted_*` reads the
+    attempts before it, so the cost of a retry stays visible beside the cost of the
+    call that replaced it rather than folded into it.
     """
 
-    output: ExtractionOutput
-    input_tokens: int
-    output_tokens: int
-    wasted_input_tokens: int = 0
-    wasted_output_tokens: int = 0
+    attempts: tuple[Attempt, ...]
+
+    @property
+    def output(self) -> ExtractionOutput:
+        """The validated output of the attempt that succeeded.
+
+        Raises:
+            ExtractionFailed: this outcome holds no successful attempt.
+        """
+        settled = self.attempts[-1].output if self.attempts else None
+        if settled is None:
+            raise ExtractionFailed("this run settled on no output")
+        return settled
+
+    @property
+    def input_tokens(self) -> int:
+        """What the settling attempt read, alone."""
+        return self.attempts[-1].input_tokens if self.attempts else 0
+
+    @property
+    def output_tokens(self) -> int:
+        """What the settling attempt wrote, alone."""
+        return self.attempts[-1].output_tokens if self.attempts else 0
+
+    @property
+    def wasted_input_tokens(self) -> int:
+        """What every attempt before the settling one read."""
+        return sum(attempt.input_tokens for attempt in self.attempts[:-1])
+
+    @property
+    def wasted_output_tokens(self) -> int:
+        """What every attempt before the settling one wrote."""
+        return sum(attempt.output_tokens for attempt in self.attempts[:-1])
 
 
 @dataclass(frozen=True)
@@ -129,12 +175,14 @@ def user_prompt(unit: Unit) -> str:
 
 
 def extract_once(
-    client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit
-) -> CallResult:
-    """Make one extraction call and return its validated output and its token usage.
+    client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit, number: int = 1
+) -> Attempt:
+    """Make one extraction call and return it as an attempt carrying its token usage.
 
     Raises:
         ExtractionFailed: the call failed, or its output did not satisfy the schema.
+            The exception carries this attempt, usage included, so the caller can
+            still write its artifact.
     """
     # The schema travels as `output_format`, not as a raw `output_config.format.schema`.
     # The models generate a discriminated union, which Pydantic renders as `oneOf`, and
@@ -159,27 +207,43 @@ def extract_once(
                 # The parse raises before the message is returned, so the cost would
                 # vanish with it. The snapshot still holds what the call really used.
                 snapshot = stream.current_message_snapshot
-                raise ExtractionFailed(
+                message = (
                     f"{unit.record_id} {unit.section}: the output did not satisfy "
-                    f"the schema ({exc})",
-                    snapshot.usage.input_tokens if snapshot else 0,
-                    snapshot.usage.output_tokens if snapshot else 0,
+                    f"the schema ({exc})"
+                )
+                raise ExtractionFailed(
+                    message,
+                    (
+                        Attempt(
+                            number=number,
+                            input_tokens=snapshot.usage.input_tokens if snapshot else 0,
+                            output_tokens=snapshot.usage.output_tokens if snapshot else 0,
+                            error=message,
+                        ),
+                    ),
                 ) from exc
     except anthropic.APIError as exc:
-        raise ExtractionFailed(f"{unit.record_id} {unit.section}: the call failed ({exc})") from exc
+        # Nothing came back, so the API reported no usage to record. Zero here means
+        # "nothing was billed that we were told about", and the error says why.
+        message = f"{unit.record_id} {unit.section}: the call failed ({exc})"
+        raise ExtractionFailed(
+            message, (Attempt(number=number, input_tokens=0, output_tokens=0, error=message),)
+        ) from exc
 
     used_in = response.usage.input_tokens
     used_out = response.usage.output_tokens
     parsed = response.parsed_output
     if parsed is None:
-        raise ExtractionFailed(
+        message = (
             f"{unit.record_id} {unit.section}: the model returned no parsed output "
             f"(stop_reason={response.stop_reason}, "
-            f"output_tokens={used_out} of max {MAX_TOKENS})",
-            used_in,
-            used_out,
+            f"output_tokens={used_out} of max {MAX_TOKENS})"
         )
-    return CallResult(output=parsed, input_tokens=used_in, output_tokens=used_out)
+        raise ExtractionFailed(
+            message,
+            (Attempt(number=number, input_tokens=used_in, output_tokens=used_out, error=message),),
+        )
+    return Attempt(number=number, input_tokens=used_in, output_tokens=used_out, output=parsed)
 
 
 def extract_unit(client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit) -> UnitRuns:
@@ -201,35 +265,36 @@ def extract_unit(client: anthropic.Anthropic, settings: AnthropicSettings, unit:
 
 def run_with_retry(
     client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit, run: int
-) -> CallResult:
+) -> RunOutcome:
     """Make one run, retrying once on a failed or malformed call (spec 0001's policy).
 
+    Every attempt is kept, the failed ones included, so each can be written as its own
+    artifact and the cost of a retry never disappears into the call that replaced it.
+
     Raises:
-        ExtractionFailed: the run failed again after its retry.
+        ExtractionFailed: the run failed again after its retry. The exception carries
+            every attempt, so the caller can still write their artifacts.
     """
     last: Exception | None = None
-    wasted_in = 0
-    wasted_out = 0
-    for attempt in range(RETRIES + 1):
+    attempts: list[Attempt] = []
+    for number in range(1, RETRIES + 2):
         try:
-            result = extract_once(client, settings, unit)
-            return replace(result, wasted_input_tokens=wasted_in, wasted_output_tokens=wasted_out)
+            attempts.append(extract_once(client, settings, unit, number))
+            return RunOutcome(attempts=tuple(attempts))
         except ExtractionFailed as exc:
             last = exc
-            wasted_in += exc.input_tokens
-            wasted_out += exc.output_tokens
+            attempts.extend(exc.attempts)
             log.debug(
                 "run %s of %s %s failed on attempt %s",
                 run + 1,
                 unit.record_id,
                 unit.section,
-                attempt + 1,
+                number,
                 exc_info=exc,
             )
     raise ExtractionFailed(
         f"{unit.record_id} {unit.section}: run {run + 1} failed after its retry ({last})",
-        wasted_in,
-        wasted_out,
+        tuple(attempts),
     )
 
 

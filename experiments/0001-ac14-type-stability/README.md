@@ -4,6 +4,8 @@
 **Corpus commit**: `2e40bcf` (JobHunt `docs/`, pinned)
 **Code commit**: `ab8c2ea`
 **Spec**: [0002, AC-14](../../docs/specs/0002-data-model/index.md)
+**Note**: Agreement figures here were measured under the comparator as it stood before the 2026-09-23 AC-11 amendment (flags in the signature, set comparison), and are not comparable with anything measured after it. See [spec 0002 AC-11](../../docs/specs/0002-data-model/index.md).
+**Also measured under prompt `0002.2`, which carries no worked examples.** Scope feature 12 is testing whether adding examples is what fixes the run to run instability on heterogeneous units. If it does, `PROMPT_VERSION` bumps and AC-14's verdict below has to be re-earned under the new prompt, because every type stability figure here is a fact about the exampleless prompt and not about the vocabulary on its own. That re-run lands as its own experiment and this file is **not** edited to match: it is the before half of that comparison, and rewriting its numbers would destroy the only record of what the old prompt did.
 
 ## Question
 
@@ -108,6 +110,8 @@ Data: [effort-default-calibration.json](data/effort-default-calibration.json),
 (`Consequence` dominant in all six runs), neither setting reaches agreement, and medium
 halves cost and time: about $2.67 and 32 minutes against about $5.65 and 76 minutes
 over the full set.
+
+This conclusion was extended by [experiment 0002](../0002-effort-low-fidelity/README.md), which measured `low` with spans persisted and confirmed medium on fidelity grounds.
 
 Two honest qualifications on that table:
 
@@ -235,3 +239,17 @@ levels, and on this run's own committed artifacts.
 `experiments/README.md` now carries the rule that came out of that mistake: artifacts
 are evidence, never delete them to make a set clean, move them and commit before any
 run that clears them.
+
+## A note on this experiment's runner
+
+`run.py` here calls `run_unit()` without catching `UnitFailed`. A unit that failed
+after its retry would therefore have lost the artifacts the exception carries out, and
+with them the record of what those calls cost, which is the same unrecoverable spend
+spec 0001's artifact storage row exists to close.
+
+The bug is real and it is left in place on purpose. This experiment is frozen: its
+script records what actually ran on the day, and editing it now would make the record
+say something that was never true. The fix lives in the two scripts that are still
+live, `0002-effort-low-fidelity/calibrate_effort.py` and
+`0003-feature-design-testscenario/run.py`, and `tests/test_experiment_scripts.py`
+holds it there. Found by `/check review`, 2026-09-23.

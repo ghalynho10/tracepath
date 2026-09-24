@@ -5,12 +5,17 @@ from typing import Any
 
 import pytest
 
+from tracepath.artifacts import review_entry
 from tracepath.extract.compare import (
     COLLAPSED,
+    LINE_PREFIX,
     ComparisonError,
     ReviewReason,
+    ReviewReasonName,
     compare_runs,
+    entity_identity,
     entity_signature,
+    is_unlocated_derived,
     route_runs,
 )
 from tracepath.extract.ids import (
@@ -477,14 +482,46 @@ def test_the_split_run_reads_as_a_disagreement() -> None:
     assert comparison.differing_entities
 
 
-def test_a_derived_id_is_collapsed_before_comparison() -> None:
+def test_a_derived_entity_is_identified_by_its_located_line() -> None:
+    """AC-11a: a verbatim id stands as it is, a derived one becomes its located line.
+
+    The line is what keeps agreement honest once flags leave the signature. Without
+    it every derived entity of one type would share the tuple (`<derived>`, type), so
+    three runs could extract entirely different spans and still read as agreeing.
+    """
     unit = unit_named("0011", "Requirements")
     split = identified("run_split", unit)
 
     signatures = {entity_signature(e)[0] for e in split.entities}
 
-    assert COLLAPSED in signatures
     assert "0011/AC-1" in signatures
+    assert any(s.startswith(LINE_PREFIX) for s in signatures)
+    assert COLLAPSED not in signatures
+
+
+def test_a_derived_entity_whose_span_cannot_be_located_collapses() -> None:
+    """AC-11a's fallback: `<derived>` survives only for an unlocatable span."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "derived:1",
+                    "id_source": "derived",
+                    "type": "Constraint",
+                    "span": "Every seeded listing carries an obviously fake company name.",
+                }
+            ],
+            "relationships": [],
+        }
+    )
+
+    output = assign_ids(locate_output(unit, raw), "0012", "requirements")
+    entity = output.entities[0]
+
+    assert entity.location is None, "this span should not locate in this unit"
+    assert entity_identity(entity) == COLLAPSED
+    assert entity_signature(entity) == (COLLAPSED, "Constraint")
 
 
 def test_comparing_fewer_than_two_runs_raises() -> None:
@@ -504,7 +541,7 @@ def test_an_item_carrying_a_known_trap_flag_is_held_for_review() -> None:
     routed = route_runs(outputs)
 
     assert not routed.accepted_entities
-    assert ReviewReason.KNOWN_TRAP_FLAG in routed.review[0].reasons
+    assert ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG) in routed.review[0].reasons
 
 
 def test_an_unflagged_agreed_entity_is_accepted() -> None:
@@ -571,7 +608,7 @@ def test_an_unclassified_entity_is_held_back_but_an_unclassified_link_goes_strai
     assert [e.canonical_id for e in routed.accepted_entities] == ["0012/AC-1"]
     assert len(routed.accepted_relationships) == 1
     assert routed.accepted_relationships[0].phrase == "already seeded by"
-    assert routed.review[0].reasons == (ReviewReason.UNCLASSIFIED_TYPE,)
+    assert routed.review[0].reasons == (ReviewReason(ReviewReasonName.UNCLASSIFIED_TYPE),)
 
 
 def test_a_signature_only_some_runs_produced_is_held_for_review() -> None:
@@ -580,5 +617,383 @@ def test_a_signature_only_some_runs_produced_is_held_for_review() -> None:
 
     routed = route_runs(outputs)
 
-    assert any(ReviewReason.RUNS_DISAGREE in item.reasons for item in routed.review)
+    assert any(
+        ReviewReason(ReviewReasonName.RUNS_DISAGREE) in item.reasons for item in routed.review
+    )
     assert not routed.accepted_entities
+
+
+# AC-11a/b: the amended comparator, added 2026-09-23.
+
+
+def _output(entities: list[dict[str, Any]], flags: tuple[str, ...] = ()) -> ExtractionOutput:
+    return ExtractionOutput.model_validate(
+        {
+            "entities": [{**e, "known_trap_flags": list(flags)} for e in entities],
+            "relationships": [],
+        }
+    )
+
+
+ALPHA = {
+    "id": "derived:1",
+    "id_source": "derived",
+    "type": "Constraint",
+    "span": "alpha claim about caching",
+}
+BETA = {
+    "id": "derived:2",
+    "id_source": "derived",
+    "type": "Constraint",
+    "span": "beta claim about retries",
+}
+ONE_LINE = "- **AC-9**: alpha claim about caching, and beta claim about retries.\n"
+
+
+def test_flag_churn_alone_no_longer_breaks_agreement() -> None:
+    """AC-11a: runs agreeing on identity and type agree, however the flags move.
+
+    The flagged item still routes to review on its own trigger, which is the point:
+    the flag was being counted twice, and the second count marked *neighbours* as
+    disagreements.
+    """
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(locate_output(unit, _output([ALPHA], flags=flags)), "0012", "requirements")
+        for flags in (("rationale_boundary_call",), (), ("multi_condition_split",))
+    ]
+
+    comparison = compare_runs(outputs)
+    routed = route_runs(outputs)
+
+    assert comparison.agree, "identical identity and type should agree whatever the flags do"
+    assert not comparison.differing_entities
+    assert not routed.accepted_entities, "the flag still holds it back on its own trigger"
+    assert routed.review[0].reasons == (ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG),)
+    assert routed.review[0].canonical_id == "0012#requirements:1"
+    assert routed.review[0].line == 1
+
+
+def test_a_count_that_differs_holds_every_copy_not_just_the_surplus() -> None:
+    """AC-11b: two entities share a signature in one run and one in the others.
+
+    Accepting the first `min(counts)` would assert a correspondence the runs never
+    established, so every copy of that signature is held.
+    """
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(locate_output(unit, _output(entities)), "0012", "requirements")
+        for entities in ([ALPHA, BETA], [ALPHA], [ALPHA])
+    ]
+
+    comparison = compare_runs(outputs)
+    routed = route_runs(outputs)
+
+    assert {e.entity.span for e in outputs[0].entities} == {ALPHA["span"], BETA["span"]}
+    assert [entity_signature(e) for e in outputs[0].entities] == [
+        ("line:1", "Constraint"),
+        ("line:1", "Constraint"),
+    ], "both spans sit on the same line, so they share one signature"
+    assert not comparison.agree
+    assert comparison.entity_counts == ((("line:1", "Constraint"), (2, 1, 1)),)
+    assert not routed.accepted_entities, "every copy is held, not just the surplus"
+    assert len(routed.review) == 2
+
+
+# AC-11c: a link whose endpoint entity was not accepted is held, added 2026-09-23.
+
+
+TWO_LINES = (
+    "- **AC-9**: alpha claim about caching, and beta claim about retries.\n"
+    "- **AC-10**: a separate rule about the retry budget entirely.\n"
+)
+
+
+def _linked_output() -> ExtractionOutput:
+    """One accepted entity, one that will be held, and a link between them."""
+    return ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "derived:1",
+                    "id_source": "derived",
+                    "type": "Constraint",
+                    "span": "a separate rule about the retry budget entirely",
+                },
+                {
+                    "id": "derived:2",
+                    "id_source": "derived",
+                    "type": "unclassified",
+                    "span": "alpha claim about caching",
+                    "unclassified_note": "fits none of the named types",
+                },
+            ],
+            "relationships": [
+                {
+                    "type": "blocked-by",
+                    "source": {"kind": "local", "id": "derived:1"},
+                    "target": {"kind": "local", "id": "derived:2"},
+                    "phrase": "blocked until",
+                }
+            ],
+        }
+    )
+
+
+def test_a_link_pointing_at_a_held_entity_is_held_too() -> None:
+    """AC-11c: the link waits with its endpoint rather than being written or dropped.
+
+    This is the rule the first full load lacked, which is why it failed with
+    `UNCLASSIFIED links: asked to write 7 but the database wrote 2`.
+    """
+    unit = unit_of(TWO_LINES)
+    outputs = [
+        assign_ids(locate_output(unit, _linked_output()), "0012", "requirements") for _ in range(3)
+    ]
+
+    routed = route_runs(outputs)
+
+    # Derived ordinals follow located offset (AC-3): the line 1 span is :1, line 2 is :2.
+    assert [e.canonical_id for e in routed.accepted_entities] == ["0012#requirements:2"]
+    assert not routed.accepted_relationships, "the link waits on its endpoint"
+
+    held = [i for i in routed.review if i.canonical_id is None]
+    assert len(held) == 1, "the held link is one queue row"
+    assert held[0].reasons == (
+        ReviewReason(ReviewReasonName.ENDPOINT_NOT_ACCEPTED, detail="0012#requirements:1"),
+    )
+    assert held[0].signature[0] == "blocked-by"
+
+
+def test_a_held_link_names_the_entity_it_waits_on_in_the_queue() -> None:
+    """AC-11c plus the review queue entry shape: a reviewer can see what to rule first."""
+    unit = unit_of(TWO_LINES)
+    outputs = [
+        assign_ids(locate_output(unit, _linked_output()), "0012", "requirements") for _ in range(3)
+    ]
+
+    routed = route_runs(outputs)
+    entries = [
+        review_entry("0012", "Requirements", item, "claude-sonnet-5", "2026-09-23T00:00:00+00:00")
+        for item in routed.review
+    ]
+
+    link_row = next(e for e in entries if e["canonical_id"] is None)
+    assert link_row["reasons"] == [
+        {"name": "endpoint_not_accepted", "detail": "0012#requirements:1"}
+    ]
+    entity_row = next(e for e in entries if e["canonical_id"] == "0012#requirements:1")
+    assert entity_row["line"] == 1
+    assert {"name": "unclassified_type", "detail": None} in entity_row["reasons"]
+
+
+# AC-11(d): a derived entity with no located line never accepts on its count alone.
+
+
+def unlocatable(type_name: str, span: str, n: int) -> dict[str, Any]:
+    """One entity whose span belongs to another document, so it cannot be located."""
+    return {"id": f"derived:{n}", "id_source": "derived", "type": type_name, "span": span}
+
+
+def runs_of(unit: Unit, *per_run: list[dict[str, Any]]) -> list[Any]:
+    """Identify several raw runs of one unit, so route_runs can compare them."""
+    return [
+        assign_ids(
+            locate_output(
+                unit, ExtractionOutput.model_validate({"entities": ents, "relationships": []})
+            ),
+            "0012",
+            "requirements",
+        )
+        for ents in per_run
+    ]
+
+
+def test_a_derived_entity_with_no_line_is_held_even_when_the_counts_agree() -> None:
+    """The regression this exists to prevent.
+
+    All three runs find two unlocatable Constraints, so the multiset counts match and
+    the old rule accepted every one. Nothing says they are the same two claims: the
+    signature is (`<derived>`, Constraint) for all six, which is the absence of an
+    identity rather than a weak one.
+    """
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    far = "Every seeded listing carries an obviously fake company name."
+    other = "The router falls back to the secondary provider after two failures."
+    runs = runs_of(
+        unit,
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+        [unlocatable("Constraint", far, 1), unlocatable("Constraint", other, 2)],
+    )
+
+    assert runs[0].entities[0].location is None, "the span must not locate for this test"
+    routed = route_runs(runs)
+
+    assert routed.comparison.agree, "counts match, so this is agreement under AC-11b"
+    assert routed.accepted_entities == (), "but agreeing on a count is not agreeing on an item"
+    assert all(
+        ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED) in item.reasons for item in routed.review
+    )
+
+
+def test_a_verbatim_entity_with_no_located_line_is_not_held_for_that_reason() -> None:
+    """AC-11d is about identity, not citations. A verbatim id is its own identity."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = [
+        {
+            "id": "AC-9",
+            "id_source": "verbatim",
+            "type": "AcceptanceCriterion",
+            "span": "Every seeded listing carries an obviously fake company name.",
+        }
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+    entity = runs[0].entities[0]
+
+    assert entity.location is None, "AC-9 is not defined in this unit, so it has no line"
+    assert entity_identity(entity) == "0012/AC-9"
+    assert not is_unlocated_derived(entity_signature(entity))
+    assert route_runs(runs).accepted_entities, "a verbatim id still accepts on its own identity"
+
+
+def test_the_leftovers_branch_labels_an_unlocatable_span_too() -> None:
+    """A signature the first run never produced takes the same reason (AC-11d).
+
+    Without this the reason would depend on which run happened to find an item first,
+    and the committed queue already holds four such rows.
+    """
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    far = "Every seeded listing carries an obviously fake company name."
+    runs = runs_of(unit, [], [unlocatable("Constraint", far, 1)], [])
+
+    routed = route_runs(runs)
+    held = [item for item in routed.review if item.signature == (COLLAPSED, "Constraint")]
+
+    assert held, "the leftover signature must reach the queue"
+    assert held[0].canonical_id is None, "a leftover has no first run entity to take an id from"
+    assert ReviewReason(ReviewReasonName.SPAN_NOT_LOCATED) in held[0].reasons
+
+
+def test_a_located_derived_entity_is_untouched_by_the_rule() -> None:
+    """The rule must not widen to every derived entity, only the unlocatable ones."""
+    unit = unit_of("- **AC-1**: a plain criterion with nothing ambiguous about it.\n")
+    raw = [
+        {
+            "id": "derived:1",
+            "id_source": "derived",
+            "type": "Constraint",
+            "span": "a plain criterion with nothing ambiguous about it",
+        }
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+    entity = runs[0].entities[0]
+
+    assert entity.location is not None, "this span is in the unit and should locate"
+    assert not is_unlocated_derived(entity_signature(entity))
+    assert route_runs(runs).accepted_entities, "a located derived entity still accepts"
+
+
+def test_a_relationship_signature_never_takes_the_entity_rule() -> None:
+    """A triple is a relationship, and AC-11c already covers its held endpoints."""
+    assert not is_unlocated_derived(("satisfies", COLLAPSED, "ref:0012/AC-1"))
+    assert is_unlocated_derived((COLLAPSED, "Constraint"))
+
+
+# AC-11: the order of the queue, which spec 0002 states and nothing else pins.
+#
+# The stability test in `test_review_queue.py` proves the file does not reorder itself
+# between rebuilds. Determinism is not the same claim as order: a change that sorted
+# the queue some other stable way would keep that test green and still break the thing
+# the order exists for, which is that a reviewer reads a unit's rows in document order.
+
+THREE_RULES = (
+    "- **AC-1**: the first rule, about how the cache is warmed on boot.\n"
+    "- **AC-2**: the second rule, about the retry budget per provider.\n"
+    "- **AC-3**: the third rule, about falling back to the secondary.\n"
+)
+
+#: A span belonging to another document, so it cannot be located in this unit.
+ELSEWHERE = "Every seeded listing carries an obviously fake company name."
+
+
+def unsure(span: str, n: int, type_name: str = "unclassified") -> dict[str, Any]:
+    """One entity that always routes to review, so ordering is what is left to observe."""
+    entity: dict[str, Any] = {
+        "id": f"derived:{n}",
+        "id_source": "derived",
+        "type": type_name,
+        "span": span,
+    }
+    if type_name == "unclassified":
+        entity["unclassified_note"] = "fits none of the named types"
+    return entity
+
+
+def test_the_queue_puts_located_rows_in_document_order_with_unlocatable_ones_behind() -> None:
+    """Spec 0002: located rows read in document order, and a row with no offset sorts
+    behind all of them, because there is no document position to place it at.
+
+    The runs are given the rows out of order on purpose. If the queue ever echoed the
+    model's output order instead of the located offset, this is what would catch it.
+    """
+    unit = unit_of(THREE_RULES)
+    raw = [
+        unsure("the third rule, about falling back to the secondary", 1),
+        unsure(ELSEWHERE, 2),
+        unsure("the first rule, about how the cache is warmed on boot", 3),
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+
+    routed = route_runs(runs)
+
+    assert [item.line for item in routed.review] == [1, 3, None]
+
+
+def test_the_unlocatable_tail_is_ordered_by_signature_not_by_arrival() -> None:
+    """The tail has no offset to sort by, so it sorts by signature to stay stable.
+
+    Without a second key the tail would keep the order routing happened to produce,
+    which is how a file tracked in git starts reordering itself between runs.
+    """
+    unit = unit_of(THREE_RULES)
+    raw = [
+        unsure(ELSEWHERE, 1, "Feature"),
+        unsure(ELSEWHERE + " It is never a real employer.", 2, "Constraint"),
+    ]
+    runs = runs_of(unit, raw, raw, raw)
+
+    routed = route_runs(runs)
+
+    assert all(item.line is None for item in routed.review), "neither span may locate here"
+    assert [item.signature for item in routed.review] == [
+        (COLLAPSED, "Constraint"),
+        (COLLAPSED, "Feature"),
+    ]
+
+
+def test_a_held_link_sorts_into_the_tail_beside_the_spans_that_would_not_place() -> None:
+    """A relationship has no offset of its own, so it belongs in the same tail.
+
+    Routing already emits entities before relationships, so a link trailing a located
+    entity proves nothing on its own; what has to hold is that the *located* entity
+    climbs past an unlocatable one that routing produced first, while the link stays
+    behind both. That is the whole rule in one row order.
+    """
+    unit = unit_of(TWO_LINES)
+    raw = _linked_output().model_dump()
+    raw["entities"] = [unsure(ELSEWHERE, 9), *raw["entities"]]
+    outputs = [
+        assign_ids(
+            locate_output(unit, ExtractionOutput.model_validate(raw)), "0012", "requirements"
+        )
+        for _ in range(3)
+    ]
+
+    review = route_runs(outputs).review
+    kinds = [
+        "located" if item.line is not None else ("link" if len(item.signature) == 3 else "unplaced")
+        for item in review
+    ]
+
+    assert kinds == ["located", "unplaced", "link"]
