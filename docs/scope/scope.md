@@ -18,7 +18,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | done |
-| 4 | Data model | Foundation | in-progress |
+| 4 | Data model | Foundation | done |
 | 5 | First traced chain | Slice 1 | planned |
 | 6 | Eval runner | Slice 2 | planned |
 | 7 | Name resolution | Slice 3 | planned |
@@ -49,7 +49,7 @@ Bring in JobHunt's `docs/` pinned at `2e40bcf`, and the finished eval file (five
 code in `corpus/jobhunt/` (commit in `SNAPSHOT.md`) and `eval/` · checked by `tests/test_corpus.py`
 - [x] Bring them in: `/develop corpus snapshot & eval set`
 
-### 4. Data model · in-progress
+### 4. Data model · done
 Entities and relationships for decision records: what a record, a claim, and a link are. It must represent the same thing named several ways, an "unresolved, don't guess" marker for entities, and a "real relationship, unclassified" value for links. Test the draft against several real files (a spike inside the spec) before locking it.
 **Done when:** the schema holds real extractions from several snapshot files, and both "not confident" values exist, so nothing gets forced into the nearest type or silently dropped.
 spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/resolve/`, `src/tracepath/graph/`
