@@ -1,0 +1,461 @@
+{
+  "record": "0001",
+  "section": "Binding rules",
+  "section_slug": "binding-rules",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.3",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-24T03:13:32+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 7254,
+  "output_tokens": 16417,
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The secret key is constructible in exactly one file. src/lib/supabase/secret.ts is the only module that may build a client with the secret key (sb_secret_\u2026), which carries BYPASSRLS and skips every policy. Importing it from anywhere under src/app is forbidden and must be enforced by a lint rule. Every legitimate caller is listed here and this list is the allow list: the development only test session mint (feature 8), hard blocked outside development; the kill switch read, src/lib/kill-switch.ts; the seeded demo account (feature 31). Adding a fourth caller means editing this spec.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Built in feature 3, not feature 10 as first written.",
+        "rejected_spans": [
+          "spec 0002 needs the switch to exist before the first external call, so feature 10 inherits this read rather than writing it."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every failure is constructed through failure(), which reports. src/lib/result.ts exports the only constructor for a failure variant, and reporting to Sentry happens inside it. There is no way to create a failure without it being reported. Call sites may attach extra context; they cannot opt out. This is structural rather than a convention.",
+        "rejected_spans": [
+          "because the reference project's own spec specified the right behaviour and it was skipped."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every failure carries a severity and a kind, both required by the type. failure() does not compile without them: unexpected (an Adzuna timeout, a malformed model response, a database error) reports to Sentry as an error. expected (a validation error, a usage cap reached, an empty search) reports at info level. The kind is a value from a FailureKind union exported from src/lib/result.ts, never a free text string. The Sentry fingerprint is derived from it mechanically. Adding a kind means adding a member to the union.",
+        "rejected_spans": [
+          "This matters because rule 4 depends on all instances of one kind grouping into a single issue with a live event count, and free text across thirty features would either fragment one kind into many issues or collide two unrelated kinds into one."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Expected failures are alerted on by rate, not only by volume. The alert combines two conditions: a ratio: the share of attempts for a given operation that end in failure, which catches total failure regardless of how few users there are; an absolute floor: a minimum number of attempts before the ratio can fire, so one failure out of two attempts does not page anyone. The ratio needs a denominator, so attempts must be counted, not just failures.",
+        "rejected_spans": [
+          "A correct per instance classification is not enough. In the reference project every denial was genuinely \"expected\", and the outage existed only in the aggregate: one hundred percent of metered actions denied, for every user, for two weeks. With a handful of users the absolute event count stayed tiny throughout, so any volume threshold would have stayed silent for the full two weeks."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "For every operation: failure() marks the active Sentry span as failed, so attempts are counted as spans. The named span must open as the first statement of the operation, before any early return, denial, or guard clause. The span name is declared in docs/observability/ beside the alert it feeds, so grouping is defined rather than incidental.",
+        "rejected_spans": [
+          "Otherwise a total denial outage produces no spans at all, the ratio has no denominator, and the alert stays silent through exactly the failure it exists to catch."
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "For gated operations, which are the ones carrying the named financial risk: the attempt counter is incremented inside feature 10's atomic gate function itself, at the moment the gate decision is made. Built with that function, not deferred.",
+        "rejected_spans": [
+          "The span rule above is a convention someone has to follow, and nothing fails to compile when a later feature adds an early return above the span. A counter inside the atomic gate has no placement to get wrong."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Trace sampling must be 1.0 on any operation whose failure rate is alerted on.",
+        "rejected_spans": [
+          "A sampled ratio at this traffic volume is noise, not a signal."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Alert rule definitions live in docs/observability/ in git, so they are reviewable even though Sentry is what enforces them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "An exception escaping an external boundary call is converted, not left to escape. Any call to something outside this application (fetch, a provider SDK, the database driver) may throw rather than return, and such a throw never passes through failure(), so it carries no severity and no kind. Those calls are wrapped and their exceptions converted into a failure variant with severity unexpected and a real kind.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This applies to external boundary calls only. A programmer bug still throws and still reaches an error boundary with its stack trace intact.",
+        "rejected_spans": [
+          "Funnelling every escaping exception into a return value would swallow real bugs into data, which is the opposite of what this error model is for."
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Authorisation is never decided in the proxy. The proxy (src/proxy.ts, the file Next.js called middleware.ts before 16) refreshes the Supabase session cookie and does nothing else. The protected layout verifies the session, and every Server Action verifies its own caller independently. Row level security in Postgres is the guarantee behind both.",
+        "rejected_spans": [
+          "because a Server Action is a callable endpoint whatever page renders it"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Route handlers under src/app/api/ may not read or write user data. They exist for callers with no session cookie, and this spec defines no authorisation rule for that case.",
+        "rejected_spans": [
+          "The feature 16 eval harness runs in process as a script and imports the scoring code directly, so v1 is not expected to need one."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "A route handler that must touch user data means writing its authorisation rule into this spec first.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The proxy also echoes the requested path as a request header, on every request, unconditionally, using the { request: { headers } } form so the value travels upstream only. The proxy still reads no session, still holds no list of routes, and still cannot tell a protected path from a public one. The guard is mechanical rather than a promise. src/proxy.test.ts lines 49 to 62 assert the proxy treats a protected route exactly as it treats a public one, and lines 64 to 70 assert it sets no cookies. Both must keep passing unmodified.",
+        "rejected_spans": [
+          "This is wording, not substance, and the distinction is load bearing",
+          "An earlier draft of that spec had the proxy write a cookie for protected paths only, which would have broken both, and it was rejected for that reason."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "/go and /auth/callback are the first route handlers here to read a user data table (public.profile, for row existence only). Both sit outside src/app/api/, so the paragraph above does not forbid them. Each verifies its own caller through the session before the read, neither writes user data, neither accepts a user supplied identifier for the row it reads, and row level security remains the guarantee behind the read rather than the handler's own check.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "On a Server Action request the proxy hands the refreshed cookie to that request's own code and withholds it from the response. The branch keys on Next's next-action request header, never on the path, so the proxy still reads no session for a decision, still holds no list of routes, and still cannot tell a protected path from a public one.",
+        "rejected_spans": [
+          "The reason is not authorisation, it is cost: a cookie mutated during an action makes Next re-render the current route into the action's response, and on /search that re-render re-runs the Adzuna search and spends one of the 25 weekly calls spec 0011 rations.",
+          "The browser keeps its stale session cookie until its next ordinary request. That is a real trade rather than a free win, it was measured rather than assumed."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The Supabase MCP server, if connected, is connected under all five of these conditions: Supabase MCP only, no other server connected alongside it; read_only=true; scoped with --project-ref to the development project; per call confirmation left on; never pointed at a project holding real user data.",
+        "rejected_spans": [
+          "An agent holding elevated database credentials, reading content that users typed, with a path to send data outward, is the documented prompt injection shape. JobHunt has user typed profile fields and saved job descriptions from Slice 1 onward, so the untrusted content is genuinely present."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The deferred tooling choices are not free choices. Each row of the \"Deliberately left open\" table above carries a Must satisfy column. Those constraints come from decisions made in this spec, and a candidate tool that cannot meet them is not a candidate.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "build task 19",
+          "mention": "spec 0002's build task 19"
+        },
+        "phrase": null,
+        "date": "2026-08-21",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "reference",
+          "record": "feature 28",
+          "id": null,
+          "label": null,
+          "mention": "Feature 28's spend visibility"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "phrase": "inherits these counters rather than originating them",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": null,
+          "label": null,
+          "mention": "spec 0008, which is Accepted and shipped"
+        },
+        "phrase": null,
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-9",
+          "label": null,
+          "mention": "spec 0008 AC-9 exists to hold them"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "spec 0014's AC-20a"
+        },
+        "phrase": null,
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011 rations"
+        },
+        "phrase": "spends one of the 25 weekly calls spec 0011 rations",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "recorded in spec 0014 AC-20a"
+        },
+        "phrase": "recorded in",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-10b",
+          "label": null,
+          "mention": "spec 0008 AC-10b"
+        },
+        "phrase": "recorded in",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "reference",
+          "record": "feature 3",
+          "id": null,
+          "label": null,
+          "mention": "Feature 3 owns the environment half of this decision"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "phrase": "owns the environment half of this decision",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "the \"Deliberately left open\" table above"
+        },
+        "phrase": "carries a Must satisfy column",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
