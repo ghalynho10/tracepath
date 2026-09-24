@@ -28,7 +28,7 @@ Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 #: The version of the instructions below. Stored on every entity, so a later prompt
 #: change can be told apart from a stable one when two runs disagree.
-PROMPT_VERSION = "0002.2"
+PROMPT_VERSION = "0002.3"
 
 #: Room for the extraction and the thinking that precedes it. This model runs adaptive
 #: thinking, and at 16000 a real `Consequences` section spent the whole budget reasoning
@@ -60,8 +60,11 @@ question is answered with, so it is kept, not discarded.
 - If a link fits none of the named types, type it `unclassified` and put the exact \
 connecting words in `phrase`. Do not drop it.
 - A link may point at something outside this unit. Use a `reference` endpoint carrying \
-the record and, where the text names one, the item inside it, plus the verbatim words \
-that made the reference. A unit may produce links and no items at all.
+the record and, where the text names a specific item inside it, either the item's \
+verbatim `AC-N` id, or, for a named but unnumbered item such as "binding rule 6", the \
+same `label` you would give that item as an entity. Set at most one of `id` and \
+`label`; leave both unset when the text names only the record. Always keep the \
+verbatim words that made the reference. A unit may produce links and no items at all.
 - Set a known trap flag whenever the call was genuinely a judgement call. A flagged \
 item is reviewed, not discarded, so flagging costs nothing and hiding doubt costs a lot.
 - Two of those flags are not interchangeable. Set `entity_type_ambiguous` only on an \

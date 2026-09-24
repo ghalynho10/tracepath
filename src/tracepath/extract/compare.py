@@ -31,6 +31,7 @@ from tracepath.extract.schema import (
     ExtractedRelationship,
     LocalEndpoint,
     ReferenceEndpoint,
+    normalize_label,
 )
 
 #: What a derived id collapses to when its span could not be located. A derived
@@ -135,8 +136,19 @@ def entity_identity(entity: IdentifiedEntity) -> str:
 
 
 def entity_signature(entity: IdentifiedEntity) -> EntitySignature:
-    """The tuple agreement is decided on, and nothing else."""
-    return (entity_identity(entity), str(entity.entity.type))
+    """The tuple agreement is decided on, and nothing else.
+
+    A `label`, normalized, joins the identity half when the entity carries one, so
+    three runs disagreeing only on a `label` are caught rather than one being silently
+    written (AC-11e). Skipped for a `COLLAPSED` identity: that entity already routes to
+    review on `SPAN_NOT_LOCATED` regardless of its label, and appending to `COLLAPSED`
+    would stop `is_unlocated_derived()` recognizing it, the exact identity that reason
+    exists to catch.
+    """
+    identity = entity_identity(entity)
+    if entity.entity.label is not None and identity != COLLAPSED:
+        identity = f"{identity}|label:{normalize_label(entity.entity.label)}"
+    return (identity, str(entity.entity.type))
 
 
 def is_unlocated_derived(signature: EntitySignature | RelationshipSignature) -> bool:
@@ -159,12 +171,14 @@ def _endpoint_signature(
 
     A local endpoint names an entity in this same output, so it takes that entity's
     identity, the same rule the entity itself is compared by. A reference points
-    outside the unit and has no local line to use, so it keeps its record and id; its
-    verbatim mention is text, and is ignored the way span text is.
+    outside the unit and has no local line to use, so it keeps its record, id and a
+    normalized `label` when it carries one (AC-11e); its verbatim mention is text, and
+    is ignored the way span text is.
     """
     if isinstance(endpoint, LocalEndpoint):
         return identities.get(endpoint.id, COLLAPSED)
-    return f"ref:{endpoint.record or ''}/{endpoint.id or ''}"
+    label = f"|label:{normalize_label(endpoint.label)}" if endpoint.label else ""
+    return f"ref:{endpoint.record or ''}/{endpoint.id or ''}{label}"
 
 
 def relationship_signature(

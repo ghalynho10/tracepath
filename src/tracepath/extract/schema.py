@@ -17,6 +17,20 @@ PLACEHOLDER_ID = re.compile(r"derived:\d+")
 #: The only token shape that counts as a verbatim id (AC-3): `AC-10`, `AC-10b`.
 VERBATIM_ID = re.compile(r"AC-\d+[a-z]?")
 
+#: Runs of whitespace, collapsed to one space when a label is normalized (AC-7).
+WHITESPACE_RUN = re.compile(r"\s+")
+
+
+def normalize_label(label: str) -> str:
+    """A label reduced to the form two mentions of the same item compare equal on.
+
+    Case folded, trimmed, and internal whitespace runs collapsed to one space.
+    Punctuation is left alone: `rule #6` does not match `rule 6` (AC-7). Used both to
+    compare two runs' labels (AC-11e) and to match a reference's `label` against an
+    entity's (AC-7), so the two never drift into different rules by accident.
+    """
+    return WHITESPACE_RUN.sub(" ", label.strip()).casefold()
+
 
 class EntityType(StrEnum):
     """The kinds of item an extraction can produce. `UNCLASSIFIED` is a real value."""
@@ -86,8 +100,11 @@ class ReferenceEndpoint(_Frozen):
     """A relationship endpoint naming something outside this output.
 
     `record` alone points at a whole document; `record` plus `id` points at one item
-    inside it. Both may be null when the text names a target code cannot place, and
-    then `mention` is all that survives into an `:Unresolved` node.
+    carrying a verbatim `AC-N` token; `record` plus `label` points at a named but
+    unnumbered item (`binding rule 6`), the same shape `ExtractedEntity.label` already
+    names on the item itself. When both `id` and `label` are set, `id` wins. All three
+    may be null when the text names a target code cannot place, and then `mention` is
+    all that survives into an `:Unresolved` node.
     """
 
     kind: Literal["reference"] = "reference"
@@ -95,7 +112,14 @@ class ReferenceEndpoint(_Frozen):
         default=None, description="The other record as the text names it, e.g. `0001` or `scope`."
     )
     id: str | None = Field(
-        default=None, description="The item inside that record, e.g. `AC-8`. Null for the record."
+        default=None, description="The item's verbatim `AC-N` token, e.g. `AC-8`. Null otherwise."
+    )
+    label: str | None = Field(
+        default=None,
+        description=(
+            "The author's own label for a named but unnumbered item, e.g. `binding rule 6`. "
+            "Null when the item carries a verbatim id, or none is named."
+        ),
     )
     mention: str = Field(description="The verbatim words that made the reference.")
 

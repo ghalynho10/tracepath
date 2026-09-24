@@ -33,7 +33,12 @@ from tracepath.extract.compare import (
 )
 from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
 from tracepath.extract.records import Record
-from tracepath.extract.schema import EntityType, ExtractedRelationship, LocalEndpoint
+from tracepath.extract.schema import (
+    EntityType,
+    ExtractedRelationship,
+    LocalEndpoint,
+    normalize_label,
+)
 from tracepath.extract.units import Unit
 from tracepath.graph.load import (
     by_link_type,
@@ -44,7 +49,13 @@ from tracepath.graph.load import (
     write_unresolved,
 )
 from tracepath.graph.model import Provenance, entity_row, link_row, record_row, unresolved_row
-from tracepath.resolve.endpoints import LinkContext, Resolution, resolve_endpoints
+from tracepath.resolve.endpoints import (
+    LabelIndex,
+    LinkContext,
+    Resolution,
+    build_label_index,
+    resolve_endpoints,
+)
 
 log = logging.getLogger(__name__)
 
@@ -169,19 +180,28 @@ def _waiting_on(
     relationship: ExtractedRelationship,
     accepted_ids: frozenset[str],
     known_ids: frozenset[str],
+    known_label_index: LabelIndex,
 ) -> str | None:
     """The entity a relationship is waiting on, if either endpoint was not accepted.
 
     An endpoint naming an entity the corpus holds but review has not released is a
     held link, never an `:Unresolved` node: the target is named, so drawing a gap
     there would break AC-10 and key invariant 8. An endpoint naming nothing the
-    corpus holds is a different case entirely, and AC-7's fallback covers it.
+    corpus holds is a different case entirely, and AC-7's fallback covers it. A
+    `{record, label}` endpoint takes the same rule as a `{record, id}` one, checked
+    against `known_label_index`, built over every known entity so a match to one
+    still waiting on review is not missed (AC-7).
     """
     for endpoint in (relationship.source, relationship.target):
         if isinstance(endpoint, LocalEndpoint):
             qualified = endpoint.id
         elif endpoint.record is not None and endpoint.id is not None:
             qualified = f"{endpoint.record}/{endpoint.id}"
+        elif endpoint.record is not None and endpoint.id is None and endpoint.label is not None:
+            matched = known_label_index.get((endpoint.record, normalize_label(endpoint.label)))
+            if matched is None:
+                continue
+            qualified = matched
         else:
             continue
         if qualified in known_ids and qualified not in accepted_ids:
@@ -203,13 +223,21 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
     # The `if` sits before the clause that indexes, not after it. A comprehension
     # evaluates its clauses left to right, so a trailing guard runs only once
     # `result.identified[0]` has already been read and has already raised.
-    known_ids = frozenset(
-        entity.canonical_id
+    known_entities = tuple(
+        entity
         for result in results
         if result.identified
         for entity in result.identified[0].entities
     )
+    known_ids = frozenset(entity.canonical_id for entity in known_entities)
     known_records = frozenset(record.canonical_id for record in records)
+    # Built once over every known entity, not only the accepted ones, so a label match
+    # to an entity still waiting on review is caught at `_waiting_on()` below, not
+    # missed the way an `:Unresolved` fallback would miss it (AC-7). `resolve_endpoints`
+    # reuses the very same index and checks its own, narrower `known_entities` (the
+    # accepted set) before trusting a match, the same two site shape a `{record, id}`
+    # reference already has between here and there.
+    known_label_index = build_label_index(known_entities)
 
     pairs: list[tuple[ExtractedRelationship, LinkContext]] = []
     held: list[HeldLink] = []
@@ -227,7 +255,7 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
             line=result.unit.start_line,
         )
         for relationship in result.routed.accepted_relationships:
-            waiting = _waiting_on(relationship, accepted_ids, known_ids)
+            waiting = _waiting_on(relationship, accepted_ids, known_ids, known_label_index)
             if waiting is not None:
                 held.append(
                     HeldLink(
@@ -247,7 +275,7 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
             pairs.append((relationship, context))
 
     return CorpusResolution(
-        resolution=resolve_endpoints(pairs, accepted_ids, known_records),
+        resolution=resolve_endpoints(pairs, accepted_ids, known_records, known_label_index),
         held=tuple(held),
     )
 

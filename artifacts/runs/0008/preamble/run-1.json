@@ -5,12 +5,16 @@
   "file": "specs/0008-app-shell-and-navigation/index.md",
   "unit_kind": "Preamble",
   "run": 1,
+  "attempt": 1,
   "model": "claude-sonnet-5",
-  "prompt_version": "0002.2",
+  "prompt_version": "0002.3",
   "commit": "2e40bcf",
-  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "extracted_at": "2026-09-24T03:13:32+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
+  "input_tokens": 5396,
+  "output_tokens": 15835,
+  "error": null,
   "output": {
     "entities": [
       {
@@ -19,6 +23,9 @@
         "type": "AcceptanceCriterion",
         "span": "The proxy now withholds the refreshed cookie from an action response, keyed on the `next-action` header rather than on the route",
         "rejected_spans": [
+          "This spec made the proxy's session refresh survive into the forwarded request (AC-10) and never considered what that refresh does to a Server Action's response.",
+          "It puts a re-render of the current route into it, and on `/search` that re-render re-runs the Adzuna search and spends one of 25 weekly calls.",
+          "Spec 0014 had defended the action from the inside and could not have defended it from here.",
           "after a measured bug in feature 12",
           "so AC-9 and AC-10a are unaffected and both `src/proxy.test.ts` assertions still pass unmodified"
         ],
@@ -35,9 +42,9 @@
         "type": "AcceptanceCriterion",
         "span": "each route under `(app)` composes the header itself, the same shape the marketing side already uses",
         "rejected_spans": [
-          "AC-3a's signed in half was not buildable, which is the same defect revision 4 found and fixed on the marketing half and left standing on this one",
+          "AC-3a's signed in half was not buildable, which is the same defect revision 4 found and fixed on the marketing half and left standing on this one.",
           "It said the `(app)` layout composes the signed in header once.",
-          "A layout never learns the pathname (`layout.md` lines 238 to 242), so a header composed there can never be told which page it is on, and the two criteria cannot both hold.",
+          "AC-5 says each route passes its own `aria-current=\"page\"` in and that no component computes it. A layout never learns the pathname (`layout.md` lines 238 to 242), so a header composed there can never be told which page it is on, and the two criteria cannot both hold.",
           "Found during the build and decided by the engineer on 2026-08-31"
         ],
         "known_trap_flags": [
@@ -47,13 +54,24 @@
         "label": null
       },
       {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "each route passes its own `aria-current=\"page\"` in and that no component computes it",
+        "rejected_spans": [
+          "because per page composition is what it always asked for"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
         "id": "AC-5a",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "the marketing navigation varies by page",
+        "span": "the marketing header is composed by each page",
         "rejected_spans": [
-          "so `/sign-in` ships no dead anchors",
-          "revision 3's AC-5a was not buildable, because it asked a layout to vary its navigation by page and a layout never learns the pathname, so the marketing header is now composed by each page instead"
+          "revision 3's AC-5a was not buildable, because it asked a layout to vary its navigation by page and a layout never learns the pathname"
         ],
         "known_trap_flags": [
           "rationale_boundary_call"
@@ -67,9 +85,17 @@
         "type": "AcceptanceCriterion",
         "span": "naming `src/lib/return-path.ts` and `src/lib/landing-rule.ts` with the header and cookie strings fixed",
         "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
-        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "bans `failure()`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
@@ -81,6 +107,18 @@
         "rejected_spans": [
           "since AC-7's ban on `failure()` had over corrected against binding rule 5"
         ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "the cap omits rather than truncates",
+        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
@@ -89,8 +127,10 @@
         "id": "AC-10",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "the request headers must be re-derived before each `NextResponse.next()`, not hoisted, or the refreshed session cookie is lost instead of the pathname",
-        "rejected_spans": [],
+        "span": "the request headers must be re-derived before each `NextResponse.next()`, not hoisted",
+        "rejected_spans": [
+          "or the refreshed session cookie is lost instead of the pathname"
+        ],
         "known_trap_flags": [
           "multi_condition_split"
         ],
@@ -101,8 +141,10 @@
         "id": "AC-10a",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "the request headers must be re-derived before each `NextResponse.next()`, not hoisted, or the refreshed session cookie is lost instead of the pathname",
-        "rejected_spans": [],
+        "span": "the request headers must be re-derived before each `NextResponse.next()`, not hoisted",
+        "rejected_spans": [
+          "or the refreshed session cookie is lost instead of the pathname"
+        ],
         "known_trap_flags": [
           "multi_condition_split"
         ],
@@ -114,16 +156,6 @@
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
         "span": "the deep link survives both error retry paths",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "AC-8",
-        "id_source": "verbatim",
-        "type": "AcceptanceCriterion",
-        "span": "the AC-8 cap now omits rather than truncates",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
@@ -162,45 +194,15 @@
       {
         "id": "derived:1",
         "id_source": "derived",
-        "type": "unclassified",
-        "span": "the three span names, `aria-current` on the nav, and `COPY-7`",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": "A list of miscellaneous additions from revision 4 without individually stated claims; unclear if these are separate acceptance criteria or implementation details.",
-        "label": "revision 4 additions"
-      },
-      {
-        "id": "derived:2",
-        "id_source": "derived",
-        "type": "Consequence",
-        "span": "One `## Key invariants` line is tightened to match.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:3",
-        "id_source": "derived",
-        "type": "Consequence",
-        "span": "the `## Decision` line, build plan step 11 and one `## Consequences` line are corrected to match",
-        "rejected_spans": [],
+        "type": "Constraint",
+        "span": "The proxy echoes the requested path as a request header and writes nothing, and the provider Server Action writes the cookie.",
+        "rejected_spans": [
+          "Revision 1 had the proxy write the return cookie.",
+          "so an AC number cited in that review refers to revision 1"
+        ],
         "known_trap_flags": [
           "granularity_boundary_call"
         ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:4",
-        "id_source": "derived",
-        "type": "Feature",
-        "span": "It now echoes the requested path as a request header and writes nothing, and the provider Server Action writes the cookie.",
-        "rejected_spans": [
-          "The return path mechanism changed after the cross model review",
-          "Revision 1 had the proxy write the return cookie."
-        ],
-        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       }
@@ -216,55 +218,29 @@
           "kind": "reference",
           "record": "0014",
           "id": "AC-20a",
-          "mention": "by spec [0014](../0014-apply-redirect-and-application-record/index.md) AC-20a"
+          "label": null,
+          "mention": "spec 0014 AC-20a"
         },
-        "phrase": null,
+        "phrase": "AC-10b added, by spec 0014 AC-20a",
         "date": "2026-09-05",
-        "known_trap_flags": []
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
       },
       {
-        "type": "unclassified",
+        "type": "amended-by",
         "source": {
-          "kind": "local",
-          "id": "AC-10b"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-10"
-        },
-        "phrase": "made the proxy's session refresh survive into the forwarded request (AC-10)",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "AC-10b"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0014",
-          "id": null,
-          "mention": "Spec 0014 had defended the action from the inside"
-        },
-        "phrase": "had defended the action from the inside and could not have defended it from here",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "AC-10b"
-        },
-        "target": {
           "kind": "reference",
           "record": "0001",
           "id": null,
+          "label": "binding rule 6",
           "mention": "Spec 0001's binding rule 6 amendment"
         },
-        "phrase": "gains a third item, dated the same day",
+        "target": {
+          "kind": "local",
+          "id": "AC-10b"
+        },
+        "phrase": "gains a third item",
         "date": "2026-09-05",
         "known_trap_flags": []
       },
@@ -278,7 +254,8 @@
           "kind": "reference",
           "record": "rationale.md",
           "id": null,
-          "mention": "[rationale.md](rationale.md)"
+          "label": null,
+          "mention": "rationale.md"
         },
         "phrase": "are recorded in",
         "date": null,
@@ -291,12 +268,26 @@
           "id": "AC-3a"
         },
         "target": {
-          "kind": "reference",
-          "record": "layout.md",
-          "id": null,
-          "mention": "`layout.md` lines 238 to 242"
+          "kind": "local",
+          "id": "AC-5"
         },
-        "phrase": "A layout never learns the pathname",
+        "phrase": "the two criteria cannot both hold",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-7a"
+        },
+        "phrase": "had over corrected against",
         "date": null,
         "known_trap_flags": []
       },
@@ -308,28 +299,30 @@
         },
         "target": {
           "kind": "reference",
-          "record": "0001",
+          "record": null,
           "id": null,
+          "label": "binding rule 5",
           "mention": "binding rule 5"
         },
-        "phrase": "had over corrected against binding rule 5",
+        "phrase": "had over corrected against",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "corrected-by",
+        "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "derived:4"
+          "id": "derived:1"
         },
         "target": {
           "kind": "reference",
           "record": "docs/reviews/2026-08-31-spec-0008-app-shell-and-navigation.md",
           "id": null,
-          "mention": "the cross model review in [docs/reviews/2026-08-31-spec-0008-app-shell-and-navigation.md](../../reviews/2026-08-31-spec-0008-app-shell-and-navigation.md)"
+          "label": null,
+          "mention": "cross model review in docs/reviews/2026-08-31-spec-0008-app-shell-and-navigation.md"
         },
-        "phrase": "changed after the cross model review in",
-        "date": "2026-08-31",
+        "phrase": "after the cross model review in",
+        "date": null,
         "known_trap_flags": []
       }
     ]

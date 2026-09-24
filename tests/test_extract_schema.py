@@ -16,6 +16,7 @@ from tracepath.extract.schema import (
     ReferenceEndpoint,
     RelationshipType,
     extraction_json_schema,
+    normalize_label,
 )
 
 RUNS = Path(__file__).parent / "fixtures" / "runs"
@@ -240,6 +241,57 @@ def test_a_relationship_may_point_at_another_record() -> None:
     assert isinstance(link.source, LocalEndpoint)
     assert isinstance(link.target, ReferenceEndpoint)
     assert link.target.mention == "spec 0001's AC-8"
+
+
+def test_a_reference_may_carry_a_label_for_a_named_but_unnumbered_item() -> None:
+    """Added 2026-09-23: `label` alongside `record` and `id` (AC-7)."""
+    output = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {"id": "AC-1", "id_source": "verbatim", "type": "AcceptanceCriterion", "span": "a"}
+            ],
+            "relationships": [
+                {
+                    "type": "amended-by",
+                    "source": {
+                        "kind": "reference",
+                        "record": "0001",
+                        "label": "binding rule 6",
+                        "mention": "spec 0001's binding rule 6",
+                    },
+                    "target": {"kind": "local", "id": "AC-1"},
+                }
+            ],
+        }
+    )
+
+    endpoint = output.relationships[0].source
+    assert isinstance(endpoint, ReferenceEndpoint)
+    assert endpoint.id is None
+    assert endpoint.label == "binding rule 6"
+
+
+# normalize_label(): the one function AC-7 and AC-11e both share, added 2026-09-23.
+# Exercised only through resolve_endpoints() and the comparator so far; direct cases here.
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("binding rule 6", "binding rule 6"),
+        ("BINDING RULE 6", "binding rule 6"),
+        ("  Binding  Rule 6 ", "binding rule 6"),
+        ("binding\trule\n6", "binding rule 6"),
+    ],
+)
+def test_normalize_label_case_folds_trims_and_collapses_whitespace(raw: str, expected: str) -> None:
+    assert normalize_label(raw) == expected
+
+
+def test_normalize_label_leaves_punctuation_alone() -> None:
+    """The docstring's own claim: `rule #6` must not match `rule 6` (AC-7)."""
+    assert normalize_label("rule #6") != normalize_label("rule 6")
+    assert normalize_label("rule #6") == "rule #6"
 
 
 def test_a_unit_may_produce_relationships_and_no_entities_at_all() -> None:
