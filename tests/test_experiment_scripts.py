@@ -313,3 +313,34 @@ def test_the_runner_prices_every_kind_of_token_at_its_own_rate() -> None:
     )
 
     assert script.cost(result) == 2.0 + 10.0 + 4.0 + 0.2
+
+
+# `experiments/0005-held-out-prompt-examples/report.py`, which builds the ruling sheet
+# from committed artifacts with no API call.
+
+
+def test_a_link_shows_its_own_source_paragraph_not_the_first_match_of_a_repeated_phrase() -> None:
+    """The defect: "revised 2026-09-15" recurs in `0021 ## Requirements`, first inside AC-2.
+
+    Locating by that phrase put AC-2's paragraph under a link whose source is AC-7's old
+    version, so the engineer would have ruled on the wrong text. The source entity's own
+    location decides first; a phrase is used only when it occurs once in the unit.
+    """
+    script = load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "report.py", "exp0005_report"
+    )
+    runs = script.runs_in(ROOT / "artifacts" / "runs" / "0021" / "requirements")
+    unit = script.unit_for(runs[0], script.SNAPSHOT)
+    links = script.distinct_links(script.identify(runs))
+    (link,) = [
+        link
+        for link in links
+        if link.relationship.phrase == "revised 2026-09-15"
+        and getattr(link.relationship.source, "id", None) == "0021#requirements:7"
+    ]
+    assert unit.text.count("revised 2026-09-15") > 1
+
+    text = script.source_text(unit, link)
+
+    assert text.startswith("- **AC-7**:")
+    assert "**AC-2**" not in text

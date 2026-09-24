@@ -54,7 +54,6 @@ from tracepath.extract.ids import (
     label_binding_rules,
     locate_output,
 )
-from tracepath.extract.locate import locate_line
 from tracepath.extract.schema import ExtractedRelationship, LocalEndpoint, ReferenceEndpoint
 from tracepath.extract.units import Unit
 from tracepath.rebuild import unit_for
@@ -217,19 +216,21 @@ def endpoint_text(endpoint: LocalEndpoint | ReferenceEndpoint, link: Link) -> st
 
 
 def source_text(unit: Unit, link: Link) -> str:
-    """The stretch of the unit the link was read from: its phrase's paragraph or bullet.
+    """The stretch of the unit the link was read from: its source's paragraph or bullet.
 
-    Located by the phrase when there is one, else by the source entity's own line, else
-    by the reference's verbatim mention. Null only when none of the three can be placed.
+    Located by the source entity's own location first, when the source is a located
+    local entity. Then by the phrase, but only when it occurs exactly once in the unit:
+    a phrase like "SUPERSEDED 2026-09-14" recurs across a section, and its first match
+    is some other item's paragraph. Then by the reference's verbatim mention. Null only
+    when none of the three can be placed.
     """
     offset: int | None = None
     relationship = link.relationship
-    if relationship.phrase:
-        located = locate_line(unit, relationship.phrase)
-        offset = located.offset if located else None
-    if offset is None and isinstance(relationship.source, LocalEndpoint):
+    if isinstance(relationship.source, LocalEndpoint):
         entity = link.entities.get(relationship.source.id)
         offset = entity.location.offset if entity and entity.location else None
+    if offset is None and relationship.phrase and unit.text.count(relationship.phrase) == 1:
+        offset = unit.text.find(relationship.phrase)
     if offset is None:
         for endpoint in (relationship.source, relationship.target):
             if isinstance(endpoint, ReferenceEndpoint):

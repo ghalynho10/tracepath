@@ -125,14 +125,13 @@ Replace each line's marks with one word, and add a few words on why when you dis
   anything a visitor's browser can reach.
   - phrase: SUPERSEDED 2026-09-14
   - source text:
-    > - **AC-2**: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring
-    >   call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still
-    >   makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna
-    >   searches, revised 2026-09-15, then one
-    >   `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained
-    >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
-    >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
-    >   other real call in this app, never inside a page render.
+    > - **AC-4**: ~~No control on the page writes to the database. There is no code path by which one
+    >   visitor's visit changes what the next visitor sees.~~ · **SUPERSEDED 2026-09-14.** No
+    >   visitor facing control writes to the database, and a visitor's own visit still cannot change
+    >   what the next visitor sees. What is no longer true is the absolute second sentence: the refresh
+    >   (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the
+    >   visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind
+    >   anything a visitor's browser can reach.
 - [ ] agree / disagree · superseded-by · written by 1 of 3 runs
   - source: `0021#requirements:7` AcceptanceCriterion: Within one profile, listings are ordered best band first, ties broken by Adzuna's own
   returned rank for that search (stored as `sort_order`), the same band ordering rule `/search`
@@ -144,14 +143,11 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - phrase: revised 2026-09-15
   - flags: relationship_type_ambiguous
   - source text:
-    > - **AC-2**: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring
-    >   call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still
-    >   makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna
-    >   searches, revised 2026-09-15, then one
-    >   `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained
-    >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
-    >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
-    >   other real call in this app, never inside a page render.
+    > - **AC-7**: Within one profile, listings are ordered best band first, ties broken by ~~Adzuna's own
+    >   returned rank for that search~~ the order the kept walk kept each listing, which interleaves the
+    >   two searches' own Adzuna order (revised 2026-09-15; **Feature design**, "The kept listing
+    >   count") (stored as `sort_order`), the same band ordering rule `/search` already uses. *(Tiebreak source changed 2026-09-14: a hand seeded display order is replaced by
+    >   Adzuna's own order, since there is no longer a hand authored order to seed.)*
 - [ ] agree / disagree · amended-by · written by 1 of 3 runs
   - source: `0021#requirements:10` AcceptanceCriterion: Deliberately not
   built by this spec.
@@ -177,14 +173,13 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - phrase: **SUPERSEDED 2026-09-14.**
   - flags: relationship_type_ambiguous
   - source text:
-    > - **AC-2**: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring
-    >   call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still
-    >   makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna
-    >   searches, revised 2026-09-15, then one
-    >   `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained
-    >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
-    >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
-    >   other real call in this app, never inside a page render.
+    > - **AC-4**: ~~No control on the page writes to the database. There is no code path by which one
+    >   visitor's visit changes what the next visitor sees.~~ · **SUPERSEDED 2026-09-14.** No
+    >   visitor facing control writes to the database, and a visitor's own visit still cannot change
+    >   what the next visitor sees. What is no longer true is the absolute second sentence: the refresh
+    >   (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the
+    >   visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind
+    >   anything a visitor's browser can reach.
 
 ### Links the befores wrote and no after wrote
 
@@ -310,27 +305,26 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - target: `0021/AC-4` AcceptanceCriterion: ~~No control on the page writes to the database. There is no code path by which one visitor's visit changes what the next visitor sees.~~ · **SUPERSEDED 2026-09-14.** No visitor facing control writes to the database, and a visitor's own visit still cannot change what the next visitor sees. What is no longer true is the absolute second sentence: the refresh (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind anything a visitor's browser can reach.
   - phrase: SUPERSEDED 2026-09-14
   - source text:
-    > - **AC-2**: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring
-    >   call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still
-    >   makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna
-    >   searches, revised 2026-09-15, then one
-    >   `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained
-    >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
-    >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
-    >   other real call in this app, never inside a page render.
+    > - **AC-4**: ~~No control on the page writes to the database. There is no code path by which one
+    >   visitor's visit changes what the next visitor sees.~~ · **SUPERSEDED 2026-09-14.** No
+    >   visitor facing control writes to the database, and a visitor's own visit still cannot change
+    >   what the next visitor sees. What is no longer true is the absolute second sentence: the refresh
+    >   (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the
+    >   visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind
+    >   anything a visitor's browser can reach.
 - [ ] real link lost / rightly dropped · superseded-by · written by 1 of 3 runs
   - source: `0021/AC-9` AcceptanceCriterion: ~~The page shows no Adzuna attribution and no salary prediction attribution~~ · **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the "Jobs by Adzuna" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders. The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.
   - target: `0021/AC-9` AcceptanceCriterion: ~~The page shows no Adzuna attribution and no salary prediction attribution~~ · **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the "Jobs by Adzuna" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders. The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.
   - phrase: SUPERSEDED 2026-09-14
   - source text:
-    > - **AC-2**: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring
-    >   call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still
-    >   makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna
-    >   searches, revised 2026-09-15, then one
-    >   `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained
-    >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
-    >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
-    >   other real call in this app, never inside a page render.
+    > - **AC-9**: ~~The page shows no Adzuna attribution and no salary prediction attribution, since
+    >   nothing on it came from either vendor.~~ · **SUPERSEDED 2026-09-14.** The opposite is now
+    >   required: every card carries the "Jobs by Adzuna" attribution (reusing `AdzunaAttribution` from
+    >   spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally
+    >   carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`),
+    >   reusing the same pairing `src/features/search/result-card.tsx` already renders, because the two
+    >   must never come apart (`salaryText()`'s own doc comment). The listing genuinely came from Adzuna
+    >   now, so both attributions are load bearing, not decorative.
 - [ ] real link lost / rightly dropped · unclassified · written by 2 of 3 runs
   - source: `0021/AC-17` AcceptanceCriterion: A refresh, triggered as described in AC-18, runs ~~exactly one real Adzuna search using the fixed query in **Feature design**, de-duplicates the results by Adzuna's own listing id (first occurrence wins) and keeps up to a fixed count of what remains in Adzuna's own returned order~~ exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Unlike `/search`, where the check is best effort, the refresh has no reader waiting on it and a previous, fully checked run to fall back to, so an unfinished check is treated the same as an unfinished score rather than silently written as if it had passed. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of ~~either call type~~ any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, "Refresh outcomes", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built.
   - target: `0021/AC-2` AcceptanceCriterion: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna searches, revised 2026-09-15, then one `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for a real search) now happens only inside the refresh described in AC-17, gated exactly like every other real call in this app, never inside a page render.
