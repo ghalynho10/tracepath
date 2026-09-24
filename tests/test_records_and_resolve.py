@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from tracepath.extract.ids import IdentifiedEntity
 from tracepath.extract.records import (
     RecordError,
     RecordKind,
@@ -12,11 +13,12 @@ from tracepath.extract.records import (
     spec_record,
     specified_by,
 )
-from tracepath.extract.schema import ExtractedRelationship
+from tracepath.extract.schema import EntityType, ExtractedEntity, ExtractedRelationship, IdSource
 from tracepath.extract.units import UnitKind, split_units
 from tracepath.resolve.endpoints import (
     LinkContext,
     Target,
+    build_label_index,
     resolve_endpoints,
     unresolved_id,
 )
@@ -172,7 +174,7 @@ def test_a_reference_naming_a_known_entity_resolves_to_it() -> None:
     relationship = link_with({"kind": "reference", "record": "0001", "id": "AC-8", "mention": "x"})
 
     resolution = resolve_endpoints(
-        [(relationship, CONTEXT)], frozenset({"0001/AC-8"}), frozenset({"0001"})
+        [(relationship, CONTEXT)], frozenset({"0001/AC-8"}), frozenset({"0001"}), {}
     )
 
     assert resolution.links[0].target.canonical_id == "0001/AC-8"
@@ -183,7 +185,7 @@ def test_a_reference_naming_a_known_entity_resolves_to_it() -> None:
 def test_a_reference_naming_only_a_record_resolves_to_that_record() -> None:
     relationship = link_with({"kind": "reference", "record": "0001", "mention": "spec 0001"})
 
-    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset({"0001"}))
+    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset({"0001"}), {})
 
     assert resolution.links[0].target.canonical_id == "0001"
     assert resolution.links[0].target.target is Target.RECORD
@@ -194,7 +196,7 @@ def test_a_reference_naming_nothing_becomes_an_unresolved_node_keeping_its_words
         {"kind": "reference", "mention": "spec 0001's binding rule 6"},
     )
 
-    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset())
+    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset(), {})
 
     node = resolution.unresolved[0]
     assert node.mention == "spec 0001's binding rule 6"
@@ -209,7 +211,7 @@ def test_no_relationship_is_dropped_for_having_an_endpoint_that_cannot_be_named(
         (link_with({"kind": "reference", "mention": f"mystery {n}"}), CONTEXT) for n in range(5)
     ]
 
-    resolution = resolve_endpoints(relationships, frozenset(), frozenset())
+    resolution = resolve_endpoints(relationships, frozenset(), frozenset(), {})
 
     assert len(resolution.links) == 5
     assert len(resolution.unresolved) == 5
@@ -222,7 +224,7 @@ def test_the_same_words_in_two_records_are_two_separate_unresolved_nodes() -> No
     relationship = link_with({"kind": "reference", "mention": "binding rule 6"})
 
     resolution = resolve_endpoints(
-        [(relationship, CONTEXT), (relationship, other)], frozenset(), frozenset()
+        [(relationship, CONTEXT), (relationship, other)], frozenset(), frozenset(), {}
     )
 
     assert len(resolution.unresolved) == 2
@@ -234,8 +236,134 @@ def test_the_same_mention_twice_in_one_record_is_one_node() -> None:
     relationship = link_with({"kind": "reference", "mention": "binding rule 6"})
 
     resolution = resolve_endpoints(
-        [(relationship, CONTEXT), (relationship, CONTEXT)], frozenset(), frozenset()
+        [(relationship, CONTEXT), (relationship, CONTEXT)], frozenset(), frozenset(), {}
     )
 
     assert len(resolution.links) == 2
     assert len(resolution.unresolved) == 1
+
+
+# AC-7: a reference endpoint gains `label`, added 2026-09-23.
+
+
+def test_a_labeled_reference_resolves_to_the_entity_carrying_that_label() -> None:
+    relationship = link_with(
+        {"kind": "reference", "record": "0001", "label": "binding rule 6", "mention": "x"}
+    )
+
+    resolution = resolve_endpoints(
+        [(relationship, CONTEXT)],
+        frozenset({"0001#binding-rules:6"}),
+        frozenset({"0001"}),
+        {("0001", "binding rule 6"): "0001#binding-rules:6"},
+    )
+
+    assert resolution.links[0].target.canonical_id == "0001#binding-rules:6"
+    assert resolution.links[0].target.target is Target.ENTITY
+    assert not resolution.unresolved
+
+
+def test_a_labeled_reference_normalizes_before_matching() -> None:
+    relationship = link_with(
+        {"kind": "reference", "record": "0001", "label": "  Binding  Rule 6 ", "mention": "x"}
+    )
+
+    resolution = resolve_endpoints(
+        [(relationship, CONTEXT)],
+        frozenset({"0001#binding-rules:6"}),
+        frozenset({"0001"}),
+        {("0001", "binding rule 6"): "0001#binding-rules:6"},
+    )
+
+    assert resolution.links[0].target.target is Target.ENTITY
+
+
+def test_a_labeled_reference_with_no_match_becomes_unresolved_never_the_record() -> None:
+    relationship = link_with(
+        {"kind": "reference", "record": "0001", "label": "binding rule 6", "mention": "x"}
+    )
+
+    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset({"0001"}), {})
+
+    node = resolution.unresolved[0]
+    assert node.record == "0001"
+    assert node.label == "binding rule 6"
+    assert resolution.links[0].target.target is Target.UNRESOLVED
+
+
+def test_an_id_and_a_label_both_set_lets_id_win() -> None:
+    relationship = link_with(
+        {
+            "kind": "reference",
+            "record": "0001",
+            "id": "AC-8",
+            "label": "binding rule 6",
+            "mention": "x",
+        }
+    )
+
+    resolution = resolve_endpoints(
+        [(relationship, CONTEXT)],
+        frozenset({"0001/AC-8"}),
+        frozenset({"0001"}),
+        {("0001", "binding rule 6"): "0001#binding-rules:6"},
+    )
+
+    assert resolution.links[0].target.canonical_id == "0001/AC-8"
+
+
+def test_a_label_with_no_record_falls_to_unresolved_like_any_other_unnameable_reference() -> None:
+    relationship = link_with({"kind": "reference", "label": "binding rule 6", "mention": "x"})
+
+    resolution = resolve_endpoints([(relationship, CONTEXT)], frozenset(), frozenset(), {})
+
+    assert resolution.links[0].target.target is Target.UNRESOLVED
+    assert resolution.unresolved[0].label == "binding rule 6"
+    assert resolution.unresolved[0].record is None
+
+
+def test_a_struck_entity_is_never_a_label_match_target() -> None:
+    """`build_label_index()` excludes it; the current, unstruck version is what a
+    reference to the label should reach, never a version AC-5 already marked struck."""
+
+    def entity(canonical_id: str, struck: bool) -> IdentifiedEntity:
+        return IdentifiedEntity(
+            canonical_id=canonical_id,
+            entity=ExtractedEntity(
+                id="derived:1",
+                id_source=IdSource.DERIVED,
+                type=EntityType.CONSTRAINT,
+                span="x",
+                label="binding rule 6",
+            ),
+            location=None,
+            struck=struck,
+            followup_status=None,
+        )
+
+    index = build_label_index(
+        [entity("0001#binding-rules:1", struck=True), entity("0001#binding-rules:2", struck=False)]
+    )
+
+    assert index[("0001", "binding rule 6")] == "0001#binding-rules:2"
+
+
+def test_two_unstruck_entities_sharing_a_label_are_excluded_not_picked() -> None:
+    def entity(canonical_id: str) -> IdentifiedEntity:
+        return IdentifiedEntity(
+            canonical_id=canonical_id,
+            entity=ExtractedEntity(
+                id="derived:1",
+                id_source=IdSource.DERIVED,
+                type=EntityType.CONSTRAINT,
+                span="x",
+                label="key invariant 1",
+            ),
+            location=None,
+            struck=False,
+            followup_status=None,
+        )
+
+    index = build_label_index([entity("0012#key-invariants:1"), entity("0012#key-invariants:2")])
+
+    assert ("0012", "key invariant 1") not in index

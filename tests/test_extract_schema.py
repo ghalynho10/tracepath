@@ -242,6 +242,34 @@ def test_a_relationship_may_point_at_another_record() -> None:
     assert link.target.mention == "spec 0001's AC-8"
 
 
+def test_a_reference_may_carry_a_label_for_a_named_but_unnumbered_item() -> None:
+    """Added 2026-09-23: `label` alongside `record` and `id` (AC-7)."""
+    output = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {"id": "AC-1", "id_source": "verbatim", "type": "AcceptanceCriterion", "span": "a"}
+            ],
+            "relationships": [
+                {
+                    "type": "amended-by",
+                    "source": {
+                        "kind": "reference",
+                        "record": "0001",
+                        "label": "binding rule 6",
+                        "mention": "spec 0001's binding rule 6",
+                    },
+                    "target": {"kind": "local", "id": "AC-1"},
+                }
+            ],
+        }
+    )
+
+    endpoint = output.relationships[0].source
+    assert isinstance(endpoint, ReferenceEndpoint)
+    assert endpoint.id is None
+    assert endpoint.label == "binding rule 6"
+
+
 def test_a_unit_may_produce_relationships_and_no_entities_at_all() -> None:
     output = ExtractionOutput.model_validate(
         {

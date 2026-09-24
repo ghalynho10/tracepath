@@ -15,7 +15,9 @@ from tracepath.extract.compare import (
     compare_runs,
     entity_identity,
     entity_signature,
+    identities_of,
     is_unlocated_derived,
+    relationship_signature,
     route_runs,
 )
 from tracepath.extract.ids import (
@@ -898,6 +900,119 @@ def test_a_relationship_signature_never_takes_the_entity_rule() -> None:
     """A triple is a relationship, and AC-11c already covers its held endpoints."""
     assert not is_unlocated_derived(("satisfies", COLLAPSED, "ref:0012/AC-1"))
     assert is_unlocated_derived((COLLAPSED, "Constraint"))
+
+
+# AC-11e: a `label` joins the comparison signature, added 2026-09-23.
+
+
+LABELED = {
+    "id": "derived:1",
+    "id_source": "derived",
+    "type": "Constraint",
+    "span": "alpha claim about caching",
+}
+
+
+def test_a_labeled_entity_carries_its_label_in_the_signature() -> None:
+    unit = unit_of(ONE_LINE)
+    output = assign_ids(
+        locate_output(unit, _output([{**LABELED, "label": "binding rule 6"}])),
+        "0012",
+        "requirements",
+    )
+
+    signature = entity_signature(output.entities[0])
+
+    assert signature[0] == "line:1|label:binding rule 6"
+
+
+def test_two_runs_agreeing_on_identity_but_differing_only_on_label_disagree() -> None:
+    """A `label` is model produced text, the same as a flag, so a run that reads it
+    differently must not be silently picked over another."""
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(
+            locate_output(unit, _output([{**LABELED, "label": label}])), "0012", "requirements"
+        )
+        for label in ("binding rule 6", "binding rule 6", "a different rule entirely")
+    ]
+
+    comparison = compare_runs(outputs)
+
+    assert not comparison.agree
+    assert comparison.differing_entities
+
+
+def test_a_label_is_normalized_before_it_joins_the_signature() -> None:
+    """Case, and leading, trailing or internal whitespace, must not read as a
+    disagreement, since AC-7 normalizes a label the same way to match it."""
+    unit = unit_of(ONE_LINE)
+    outputs = [
+        assign_ids(
+            locate_output(unit, _output([{**LABELED, "label": label}])), "0012", "requirements"
+        )
+        for label in ("binding rule 6", "  Binding Rule  6 ", "BINDING RULE 6")
+    ]
+
+    comparison = compare_runs(outputs)
+
+    assert comparison.agree
+    assert not comparison.differing_entities
+
+
+def test_an_unlocated_derived_entitys_label_does_not_defeat_the_collapsed_check() -> None:
+    """A `COLLAPSED` identity must stay exactly `COLLAPSED`, whatever the label, or
+    `is_unlocated_derived()` stops recognizing it and AC-11d's rule goes silent."""
+    raw = {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every seeded listing carries an obviously fake company name.",
+        "label": "binding rule 6",
+    }
+    output = assign_ids(
+        locate_output(unit_of("- **AC-1**: unrelated.\n"), _output([raw])), "0012", "requirements"
+    )
+    entity = output.entities[0]
+
+    assert entity.location is None
+    signature = entity_signature(entity)
+    assert signature == (COLLAPSED, "Constraint")
+    assert is_unlocated_derived(signature)
+
+
+def test_a_reference_endpoints_label_joins_the_relationship_signature() -> None:
+    unit = unit_of("- **AC-1**: the criterion, satisfied elsewhere in spec 0001.\n")
+    raw = ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "AC-1",
+                    "id_source": "verbatim",
+                    "type": "AcceptanceCriterion",
+                    "span": "the criterion, satisfied elsewhere in spec 0001.",
+                }
+            ],
+            "relationships": [
+                {
+                    "type": "satisfies",
+                    "source": {"kind": "local", "id": "AC-1"},
+                    "target": {
+                        "kind": "reference",
+                        "record": "0001",
+                        "label": "binding rule 6",
+                        "mention": "spec 0001's binding rule 6",
+                    },
+                }
+            ],
+        }
+    )
+    output = assign_ids(locate_output(unit, raw), "0012", "requirements")
+    identities = identities_of(output)
+
+    signature = relationship_signature(output.relationships[0], identities)
+
+    assert signature[2] == "ref:0001/|label:binding rule 6"
 
 
 # AC-11: the order of the queue, which spec 0002 states and nothing else pins.

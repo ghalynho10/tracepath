@@ -81,6 +81,8 @@ def unresolved_row(node: UnresolvedNode) -> dict[str, Any]:
             "canonical_id": node.canonical_id,
             "mention": node.mention,
             "source_record": node.source_record,
+            "record": node.record,
+            "label": node.label,
             "file": node.file,
             "section": node.section,
             "line": node.line,
