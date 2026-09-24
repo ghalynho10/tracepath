@@ -193,3 +193,58 @@ def test_a_calibration_that_fails_still_writes_every_attempt_it_paid_for(
         for p in sorted((tmp_path / "effort-medium").rglob("*.json"))
     ]
     assert costs == [64000, 63000], "each attempt's own cost, never a running total"
+
+
+# `experiments/0005-held-out-prompt-examples/baseline_0021.py`, which calls `run_unit()`
+# and moves the unit's committed runs aside first (spec 0003, AC-13).
+
+
+def baseline_script() -> ModuleType:
+    return load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "baseline_0021.py", "exp0005_baseline"
+    )
+
+
+def test_the_baseline_moves_the_committed_runs_aside_before_a_failed_call_writes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A failed run writes into the unit's directory, so the old runs must be gone first."""
+    script = baseline_script()
+    unit, slug = script.target()
+    committed = tmp_path / "artifacts" / "runs" / "0021" / slug
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text('{"prompt_version": "0002.2"}\n')
+    lost = (an_artifact(unit, run=1, attempt=1), an_artifact(unit, run=1, attempt=2))
+
+    def fails(*args: Any, **kwargs: Any) -> None:
+        raise UnitFailed("run 1 failed again after its retry", lost)
+
+    monkeypatch.setattr(script, "run_unit", fails)
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(UnitFailed):
+        script.main()
+
+    moved = tmp_path / script.SUPERSEDED / "0021" / slug
+    assert json.loads((moved / "run-1.json").read_text()) == {"prompt_version": "0002.2"}
+    assert (moved / "NOTE.md").read_text().startswith("Prompt `0002.2` runs")
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json", "failed-run-1-attempt-2.json"]
+
+
+def test_the_baseline_refuses_to_run_under_any_prompt_but_the_one_it_measures(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Run after the prompt bump, it would measure the new prompt and call it the before."""
+    script = baseline_script()
+    committed = tmp_path / "artifacts" / "runs" / "0021" / "requirements"
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text("{}\n")
+    monkeypatch.setattr(script, "PROMPT_VERSION", "0003.0")
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match=r"0003\.0"):
+        script.main()
+
+    assert (committed / "run-1.json").exists()
