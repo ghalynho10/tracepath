@@ -2,8 +2,6 @@
 
 Drafted for tracepath's `SYSTEM_PROMPT` (schema at `src/tracepath/extract/schema.py`).
 
-> **Validation caveat.** This example carries a `label` on a reference endpoint, per AC-7's 2026-09-23 amendment. **`ReferenceEndpoint` does not have that field yet** — it is unchanged on `main` at `dbdd5cb` and on `feat/reference-label`, whose own preamble says "No code changes here". Since `_Frozen` sets `extra="forbid"`, this example will fail `ExtractionOutput.model_validate` until build plan task 17 lands (`Add label to ReferenceEndpoint … regenerate extraction_json_schema() … bump prompt_version`). That task also names the gap this example fills: "add at least one `label` worked example to the prompt's few shot set, since it currently has none". Validate this one after task 17, not before.
-
 ## Reasoning notes
 
 - **Zero entities.** Every span in this preamble describes a change to something that lives in a different unit (`## Requirements`, or another spec entirely) — nothing here is itself a testable claim this unit can point at locally. This matches spec 0002's own test scenario naming this exact unit as the one that produces links and no local entities.

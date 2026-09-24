@@ -146,7 +146,7 @@ class ExtractedEntity(_Frozen):
     )
     label: str | None = Field(
         default=None,
-        description="The author's own label for an unnumbered item, e.g. `key invariant 1`.",
+        description="The author's own label for an unnumbered item, e.g. `Happy path`.",
     )
 
     @model_validator(mode="after")

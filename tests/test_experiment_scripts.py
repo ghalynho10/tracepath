@@ -28,12 +28,12 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import Any
 
 import pytest
 
-from tracepath.artifacts import RunArtifact, build_artifact
+from tracepath.artifacts import RunArtifact, artifact_payload, build_artifact
 from tracepath.config import AnthropicSettings
 from tracepath.extract.client import Attempt, ExtractionFailed, RunOutcome
 from tracepath.extract.schema import ExtractionOutput
@@ -222,6 +222,8 @@ def test_the_baseline_moves_the_committed_runs_aside_before_a_failed_call_writes
     monkeypatch.setattr(script, "run_unit", fails)
     monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
     monkeypatch.setattr(script, "ROOT", tmp_path)
+    # The script ran once, under `0002.3`, before the prompt moved on; pin it back.
+    monkeypatch.setattr(script, "PROMPT_VERSION", script.BASELINE_PROMPT)
 
     with pytest.raises(UnitFailed):
         script.main()
@@ -248,3 +250,66 @@ def test_the_baseline_refuses_to_run_under_any_prompt_but_the_one_it_measures(
         script.main()
 
     assert (committed / "run-1.json").exists()
+
+
+# `experiments/0005-held-out-prompt-examples/run_units.py`, the runner for every paid
+# run of experiment 0005 after the baseline.
+
+
+def units_script() -> ModuleType:
+    return load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "run_units.py", "exp0005_run_units"
+    )
+
+
+def test_the_runner_refuses_a_prompt_version_it_was_not_asked_to_measure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = units_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match=r"not 0002\.3"):
+        script.main(["0002.3", "before", "0013:Feature design"])
+
+
+def test_the_runner_files_old_runs_under_their_own_prompt_before_a_failed_call(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = units_script()
+    unit, slug = script.target("0013:Feature design")
+    old = an_artifact(unit, run=1, attempt=1)
+    committed = tmp_path / "artifacts" / "runs" / "0013" / slug
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text(
+        json.dumps({**artifact_payload(old), "output": json.loads(an_output().model_dump_json())})
+        + "\n"
+    )
+    lost = (an_artifact(unit, run=1, attempt=1),)
+
+    def fails(*args: Any, **kwargs: Any) -> None:
+        raise UnitFailed("run 1 failed again after its retry", lost)
+
+    monkeypatch.setattr(script, "run_unit", fails)
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(UnitFailed):
+        script.main([script.PROMPT_VERSION, "after", "0013:Feature design"])
+
+    moved = tmp_path / "artifacts" / "superseded" / "2026-09-24-prompt-0002.2" / "0013" / slug
+    assert (moved / "run-1.json").exists()
+    assert (moved / "NOTE.md").exists()
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json"]
+
+
+def test_the_runner_prices_every_kind_of_token_at_its_own_rate() -> None:
+    script = units_script()
+    result = SimpleNamespace(
+        input_tokens=1_000_000,
+        output_tokens=1_000_000,
+        cache_creation_input_tokens=1_000_000,
+        cache_read_input_tokens=1_000_000,
+    )
+
+    assert script.cost(result) == 2.0 + 10.0 + 4.0 + 0.2

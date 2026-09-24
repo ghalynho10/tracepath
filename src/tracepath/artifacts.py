@@ -42,6 +42,11 @@ class RunArtifact:
     * `input_tokens` and `output_tokens` are null only on an artifact written before
       the amendment that added them, where the numbers are unrecoverable. Null there
       means unmeasured, and the pipeline never writes one.
+
+    The two cache counts are the system prompt written to the prompt cache and read
+    from it, apart from `input_tokens` because each bills at its own rate (spec 0003,
+    AC-19). An artifact written before caching reads them as 0, which is true rather
+    than unmeasured: no call before `0003.0` sent a cache marker at all.
     """
 
     record: str
@@ -61,6 +66,8 @@ class RunArtifact:
     output_tokens: int | None
     output: ExtractionOutput | None
     error: str | None = None
+    cache_creation_input_tokens: int = 0
+    cache_read_input_tokens: int = 0
 
 
 def now_utc() -> str:
@@ -83,6 +90,8 @@ def build_artifact(
     output_tokens: int,
     attempt: int = 1,
     error: str | None = None,
+    cache_creation_input_tokens: int = 0,
+    cache_read_input_tokens: int = 0,
 ) -> RunArtifact:
     """Assemble one run artifact. Pure: every value is given, none is looked up."""
     return RunArtifact(
@@ -103,6 +112,8 @@ def build_artifact(
         output_tokens=output_tokens,
         output=output,
         error=error,
+        cache_creation_input_tokens=cache_creation_input_tokens,
+        cache_read_input_tokens=cache_read_input_tokens,
     )
 
 
@@ -124,6 +135,8 @@ def artifact_payload(artifact: RunArtifact) -> dict[str, Any]:
         "effort": artifact.effort,
         "input_tokens": artifact.input_tokens,
         "output_tokens": artifact.output_tokens,
+        "cache_creation_input_tokens": artifact.cache_creation_input_tokens,
+        "cache_read_input_tokens": artifact.cache_read_input_tokens,
         "error": artifact.error,
         "output": None if artifact.output is None else artifact.output.model_dump(mode="json"),
     }
@@ -181,6 +194,8 @@ def read_run(path: Path) -> RunArtifact:
         output_tokens=payload.get("output_tokens"),
         output=None if output is None else ExtractionOutput.model_validate(output),
         error=payload.get("error"),
+        cache_creation_input_tokens=payload.get("cache_creation_input_tokens", 0),
+        cache_read_input_tokens=payload.get("cache_read_input_tokens", 0),
     )
 
 

@@ -97,6 +97,8 @@ class UnitResult:
     routed: RoutedUnit
     input_tokens: int
     output_tokens: int
+    cache_creation_input_tokens: int = 0
+    cache_read_input_tokens: int = 0
 
 
 class UnitFailed(Exception):
@@ -135,6 +137,8 @@ def run_unit(
     identified: list[IdentifiedOutput] = []
     input_tokens = 0
     output_tokens = 0
+    cache_written = 0
+    cache_read = 0
 
     def record(run: int, attempt: Attempt) -> None:
         artifacts.append(
@@ -153,6 +157,8 @@ def run_unit(
                 input_tokens=attempt.input_tokens,
                 output_tokens=attempt.output_tokens,
                 error=attempt.error,
+                cache_creation_input_tokens=attempt.cache_creation_input_tokens,
+                cache_read_input_tokens=attempt.cache_read_input_tokens,
             )
         )
 
@@ -167,6 +173,8 @@ def run_unit(
             record(run, attempt)
             input_tokens += attempt.input_tokens
             output_tokens += attempt.output_tokens
+            cache_written += attempt.cache_creation_input_tokens
+            cache_read += attempt.cache_read_input_tokens
         located = label_binding_rules(unit, locate_output(unit, outcome.output))
         identified.append(assign_ids(located, unit.record_id, section_slug))
     return UnitResult(
@@ -177,6 +185,8 @@ def run_unit(
         routed=route_runs(identified),
         input_tokens=input_tokens,
         output_tokens=output_tokens,
+        cache_creation_input_tokens=cache_written,
+        cache_read_input_tokens=cache_read,
     )
 
 
