@@ -16,7 +16,7 @@ from pathlib import Path
 
 from tracepath.artifacts import RUNS_DIR, RunArtifact, read_run
 from tracepath.extract.compare import route_runs
-from tracepath.extract.ids import assign_ids, locate_output
+from tracepath.extract.ids import assign_ids, label_binding_rules, locate_output
 from tracepath.extract.records import Record, records_for
 from tracepath.extract.units import Unit, split_units
 from tracepath.pipeline import UnitResult
@@ -71,7 +71,11 @@ def committed_units(root: Path, snapshot: Path) -> tuple[UnitResult, ...]:
         ordered = sorted(artifacts, key=lambda a: a.run)
         unit = unit_for(ordered[0], snapshot)
         identified = tuple(
-            assign_ids(locate_output(unit, a.output), unit.record_id, a.section_slug)
+            assign_ids(
+                label_binding_rules(unit, locate_output(unit, a.output)),
+                unit.record_id,
+                a.section_slug,
+            )
             for a in ordered
             if a.output is not None
         )

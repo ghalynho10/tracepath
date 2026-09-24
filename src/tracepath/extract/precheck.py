@@ -2,7 +2,8 @@
 
 Struck text and checkbox state are read here, from the characters themselves, so
 whether something is struck or done never depends on the model noticing it
-(AC-5, AC-6).
+(AC-5, AC-6). A binding rule's number is read the same way, so `binding rule 6` is
+taken from the text by code and never asked of the model (spec 0003, AC-1).
 """
 
 import re
@@ -18,6 +19,9 @@ CHECKBOX = re.compile(r"^(\s*)[-*] \[([ xX])\]\s?", re.MULTILINE)
 
 #: A fenced code block. Its contents are text, not markup.
 FENCED_BLOCK = re.compile(r"^(\s*)(```|~~~).*?^\1\2.*?$", re.MULTILINE | re.DOTALL)
+
+#: A binding rule's bold number, `**6.`, at the start of a line (spec 0003, AC-1).
+BINDING_RULE = re.compile(r"^\*\*(\d+)\.", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -43,6 +47,24 @@ class CheckboxItem:
 
     def contains(self, offset: int) -> bool:
         """True when an offset falls inside this item."""
+        return self.start <= offset < self.end
+
+
+@dataclass(frozen=True)
+class BindingRule:
+    """One numbered binding rule and its leading span (spec 0003, AC-1)."""
+
+    number: int
+    start: int
+    end: int
+
+    @property
+    def label(self) -> str:
+        """The label the rule's headline entity is given, e.g. `binding rule 6`."""
+        return f"binding rule {self.number}"
+
+    def contains(self, offset: int) -> bool:
+        """True when an offset falls inside this rule's leading span."""
         return self.start <= offset < self.end
 
 
@@ -99,6 +121,32 @@ def read_checkbox(text: str) -> FollowUpStatus | None:
     """The state of the first checkbox in a stretch of text, or `None` when it has none."""
     items = read_checkboxes(text)
     return items[0].status if items else None
+
+
+def read_binding_rules(text: str) -> tuple[BindingRule, ...]:
+    """Every bold numbered rule in a unit, each with its leading span, in file order.
+
+    A rule's leading span runs from its `**N.` marker to the first blank line after it,
+    or to the next marker or the end of the unit, whichever comes first. Not to the
+    next marker alone: measured over the committed runs of spec 0001's binding rules,
+    that wider span held two to six entities for rule 6 in every run, which leaves it
+    ambiguous and unlabelled (spec 0003, AC-1). A unit with no such rule returns an
+    empty tuple.
+    """
+    scanned = _mask_fenced_blocks(text)
+    matches = list(BINDING_RULE.finditer(scanned))
+    rules: list[BindingRule] = []
+    for position, match in enumerate(matches):
+        next_marker = matches[position + 1].start() if position + 1 < len(matches) else len(text)
+        blank = scanned.find("\n\n", match.start(), next_marker)
+        rules.append(
+            BindingRule(
+                number=int(match.group(1)),
+                start=match.start(),
+                end=blank if blank != -1 else next_marker,
+            )
+        )
+    return tuple(rules)
 
 
 def checkbox_status_at(

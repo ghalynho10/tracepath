@@ -1,7 +1,7 @@
 # 0003. Extraction stability on heterogeneous units
 
 **Date**: 2026-09-24
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

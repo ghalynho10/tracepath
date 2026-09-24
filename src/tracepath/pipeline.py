@@ -31,7 +31,12 @@ from tracepath.extract.compare import (
     relationship_signature,
     route_runs,
 )
-from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
+from tracepath.extract.ids import (
+    IdentifiedOutput,
+    assign_ids,
+    label_binding_rules,
+    locate_output,
+)
 from tracepath.extract.records import Record
 from tracepath.extract.schema import (
     EntityType,
@@ -162,9 +167,8 @@ def run_unit(
             record(run, attempt)
             input_tokens += attempt.input_tokens
             output_tokens += attempt.output_tokens
-        identified.append(
-            assign_ids(locate_output(unit, outcome.output), unit.record_id, section_slug)
-        )
+        located = label_binding_rules(unit, locate_output(unit, outcome.output))
+        identified.append(assign_ids(located, unit.record_id, section_slug))
     return UnitResult(
         unit=unit,
         section_slug=section_slug,

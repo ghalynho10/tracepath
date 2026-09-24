@@ -6,7 +6,7 @@ located in the unit so two runs of the same section produce the same ids (AC-3).
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from tracepath.extract.locate import Location, locate_line, locate_verbatim
 from tracepath.extract.precheck import (
@@ -15,6 +15,7 @@ from tracepath.extract.precheck import (
     checkbox_status_at,
     is_struck,
     mark_struck,
+    read_binding_rules,
     read_checkboxes,
 )
 from tracepath.extract.schema import (
@@ -26,7 +27,10 @@ from tracepath.extract.schema import (
     IdSource,
     LocalEndpoint,
 )
-from tracepath.extract.units import Unit
+from tracepath.extract.units import Unit, UnitKind
+
+#: The one section the binding rule label pre-check reads (spec 0003, AC-5).
+BINDING_RULES_SECTION = "Binding rules"
 
 
 class IdAssignmentError(Exception):
@@ -125,6 +129,51 @@ def locate_output(unit: Unit, output: ExtractionOutput) -> LocatedOutput:
             )
         )
     return LocatedOutput(entities=tuple(located), relationships=output.relationships)
+
+
+def label_binding_rules(unit: Unit, located: LocatedOutput) -> LocatedOutput:
+    """Set `binding rule N` on each rule's headline entity, from the text, not the model.
+
+    Runs only on a `## Binding rules` section whose items are bold `**N.` entries
+    (spec 0003, AC-1, AC-5); any other unit comes back unchanged. The one entity located
+    inside a rule's leading span gets that rule's label, overwriting whatever the model
+    wrote. None inside, or more than one, sets nothing for that rule (AC-2, AC-3). Every
+    other entity loses its model written label unless that label sits verbatim in its
+    own span, because this section names no sub items and a stray label here is
+    invented, not found (AC-4). The stored artifacts are never touched: this is computed
+    fresh on every run and every rebuild.
+    """
+    if unit.kind is not UnitKind.SECTION or unit.section != BINDING_RULES_SECTION:
+        return located
+    rules = read_binding_rules(unit.text)
+    if not rules:
+        return located
+
+    targets: dict[int, str] = {}
+    for rule in rules:
+        inside = [
+            item
+            for item in located.entities
+            if item.location is not None and rule.contains(item.location.offset)
+        ]
+        if len(inside) == 1:
+            targets[inside[0].order] = rule.label
+
+    relabelled: list[LocatedEntity] = []
+    for item in located.entities:
+        current = item.entity.label
+        if item.order in targets:
+            label: str | None = targets[item.order]
+        elif current is not None and current in item.entity.span:
+            label = current
+        else:
+            label = None
+        relabelled.append(
+            item
+            if label == current
+            else replace(item, entity=item.entity.model_copy(update={"label": label}))
+        )
+    return LocatedOutput(entities=tuple(relabelled), relationships=located.relationships)
 
 
 def _struck_probe(unit: Unit, entity: ExtractedEntity, location: Location | None) -> int | None:
