@@ -1,0 +1,152 @@
+{
+  "A": {
+    "unit": "0021 / requirements",
+    "tests": "a unit kind with no worked example",
+    "before": {
+      "entities_per_run": [
+        21,
+        21,
+        21
+      ],
+      "entity_spread": 0,
+      "entity_rows_runs_disagree": 0,
+      "relationships_per_run": [
+        33,
+        41,
+        35
+      ],
+      "relationship_rows_runs_disagree": 26,
+      "relationship_rows_endpoint_not_accepted": 22
+    },
+    "after": {
+      "entities_per_run": [
+        29,
+        29,
+        28
+      ],
+      "entity_spread": 1,
+      "entity_rows_runs_disagree": 2,
+      "relationships_per_run": [
+        9,
+        7,
+        8
+      ],
+      "relationship_rows_runs_disagree": 10,
+      "relationship_rows_endpoint_not_accepted": 9
+    },
+    "label_check_after": {
+      "verbatim_in_span": [],
+      "not_in_span": []
+    }
+  },
+  "B": {
+    "unit": "0013 / feature-design",
+    "tests": "a kind with an example, different content",
+    "before": {
+      "entities_per_run": [
+        21,
+        20,
+        34
+      ],
+      "entity_spread": 14,
+      "entity_rows_runs_disagree": 21,
+      "relationships_per_run": [
+        20,
+        22,
+        32
+      ],
+      "relationship_rows_runs_disagree": 63,
+      "relationship_rows_endpoint_not_accepted": 20
+    },
+    "after": {
+      "entities_per_run": [
+        31,
+        34,
+        31
+      ],
+      "entity_spread": 3,
+      "entity_rows_runs_disagree": 8,
+      "relationships_per_run": [
+        15,
+        15,
+        15
+      ],
+      "relationship_rows_runs_disagree": 9,
+      "relationship_rows_endpoint_not_accepted": 5
+    },
+    "label_check_after": {
+      "verbatim_in_span": [
+        "Happy path",
+        "Failure case",
+        "Failure case",
+        "Failure case",
+        "Gate",
+        "Gate failure",
+        "Validation",
+        "Empty",
+        "Predicted salary",
+        "Prefill without spend",
+        "Happy path",
+        "Failure case",
+        "Failure case",
+        "Failure case",
+        "Gate",
+        "Gate failure",
+        "Validation",
+        "Empty",
+        "Predicted salary",
+        "Prefill without spend",
+        "Happy path",
+        "Gate",
+        "Gate failure",
+        "Validation",
+        "Empty",
+        "Predicted salary",
+        "Prefill without spend"
+      ],
+      "not_in_span": []
+    },
+    "ac17_threshold": 2,
+    "ac17_test_ac2": true
+  },
+  "C": {
+    "unit": "feature-9 / 9-profile-entry-done",
+    "tests": "a different scope row than the example's",
+    "before": {
+      "entities_per_run": [
+        13,
+        19,
+        15
+      ],
+      "entity_spread": 6,
+      "entity_rows_runs_disagree": 4,
+      "relationships_per_run": [
+        13,
+        29,
+        17
+      ],
+      "relationship_rows_runs_disagree": 44,
+      "relationship_rows_endpoint_not_accepted": 10
+    },
+    "after": {
+      "entities_per_run": [
+        14,
+        17,
+        14
+      ],
+      "entity_spread": 3,
+      "entity_rows_runs_disagree": 3,
+      "relationships_per_run": [
+        24,
+        26,
+        31
+      ],
+      "relationship_rows_runs_disagree": 15,
+      "relationship_rows_endpoint_not_accepted": 5
+    },
+    "label_check_after": {
+      "verbatim_in_span": [],
+      "not_in_span": []
+    }
+  }
+}
