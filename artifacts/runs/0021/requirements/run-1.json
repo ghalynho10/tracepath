@@ -5,14 +5,44 @@
   "file": "specs/0021-seeded-demo-account/index.md",
   "unit_kind": "Section",
   "run": 1,
+  "attempt": 2,
   "model": "claude-sonnet-5",
-  "prompt_version": "0002.2",
+  "prompt_version": "0002.3",
   "commit": "2e40bcf",
-  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "extracted_at": "2026-09-24T17:22:14+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
+  "input_tokens": 8276,
+  "output_tokens": 18811,
+  "error": null,
   "output": {
     "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a visitor who has not signed up, I want to see real listings scored for real against a stated candidate",
+        "rejected_spans": [
+          "so that I can judge whether the ranking actually works, not just whether it looks plausible."
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the engineer, I want the page to cost nothing on render and never be corruptible by a visitor, while still reflecting real data that nobody hand picked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
       {
         "id": "AC-1",
         "id_source": "verbatim",
@@ -73,7 +103,7 @@
         "type": "AcceptanceCriterion",
         "span": "~~Exactly two seeded listings (the same title and company each time) appear under both profiles, each with a different band, different matched and not mentioned skills, and different written reasoning per profile. Their exact content is named in **Seed content** below.~~ \u00b7 **SUPERSEDED 2026-09-14.** Every kept listing (AC-17) appears under both profiles now, not just two of them. Each listing's band, matched skills, not mentioned skills, ungrounded skills, and reasoning are computed independently per persona by the real scorer and the real grounding check, and are expected to differ, but nothing in the build may select or discard a listing based on whether they actually do, and a refresh that returns fewer than the target count (**Feature design**, \"The kept listing count\") is still published as is, never padded or retried to reach it, as long as it kept at least one listing; a refresh that kept zero aborts (**Feature design**, \"Refresh outcomes\", recorded 2026-09-15).",
         "rejected_spans": [
-          "because both personas are scored against the same ~~one search's results~~ kept set, drawn from both searches (revised 2026-09-15)."
+          "because both personas are scored against the same ~~one search's results~~ kept set, drawn from both searches (revised 2026-09-15)"
         ],
         "known_trap_flags": [
           "rationale_boundary_call",
@@ -90,7 +120,9 @@
         "rejected_spans": [
           "*(Tiebreak source changed 2026-09-14: a hand seeded display order is replaced by Adzuna's own order, since there is no longer a hand authored order to seed.)*"
         ],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
         "unclassified_note": null,
         "label": null
       },
@@ -108,13 +140,12 @@
         "id": "AC-9",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "~~The page shows no Adzuna attribution and no salary prediction attribution.~~ \u00b7 **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders.",
-        "rejected_spans": [
-          "since nothing on it came from either vendor.",
-          "because the two must never come apart (`salaryText()`'s own doc comment).",
-          "The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative."
+        "span": "~~The page shows no Adzuna attribution and no salary prediction attribution, since nothing on it came from either vendor.~~ \u00b7 **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders, because the two must never come apart (`salaryText()`'s own doc comment). The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
         ],
-        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
@@ -124,7 +155,9 @@
         "type": "AcceptanceCriterion",
         "span": "~~A visible line on the page states plainly that this is sample data, not live postings.~~ \u00b7 **SUPERSEDED 2026-09-14.** That claim is now false and reversed: a visible line states plainly that the listings are real, live Adzuna results, refreshed periodically, and that the two candidate profiles judged against them are fictional (AC-14 names what else that line shows). Every other place on the page or in its code that asserted the old claim (page metadata, heading, intro copy, the demo card's own doc comment, the not mentioned skills caption's justification) is corrected in the same pass (**Build plan**, \"the wording pass\").",
         "rejected_spans": [],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
         "unclassified_note": null,
         "label": null
       },
@@ -152,12 +185,14 @@
         "id": "AC-13",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "The entry page's hero carries a real, working link to `/demo`, and the \"what's real today\" status card moves \"a no sign in demo account\" from planned to working. ~~**Deliberately not built by this spec.** Recorded in `docs/scope/scope.md` on 2026-09-14.~~ **Built 2026-09-17.**",
+        "span": "The entry page's hero carries a real, working link to `/demo`, and the \"what's real today\" status card moves \"a no sign in demo account\" from planned to working. **Built 2026-09-17**, once its own stated condition was met: the real data version shipped in pull request #135 and the first production refresh ran 2026-09-16, so `/demo` shows real scored postings rather than the fabricated set this was waiting out.",
         "rejected_spans": [
-          "wiring this while the page still showed fabricated data would have advertised a demo already decided to be insufficient, and that reasoning holds unchanged for the real data version until it ships.",
-          "once its own stated condition was met: the real data version shipped in pull request #135 and the first production refresh ran 2026-09-16, so `/demo` shows real scored postings rather than the fabricated set this was waiting out."
+          "~~**Deliberately not built by this spec.** Recorded in `docs/scope/scope.md` on 2026-09-14: wiring this while the page still showed fabricated data would have advertised a demo already decided to be insufficient, and that reasoning holds unchanged for the real data version until it ships.~~"
         ],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
         "unclassified_note": null,
         "label": null
       },
@@ -185,11 +220,8 @@
         "id": "AC-16",
         "id_source": "verbatim",
         "type": "AcceptanceCriterion",
-        "span": "Each card additionally names the other persona's band for the same listing, in a compact line separate from the active persona's full result. The paired row is always present by construction (AC-17's transaction writes both personas' rows for every kept listing together); it is not defensively hidden.",
-        "rejected_spans": [
-          "so a reader sees both scores without switching `?persona=`.",
-          "so this line has no \"missing\" case to design for"
-        ],
+        "span": "Each card additionally names the other persona's band for the same listing, in a compact line separate from the active persona's full result, so a reader sees both scores without switching `?persona=`. The paired row is always present by construction (AC-17's transaction writes both personas' rows for every kept listing together), so this line has no \"missing\" case to design for; it is not defensively hidden.",
+        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
@@ -201,11 +233,11 @@
         "span": "A refresh, triggered as described in AC-18, runs ~~exactly one real Adzuna search using the fixed query in **Feature design**, de-duplicates the results by Adzuna's own listing id (first occurrence wins) and keeps up to a fixed count of what remains in Adzuna's own returned order~~ exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Unlike `/search`, where the check is best effort, the refresh has no reader waiting on it and a previous, fully checked run to fall back to, so an unfinished check is treated the same as an unfinished score rather than silently written as if it had passed. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of ~~either call type~~ any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built.",
         "rejected_spans": [
           "because a real search must still render something",
-          "since it is the budget working as designed."
+          "since it is the budget working as designed"
         ],
         "known_trap_flags": [
           "multi_condition_split",
-          "granularity_boundary_call"
+          "rationale_boundary_call"
         ],
         "unclassified_note": null,
         "label": null
@@ -233,20 +265,6 @@
     ],
     "relationships": [
       {
-        "type": "superseded-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-2"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-2"
-        },
-        "phrase": null,
-        "date": "2026-09-14",
-        "known_trap_flags": []
-      },
-      {
         "type": "unclassified",
         "source": {
           "kind": "local",
@@ -258,22 +276,6 @@
         },
         "phrase": "now happens only inside the refresh described in AC-17",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "superseded-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-3"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-3"
-        },
-        "phrase": null,
-        "date": "2026-09-14",
         "known_trap_flags": []
       },
       {
@@ -288,9 +290,7 @@
         },
         "phrase": "(AC-19)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -304,22 +304,6 @@
         },
         "phrase": "(AC-14)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "superseded-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-4"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-4"
-        },
-        "phrase": null,
-        "date": "2026-09-14",
         "known_trap_flags": []
       },
       {
@@ -334,9 +318,7 @@
         },
         "phrase": "the refresh (AC-17)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -348,52 +330,25 @@
           "kind": "local",
           "id": "AC-18"
         },
-        "phrase": "a secret only the engineer holds (AC-18)",
+        "phrase": "(AC-18)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
-        "type": "amended-by",
+        "type": "unclassified",
         "source": {
           "kind": "local",
           "id": "AC-5"
         },
         "target": {
-          "kind": "local",
-          "id": "AC-5"
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "label": null,
+          "mention": "see `rationale.md`"
         },
-        "phrase": null,
-        "date": "2026-09-14",
-        "known_trap_flags": []
-      },
-      {
-        "type": "superseded-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "phrase": null,
-        "date": "2026-09-14",
-        "known_trap_flags": []
-      },
-      {
-        "type": "amended-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "phrase": null,
-        "date": "2026-09-15",
+        "phrase": "see `rationale.md`",
+        "date": null,
         "known_trap_flags": []
       },
       {
@@ -408,71 +363,39 @@
         },
         "phrase": "Every kept listing (AC-17)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "Feature design",
-          "id": "The kept listing count",
-          "mention": "**Feature design**, \"The kept listing count\""
-        },
-        "phrase": "target count (Feature design, \"The kept listing count\")",
-        "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "AC-6"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "Feature design",
-          "id": "Refresh outcomes",
-          "mention": "**Feature design**, \"Refresh outcomes\""
-        },
-        "phrase": "a refresh that kept zero aborts (Feature design, \"Refresh outcomes\")",
-        "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "amended-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-7"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-7"
-        },
-        "phrase": null,
-        "date": "2026-09-14",
         "known_trap_flags": []
       },
       {
-        "type": "amended-by",
+        "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "AC-7"
+          "id": "AC-6"
         },
         "target": {
-          "kind": "local",
-          "id": "AC-7"
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": "The kept listing count",
+          "mention": "**Feature design**, \"The kept listing count\""
         },
-        "phrase": null,
+        "phrase": "(**Feature design**, \"The kept listing count\")",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": "Refresh outcomes",
+          "mention": "**Feature design**, \"Refresh outcomes\", recorded 2026-09-15"
+        },
+        "phrase": "(**Feature design**, \"Refresh outcomes\", recorded 2026-09-15)",
         "date": "2026-09-15",
         "known_trap_flags": []
       },
@@ -485,32 +408,30 @@
         "target": {
           "kind": "reference",
           "record": "Feature design",
-          "id": "The kept listing count",
-          "mention": "**Feature design**, \"The kept listing count\""
+          "id": null,
+          "label": "The kept listing count",
+          "mention": "revised 2026-09-15; **Feature design**, \"The kept listing count\""
         },
-        "phrase": "the order the kept walk kept each listing (Feature design, \"The kept listing count\")",
-        "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "phrase": "(revised 2026-09-15; **Feature design**, \"The kept listing count\")",
+        "date": "2026-09-15",
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "AC-8"
+          "id": "AC-7"
         },
         "target": {
           "kind": "reference",
-          "record": "Feature design",
-          "id": "Ungrounded skills",
-          "mention": "**Feature design**, \"Ungrounded skills\""
+          "record": "/search",
+          "id": null,
+          "label": null,
+          "mention": "the same band ordering rule `/search` already uses"
         },
-        "phrase": "the same two sentences the real card shows appear here too (Feature design, \"Ungrounded skills\")",
+        "phrase": "the same band ordering rule `/search` already uses",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -522,24 +443,25 @@
           "kind": "local",
           "id": "AC-16"
         },
-        "phrase": "and (AC-16) a compact line naming the other persona's band",
+        "phrase": "(AC-16)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
-        "type": "superseded-by",
+        "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "AC-9"
+          "id": "AC-8"
         },
         "target": {
-          "kind": "local",
-          "id": "AC-9"
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": "Ungrounded skills",
+          "mention": "**Feature design**, \"Ungrounded skills\""
         },
-        "phrase": null,
-        "date": "2026-09-14",
+        "phrase": "(**Feature design**, \"Ungrounded skills\")",
+        "date": null,
         "known_trap_flags": []
       },
       {
@@ -552,13 +474,12 @@
           "kind": "reference",
           "record": "0013",
           "id": null,
+          "label": null,
           "mention": "reusing `AdzunaAttribution` from spec 0013 unchanged"
         },
         "phrase": "reusing `AdzunaAttribution` from spec 0013 unchanged",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -570,26 +491,28 @@
           "kind": "reference",
           "record": "src/features/search/result-card.tsx",
           "id": null,
+          "label": null,
           "mention": "reusing the same pairing `src/features/search/result-card.tsx` already renders"
         },
         "phrase": "reusing the same pairing `src/features/search/result-card.tsx` already renders",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
-        "type": "superseded-by",
+        "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "AC-10"
+          "id": "AC-9"
         },
         "target": {
-          "kind": "local",
-          "id": "AC-10"
+          "kind": "reference",
+          "record": "salaryText()",
+          "id": null,
+          "label": null,
+          "mention": "(`salaryText()`'s own doc comment)"
         },
-        "phrase": null,
-        "date": "2026-09-14",
+        "phrase": "(`salaryText()`'s own doc comment)",
+        "date": null,
         "known_trap_flags": []
       },
       {
@@ -604,9 +527,7 @@
         },
         "phrase": "(AC-14 names what else that line shows)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -617,14 +538,13 @@
         "target": {
           "kind": "reference",
           "record": "Build plan",
-          "id": "the wording pass",
+          "id": null,
+          "label": "the wording pass",
           "mention": "**Build plan**, \"the wording pass\""
         },
-        "phrase": "is corrected in the same pass (Build plan, \"the wording pass\")",
+        "phrase": "(**Build plan**, \"the wording pass\")",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -638,22 +558,6 @@
         },
         "phrase": "This is a different case from AC-15",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "amended-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-13"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-13"
-        },
-        "phrase": null,
-        "date": "2026-09-17",
         "known_trap_flags": []
       },
       {
@@ -666,13 +570,12 @@
           "kind": "reference",
           "record": "docs/scope/scope.md",
           "id": null,
+          "label": null,
           "mention": "Recorded in `docs/scope/scope.md` on 2026-09-14"
         },
         "phrase": "Recorded in `docs/scope/scope.md` on 2026-09-14",
-        "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "date": "2026-09-14",
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -682,15 +585,14 @@
         },
         "target": {
           "kind": "reference",
-          "record": "PR #135",
+          "record": "#135",
           "id": null,
-          "mention": "pull request #135"
+          "label": null,
+          "mention": "shipped in pull request #135"
         },
-        "phrase": "the real data version shipped in pull request #135",
+        "phrase": "shipped in pull request #135",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -702,13 +604,12 @@
           "kind": "reference",
           "record": "Feature design",
           "id": null,
-          "mention": "(**Feature design**)"
+          "label": null,
+          "mention": "both read from the single `demo_refresh` row (**Feature design**)"
         },
-        "phrase": "both read from the single `demo_refresh` row (Feature design)",
+        "phrase": "both read from the single `demo_refresh` row (**Feature design**)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -720,11 +621,9 @@
           "kind": "local",
           "id": "AC-3"
         },
-        "phrase": "the disclosure AC-3 now depends on",
+        "phrase": "which is the disclosure AC-3 now depends on",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -738,9 +637,7 @@
         },
         "phrase": "worded distinctly from AC-12's failure state",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -752,24 +649,8 @@
           "kind": "local",
           "id": "AC-17"
         },
-        "phrase": "AC-17's transaction writes both personas' rows for every kept listing together",
+        "phrase": "(AC-17's transaction writes both personas' rows for every kept listing together)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "amended-by",
-        "source": {
-          "kind": "local",
-          "id": "AC-17"
-        },
-        "target": {
-          "kind": "local",
-          "id": "AC-17"
-        },
-        "phrase": null,
-        "date": "2026-09-15",
         "known_trap_flags": []
       },
       {
@@ -784,9 +665,41 @@
         },
         "phrase": "triggered as described in AC-18",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": null,
+          "mention": "using the fixed queries in **Feature design**"
+        },
+        "phrase": "using the fixed queries in **Feature design**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": null,
+          "mention": "by the walk **Feature design** states (revised 2026-09-15)"
+        },
+        "phrase": "by the walk **Feature design** states (revised 2026-09-15)",
+        "date": "2026-09-15",
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -810,15 +723,31 @@
         },
         "target": {
           "kind": "reference",
-          "record": "Feature design",
-          "id": "Refresh outcomes",
-          "mention": "**Feature design**, \"Refresh outcomes\""
+          "record": "/search",
+          "id": null,
+          "label": null,
+          "mention": "Unlike `/search`, where the check is best effort"
         },
-        "phrase": "states the exact shape of each outcome (Feature design, \"Refresh outcomes\")",
+        "phrase": "Unlike `/search`, where the check is best effort",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "Feature design",
+          "id": null,
+          "label": "Refresh outcomes",
+          "mention": "**Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15"
+        },
+        "phrase": "**Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -830,13 +759,12 @@
           "kind": "reference",
           "record": "/develop",
           "id": null,
-          "mention": "recorded 2026-09-15 from what `/develop` built"
+          "label": null,
+          "mention": "from what `/develop` built"
         },
-        "phrase": "recorded 2026-09-15 from what `/develop` built",
+        "phrase": "from what `/develop` built",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -848,13 +776,12 @@
           "kind": "reference",
           "record": "Feature design",
           "id": null,
+          "label": null,
           "mention": "(which requires a verified session, **Feature design**)"
         },
-        "phrase": "the existing gate (which requires a verified session, Feature design)",
+        "phrase": "(which requires a verified session, **Feature design**)",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       }
     ]
   }
