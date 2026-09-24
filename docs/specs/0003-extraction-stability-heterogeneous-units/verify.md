@@ -11,9 +11,9 @@ uv run ruff check . && uv run ruff format --check .
 ## The label pre check, proven with no API call
 
 1. Load the committed `0002.3` artifacts for spec 0001's `## Binding rules` section (`artifacts/runs/`).
-2. For each of the three runs, find rule 6's leading span (the regex `^\*\*6\.` to the next `**N.**` marker or the section end) and confirm exactly one entity's located offset falls inside it, in all three runs.
+2. For each of the three runs, find rule 6's leading span, the regex `^\*\*6\.` to the first blank line after it, or to the next `**N.**` marker or the section end if no blank line intervenes first, and confirm exactly one entity's located offset falls inside it, in all three runs. **Do not use marker to next marker alone**: measured against these same three runs, that span gives rule 6 two, six and two candidate entities (17 of 24 rule instances across the section hold exactly one under that definition; rule 6 is not one of them). Marker to first blank line gives 23 of 24 exact one, the only miss being rule 4 in run 3 (no entity located in that span, correctly routes to AC-3's no label case). A run of this check itself is the regression test for the span definition, not only for the mechanism.
 3. Run the pre check over the same three runs and confirm it sets `label: "binding rule 6"` on that one entity each time, and on no other entity in rule 6's span.
-4. Rebuild the label index and confirm `("0001", "binding rule 6")` resolves to that entity's canonical id, verifies **AC-1**, **AC-12**.
+4. Rebuild the label index and confirm `("0001", "binding rule 6")` resolves to an entity in each of the three runs, the one located on rule 6's opening line in that run; its canonical id differs run to run (`0001#binding-rules:10`, `:12`, `:6`), by design, since derived ids are per run, verifies **AC-1**, **AC-12**.
 5. Note the known remaining gap: the link from `0008`'s preamble to this entity still holds under `endpoint_not_accepted`, because `0008/AC-10b` (the entity on the other end of that relationship) was not accepted in experiment 0004's run. This is a separate, already understood acceptance condition (AC-11, spec 0002), not something this spec's label fix changes. Stating it here satisfies the round trip scenario's owed evidence without a new paid run for this part.
 
 ## The stray label clearing rule, proven with no API call

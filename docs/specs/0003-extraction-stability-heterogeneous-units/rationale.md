@@ -25,7 +25,7 @@ Code reads a `## Binding rules` heading's bold numbered items and sets `label: "
 
 **Cons**:
 - Narrow by construction: only fixes `## Binding rules`, not `step N`, `invariant N` or `revision N`, each a real, separately occurring pattern in the corpus.
-- A second, non trivial decision rides inside it: which entity, of possibly several inside one rule's span, gets the label, and what happens to a stray model produced label on a different entity in the same unit. Answered by measurement (the entity on the rule's own leading span, confirmed stable across 23 of 24 rule instances in the committed `0002.3` runs) and by the same evidence that shows a stray label is more likely invented than found (see the `0006` findings above), not by assumption.
+- A second, non trivial decision rides inside it: which entity, of possibly several inside one rule's span, gets the label, what exactly bounds that span, and what happens to a stray model produced label on a different entity in the same unit. All three answered by measurement, not assumption: the span must end at the rule's first blank line, not at the next `**M.**` marker (see the span evidence below), and a stray label is more likely invented than found (see the `0006` findings above).
 
 #### Option 2: The model constructs the label from the heading and the number
 
@@ -107,6 +107,16 @@ The disagreement rate question stays real and testable on its own terms once the
 Caching and cost: Anthropic's published pricing (fetched 2026-09-24, see References) confirms Claude Sonnet 5 at $2 per million input tokens and $10 per million output tokens, a cache read at 0.1x base input ($0.20/MTok), a 1 hour cache write at 2x base input ($4/MTok), and the Batch API at a flat 50% discount on both input and output, not the roughly 10x figure an earlier draft of this reasoning assumed (that 10x compares a cache read against an uncached input token, a different comparison). Prompt caching's default lifetime is 5 minutes, measured from the start of the request that last read or wrote it, not from the end of its response; experiment 0004 averaged about 15,700 output tokens per call, long enough to risk falling outside a 5 minute window between sequential calls. A 1 hour breakpoint costs more per write (2x versus 1.25x base input) but only needs to be paid once per session, since every `0003.0` call shares the identical examples prefix; it cannot help the fresh `0002.3` baseline call, which predates the examples block and stays uncached like every prior run. The Batch API's own docs (fetched 2026-09-24) confirm cache hits inside a batch are best effort, 30% to 98% observed, and recommend the 1 hour duration specifically because batch processing can outlast 5 minutes; this project's runs are already sequential and already output heavy, so the same reasoning applies without needing batch's asynchronous turnaround, which is a poor fit for a handful of calls the engineer wants to inspect immediately. Batch stays reserved for feature 9's future 564 call whole corpus run, where the 50% discount compounds over real volume.
 
 ## Evidence
+
+**Rule 6's leading span, three definitions measured against the same data** (the committed `0002.3` runs of `0001 ## Binding rules`, `locate_line` from `src/tracepath/extract/locate.py` run against each entity's `span`, checked 2026-09-25; a "hold" count is entities whose located offset falls inside the span, per rule per run, tallied for all 8 rules across the 3 runs, 24 rule instances total):
+
+| Span definition | Rule 6 holds (run 1 / 2 / 3) | Exact one entity, whole section | Where it misses |
+|---|---|---|---|
+| Marker to next `**M.**` marker | 2 / 6 / 2 | 17 of 24 | Rule 6 in every run (ambiguous, AC-2 leaves it unlabelled); rule 4 also over holds in runs 1 to 2 |
+| Marker to first blank line (chosen, AC-1) | 1 / 1 / 1 | 23 of 24 | Rule 4 in run 3 only (0 entities located in the span, correctly falls to AC-3) |
+| Bold headline only | 1 / 1 / 1 | 21 of 24 | Rule 4 in all three runs (0 entities; its own entity's located offset sits after the bold lead in ends) |
+
+The earlier draft of this rationale cited "23 of 24" without stating which span it was measured on; it is the marker to first blank line span, the one AC-1 now specifies. The entity rule 6 resolves to also carries a different derived id in each run (`0001#binding-rules:10`, `:12`, `:6`), the same run to run id instability spec 0002's AC-11(a) already accounts for by comparing derived entities on their located line rather than their canonical id; AC-12 does the same.
 
 **Ordinal reference patterns in the corpus** (`corpus/jobhunt/docs/`, grep counted 2026-09-24):
 
