@@ -7,13 +7,15 @@
   "run": 3,
   "attempt": 1,
   "model": "claude-sonnet-5",
-  "prompt_version": "0002.3",
+  "prompt_version": "0003.0",
   "commit": "2e40bcf",
-  "extracted_at": "2026-09-24T18:08:21+00:00",
+  "extracted_at": "2026-09-24T19:07:38+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
-  "input_tokens": 5462,
-  "output_tokens": 12436,
+  "input_tokens": 1543,
+  "output_tokens": 16285,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 49114,
   "error": null,
   "output": {
     "entities": [
@@ -21,31 +23,21 @@
         "id": "derived:1",
         "id_source": "derived",
         "type": "Feature",
-        "span": "A form for the flat profile: personal details, skills, one layer of work history, and stated job preferences.",
+        "span": "A form for the flat profile: personal details, skills, one layer of work history, and stated job preferences. Typed by hand, with no resume upload and no extraction, so it makes no external call at all.",
         "rejected_spans": [
           "Scoring cannot function without this, and the completion test does not start without a way to get profile data in."
         ],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
         "unclassified_note": null,
         "label": null
       },
       {
         "id": "derived:2",
         "id_source": "derived",
-        "type": "Constraint",
-        "span": "Typed by hand, with no resume upload and no extraction, so it makes no external call at all.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:3",
-        "id_source": "derived",
         "type": "AcceptanceCriterion",
-        "span": "a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser.",
+        "span": "**Done when:** a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser.",
         "rejected_spans": [],
         "known_trap_flags": [
           "multi_condition_split"
@@ -54,10 +46,24 @@
         "label": null
       },
       {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "That last clause is spec 0001's third runner constraint, deferred to here by spec 0004.",
+        "rejected_spans": [
+          "because there was no real write path to drive at feature 8; the technique is recorded in that spec's follow up list."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
         "id": "derived:4",
         "id_source": "derived",
         "type": "Consequence",
-        "span": "this feature moves its own claim (`profile`) from planned to working in the entry page's \"What's real today\" card",
+        "span": "Also, this feature moves its own claim (`profile`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**).",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
@@ -67,28 +73,18 @@
         "id": "derived:5",
         "id_source": "derived",
         "type": "Consequence",
-        "span": "closes the deferred half of spec 0007 AC-15: two real accounts, on the running app, each reading their OWN profile and not the other's",
+        "span": "It also closes the deferred half of spec 0007 AC-15: two real accounts, on the running app, each reading their OWN profile and not the other's.",
         "rejected_spans": [
-          "AC-15's wording assumes rows are there to be isolated, and this is the feature that first makes that true, so the proof lands here rather than being re run against the fixture pool it was written to go beyond."
+          "Feature 7 proved only the negative half, that neither account reaches the other's data, because at that point no `profile` row existed for anyone and both signed in users landed on the same named `record_not_found`. AC-15's wording assumes rows are there to be isolated, and this is the feature that first makes that true, so the proof lands here rather than being re run against the fixture pool it was written to go beyond."
         ],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
         "unclassified_note": null,
         "label": null
       },
       {
         "id": "derived:6",
-        "id_source": "derived",
-        "type": "Consequence",
-        "span": "Feature 7 proved only the negative half, that neither account reaches the other's data",
-        "rejected_spans": [
-          "because at that point no `profile` row existed for anyone and both signed in users landed on the same named `record_not_found`."
-        ],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:7",
         "id_source": "derived",
         "type": "BuildStep",
         "span": "Design it (spec): `/architect profile entry`",
@@ -98,7 +94,7 @@
         "label": null
       },
       {
-        "id": "derived:8",
+        "id": "derived:7",
         "id_source": "derived",
         "type": "BuildStep",
         "span": "Build it: `/develop profile entry`",
@@ -108,10 +104,24 @@
         "label": null
       },
       {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) added to `src/components/ui/` \u00b7 AC-17",
+        "rejected_spans": [
+          "extending spec 0005's inventory the way spec 0006 added `Logo`"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
         "id": "derived:9",
         "id_source": "derived",
         "type": "BuildStep",
-        "span": "Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) added to `src/components/ui/`, extending spec 0005's inventory the way spec 0006 added `Logo`",
+        "span": "Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page \u00b7 AC-1 to AC-4, AC-11 to AC-14",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
@@ -121,37 +131,7 @@
         "id": "derived:10",
         "id_source": "derived",
         "type": "BuildStep",
-        "span": "Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:11",
-        "id_source": "derived",
-        "type": "BuildStep",
-        "span": "Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step)",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:12",
-        "id_source": "derived",
-        "type": "BuildStep",
-        "span": "Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:13",
-        "id_source": "derived",
-        "type": "BuildStep",
-        "span": "Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass",
+        "span": "Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) \u00b7 AC-5 to AC-8, AC-7a",
         "rejected_spans": [],
         "known_trap_flags": [
           "multi_condition_split"
@@ -160,25 +140,54 @@
         "label": null
       },
       {
-        "id": "derived:14",
+        "id": "derived:11",
         "id_source": "derived",
         "type": "BuildStep",
-        "span": "Verify it: `/check verify profile entry` \u00b7 run 2026-09-02, PASS, all 18 acceptance criteria met, 51 of 53 steps ticked in verify.md. A first run on the same day found AC-13 half unbuilt: a malformed `entry` id rendered the plain list and said nothing, while a well formed one that matched no row correctly said the entry was gone. `/debug` traced it to `parsePageState` collapsing an unusable id into the plain view, fixed in `8a59fdf`, and this run re-proved all four URL cases. The two unticked steps are recorded at the end of `verify.md` and neither is an acceptance criterion failure. The read failure state was proved by stopping the database container: `/profile` renders the failure treatment and never the first run form",
+        "span": "Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working \u00b7 AC-9, AC-10, AC-16",
         "rejected_spans": [],
         "known_trap_flags": [
-          "embedded_second_claim"
+          "multi_condition_split"
         ],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:15",
+        "id": "derived:12",
         "id_source": "derived",
         "type": "BuildStep",
-        "span": "Test it: `/test profile entry` \u00b7 run 2026-09-02, 222 new tests across 12 files, all passing (unit 751, integration 58). Covers the validation rules behind AC-3, AC-5 to AC-7a and AC-9 at the schema boundary, the four new base components against their own `AGENTS.md` convention, the work history section's four states, and the AC-13 regression at both the parser and the page. It also closes the two steps `/check verify` could not observe from outside the app, in `test/integration/profile-actions.test.ts`: the action's own caller check (unreachable over HTTP, because the protected layout redirects first) and invariant 9's write ordering (proved by breaking the delete at the driver and showing the caller ends with more skills than they started with, never fewer)",
+        "span": "Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass \u00b7 AC-14, AC-15, AC-17",
         "rejected_spans": [],
         "known_trap_flags": [
-          "embedded_second_claim"
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Verify it: `/check verify profile entry` \u00b7 run 2026-09-02, **PASS**, all 18 acceptance criteria met, 51 of 53 steps ticked in verify.md.",
+        "rejected_spans": [
+          "A first run on the same day found **AC-13 half unbuilt**: a malformed `entry` id rendered the plain list and said nothing, while a well formed one that matched no row correctly said the entry was gone. `/debug` traced it to `parsePageState` collapsing an unusable id into the plain view, fixed in `8a59fdf`, and this run re-proved all four URL cases. The two unticked steps are recorded at the end of `verify.md` and neither is an acceptance criterion failure. The read failure state was proved by stopping the database container: `/profile` renders the failure treatment and never the first run form"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Test it: `/test profile entry` \u00b7 run 2026-09-02, 222 new tests across 12 files, all passing (unit 751, integration 58). Covers the validation rules behind AC-3, AC-5 to AC-7a and AC-9 at the schema boundary, the four new base components against their own `AGENTS.md` convention, the work history section's four states, and the AC-13 regression at both the parser and the page. It also closes the two steps `/check verify` could not observe from outside the app, in `test/integration/profile-actions.test.ts`: the action's own caller check and invariant 9's write ordering.",
+        "rejected_spans": [
+          "(unreachable over HTTP, because the protected layout redirects first)",
+          "(proved by breaking the delete at the driver and showing the caller ends with more skills than they started with, never fewer)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
         ],
         "unclassified_note": null,
         "label": null
@@ -198,9 +207,11 @@
           "label": "third runner constraint",
           "mention": "spec 0001's third runner constraint"
         },
-        "phrase": "is spec 0001's third runner constraint",
+        "phrase": "spec 0001's third runner constraint",
         "date": null,
-        "known_trap_flags": []
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
       },
       {
         "type": "unclassified",
@@ -215,29 +226,14 @@
           "label": null,
           "mention": "spec 0004"
         },
-        "phrase": "deferred to here by",
+        "phrase": "deferred to here by spec 0004",
         "date": null,
-        "known_trap_flags": []
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
       },
       {
         "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:3"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0004",
-          "id": null,
-          "label": "follow up list",
-          "mention": "that spec's follow up list"
-        },
-        "phrase": "recorded in",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "satisfies",
         "source": {
           "kind": "local",
           "id": "derived:4"
@@ -247,14 +243,16 @@
           "record": "0006",
           "id": "AC-8",
           "label": null,
-          "mention": "(spec 0006, AC-8)"
+          "mention": "(spec 0006, **AC-8**)"
         },
-        "phrase": null,
+        "phrase": "(spec 0006, **AC-8**)",
         "date": null,
-        "known_trap_flags": []
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
       },
       {
-        "type": "satisfies",
+        "type": "unclassified",
         "source": {
           "kind": "local",
           "id": "derived:5"
@@ -266,27 +264,28 @@
           "label": null,
           "mention": "spec 0007 AC-15"
         },
-        "phrase": null,
+        "phrase": "closes the deferred half of spec 0007 AC-15",
         "date": null,
         "known_trap_flags": [
           "relationship_type_ambiguous"
         ]
       },
       {
-        "type": "unclassified",
+        "type": "satisfies",
         "source": {
           "kind": "local",
-          "id": "derived:6"
+          "id": "derived:8"
         },
         "target": {
-          "kind": "local",
-          "id": "derived:5"
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
         },
-        "phrase": "proved only the negative half",
+        "phrase": "AC-17",
         "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "satisfies",
@@ -297,45 +296,130 @@
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": "AC-17",
+          "id": "AC-1",
           "label": null,
-          "mention": "AC-17"
+          "mention": "AC-1 to AC-4"
         },
-        "phrase": null,
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "unclassified",
+        "type": "satisfies",
         "source": {
           "kind": "local",
           "id": "derived:9"
         },
         "target": {
           "kind": "reference",
-          "record": "0005",
-          "id": null,
+          "record": "0010",
+          "id": "AC-2",
           "label": null,
-          "mention": "spec 0005's inventory"
+          "mention": "AC-1 to AC-4"
         },
-        "phrase": "extending spec 0005's inventory the way spec 0006 added `Logo`",
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "unclassified",
+        "type": "satisfies",
         "source": {
           "kind": "local",
           "id": "derived:9"
         },
         "target": {
           "kind": "reference",
-          "record": "0006",
-          "id": null,
+          "record": "0010",
+          "id": "AC-3",
           "label": null,
-          "mention": "spec 0006 added `Logo`"
+          "mention": "AC-1 to AC-4"
         },
-        "phrase": "extending spec 0005's inventory the way spec 0006 added `Logo`",
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-1 to AC-4"
+        },
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11 to AC-14"
+        },
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-11 to AC-14"
+        },
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-11 to AC-14"
+        },
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-11 to AC-14"
+        },
+        "phrase": "AC-1 to AC-4, AC-11 to AC-14",
         "date": null,
         "known_trap_flags": []
       },
@@ -348,11 +432,98 @@
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": null,
+          "id": "AC-5",
           "label": null,
-          "mention": "AC-1 to AC-4, AC-11 to AC-14"
+          "mention": "AC-5 to AC-8"
         },
-        "phrase": null,
+        "phrase": "AC-5 to AC-8, AC-7a",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-5 to AC-8"
+        },
+        "phrase": "AC-5 to AC-8, AC-7a",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-5 to AC-8"
+        },
+        "phrase": "AC-5 to AC-8, AC-7a",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-5 to AC-8"
+        },
+        "phrase": "AC-5 to AC-8, AC-7a",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-7a",
+          "label": null,
+          "mention": "AC-7a"
+        },
+        "phrase": "AC-5 to AC-8, AC-7a",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "AC-9, AC-10, AC-16",
         "date": null,
         "known_trap_flags": []
       },
@@ -365,11 +536,28 @@
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": null,
+          "id": "AC-10",
           "label": null,
-          "mention": "AC-5 to AC-8, AC-7a"
+          "mention": "AC-10"
         },
-        "phrase": null,
+        "phrase": "AC-9, AC-10, AC-16",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16"
+        },
+        "phrase": "AC-9, AC-10, AC-16",
         "date": null,
         "known_trap_flags": []
       },
@@ -382,11 +570,11 @@
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": null,
+          "id": "AC-14",
           "label": null,
-          "mention": "AC-9, AC-10, AC-16"
+          "mention": "AC-14"
         },
-        "phrase": null,
+        "phrase": "AC-14, AC-15, AC-17",
         "date": null,
         "known_trap_flags": []
       },
@@ -394,21 +582,38 @@
         "type": "satisfies",
         "source": {
           "kind": "local",
-          "id": "derived:13"
+          "id": "derived:12"
         },
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": null,
+          "id": "AC-15",
           "label": null,
-          "mention": "AC-14, AC-15, AC-17"
+          "mention": "AC-15"
         },
-        "phrase": null,
+        "phrase": "AC-14, AC-15, AC-17",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "verifies",
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": "AC-14, AC-15, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
         "source": {
           "kind": "local",
           "id": "derived:14"
@@ -416,62 +621,115 @@
         "target": {
           "kind": "reference",
           "record": "0010",
-          "id": null,
-          "label": null,
-          "mention": "all 18 acceptance criteria met"
-        },
-        "phrase": null,
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:14"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0010",
-          "id": "AC-13",
-          "label": null,
-          "mention": "AC-13 half unbuilt"
-        },
-        "phrase": "found",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "verifies",
-        "source": {
-          "kind": "local",
-          "id": "derived:15"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0010",
-          "id": null,
+          "id": "AC-3",
           "label": null,
           "mention": "AC-3, AC-5 to AC-7a and AC-9"
         },
-        "phrase": null,
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "verifies",
+        "type": "satisfies",
         "source": {
           "kind": "local",
-          "id": "derived:15"
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-3, AC-5 to AC-7a and AC-9"
+        },
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-3, AC-5 to AC-7a and AC-9"
+        },
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-3, AC-5 to AC-7a and AC-9"
+        },
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-7a",
+          "label": null,
+          "mention": "AC-3, AC-5 to AC-7a and AC-9"
+        },
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-3, AC-5 to AC-7a and AC-9"
+        },
+        "phrase": "AC-3, AC-5 to AC-7a and AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
         },
         "target": {
           "kind": "reference",
           "record": "0010",
           "id": "AC-13",
           "label": null,
-          "mention": "AC-13 regression"
+          "mention": "the AC-13 regression"
         },
-        "phrase": null,
+        "phrase": "the AC-13 regression",
         "date": null,
         "known_trap_flags": []
       }
