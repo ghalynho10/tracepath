@@ -141,6 +141,18 @@ retries" bound the engineer approved. No retries: all six calls settled on their
 attempt (`input_tokens`/`output_tokens` breakdown, and the per unit split, in
 [`data/report.json`](data/report.json)).
 
+**Calibration note for the next estimate.** The pre run estimate interpolated cost from
+character count alone, against two prior anchors. Output ran 94,264 tokens against
+37,950 input, about 2.5 times, higher than either anchor's ratio, because both real
+units here provoke more reasoning per character than a typical section: `## Binding
+rules` is eight dense, individually numbered constraints rather than one continuous
+argument, and the `Preamble` is six stacked revision notes, each its own small claim.
+Size based interpolation reads chars, not argument density, and undercounts exactly
+this shape. The 9.5% miss was small only because both units still sat in a similar
+range to the anchors; a unit this dense but larger could miss by more. Carry a wider
+margin, not a bigger point estimate, when a unit is this densely enumerated rather than
+prose.
+
 ## Conclusion
 
 **The label round trip does not happen, cleanly and reproducibly.** Not a near miss on
