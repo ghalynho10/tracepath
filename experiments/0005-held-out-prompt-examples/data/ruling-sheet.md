@@ -97,7 +97,7 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 5 evenly spaced through the 12 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · superseded-by · written by 3 of 3 runs
+- [x] agree · superseded-by · written by 3 of 3 runs
   - source: `0021#requirements:3` AcceptanceCriterion: The page makes no external paid call on any render: no Adzuna search, no AI scoring
   call. Every value shown was prepared in advance.
   - target: `0021/AC-2` AcceptanceCriterion: The page still
