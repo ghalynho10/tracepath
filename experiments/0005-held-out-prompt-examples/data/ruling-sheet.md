@@ -28,10 +28,10 @@ Replace each line's marks with one word, and add a few words on why when you dis
   `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and
   they are shown on the page in full (AC-14) as the disclosure that makes this honest.
   - flags: multi_condition_split
-- [x]  disagree · `0021#requirements:5` · AcceptanceCriterion
+- [x] agree · `0021#requirements:5` · AcceptanceCriterion
   - span: No control on the page writes to the database. There is no code path by which one
   visitor's visit changes what the next visitor sees.
-  - (two claims, should be split)
+  - (struck, superseded text: kept whole as the thing replaced, per the struck text rule) · `0021#requirements:5` · AcceptanceCriterion
 - [x] agree · `0021#requirements:6` · AcceptanceCriterion
   - span: Exactly two seeded listings (the same title and company each time) appear under both
   profiles, each with a different band, different matched and not mentioned skills, and
@@ -55,12 +55,13 @@ Replace each line's marks with one word, and add a few words on why when you dis
   heading, intro copy, the demo card's own doc comment, the not mentioned skills caption's
   justification) is corrected in the same pass (**Build plan**, "the wording pass").
   - flags: multi_condition_split
-- [ ] agree / disagree · `0021/AC-12` · AcceptanceCriterion
+- [x] disagree · `0021/AC-12` · AcceptanceCriterion
   - span: If the seeded data cannot be read because of a genuine fault (the database is
   unreachable, or a row fails to parse), the page answers a normal 200 and shows a visible failure
   state rather than an empty, broken looking, or server error page. This is a different case from
   AC-15, and the two must render distinguishable copy.
   - flags: multi_condition_split
+  - (should split: fault renders 200 with a visible failure state / copy distinguishable from AC-15, testable separately) · `0021/AC-12` · AcceptanceCriterion
 - [ ] agree / disagree · `0021/AC-14` · AcceptanceCriterion
   - span: The page shows both search queries the current
   results answer (both titles, and the shared location when one is set) and
@@ -70,7 +71,7 @@ Replace each line's marks with one word, and add a few words on why when you dis
   the disclosure AC-3 now depends on.
   - rejected: ['revised 2026-09-15']
   - flags: multi_condition_split, embedded_second_claim
-- [ ] agree / disagree · `0021/AC-17` · AcceptanceCriterion
+- [x] disagree · `0021/AC-17` · AcceptanceCriterion
   - span: A refresh, triggered as described in AC-18, runs
   exactly two real Adzuna searches using the fixed queries in **Feature
   design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings
@@ -92,6 +93,7 @@ Replace each line's marks with one word, and add a few words on why when you dis
   total also aborts, writing nothing.
   - rejected: ['**Feature design**, "Refresh outcomes", states the exact\n  shape of each outcome, both recorded 2026-09-15 from what `/develop` built.']
   - flags: multi_condition_split, rationale_boundary_call
+  - (should split into its separately testable rules: searches and keep / never selected by score / score against both personas / abort on any unclean call / atomic replace / gate refusal severity / abort on zero kept) · `0021/AC-17` · AcceptanceCriterion
 
 ### Relationships
 
