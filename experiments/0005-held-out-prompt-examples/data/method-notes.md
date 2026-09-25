@@ -1,5 +1,9 @@
 # Method notes, experiment 0005 ruling
 
+## Convention: recording reasons
+
+Each reason is one sub-bullet directly under the mark line, starting `reason:`, holding only the reason (no copied item text). Required on every `disagree` and `unsure` (say what it should have been), and on an `agree` when a rule decided it.
+
 Findings about the ruling method itself, kept apart from the item marks so the tally stays a clean count.
 
 ## Group A, entity 1 (`0021#requirements:1`, Feature): the deletion trick and user stories
@@ -19,3 +23,8 @@ AC-4's new text says only its second sentence stopped being true, the first carr
 - AC-12 (line 111) and AC-15 (line 129) each state that the fault state and the not-yet state must render distinguishable copy, but no after run wrote any link between them. It would be `unclassified`, phrase "the two must render distinguishable copy".
 - AC-17 (lines 137 to 158) carries a struck old version; run 1 left it out of the span, correctly, but did not extract it as its own old-version entity, as spec 0002 AC-5 expects and as the model did for AC-2 and AC-6.
 - Entities ruled: 7 of 10 (1 to 5, 8 and 10); 6, 7 and 9 skipped by choice.
+- The reason AC-2, AC-3 and AC-6 moved from fake to real data (2026-09-14) is the user story's "so that" clause (0021/index.md:31-32), which the text never links to those changes; a "why did AC-2 change" chain cannot reach it today.
+
+## History link types: judged by what changed, not the author's stamp
+
+The type reflects what actually changed; the author's literal wording is kept in `phrase` either way. `superseded-by` means the old version is retired and the new one goes a different direction. `amended-by` means the same direction with a changed scope or an addition, the old premise still standing. `corrected-by` means the old version was wrong. Set on group A relationship 2 (old AC-4 to new AC-4, stamped "SUPERSEDED" but narrowed, not retired); the runs split the same way, 2 superseded to 1 amended.

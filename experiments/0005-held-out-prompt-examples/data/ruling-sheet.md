@@ -13,11 +13,11 @@ Replace each line's marks with one word, and add a few words on why when you dis
 10 evenly spaced through after run 1's located order.
 
 - [x] disagree · `0021#requirements:1` · Feature
+  - reason: On this item the "so that" clause carried the feature's distinguishing value (the ranking being judgeable), not background; the engineer ruled the span too narrow.
   - span: As a visitor who has not signed up, I want to see real listings scored for real against a
   stated candidate
   - rejected: ['so that I can judge whether the ranking actually works, not just whether it\n  looks plausible.']
   - flags: granularity_boundary_call
-  - (On this item the "so that" clause carried the feature's distinguishing value (the ranking being judgeable), not background; the engineer ruled the span too narrow.)
 - [x] agree · `0021/AC-1` · AcceptanceCriterion
   - span: A visitor reaches `/demo` and sees a list of results with no sign in, no redirect,
   and no account required.
@@ -29,15 +29,15 @@ Replace each line's marks with one word, and add a few words on why when you dis
   they are shown on the page in full (AC-14) as the disclosure that makes this honest.
   - flags: multi_condition_split
 - [x] agree · `0021#requirements:5` · AcceptanceCriterion
+  - reason: (struck, superseded text: kept whole as the thing replaced, per the struck text rule)
   - span: No control on the page writes to the database. There is no code path by which one
   visitor's visit changes what the next visitor sees.
-  - (struck, superseded text: kept whole as the thing replaced, per the struck text rule) · `0021#requirements:5` · AcceptanceCriterion
 - [x] agree · `0021#requirements:6` · AcceptanceCriterion
+  - reason: (superseded text; kept whole as the thing that was replaced, less fragmentation) 
   - span: Exactly two seeded listings (the same title and company each time) appear under both
   profiles, each with a different band, different matched and not mentioned skills, and
   different written reasoning per profile. Their exact content is named in **Seed content**
 
-  - (superseded text; kept whole as the thing that was replaced, less fragmentation) 
 - [ ] agree / disagree · `0021/AC-8` · AcceptanceCriterion
   - span: Each card shows title, company, location when present, a stated or predicted salary
   on some listings, a description snippet, the band, matched skills, not mentioned skills, the
@@ -56,12 +56,12 @@ Replace each line's marks with one word, and add a few words on why when you dis
   justification) is corrected in the same pass (**Build plan**, "the wording pass").
   - flags: multi_condition_split
 - [x] disagree · `0021/AC-12` · AcceptanceCriterion
+  - reason: (should split: fault renders 200 with a visible failure state / copy distinguishable from AC-15, testable separately)
   - span: If the seeded data cannot be read because of a genuine fault (the database is
   unreachable, or a row fails to parse), the page answers a normal 200 and shows a visible failure
   state rather than an empty, broken looking, or server error page. This is a different case from
   AC-15, and the two must render distinguishable copy.
   - flags: multi_condition_split
-  - (should split: fault renders 200 with a visible failure state / copy distinguishable from AC-15, testable separately) · `0021/AC-12` · AcceptanceCriterion
 - [ ] agree / disagree · `0021/AC-14` · AcceptanceCriterion
   - span: The page shows both search queries the current
   results answer (both titles, and the shared location when one is set) and
@@ -72,6 +72,7 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - rejected: ['revised 2026-09-15']
   - flags: multi_condition_split, embedded_second_claim
 - [x] disagree · `0021/AC-17` · AcceptanceCriterion
+  - reason: (should split into its separately testable rules: searches and keep / never selected by score / score against both personas / abort on any unclean call / atomic replace / gate refusal severity / abort on zero kept)
   - span: A refresh, triggered as described in AC-18, runs
   exactly two real Adzuna searches using the fixed queries in **Feature
   design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings
@@ -93,13 +94,13 @@ Replace each line's marks with one word, and add a few words on why when you dis
   total also aborts, writing nothing.
   - rejected: ['**Feature design**, "Refresh outcomes", states the exact\n  shape of each outcome, both recorded 2026-09-15 from what `/develop` built.']
   - flags: multi_condition_split, rationale_boundary_call
-  - (should split into its separately testable rules: searches and keep / never selected by score / score against both personas / abort on any unclean call / atomic replace / gate refusal severity / abort on zero kept) · `0021/AC-17` · AcceptanceCriterion
-
 ### Relationships
 
 5 evenly spaced through the 12 distinct links the three after runs wrote.
 
+
 - [x] agree · superseded-by · written by 3 of 3 runs
+  - reason: (re-checked under the history link rule: new AC-2 contradicts the old, a deliberate change of direction, so superseded)
   - source: `0021#requirements:3` AcceptanceCriterion: The page makes no external paid call on any render: no Adzuna search, no AI scoring
   call. Every value shown was prepared in advance.
   - target: `0021/AC-2` AcceptanceCriterion: The page still
@@ -119,7 +120,8 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
     >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
     >   other real call in this app, never inside a page render.
-- [ ] agree / disagree · superseded-by · written by 2 of 3 runs
+- [x] disagree · superseded-by · written by 2 of 3 runs
+  - reason: (should be amended-by: premise still true, narrowed in scope with an addition; same direction, not retired)
   - source: `0021#requirements:5` AcceptanceCriterion: No control on the page writes to the database. There is no code path by which one
   visitor's visit changes what the next visitor sees.
   - target: `0021/AC-4` AcceptanceCriterion: No
