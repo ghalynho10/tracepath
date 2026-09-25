@@ -12,29 +12,32 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `0021#requirements:1` · Feature
+- [x] disagree · `0021#requirements:1` · Feature
   - span: As a visitor who has not signed up, I want to see real listings scored for real against a
   stated candidate
   - rejected: ['so that I can judge whether the ranking actually works, not just whether it\n  looks plausible.']
   - flags: granularity_boundary_call
-- [ ] agree / disagree · `0021/AC-1` · AcceptanceCriterion
+  - (On this item the "so that" clause carried the feature's distinguishing value (the ranking being judgeable), not background; the engineer ruled the span too narrow.)
+- [x] agree · `0021/AC-1` · AcceptanceCriterion
   - span: A visitor reaches `/demo` and sees a list of results with no sign in, no redirect,
   and no account required.
-- [ ] agree / disagree · `0021/AC-3` · AcceptanceCriterion
+- [x] agree · `0021/AC-3` · AcceptanceCriterion
   - span: The opposite
   is now true on purpose: every listing (company name, title, description, location) is real,
   exactly as Adzuna returned it, including a real employer's name on a `weak_match` or
   `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and
   they are shown on the page in full (AC-14) as the disclosure that makes this honest.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0021#requirements:5` · AcceptanceCriterion
+- [x]  disagree · `0021#requirements:5` · AcceptanceCriterion
   - span: No control on the page writes to the database. There is no code path by which one
   visitor's visit changes what the next visitor sees.
-- [ ] agree / disagree · `0021#requirements:6` · AcceptanceCriterion
+  - (two claims, should be split)
+- [x] agree · `0021#requirements:6` · AcceptanceCriterion
   - span: Exactly two seeded listings (the same title and company each time) appear under both
   profiles, each with a different band, different matched and not mentioned skills, and
   different written reasoning per profile. Their exact content is named in **Seed content**
-  below.
+
+  - (superseded text; kept whole as the thing that was replaced, less fragmentation) 
 - [ ] agree / disagree · `0021/AC-8` · AcceptanceCriterion
   - span: Each card shows title, company, location when present, a stated or predicted salary
   on some listings, a description snippet, the band, matched skills, not mentioned skills, the
