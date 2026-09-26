@@ -139,7 +139,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the
     >   visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind
     >   anything a visitor's browser can reach.
-- [ ] agree / disagree · superseded-by · written by 1 of 3 runs
+- [x] disagree · superseded-by · written by 1 of 3 runs
+  - reason: should be amended-by at the criterion level; only the tiebreaker changed. The tiebreaker itself is superseded, which fits the open partial supersession question in method notes
+
   - source: `0021#requirements:7` AcceptanceCriterion: Within one profile, listings are ordered best band first, ties broken by Adzuna's own
   returned rank for that search (stored as `sort_order`), the same band ordering rule `/search`
   already uses.
@@ -155,7 +157,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   two searches' own Adzuna order (revised 2026-09-15; **Feature design**, "The kept listing
     >   count") (stored as `sort_order`), the same band ordering rule `/search` already uses. *(Tiebreak source changed 2026-09-14: a hand seeded display order is replaced by
     >   Adzuna's own order, since there is no longer a hand authored order to seed.)*
-- [ ] agree / disagree · amended-by · written by 1 of 3 runs
+- [x] disagree · amended-by · written by 1 of 3 runs
+  - reason: should be blocked-by (AC-13 → the real data version shipping): the link was deliberately held back until that condition was met, which the new text records as done; a deliberate hold with a stated condition counts as blocked
+
   - source: `0021#requirements:10` AcceptanceCriterion: Deliberately not
   built by this spec.
   - target: `0021/AC-13` AcceptanceCriterion: The entry page's hero carries a real, working link to `/demo`, and the "what's real
@@ -174,7 +178,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   2026-09-17**, once its own stated condition was met: the real data version shipped in pull
     >   request #135 and the first production refresh ran 2026-09-16, so `/demo` shows real scored
     >   postings rather than the fabricated set this was waiting out.
-- [ ] agree / disagree · amended-by · written by 1 of 3 runs
+- [x] agree · amended-by · written by 1 of 3 runs
+  - reason: same pair as relationship 2 (old AC-4 → new AC-4); amended-by is the type ruled correct there
+
   - source: `0021#requirements:5` AcceptanceCriterion: No control on the page writes to the database. There is no code path by which one visitor's visit changes what the next visitor sees.
   - target: `0021/AC-4` AcceptanceCriterion: No visitor facing control writes to the database, and a visitor's own visit still cannot change what the next visitor sees. What is no longer true is the absolute second sentence: the refresh (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind anything a visitor's browser can reach.
   - phrase: **SUPERSEDED 2026-09-14.**

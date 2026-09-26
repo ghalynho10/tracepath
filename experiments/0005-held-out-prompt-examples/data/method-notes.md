@@ -4,6 +4,10 @@
 
 Each reason is one sub-bullet directly under the mark line, starting `reason:`, holding only the reason (no copied item text). Required on every `disagree` and `unsure` (say what it should have been), and on an `agree` when a rule decided it.
 
+## blocked-by includes deliberate holds
+
+`blocked-by` covers any item waiting on something to be done first, whether the wait is technical or a deliberate decision with a stated condition ("until it ships"). Set on group A relationship 4 (AC-13, held back until the real data version shipped; JobHunt's `hero-section.tsx:68-72` calls it "the condition that held it back").
+
 Findings about the ruling method itself, kept apart from the item marks so the tally stays a clean count.
 
 ## Group A, entity 1 (`0021#requirements:1`, Feature): the deletion trick and user stories
@@ -16,7 +20,9 @@ Struck (superseded) text is ruled as one entity even when it bundles several con
 
 ## Open design question: partial supersession
 
-AC-4's new text says only its second sentence stopped being true, the first carried over. Splitting struck text would let the graph say exactly which part was superseded. Spec 0002 (AC-5 and its 0021 AC-2 test scenario) currently expects one struck entity per criterion, so the ruling applies the struck text rule consistently and leaves this as a possible spec 0002 amendment. Entity 4 was first ruled "should split" before the rule was set, then changed to agree for consistency.
+- AC-4's new text says only its second sentence stopped being true, the first carried over. Splitting struck text would let the graph say exactly which part was superseded. Spec 0002 (AC-5 and its 0021 AC-2 test scenario) currently expects one struck entity per criterion, so the ruling applies the struck text rule consistently and leaves this as a possible spec 0002 amendment. Entity 4 was first ruled "should split" before the rule was set, then changed to agree for consistency.
+- Second example: AC-7's tiebreaker fragment was superseded (single search rank replaced by the interleaved kept walk order), while AC-7 as a whole was amended.
+
 
 ## Group A findings
 
