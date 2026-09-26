@@ -30,7 +30,10 @@ Struck (superseded) text is ruled as one entity even when it bundles several con
 - AC-17 (lines 137 to 158) carries a struck old version; run 1 left it out of the span, correctly, but did not extract it as its own old-version entity, as spec 0002 AC-5 expects and as the model did for AC-2 and AC-6.
 - Entities ruled: 7 of 10 (1 to 5, 8 and 10); 6, 7 and 9 skipped by choice.
 - The reason AC-2, AC-3 and AC-6 moved from fake to real data (2026-09-14) is the user story's "so that" clause (0021/index.md:31-32), which the text never links to those changes; a "why did AC-2 change" chain cannot reach it today.
+- AC-7's "best band first" depends on the band order defined in spec 0015 AC-1, which AC-7 never names; the text points at `/search` instead, so no chain can reach the real dependency from AC-7 today.
 
 ## History link types: judged by what changed, not the author's stamp
 
 The type reflects what actually changed; the author's literal wording is kept in `phrase` either way. `superseded-by` means the old version is retired and the new one goes a different direction. `amended-by` means the same direction with a changed scope or an addition, the old premise still standing. `corrected-by` means the old version was wrong. Set on group A relationship 2 (old AC-4 to new AC-4, stamped "SUPERSEDED" but narrowed, not retired); the runs split the same way, 2 superseded to 1 amended.
+
+Unnamed dependencies (a dependency the text never names, e.g. AC-2's change back to its user story, AC-7 back to spec 0015 AC-1): 2 found in group A's ~15 relationship items. Keep counting through groups B and C; whether they matter is decided by whether any eval chain needs one. No clear feature owns them: feature 7 covers the same thing named several ways, not links never named at all.

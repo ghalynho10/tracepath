@@ -198,7 +198,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 50 distinct links appear in at least one `0002.3` before run and in none of the `0003.0` afters (by how many before runs wrote each: {'1': 18, '2': 7, '3': 25}). 10 evenly spaced through them, in the order the befores first wrote them.
 
-- [ ] real link lost / rightly dropped · unclassified · written by 3 of 3 runs
+- [x] real link lost · unclassified · written by 3 of 3 runs
+  - reason: AC-2's second part ("every paid call happens only inside the refresh described in AC-17") cannot be understood without AC-17; all 3 before runs wrote it
+
   - source: `0021/AC-2` AcceptanceCriterion: ~~The page makes no external paid call on any render: no Adzuna search, no AI scoring call. Every value shown was prepared in advance.~~ · **SUPERSEDED 2026-09-14.** The page still makes no external paid call on any render. Every paid call (~~one Adzuna search~~ two Adzuna searches, revised 2026-09-15, then one `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for a real search) now happens only inside the refresh described in AC-17, gated exactly like every other real call in this app, never inside a page render.
   - target: `0021/AC-17` AcceptanceCriterion: A refresh, triggered as described in AC-18, runs ~~exactly one real Adzuna search using the fixed query in **Feature design**, de-duplicates the results by Adzuna's own listing id (first occurrence wins) and keeps up to a fixed count of what remains in Adzuna's own returned order~~ exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Unlike `/search`, where the check is best effort, the refresh has no reader waiting on it and a previous, fully checked run to fall back to, so an unfinished check is treated the same as an unfinished score rather than silently written as if it had passed. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of ~~either call type~~ any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, "Refresh outcomes", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built.
   - phrase: now happens only inside the refresh described in AC-17
@@ -211,7 +213,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for
     >   a real search) now happens only inside the refresh described in AC-17, gated exactly like every
     >   other real call in this app, never inside a page render.
-- [ ] real link lost / rightly dropped · unclassified · written by 3 of 3 runs
+- [x] rightly dropped · unclassified · written by 3 of 3 runs
+  - reason: rationale; AC-5 is self-contained, and its note gives the reason for the slug change before pointing to rationale.md for more
+
   - source: `0021/AC-5` AcceptanceCriterion: The page offers exactly two example candidate profiles, `backend-engineer` ("Backend engineer", the default) and `frontend-engineer` ("Frontend engineer"), switchable through a `?persona=` link. Any value that is not exactly one of those two slugs (absent, unrecognized, empty, or a repeated query param) shows the default profile rather than erroring.
   - target: reference `rationale.md` (whole record), mention: see `rationale.md`
   - phrase: see `rationale.md`
@@ -223,7 +227,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   *(Slug changed 2026-09-14: `product-designer` is replaced by `frontend-engineer`, since the
     >   personas are now scored for real and a contrasting-stack pair of engineers gives a cleaner
     >   signal than an engineer against a designer; see `rationale.md`.)*
-- [ ] real link lost / rightly dropped · unclassified · written by 3 of 3 runs
+- [x] rightly dropped · unclassified · written by 3 of 3 runs
+  - reason: "the same band ordering rule /search already uses" is a remark, not a requirement; AC-7 is checkable without /search's rule (spec 0015 AC-9), and the two orderings differ in tiebreak and refused cards
+
   - source: `0021/AC-7` AcceptanceCriterion: Within one profile, listings are ordered best band first, ties broken by ~~Adzuna's own returned rank for that search~~ the order the kept walk kept each listing, which interleaves the two searches' own Adzuna order (revised 2026-09-15; **Feature design**, "The kept listing count") (stored as `sort_order`), the same band ordering rule `/search` already uses.
   - target: reference `/search` (whole record), mention: the same band ordering rule `/search` already uses
   - phrase: the same band ordering rule `/search` already uses
