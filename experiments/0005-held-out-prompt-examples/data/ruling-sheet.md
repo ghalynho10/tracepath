@@ -392,11 +392,17 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `0013#feature-design:1` · Constraint
+- [x] disagree · `0013#feature-design:1` · Constraint
+  - reason: should be one item with the next sentence; "no new database table" follows from the product decision that results are never persisted, and splitting cuts it off from its reason (runs 2 and 3 kept them together)
+
   - span: No new database table.
-- [ ] agree / disagree · `0013#feature-design:4` · Constraint
+- [x] agree · `0013#feature-design:4` · Constraint
+  - reason: one rule in context: counting the dropped listings is what lets the next sentence's exception (every item fails) be detected; all 3 runs kept it as one
+
   - span: Adzuna's response is parsed as an envelope first (does the whole body match the expected shape at all) and then per item: a single listing that fails its own parse is dropped and counted, not treated as a reason to fail the whole page.
-- [ ] agree / disagree · `0013#feature-design:7` · Constraint
+- [x] agree · `0013#feature-design:7` · Constraint
+  - reason: "the same convention specs 0007 and 0011 use" does both jobs, a precedent and a shortcut importing 0007's terms (used verbatim, punctuation rule), so by the deletion trick it is load-bearing and stays in the span; run 2 removed it
+
   - span: **Copy**: one slot per user facing string, text left for the engineer to write before `/develop`, the same convention specs 0007 and 0011 use.
 - [ ] agree / disagree · `0013#feature-design:10` · Constraint
   - span: Exactly one Adzuna call, and exactly one usage gate check, per user submitted search, never zero and never more than one, so spec 0011's own accounting assumption ("the cap counts outbound API calls") holds exactly.
@@ -405,13 +411,17 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - span: Attribution renders once per displayed listing, never once per screen. A screen with zero listings shows no attribution block.
   - rejected: ['since there is nothing to attribute']
   - flags: rationale_boundary_call
-- [ ] agree / disagree · `0013#feature-design:16` · Constraint
+- [x] disagree · `0013#feature-design:16` · Constraint
+  - reason: (minor: one rule, correctly kept whole, but "that could be mistaken for real data" is the reason, not a limit ("simply omitted" already bans every dash), so it belongs in rejected)
+
   - span: An optional field with no value (`location`, `descriptionSnippet`, either salary figure, `postedAt`) is simply omitted from the card, never rendered as a placeholder or a dash that could be mistaken for real data.
 - [ ] agree / disagree · `0013#feature-design:19` · Constraint
   - span: `ADZUNA_APP_KEY`: server only, required (`z.string().min(1)`, no default), Adzuna's application key credential.
 - [ ] agree / disagree · `0013#feature-design:22` · TestScenario · label `Happy path`
   - span: Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**.
-- [ ] agree / disagree · `0013#feature-design:25` · TestScenario · label `Failure case`
+- [x] disagree · `0013#feature-design:25` · TestScenario · label `Failure case`
+  - reason: one test scenario, correctly cut and typed, but "Failure case" is a category shared by three bullets (lines 168 to 170), not this test's own name, so no label should be set; runs 1 and 2 labelled all three the same, run 3 set none
+
   - span: Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the "every item fails" branch is a separate case, same kind).
 - [ ] agree / disagree · `0013#feature-design:28` · TestScenario · label `Validation`
   - span: Validation: a submission with both fields blank is refused before any call and spends no budget, verifies **AC-2**.
@@ -420,32 +430,38 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 5 evenly spaced through the 16 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] agree · unclassified · written by 2 of 3 runs
+  - reason: feature 12 reuses this data shape; no named type means "reuses", so unclassified with the phrase is right (spec 0002 lists "reuses or seeds" only as a candidate type)
+
   - source: `0013#feature-design:3` Constraint: Feature 12 imports this exact shape later for its own field mapping (spec 0003 already names feature 11 as owner of that mapping).
   - target: reference `feature 12` (whole record), mention: Feature 12
   - phrase: Feature 12 imports this exact shape later for its own field mapping
   - flags: relationship_type_ambiguous
   - source text:
     > No new database table. Results are never persisted (by product decision, recorded in `docs/scope/scope.md`'s Slice 1 introduction), so the only new shape is an in memory value object, Zod parsed at the Adzuna response boundary and never written to Postgres. Feature 12 imports this exact shape later for its own field mapping (spec 0003 already names feature 11 as owner of that mapping).
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+
   - source: `0013#feature-design:22` TestScenario: Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**.
   - target: reference `0013` AC-8, mention: **AC-8**
   - phrase: verifies **AC-1**, **AC-6**, **AC-8**
   - source text:
     > - Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**.
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+
   - source: `0013#feature-design:25` TestScenario: Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the "every item fails" branch is a separate case, same kind).
   - target: reference `0013` AC-1, mention: **AC-1**
   - phrase: verifies **AC-1**, **AC-5**
   - source text:
     > - Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the "every item fails" branch is a separate case, same kind).
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+
   - source: `0013#feature-design:26` TestScenario: Gate: a caller whose account week cap is already spent gets the exact `account_week_cap_reached` sentence and no Adzuna call runs, verifies **AC-3**, **AC-10**.
   - target: reference `0013` AC-10, mention: **AC-10**
   - phrase: verifies **AC-3**, **AC-10**
   - source text:
     > - Gate: a caller whose account week cap is already spent gets the exact `account_week_cap_reached` sentence and no Adzuna call runs, verifies **AC-3**, **AC-10**.
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+
   - source: `0013#feature-design:29` TestScenario: Empty: a search that legitimately matches nothing renders the empty state, distinguishable from both the failure and refusal states, verifies **AC-4**.
   - target: reference `0013` AC-4, mention: **AC-4**
   - phrase: verifies **AC-4**

@@ -4,6 +4,10 @@
 
 Each reason is one sub-bullet directly under the mark line, starting `reason:`, holding only the reason (no copied item text). Required on every `disagree` and `unsure` (say what it should have been), and on an `agree` when a rule decided it.
 
+## Rule by what the text supports, including its context
+
+The extractor sees only the text, so a ruling judges its cut against what the text and its context support under the three-question test, not against knowledge only the author has. Where the author's knowledge differs, it goes in the reason. Set on group B entity 2 (0013's "dropped and counted"), first ruled a split, then changed to one rule once its context showed counting serves the all-failed exception. Separately, a JobHunt finding: adzuna.ts drops failing listings but counts them only when every listing fails (droppedCount, line 295).
+
 ## blocked-by includes deliberate holds
 
 `blocked-by` covers any item waiting on something to be done first, whether the wait is technical or a deliberate decision with a stated condition ("until it ships"). Set on group A relationship 4 (AC-13, held back until the real data version shipped; JobHunt's `hero-section.tsx:68-72` calls it "the condition that held it back").
@@ -41,3 +45,7 @@ Unnamed dependencies (a dependency the text never names, e.g. AC-2's change back
 Group A: the old prompt wrote 27 to 35 unclassified links per run, the new prompt 0 to 1. Lost links test whether the drop removed only junk (files, PRs, tools, self-links) or also real criterion-to-criterion pointers (lost link 1, AC-2 to AC-17, was real; #6 and #10 are the same shape).
 
 Named but unlinkable: AC-17 points to Feature design's "Refresh outcomes" section (0021 lines 388 to 390, decisions ratified from the build), but a sub-section is not a record, an AC id or a label, so AC-7's endpoint shapes cannot name it; run 1 moved the sentence into rejected_spans.
+
+- A reference like "the same convention spec X uses" can import rules from another spec without stating them; by the deletion trick it stays in the span. No run linked 0013 to spec 0007, though the text names 0007's convention as the one it follows.
+
+- Category prefixes are not labels: 0013's test list uses prefixes ("Failure case:" three times, "Happy path:", "Gate:"), and runs 1 and 2 set the label "Failure case" on all three failure bullets, run 3 on none. Spec 0003 AC-6 sets a label only for an item's own name, so a shared prefix gets none (three identical labels would also tie under AC-7). JobHunt observations: the third "Failure case" bullet renders the page normally (AC-1, AC-5), unlike the other two; the first bullet holds two tests ("and, separately"); the "every item fails" branch has no bullet of its own.
