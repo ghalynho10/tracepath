@@ -74,6 +74,13 @@ about $0.33 had it been trusted. See Follow up.
 
 Actual came in under both the central and the wide plan, on either accounting.
 
+**The $3.9303 safe total excludes `0015`'s crashed first call**: the connection
+dropped before any usage event arrived, so nothing was recorded for that attempt at
+all (not even the undercounted figure a schema validation failure leaves behind); if
+the API billed anything for it, the true total is unrecorded, bounded above by one
+more flat $0.35, so the honest upper bound is about **$4.28**, still under the wide
+plan.
+
 ## What happened running it
 
 The first before call ran clean: `0014`, 3 settled runs plus one retried failure,
@@ -109,21 +116,44 @@ heterogeneity question (spec 0002: should a bold sub label start a new unit) sta
 untested, per feature 12's scope `Done when`, which states that explicitly rather than
 leaving it silently untested.
 
+**Worth reading alongside the spread**: `feature-33`'s after run is `13/13/13`, 0
+entity rows disagreeing, yet only **1** entity accepted, because every run flags 9 to
+11 of its 13 entities with a trap flag (7 to 8 of them `multi_condition_split`); an
+identical count with no disagreement still needs a matching *signature* on every run
+to accept, and a flagged, split-eligible item is exactly where that signature is most
+likely to drift. `0014`'s accepted count fell from 16 (before) to 10 (after), the same
+direction, on a unit whose entity counts held flat at 27/27/27 with 0 rows
+disagreeing both times: prompt `0003.1`'s added rules are producing more items runs
+agree exist but disagree on the exact cut of, not fewer.
+
 ## Ruling
 
-Not ruled; that is the engineer's step. `prepare_ruling.py` (no API call) rebuilds
-`data/ruling-sheet.md`: 10 entities evenly spaced through each unit's after run 1,
-5 relationships evenly spaced through each unit's distinct after links, and up to 15
-dropped links (written by a before run, by no after run) per unit, drawn at random
-(seed `20260928`, recorded and reproducible). AC-30 allows no unruled item in the
-entity or relationship samples once ruled (`unsure` is a real value, skipping is not);
-the dropped link sample follows the same rule experiment 0005's ruling method notes
-already set for a bundled `AC-N`, applied here to the draw instead of an even spread.
+Not ruled; that is the engineer's step. Three pieces, none of them pass or fail on
+their own (AC-30):
 
-**Not built here, still needed before the bar can be applied**: the cold read (3
-passages per unit) and the blind self agreement check (10 earlier calls), both
-reported alongside the ruling per AC-30, not pass or fail on their own. Experiment
-0005's data and scripts are unchanged by any of this.
+- **The sample**: `prepare_ruling.py` (no API call) rebuilds `data/ruling-sheet.md`:
+  10 entities evenly spaced through each unit's after run 1, 5 relationships evenly
+  spaced through each unit's distinct after links, and up to 15 dropped links
+  (written by a before run, by no after run) per unit, drawn at random (seed
+  `20260928`, recorded and reproducible). AC-30 allows no unruled item in the entity
+  or relationship samples once ruled (`unsure` is a real value, skipping is not); the
+  dropped link sample follows the same rule experiment 0005's ruling method notes
+  already set for a bundled `AC-N`, applied here to the draw instead of an even
+  spread.
+- **The cold read**: `prepare_cold_read.py` (no API call) rebuilds `data/cold-read.md`:
+  3 passages per unit (one paragraph or bulleted item each, the same boundary
+  `source_text()` uses), drawn at random (seed `20260928001`). Each passage's own text
+  comes first; every link the before and after runs actually wrote from it, classified
+  accepted, held or dropped, sits below a divider, read only after forming a cold
+  answer. The question is whether a real link is missing from all three buckets alike.
+- **The blind self agreement check**: `prepare_blind_reread.py` (no API call) draws
+  10 items at random (seed `20260928002`) from experiment 0005's own already ruled
+  `ruling-sheet.md` (42 ruled items across groups A, B, C) and writes `data
+  /blind-reread.md`, each item's own text with no mark and no reason, next to `data
+  /blind-reread-answers.md`, the same 10 items' original mark and reason, meant to
+  stay closed until every item in the first file is re-marked cold.
+
+Experiment 0005's own data and scripts are unchanged by any of this.
 
 ## Follow up
 
