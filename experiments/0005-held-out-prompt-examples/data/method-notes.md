@@ -62,3 +62,23 @@ Second example: feature 9's Done when names "spec 0001's third runner constraint
 
 - Category prefixes are not labels: 0013's test list uses prefixes ("Failure case:" three times, "Happy path:", "Gate:"), and runs 1 and 2 set the label "Failure case" on all three failure bullets, run 3 on none. Spec 0003 AC-6 sets a label only for an item's own name, so a shared prefix gets none (three identical labels would also tie under AC-7). JobHunt observations: the third "Failure case" bullet renders the page normally (AC-1, AC-5), unlike the other two; the first bullet holds two tests ("and, separately"); the "every item fails" branch has no bullet of its own.
 
+## Vocabulary gaps: running tally
+
+Tag a reason with gap:<name> when a disagreement comes from something tracepath cannot express. Counts so far (groups A to C):
+
+- gap:reuses-type (3): feature 12 reuses 0013's shape (B rel 1); 0013 follows 0007's copy convention (B entity 3); AC-9 reuses 0013's attribution pairing (A lost link 4). Spec 0002 already lists "reuses or seeds" as a candidate type awaiting evidence.
+- gap:partial-supersession (2): AC-4 (A rel 2), AC-7's tiebreaker (A rel 3).
+- gap:unlinkable-target (2): AC-17 to Feature design "Refresh outcomes" (A lost link 7); spec 0001's "third runner constraint" (C rel 1).
+- gap:stage-type (1): "Verify it" (C entity 10).
+The most frequent gap is the first candidate for a spec change.
+New gaps get a new tag when first seen. To find ones not yet noticed: group the phrases on unclassified links and the notes on unclassified entities across all runs, check unresolved nodes that carry a record and label, and look at relationship_type_ambiguous flags; anything that recurs is a candidate. Most useful after the whole-corpus run (feature 9).
+
+## Accuracy bar for AC-16 (set after seeing rough counts)
+
+Judged on usefulness by the engineer, counting every disagreement whatever its cause; disagreements that come only from knowledge not in the text are reported separately and do not fail a group. Good enough to move on if at least two thirds of entity marks and of relationship marks in each group agree, and no more than 1 in 5 of the dropped links sampled were real.
+
+Counts at the time: entities A 4/7, B 2/5, C 1/5; relationships A 2/5, B 5/5, C 3/5; knowledge-not-in-text disagreements: 0 by keyword search of the reasons, to be confirmed by the build session's pre-sort (the one intent case, group B entity 2, was ruled on the text and ended agree). Dropped links: 2 real of 10, sampled evenly spaced (not random) from 50. That is exactly 1 in 5, so it sits on the line, and the 95% Wilson interval (5.7% to 51.0%) is too wide to show it is under; about 15 samples with none real, or more if some are, could.
+
+On these counts the bar fails on five of the six results (entities and relationships in groups A, B and C; only B's relationships reach two thirds), so this experiment says fix first. Descriptive, not a test: set after seeing the counts, not pre-registered. Re-check after fixes on units not used in this tally or in the prompt examples (API spend, estimate first), with a larger dropped-link sample, a few random passages read cold for real links missing from accepted, held and dropped alike, and about 10 of the engineer's own calls re-judged blind for self-agreement. Then once on the five eval chains when the eval runner (feature 6) exists.
+
+Fix ladder, cheapest cause first: rules the model was never given (add them to the prompt), then prompt or example quality; vocabulary gaps go to a later spec change, starting with the most frequent tag in the running tally.
