@@ -96,6 +96,52 @@ Replace the bad schema sample (AC-7), add an explicit, general entity labelling 
 
 **Chosen: Option 1**, after first lifting and generalising the rules that would otherwise be lost.
 
+### Amended 2026-09-28: what to do with a bundled criterion that carries a verbatim `AC-N` id
+
+The trigger: the engineer ruled `0021` AC-12 and AC-17 "should split" (`ruling-sheet.md`, lines 58 to 59 and 74 to 75). The prompt's id rule (`client.py`, the "Ids and spans" bullet at line 58) tells the model to use the verbatim `AC-N` token as the id. Three facts weigh against splitting. Verified by reading: `_verbatim_keepers` in `src/tracepath/extract/ids.py` (lines 198 to 213) gives a verbatim id to one entity only, the unstruck one earliest in the unit, and every other entity with that id falls through to a derived id. So a split criterion has one part called `0021/AC-17` and the rest called `0021#requirements:N`, and a reference that names `AC-17` resolves to the first part. Verified from the ruling sheet and corpus: the references that name these two criteria name them whole (`0021`'s own files mention AC-17 about 41 times and AC-12 about 19 times, counted by regular expression; the engineer's own count for AC-17 is about 40 lines). Verified from spec 0002's rationale (lines 93 and 94): `satisfies` and `verifies` lines make about 654 criterion references across 20 specs, each naming a criterion by its id.
+
+Size does not identify a bundled criterion. My count of the corpus's criterion definitions (325 with a looser matcher than the 316 the engineer quotes, so the two are not reconciled) gives a median of 324 characters, a 90th percentile of 846, 26 over 900 and 4 over 1500. `0021` AC-12 is 342 characters, about the median, and was still ruled bundled. So a rule keyed on length would miss it, and how many of the 316 a reviewer would call bundled is not measured; only two rulings exist.
+
+#### Option 1: keep the criterion whole, flag it, log the gap (chosen)
+
+**Pros**: every reference to `AC-N` keeps landing on the one node it names; no change to spec 0002, the graph or the resolver; the model already behaves this way, so the prompt change only states it; the reviewer still sees `multi_condition_split` on the item; the gap is counted (`gap:bundled-ac`, 2) so the most frequent gap can drive a later spec change.
+
+**Cons**: the graph loses the ability to point at one condition of a bundled criterion, so a chain that needs "abort on zero kept" reaches all of AC-17. The engineer's two rulings stay as disagreements in the tally, and the convention that a whole, flagged criterion is ruled `agree` from the re check on is a judgement about the ruling method, not a fix.
+
+#### Option 2: split with sub ids and a part of link
+
+**Pros**: keeps atomicity and referenceability both, in principle: a chain can name one condition, and a bare `AC-17` could still name the whole.
+
+**Cons**: needs a spec 0002 amendment first. The model must not invent ids (line 58), so the sub ids would be assigned by code; that touches AC-3 and AC-4 (id shapes), AC-7 (how a bare `AC-17` resolves once parts exist), the relationship table (a new `part of` type, a closed set today), the graph model and the review queue. The corpus already uses a letter suffix (`AC-10b`) that the prompt reads as amending its numeric parent, so a part scheme cannot reuse it. Without more evidence, that cost is paid for two rulings.
+
+#### Option 3: split freely and accept that the first part wins
+
+**Pros**: no spec change.
+
+**Cons**: every existing reference to the criterion lands on part 1, wherever the condition it meant actually sits, and nothing tells the reader. That is a silent graph corruption, which AGENTS.md's rules on uncertainty are written to prevent.
+
+#### Option 4: split only blocks that carry no verbatim id
+
+This is not a rival to Option 1; it is what Option 1 leaves open. `Done when` blocks, plain bullets and scope row bundles have derived ids, so splitting them costs no reference (AC-26). It is part of the chosen approach.
+
+**Chosen: Option 1 with Option 4**, on the engineer's answer of 2026-09-28. Sub ids and a part of link reopen only if an eval chain or the re check needs a part of one criterion; if reopened, the design starts from a general parent `AC-N` node that bare references resolve to, with the parts listed under it and no automatic part matching.
+
+### Amended 2026-09-28: the six rule and example candidates
+
+Verified by reading `client.py` and the example files, and checked against `method-notes.md`, `ruling-sheet.md` and `ruling-tally.json`. Where a candidate could conflict with something already in the prompt, that is stated.
+
+- **History link types.** `client.py:101-102` tells the model that a struck claim and its replacement are linked `superseded-by` or `corrected-by`, and `133-135` tells it a partial retirement is `amended-by`. A criterion stamped `SUPERSEDED` but only narrowed matches both, which is the conflict the runs split on (2 `superseded-by`, 1 `amended-by`). The fix states one test, what actually changed, in the Links section, and lets line 101 point there.
+- **Category prefixes.** The test is whether a prefix starts more than one item in the unit, because a model can check that from the text alone and it matches the label index's own tie rule (spec 0002 AC-7: a tie resolves to `:Unresolved`). One point stays open: `0013`'s `Happy path:` and `Gate:` each appear once, so this test keeps them as labels, while the method notes call all the prefixes categories. The rule does not settle it and the re check will show whether it matters. `examples/0006` uses `Happy path` as a label, and the schema sample uses it too (AC-7), so a rule that banned every prefix would contradict the existing example.
+- **Link starts from the connected item; `blocked-by` deliberate holds.** Neither has a rule today; both are additions.
+- **Unclassified pointer between two criteria.** The rule already exists; what is missing is a demonstration. Excluded at the record level (AC-25): every record in group A, B or C, every re check record (`0014`, `0015`, feature 33's own record (0018)), every record an example already draws from, and every record an eval chain cites, which rules out `0011` (an eval chain cites `0011` AC-12) as well as `0013`, `0014` and `0015`. A rough search of criterion definitions that mention another criterion of their own spec leaves `0017` and `0019`, each with several candidates. That search did not read the pairs, so the build must confirm one is a real, unnamed dependency before using it.
+- **Feature 21 example.** The `Done when` block was kept whole on purpose, to avoid three identical `Done when` labels tying (the example's own note). That reason no longer holds, since the current labelling rules already forbid a label on a block. Splitting removes the reason and matches the ruling on group C. The cost is that this example now teaches splitting on unnumbered blocks, which can move entity counts; the re check reports it. `Verify it` follows the ruling on group C entity 10.
+
+### Amended 2026-09-28: the two recorded decisions
+
+**AC-17 heterogeneity test, not run.** The trigger fired: group B's after spread was 3 (31, 34, 31; `heldout-table.json`). The engineer decided against the test. The reasons: 3 is about 9% of about 32 entities, and the stable `0021` baseline's 2 is 2 of about 20, 10%, so the relative spread is no wider; and the measured estimate was about 30 calls. That estimate replaces the "up to 39" in AC-17, which assumed 13 bold sub labels; counting `0013`'s `## Feature design` in the pinned corpus gives 10. Group C's after spread was also 3 (14, 17, 14), but AC-17's trigger names group B only. The trigger stays at 2, and the test reopens if `0015`'s `## Feature design` in the re check spreads by more than 2.
+
+**The re check.** The accuracy bar in `method-notes.md` requires units the prompt and the tally never saw. `0014` `## Requirements`, `0015` `## Feature design` and JobHunt's feature 33 scope row appear in no worked example and in none of runs `0001`, `0006`, `0008`, `0012`, `0013`, `0021`, `feature-21`, `feature-9` (checked by listing `artifacts/runs/`). `0014` is cited by one eval chain (AC-20a of `0014`), which is not a conflict for the re check units themselves (AC-25's exclusion is about the seventh example, not the re check's own units), since the eval chains test the graph and not the prompt. The 10 entity and 5 relationship sample sizes come from `ruling-tally.json`'s counts. The $4.10 and $5.10 figures are the engineer's planning numbers, equal to experiment 0005's own measured 18 calls summed ($0.6918 + $0.4776 + $0.4276 + $1.2139 + $0.6693 + $0.5768 = $4.06, from `heldout-table.json`'s companion cost log); the `$0.22` figure in `verify.md`'s cost table is a character count estimate, not a measured figure, and is not the basis for this planning number. Per call output varied about 1.6x across experiment 0005's own runs (the `0021` after run averaged about 32k output tokens per call, `0013` about 20k), so a flat per call average is a rough basis. The recomputed go ahead figure (AC-20) should match each fresh unit to its nearest experiment 0005 twin by character count (`0014 ## Requirements` to `0021 ## Requirements`, `0015 ## Feature design` to `0013 ## Feature design`, the feature 33 row to the `0021` row, both densely enumerated scope-shaped text) rather than use one average across all three, and add one `0003.1` cache write and headroom for a retry. The reflex on API spend requires the figure to be recomputed from measured per call cost before the go ahead either way.
+
 ## Rationale
 
 The label defect and the disagreement rate question have different root causes and different fixes, and treating them as one question was the planning error the earlier scope entry made. The defect is a missing rule in AC-7, not a missing demonstration; a worked example teaching the model to invent `binding rule 6` would have taught it to break the very rule that makes the existing example correct. Fixing it in code, scoped narrowly to the one heading shape the corpus actually shows this pattern for (`## Binding rules`, about 159 references, against `step N` at about 83, `invariant N` at about 67 and `revision N` at about 63, none yet shown to share the same structure), keeps the fix provable without spending anything.

@@ -56,13 +56,40 @@ stop threshold: if total > $15, stop and re-confirm before running anything
 |---|---|---|---|
 | `0021 ## Requirements`, fresh `0002.3` baseline | 3 | No | 15,711/call (experiment 0004 average); replace with the real measured figure once this run itself completes |
 | `0021 ## Requirements`, after (new prompt) | 3 | Yes | This unit's own fresh baseline output tokens, once measured |
-| `0013 ## Feature design`, before and after | 3 + 3 | Before: no · After: yes | 15,711/call, with a wider margin (densely enumerated, 13 bold sub labels) |
+| `0013 ## Feature design`, before and after | 3 + 3 | Before: no · After: yes | 15,711/call, with a wider margin (densely enumerated, 10 bold sub labels) |
 | `Profile entry` scope row, before and after | 3 + 3 | Before: no · After: yes | 15,711/call, with a wider margin (densely enumerated, a scope row) |
 | Type coverage set, `PROMPT_VERSION 0003.0` | 24 | Yes | 15,711/call, except the three `## Feature design` calls, which carry the wider margin |
 
 18 calls before the type coverage set, 42 total. Confirm this count has not changed (a different unit substituted, a group added or dropped) before running; if it has, recompute. The conditional AC-2 test (AC-17), if triggered, is a separate cost estimate brought fresh at that point, not folded into this total in advance.
 
 For each `0003.0` session: confirm the second call shows `cache_read_input_tokens` greater than zero, verifying the 1 hour breakpoint actually hit (AC-19), before trusting the cached cost estimate for the remaining calls in that session. The fresh `0021` baseline predates the examples block and is never expected to show a cache hit.
+
+## The re check, experiment 0006, amended 2026-09-28 (spends money, same rules as above)
+
+Do not run any of this until a go ahead is given for the figure computed below. The $4.10 central and $5.10 wider figures are planning numbers only.
+
+Before storage changes: add the four safeguards spec 0001 now names (`write_run` and `move_superseded` refuse to overwrite an existing file; a run id and format version on every artifact; a `SHA-256` of the unit text; the raw response text and `stop_reason` alongside `output`) before any call in this section runs. Experiments 0001 to 0004 are untouched.
+
+| Run | Calls | Cached? |
+|---|---|---|
+| `0014` `## Requirements`, before (`0002.3`, from commit `972907b`) and after (`0003.1`) | 3 + 3 | Before: no · After: yes |
+| `0015` `## Feature design`, before and after | 3 + 3 | Before: no · After: yes |
+| JobHunt feature 33 scope row (Band anchor review), before and after | 3 + 3 | Before: no · After: yes |
+
+18 calls. The before runs use `PROMPT_VERSION 0002.3`, run from a worktree of commit `972907b`, the same prompt group A's lost links were measured against, for continuity with experiment 0005. Use the cost formula in the section above, with two changes: the token count is the `0003.1` prompt's, measured with the token counting endpoint, and the per call output tokens come from matching each fresh unit to its nearest experiment 0005 twin by character count (`0014 ## Requirements` to `0021 ## Requirements`; `0015 ## Feature design` to `0013 ## Feature design`; the feature 33 row to the `0021` row, both densely enumerated scope-shaped text) and using that twin's own measured per call usage (thinking tokens included), not a single flat average, since per call output varied about 1.6x across experiment 0005's own runs. Add one `0003.1` cache write and headroom for a retry. Report the figure, name which measurement it comes from, and wait for a go ahead. Stop threshold: if the total is above $15, stop and re confirm.
+
+Before any call, confirm the three units still appear in no worked example and in none of the runs in `artifacts/runs/`.
+
+**Ruling.** Rule all 10 entity items and all 5 relationship items per after run. "Unruled" means skipped by choice; the re check allows no unruled items left when the bar is applied. "Unsure" is an allowed ruling, counted on its own, neither agree nor disagree.
+
+**Free checks, reported alongside the bar, not pass or fail on their own:**
+- Dropped link sample: 15 per unit, drawn at random, the seed recorded. Pass rule unchanged from `method-notes.md` (no more than 1 in 5 sampled links that were really dropped), with the 95% Wilson interval reported beside the count.
+- Cold read: 3 passages per unit, read for real links missing from accepted, held and dropped alike.
+- Blind self agreement: about 10 of the engineer's own earlier calls, re judged blind.
+
+Apply the bar in `method-notes.md` (thresholds unchanged) using the ruled counts above. Compute `0015`'s after run entity spread and compare it to 2 (AC-31); write the result to experiment 0005's README (which this step adds, stating the AC-17 decision, without touching 0005's own data or scripts).
+
+**If the bar fails**: stop. Run the pre sort again, the same fix ladder `method-notes.md` states (rules the model was never given, then prompt or example quality, then vocabulary gaps). No further spend follows automatically; a next amendment, if one is needed, brings its own go ahead.
 
 ## Acceptance criteria coverage
 
@@ -75,6 +102,14 @@ For each `0003.0` session: confirm the second call shows `cache_read_input_token
 | AC-14, AC-15 | The held out before/after report, entity and relationship columns, per group |
 | AC-16 | The engineer's ruling on each after run's fixed ~10 item sample, reported beside the disagreement rate |
 | AC-17 | Group B's after run entity spread computed against 2; the experiment README states the resulting decision either way |
-| AC-18 | The re run type coverage set, recorded as a new experiment |
-| AC-19 | `cache_read_input_tokens` on the second call of each `0003.0` session |
+| AC-18 | The re run type coverage set, run once after the re check under whichever prompt version it leaves in place, recorded as a new experiment |
+| AC-19 | `cache_read_input_tokens` on the second call of each `0003.x` session |
 | AC-20 | The measured token count and computed cost (the formula above), confirmed before the first paid call |
+| AC-21 | Inspection of the reworded struck claim and partial retirement rules in `RULES`, and of `examples/0012-build-plan.md` step 3's retyped link |
+| AC-22 to AC-24, AC-27 | Inspection of the assembled `0003.1` prompt: each new rule appears once, no example file repeats one |
+| AC-25 | Example validation test, plus inspection: the seventh example's source record is on none of the excluded lists and its unclassified pointer is real |
+| AC-26 | Inspection: `feature-21-scope-row.md` shows the `Done when` block split at its clause boundaries into three parts |
+| AC-28 | The test that every example's Output holds at most one **unstruck** entity per verbatim `AC-N` id; the seventh example contains at least one bundled, flagged `AC-N`; `method-notes.md` carries the ruling convention |
+| AC-29 | `PROMPT_VERSION` reads `0003.1`; the example validation test passes; the token count is re measured |
+| AC-30 | The re check (experiment 0006) report per unit (entity and relationship columns), the ruling counts with no unruled items left, the bar applied as `method-notes.md` states it, the dropped link/cold read/blind self agreement checks reported, experiment 0005's README added |
+| AC-31 | The `0015` `## Feature design` after run spread against 2, written to experiment 0005's README either way |

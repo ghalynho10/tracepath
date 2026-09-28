@@ -28,6 +28,10 @@ The deletion trick asks whether a testable condition disappears, which has no an
 
 Struck (superseded) text is ruled as one entity even when it bundles several conditions, since it is recorded as the thing that was replaced; atomicity is applied to current text only. Reason: splitting replaced text fragments the history without adding anything a chain needs.
 
+## Group A, entities 0021 AC-12 and AC-17: a bundled AC-N kept whole
+
+A criterion with a verbatim `AC-N` id is one item however many conditions it bundles, and the prompt keeps it whole and flags it `multi_condition_split` (spec 0003, AC-28). Splitting would give the verbatim id to the first part only (`ids.py`, `_verbatim_keepers`), so every reference to the id would land on that part; the eval set and about 40 lines of `0021` cite these criteria as one item. The two rulings made before this decision, AC-12 and AC-17 "should split", stay as recorded disagreements, tagged `gap:bundled-ac` (2); the tally is not rewritten. From the re check on, a bundled `AC-N` kept whole and flagged `multi_condition_split` is ruled `agree`, with a reason line tagged `gap:bundled-ac`, the same way struck text kept whole is ruled. A bundled `AC-N` kept whole but left unflagged, or one that was split, is ruled `disagree`. The accuracy bar's thresholds do not change. Sub ids and a part of link reopen only if an eval chain or the re check needs a part of one criterion; the design then starts from a general parent `AC-N` node that bare references resolve to, with parts listed under it and no automatic part matching.
+
 ## Open design question: partial supersession
 
 - AC-4's new text says only its second sentence stopped being true, the first carried over. Splitting struck text would let the graph say exactly which part was superseded. Spec 0002 (AC-5 and its 0021 AC-2 test scenario) currently expects one struck entity per criterion, so the ruling applies the struck text rule consistently and leaves this as a possible spec 0002 amendment. Entity 4 was first ruled "should split" before the rule was set, then changed to agree for consistency.
@@ -70,6 +74,7 @@ Tag a reason with gap:<name> when a disagreement comes from something tracepath 
 - gap:partial-supersession (2): AC-4 (A rel 2), AC-7's tiebreaker (A rel 3).
 - gap:unlinkable-target (2): AC-17 to Feature design "Refresh outcomes" (A lost link 7); spec 0001's "third runner constraint" (C rel 1).
 - gap:stage-type (1): "Verify it" (C entity 10).
+- gap:bundled-ac (2): 0021 AC-12 and AC-17, kept whole by design (spec 0003, AC-28).
 The most frequent gap is the first candidate for a spec change.
 New gaps get a new tag when first seen. To find ones not yet noticed: group the phrases on unclassified links and the notes on unclassified entities across all runs, check unresolved nodes that carry a record and label, and look at relationship_type_ambiguous flags; anything that recurs is a candidate. Most useful after the whole-corpus run (feature 9).
 
