@@ -4,6 +4,9 @@
 **Corpus commit**: `2e40bcf` (JobHunt `docs/`, pinned)
 **Code commit**: `3bbfb9b` plus the effort default fix in this run
 **Spec**: [0002, AC-14](../../docs/specs/0002-data-model/index.md), amended 2026-09-23
+**Erratum**: the three committed run artifacts' `extracted_at` (`2026-09-23T00:00:00+00:00`,
+identical across all three) is a placeholder, not a real timestamp; the real run happened
+at or before `472b6ed`.
 **Note**: This run uses the **amended** comparator (no flags in the signature, derived
 entities identified by located line, runs compared by count). Its agreement figures are
 not comparable with [experiment 0001](../0001-ac14-type-stability/README.md) or

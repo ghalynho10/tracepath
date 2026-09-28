@@ -142,7 +142,15 @@ def test_the_calibration_writes_an_artifact_per_attempt_rather_than_raising_type
         EXPERIMENTS / "0002-effort-low-fidelity" / "calibrate_effort.py", "exp0002"
     )
     settled = RunOutcome(
-        attempts=(Attempt(number=1, input_tokens=4211, output_tokens=9012, output=an_output()),)
+        attempts=(
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=4211,
+                output_tokens=9012,
+                output=an_output(),
+            ),
+        )
     )
 
     monkeypatch.setattr(script, "run_with_retry", lambda *a, **k: settled)
@@ -171,8 +179,20 @@ def test_a_calibration_that_fails_still_writes_every_attempt_it_paid_for(
         EXPERIMENTS / "0002-effort-low-fidelity" / "calibrate_effort.py", "exp0002_fail"
     )
     attempts = (
-        Attempt(number=1, input_tokens=4211, output_tokens=64000, error="malformed output"),
-        Attempt(number=2, input_tokens=4211, output_tokens=63000, error="malformed output"),
+        Attempt(
+            number=1,
+            run_id="test-run",
+            input_tokens=4211,
+            output_tokens=64000,
+            error="malformed output",
+        ),
+        Attempt(
+            number=2,
+            run_id="test-run",
+            input_tokens=4211,
+            output_tokens=63000,
+            error="malformed output",
+        ),
     )
 
     def fails(*args: Any, **kwargs: Any) -> RunOutcome:

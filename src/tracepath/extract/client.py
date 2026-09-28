@@ -10,12 +10,13 @@ so leaving them off is both what the spec asked for and the only thing that work
 """
 
 import logging
+import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal, cast
 
 import anthropic
-from anthropic.types import OutputConfigParam, TextBlockParam, Usage
+from anthropic.types import ContentBlock, OutputConfigParam, TextBlockParam, Usage
 from pydantic import ValidationError
 
 from tracepath.config import AnthropicSettings
@@ -250,15 +251,26 @@ class Attempt:
     unmeasured. Usage counts **this attempt alone**, never a running total.
     `input_tokens` is the uncached input only; the cached system prompt is counted
     apart, as written to the cache or read from it, because each bills at its own rate.
+
+    `run_id` is a fresh identifier minted for this one call, distinct from `number`
+    (the retry accounting within a run) and from `attempt` (`pipeline.py`'s own count):
+    two attempts can share a `number`/`attempt` position across different runs, but
+    never a `run_id` (spec 0001's storage row, amended 2026-09-28). `raw_response` and
+    `stop_reason` carry the API's own text and stop reason alongside the already
+    parsed `output`, so a malformed or truncated response is diagnosable from the
+    artifact itself; both are null when the call raised before any response came back.
     """
 
     number: int
     input_tokens: int
     output_tokens: int
+    run_id: str
     output: ExtractionOutput | None = None
     error: str | None = None
     cache_creation_input_tokens: int = 0
     cache_read_input_tokens: int = 0
+    raw_response: str | None = None
+    stop_reason: str | None = None
 
 
 class ExtractionFailed(Exception):
@@ -345,23 +357,48 @@ def system_blocks() -> list[TextBlockParam]:
     ]
 
 
+def _raw_text(content: Sequence[ContentBlock]) -> str | None:
+    """The response's own text, exactly as the API wrote it.
+
+    For diagnosing a malformed or truncated call from the artifact alone (spec 0001,
+    amended 2026-09-28). `None` when no text block came back at all.
+    """
+    blocks = [block.text for block in content if block.type == "text"]
+    return "\n".join(blocks) if blocks else None
+
+
 def _attempt_from_usage(
     number: int,
     usage: Usage | None,
     output: ExtractionOutput | None = None,
     error: str | None = None,
+    raw_response: str | None = None,
+    stop_reason: str | None = None,
 ) -> Attempt:
     """One attempt, with every part of the usage the API reported for it."""
+    run_id = uuid.uuid4().hex
     if usage is None:
-        return Attempt(number=number, input_tokens=0, output_tokens=0, output=output, error=error)
+        return Attempt(
+            number=number,
+            input_tokens=0,
+            output_tokens=0,
+            run_id=run_id,
+            output=output,
+            error=error,
+            raw_response=raw_response,
+            stop_reason=stop_reason,
+        )
     return Attempt(
         number=number,
         input_tokens=usage.input_tokens,
         output_tokens=usage.output_tokens,
+        run_id=run_id,
         output=output,
         error=error,
         cache_creation_input_tokens=usage.cache_creation_input_tokens or 0,
         cache_read_input_tokens=usage.cache_read_input_tokens or 0,
+        raw_response=raw_response,
+        stop_reason=stop_reason,
     )
 
 
@@ -417,7 +454,11 @@ def extract_once(
                     message,
                     (
                         _attempt_from_usage(
-                            number, snapshot.usage if snapshot else None, error=message
+                            number,
+                            snapshot.usage if snapshot else None,
+                            error=message,
+                            raw_response=_raw_text(snapshot.content) if snapshot else None,
+                            stop_reason=snapshot.stop_reason if snapshot else None,
                         ),
                     ),
                 ) from exc
@@ -426,7 +467,16 @@ def extract_once(
         # "nothing was billed that we were told about", and the error says why.
         message = f"{unit.record_id} {unit.section}: the call failed ({exc})"
         raise ExtractionFailed(
-            message, (Attempt(number=number, input_tokens=0, output_tokens=0, error=message),)
+            message,
+            (
+                Attempt(
+                    number=number,
+                    input_tokens=0,
+                    output_tokens=0,
+                    run_id=uuid.uuid4().hex,
+                    error=message,
+                ),
+            ),
         ) from exc
 
     parsed = response.parsed_output
@@ -437,9 +487,24 @@ def extract_once(
             f"output_tokens={response.usage.output_tokens} of max {MAX_TOKENS})"
         )
         raise ExtractionFailed(
-            message, (_attempt_from_usage(number, response.usage, error=message),)
+            message,
+            (
+                _attempt_from_usage(
+                    number,
+                    response.usage,
+                    error=message,
+                    raw_response=_raw_text(response.content),
+                    stop_reason=response.stop_reason,
+                ),
+            ),
         )
-    return _attempt_from_usage(number, response.usage, output=parsed)
+    return _attempt_from_usage(
+        number,
+        response.usage,
+        output=parsed,
+        raw_response=_raw_text(response.content),
+        stop_reason=response.stop_reason,
+    )
 
 
 def extract_unit(client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit) -> UnitRuns:

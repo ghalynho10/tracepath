@@ -32,7 +32,7 @@ from pathlib import Path
 
 import anthropic
 
-from tracepath.artifacts import RUNS_DIR, now_utc, read_run, write_run
+from tracepath.artifacts import RUNS_DIR, ArtifactCollisionError, now_utc, read_run, write_run
 from tracepath.config import load_anthropic_settings
 from tracepath.extract import client as client_module
 from tracepath.extract.client import PROMPT_VERSION
@@ -77,7 +77,10 @@ def move_superseded(root: Path, record: str, slug: str) -> list[Path]:
         destination = root / "artifacts" / "superseded" / f"{SUPERSEDED_DATE}-prompt-{version}"
         destination = destination / record / slug
         destination.mkdir(parents=True, exist_ok=True)
-        moved.append(Path(shutil.move(path, destination / path.name)))
+        target_path = destination / path.name
+        if target_path.exists():
+            raise ArtifactCollisionError(f"a superseded artifact already exists at {target_path}")
+        moved.append(Path(shutil.move(path, target_path)))
         note = destination / "NOTE.md"
         if not note.exists():
             note.write_text(

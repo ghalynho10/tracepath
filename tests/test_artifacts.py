@@ -6,12 +6,15 @@ run died before writing a summary, and the 97 held links had nowhere durable to 
 while `write_review_queue()` sat with no caller.
 """
 
+import hashlib
 import json
 from pathlib import Path
 
 import pytest
 
 from tracepath.artifacts import (
+    ARTIFACT_FORMAT_VERSION,
+    ArtifactCollisionError,
     RunArtifact,
     build_artifact,
     ensure_review_log,
@@ -119,6 +122,61 @@ def test_usage_survives_a_round_trip(tmp_path: Path) -> None:
     assert read_run(path).output_tokens == 22
 
 
+# Spec 0001's storage row, amended 2026-09-28: no silent overwrite, a run id and
+# format version on every artifact, a SHA-256 of the unit text, and the raw response.
+
+
+def test_write_run_refuses_to_replace_an_existing_artifact(tmp_path: Path) -> None:
+    write_run(tmp_path, artifact(run=1))
+
+    with pytest.raises(ArtifactCollisionError):
+        write_run(tmp_path, artifact(run=1))
+
+
+def test_a_settled_run_carries_a_run_id_format_version_and_unit_hash(tmp_path: Path) -> None:
+    path = write_run(tmp_path, artifact(run_id="the-run-id"))
+
+    payload = json.loads(path.read_text())
+    expected_hash = hashlib.sha256(a_unit().text.encode()).hexdigest()
+
+    assert payload["run_id"] == "the-run-id"
+    assert payload["artifact_format_version"] == ARTIFACT_FORMAT_VERSION
+    assert payload["unit_sha256"] == expected_hash
+
+
+def test_the_raw_response_and_stop_reason_survive_a_round_trip(tmp_path: Path) -> None:
+    path = write_run(tmp_path, artifact(raw_response='{"entities": []}', stop_reason="end_turn"))
+
+    read_back = read_run(path)
+
+    assert read_back.raw_response == '{"entities": []}'
+    assert read_back.stop_reason == "end_turn"
+
+
+def test_an_artifact_written_before_the_amendment_reads_the_four_fields_as_unrecorded(
+    tmp_path: Path,
+) -> None:
+    path = write_run(tmp_path, artifact())
+    payload = json.loads(path.read_text())
+    for field in (
+        "run_id",
+        "artifact_format_version",
+        "unit_sha256",
+        "raw_response",
+        "stop_reason",
+    ):
+        del payload[field]
+    path.write_text(json.dumps(payload))
+
+    legacy = read_run(path)
+
+    assert legacy.run_id is None
+    assert legacy.artifact_format_version is None
+    assert legacy.unit_sha256 is None
+    assert legacy.raw_response is None
+    assert legacy.stop_reason is None
+
+
 def test_an_artifact_written_before_the_field_reads_as_unmeasured(tmp_path: Path) -> None:
     """Null means unmeasured, which is what the 24 artifacts of the first runs are.
 
@@ -144,8 +202,12 @@ def test_an_artifact_written_before_the_field_reads_as_unmeasured(tmp_path: Path
 def test_a_run_outcome_reports_the_settling_attempt_and_the_wasted_one_apart() -> None:
     outcome = RunOutcome(
         attempts=(
-            Attempt(number=1, input_tokens=100, output_tokens=900, error="malformed"),
-            Attempt(number=2, input_tokens=100, output_tokens=800, output=an_output()),
+            Attempt(
+                number=1, run_id="test-run", input_tokens=100, output_tokens=900, error="malformed"
+            ),
+            Attempt(
+                number=2, run_id="test-run", input_tokens=100, output_tokens=800, output=an_output()
+            ),
         )
     )
 
@@ -157,8 +219,8 @@ def test_a_run_outcome_reports_the_settling_attempt_and_the_wasted_one_apart() -
 
 def test_a_run_that_failed_after_its_retry_still_carries_both_attempts() -> None:
     attempts = (
-        Attempt(number=1, input_tokens=100, output_tokens=900, error="one"),
-        Attempt(number=2, input_tokens=100, output_tokens=950, error="two"),
+        Attempt(number=1, run_id="test-run", input_tokens=100, output_tokens=900, error="one"),
+        Attempt(number=2, run_id="test-run", input_tokens=100, output_tokens=950, error="two"),
     )
 
     failure = ExtractionFailed("run 1 failed after its retry", attempts)
@@ -167,7 +229,9 @@ def test_a_run_that_failed_after_its_retry_still_carries_both_attempts() -> None
 
 
 def test_an_outcome_with_no_successful_attempt_raises_rather_than_returning_nothing() -> None:
-    outcome = RunOutcome(attempts=(Attempt(number=1, input_tokens=1, output_tokens=2, error="x"),))
+    outcome = RunOutcome(
+        attempts=(Attempt(number=1, run_id="test-run", input_tokens=1, output_tokens=2, error="x"),)
+    )
 
     with pytest.raises(ExtractionFailed):
         _ = outcome.output
