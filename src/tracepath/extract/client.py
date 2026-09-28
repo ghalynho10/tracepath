@@ -29,8 +29,10 @@ Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 #: The version of the instructions below. Stored on every entity, so a later prompt
 #: change can be told apart from a stable one when two runs disagree. `0003.0` is the
-#: first prompt with worked examples, a new numbering root tied to spec 0003.
-PROMPT_VERSION = "0003.0"
+#: first prompt with worked examples, a new numbering root tied to spec 0003. `0003.1`
+#: covers the AC-16 findings: seven rule changes, two changed examples and one new
+#: example (spec 0003, AC-21 to AC-29).
+PROMPT_VERSION = "0003.1"
 
 #: Room for the extraction and the thinking that precedes it. This model runs adaptive
 #: thinking, and at 16000 a real `Consequences` section spent the whole budget reasoning

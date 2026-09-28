@@ -29,7 +29,8 @@ from tracepath.extract.examples import (
     parse_example,
     read_examples,
 )
-from tracepath.extract.schema import ExtractionOutput, extraction_json_schema
+from tracepath.extract.precheck import is_struck, mark_struck
+from tracepath.extract.schema import ExtractionOutput, IdSource, extraction_json_schema
 
 EXAMPLE = """\
 # Worked example: a tiny one
@@ -72,11 +73,31 @@ def test_every_committed_example_output_validates_against_the_extraction_schema(
     examples = read_examples(EXAMPLES_DIR)
     properties = set(extraction_json_schema()["properties"])
 
-    assert len(examples) == 6
+    assert len(examples) == 7
     for example in examples:
         payload = json.loads(example.output)
         assert set(payload) <= properties, example.name
         ExtractionOutput.model_validate(payload)
+
+
+# AC-28: a struck old version and its unstruck replacement may legitimately share one
+# verbatim id (`ids.py`, `_verbatim_keepers`); nothing else may.
+
+
+def test_every_committed_example_holds_at_most_one_unstruck_entity_per_verbatim_id() -> None:
+    for example in read_examples(EXAMPLES_DIR):
+        payload = json.loads(example.output)
+        struck_ranges = mark_struck(example.input)
+        unstruck_ids: list[str] = []
+        for entity in payload["entities"]:
+            if entity["id_source"] != IdSource.VERBATIM:
+                continue
+            offset = example.input.find(entity["span"])
+            struck = offset != -1 and is_struck(struck_ranges, offset)
+            if not struck:
+                unstruck_ids.append(entity["id"])
+        duplicates = {i for i in unstruck_ids if unstruck_ids.count(i) > 1}
+        assert not duplicates, f"{example.name}: {duplicates}"
 
 
 def test_every_committed_example_input_is_a_unit_as_the_model_receives_it() -> None:
