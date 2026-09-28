@@ -87,19 +87,25 @@ steps side by side.
 - A claim that something is unaffected or untouched is an item, and produces no link. \
 A link records a relation that exists; asserting the absence of one must not \
 manufacture it.
+- A stage line that only reports a check (`Verify it`, `Test it`) is not a `BuildStep`. \
+It is typed `unclassified`, with `unclassified_note` saying it only reports a check \
+rather than delivering one.
 
 Where one item ends
 - A numbered list's own numbering is the item boundary. A numbered step stays one item \
 however much it bundles, flagged `multi_condition_split` rather than split, so the \
 links written on the step stay attached to it.
-- An unnumbered bullet that bundles several independently statable claims may be \
-split. Every item from that split carries `multi_condition_split`, so a reviewer can \
-see they were one bullet.
+- A bullet or a sub-label headed block that carries no verbatim id, and that bundles \
+several independently statable claims, is split at its own clause boundaries. Every \
+part from that split carries `multi_condition_split`, so a reviewer can see they were \
+one block. An item that carries a verbatim `AC-N` id is never split, however many \
+conditions it bundles; it carries `multi_condition_split` only when it genuinely \
+bundles more than one condition.
 - A row of a reference or lookup table, keyed by its first cell, is not itself a \
 claim: it answers none of the type questions on its own. Return no item and no link \
 from it.
-- A struck claim and the replacement written beside it are two items, linked \
-`superseded-by` or `corrected-by`, never one span covering both.
+- A struck claim and the replacement written beside it are two items, linked per the \
+Links rules below, never one span covering both.
 - Build a second item for an old version only when the old text is quoted. When the \
 old version is only described, nothing is built from the paraphrase, and the \
 correction stays inside the current item's span.
@@ -120,8 +126,21 @@ descriptions included. Never invent a label to fill the field.
 the span wherever the source writes it inline.
 - A `label` goes only on an item that is the whole of what the author named. If a \
 named item is split, the label goes on neither part.
+- A lead-in name, taken up to its own delimiter, that is repeated word for word before \
+more than one item in the unit is not a `label` on any of them: it names a kind of \
+item, not one item. A name used exactly once stays a label, even where every item in \
+the list also carries a separate, shared tag; the shared tag and the item's own \
+once-used name are different things, and only the repeated one is barred. Names are \
+compared whole, so `Gate` and `Gate failure` are different names, neither one a prefix \
+of the other.
 
 Links
+- A link starts from the item that is actually connected, never from a sentence that \
+only describes the connection (a provenance note such as "That last clause is spec \
+0001's third runner constraint...").
+- `blocked-by` covers any item waiting on something else to be done first, whether the \
+wait is technical or a deliberate hold with a stated condition ("held back until the \
+real data version shipped").
 - Directions are fixed. `superseded-by` and `corrected-by` run old to new, \
 `amended-by` runs amended to amending, `blocked-by` runs blocked to blocker, \
 `verifies` runs TestScenario to AcceptanceCriterion, and `satisfies` runs BuildStep to \
@@ -130,9 +149,12 @@ with its verbatim phrase, not `blocked-by`.
 - `superseded-by` versus `corrected-by` turns on error framing, not on recency. An old \
 claim overtaken by events is superseded; one the text says rested on something wrong \
 is corrected.
-- A change that retires part of an item while the rest still stands is `amended-by`, \
-flagged `relationship_type_ambiguous`, since the named type is wider than what \
-changed. The same flag goes on a supersession the text scopes to only part of an item.
+- History link types follow what actually changed, not the author's own stamp word, \
+tested in this order: does the old claim stop standing at all? If part of it still \
+stands, the change is `amended-by`, flagged `relationship_type_ambiguous`, whether the \
+scope narrowed, widened, or gained an addition, whatever the author's own stamp says. \
+Only when the old claim is fully retired does the rule above (error framing) decide \
+`superseded-by` from `corrected-by`.
 - If a link fits none of the named types, type it `unclassified` and put the exact \
 connecting words in `phrase`. Do not drop it.
 - A link may point at something outside this unit. Use a `reference` endpoint carrying \

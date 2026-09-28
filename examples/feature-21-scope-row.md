@@ -18,11 +18,12 @@ This is the one unit kind where record identity differs from the document it sit
 ### Extraction calls
 
 - **A scope row mixes types that a spec section usually separates.** One row holds the capability (`Feature`), its acceptance clause (`AcceptanceCriterion`), standing rules (`Constraint`), an accepted tradeoff (`Consequence`), and its build checkboxes (`BuildStep`). Typing each by what it claims, not by where it sits, is what keeps `unclassified` rare here.
-- **The `Done when:` sub-label is carried inline in the span, not in `label`.** The clause is unreadable without it, and it stays verbatim-contiguous that way. It is not a `label`: this entity is flagged `multi_condition_split`, so a run could split its three conditions, and three halves each carrying `label: "Done when"` would tie the label index (AC-7 resolves a tie to `:Unresolved`) while disagreeing across runs (AC-11e). See the 0006 example for `label` used as intended, on items the author named individually.
+- **The `Done when:` block is split into its three independently statable conditions** (spec 0003, AC-26), at the author's own clause separators: the linking of the two pages is one clause and stays whole ("both pages exist and are linked from the entry page and from sign in"), then the privacy notice's content, then the deletion path. `**Done when:**` still carries inline in the first part's span, not in `label`: the sub-label is unreadable without the clause it heads, and it was never a candidate for `label` in the first place, that field names one item the author gave its own name, not a block header. All three parts carry `multi_condition_split`, so a reviewer sees they were one block. See the 0006 example for `label` used as intended, on items the author named individually.
 - **Two `Constraint`s are pulled out of paragraphs that are otherwise rationale**, both flagged `embedded_second_claim`: the `usejobhunt.dev` serving requirement inside the slice-move note, and the obligation on later features to add themselves to the notice. Both survive the deletion trick as claims in their own right while everything around them explains *why the row moved* or *why the list is incomplete*.
-- **The slice-move note is `unclassified`.** "Moved here from Slice 5 on 2026-08-31, to build after feature 32" is a real, substantial scheduling record that answers none of the named types' questions — it is not a requirement, a consequence, a build step or a test. It carries `entity_type_ambiguous`, as every `unclassified` entity must.
+- **The slice-move note is `unclassified`.** "Moved here from Slice 5 on 2026-08-31, to build after feature 32" is a real, substantial scheduling record that answers none of the named types' questions — it is not a requirement, a consequence, a build step or a test. It carries `entity_type_ambiguous`, as every genuinely ambiguous `unclassified` entity does.
 - **"Depends on feature 7, both ways" is `unclassified`, not `blocked-by`.** `blocked-by` is directional (blocked → blocker) and the text says the dependency runs both ways, which the named type cannot express. The verbatim phrase carries what the type cannot.
 - **"all 23 acceptance criteria met" produces no links, and this is the deliberate contrast with 0012's Build plan step 9.** There, `satisfies **AC-1** through **AC-8**` names both endpoints of a range and expands to eight links. Here, "all 23" names a *count*, not endpoints — expanding it would invent 23 ids the text never writes. A stated range is enumerable; a stated total is not.
+- **`Verify it` is `unclassified`, not `BuildStep`** (spec 0003, AC-27): it reports a check already run, "**PASS**, all 23 acceptance criteria met", not work delivered. This typing is no longer a judgement call once the checking-stage rule exists, so it carries no `entity_type_ambiguous`, unlike the slice-move note above, which is genuinely ambiguous among several types.
 
 ## Input
 
@@ -70,12 +71,28 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "id": "derived:2",
       "id_source": "derived",
       "type": "AcceptanceCriterion",
-      "span": "**Done when:** both pages exist and are linked from the entry page and from sign in, the privacy notice names the real stored fields and the real third parties data reaches, and a user can find out how to request deletion.",
+      "span": "**Done when:** both pages exist and are linked from the entry page and from sign in,",
       "rejected_spans": [],
       "known_trap_flags": ["multi_condition_split"]
     },
     {
       "id": "derived:3",
+      "id_source": "derived",
+      "type": "AcceptanceCriterion",
+      "span": "the privacy notice names the real stored fields and the real third parties data reaches,",
+      "rejected_spans": [],
+      "known_trap_flags": ["multi_condition_split"]
+    },
+    {
+      "id": "derived:4",
+      "id_source": "derived",
+      "type": "AcceptanceCriterion",
+      "span": "and a user can find out how to request deletion.",
+      "rejected_spans": [],
+      "known_trap_flags": ["multi_condition_split"]
+    },
+    {
+      "id": "derived:5",
       "id_source": "derived",
       "type": "unclassified",
       "span": "Moved here from Slice 5 on 2026-08-31, to build after feature 32.",
@@ -87,7 +104,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "unclassified_note": "A scheduling record of when and why this row moved between slices. It states no requirement, outcome, build step or test, so none of the named types fits."
     },
     {
-      "id": "derived:4",
+      "id": "derived:6",
       "id_source": "derived",
       "type": "Constraint",
       "span": "The pages must be served from `usejobhunt.dev`",
@@ -97,7 +114,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": ["embedded_second_claim"]
     },
     {
-      "id": "derived:5",
+      "id": "derived:7",
       "id_source": "derived",
       "type": "Constraint",
       "span": "the privacy notice must describe what arrives from the provider into `auth.users`, meaning the email address, the display name and the avatar URL.",
@@ -107,7 +124,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": []
     },
     {
-      "id": "derived:6",
+      "id": "derived:8",
       "id_source": "derived",
       "type": "Consequence",
       "span": "**Building it early means the third party list is incomplete on the day it ships, and that is accepted rather than overlooked.** At this point in the build the real third parties are Supabase, Vercel, Sentry, Google and GitHub.",
@@ -117,7 +134,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": []
     },
     {
-      "id": "derived:7",
+      "id": "derived:9",
       "id_source": "derived",
       "type": "Constraint",
       "span": "Adzuna arrives at feature 11 and the model providers at features 13 and 14, so each of those features must add itself to the notice as part of its own build.",
@@ -125,7 +142,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": ["embedded_second_claim"]
     },
     {
-      "id": "derived:8",
+      "id": "derived:10",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "Design it (spec): `/architect terms & privacy notices` · written 2026-09-01, 23 acceptance criteria.",
@@ -136,7 +153,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": ["rationale_boundary_call"]
     },
     {
-      "id": "derived:9",
+      "id": "derived:11",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "Build it: `/develop terms & privacy notices`",
@@ -144,7 +161,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": []
     },
     {
-      "id": "derived:10",
+      "id": "derived:12",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test · **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**.",
@@ -155,7 +172,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": ["rationale_boundary_call"]
     },
     {
-      "id": "derived:11",
+      "id": "derived:13",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "The two routes under `(marketing)`, indexable, with their own metadata, linked from the entry page footer's reserved slot and from a static line under the provider forms on `/sign-in` · **AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**.",
@@ -166,7 +183,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": []
     },
     {
-      "id": "derived:12",
+      "id": "derived:14",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies · **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**.",
@@ -176,7 +193,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": []
     },
     {
-      "id": "derived:13",
+      "id": "derived:15",
       "id_source": "derived",
       "type": "BuildStep",
       "span": "The terms content and effective dates, then the mail delivery check and the Google console work: authorized domain, both URLs, publish out of Testing, submit brand verification · **AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**.",
@@ -188,15 +205,16 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
       "known_trap_flags": ["multi_condition_split"]
     },
     {
-      "id": "derived:14",
+      "id": "derived:16",
       "id_source": "derived",
-      "type": "BuildStep",
+      "type": "unclassified",
       "span": "Verify it: `/check verify terms & privacy notices` · run 2026-09-01, **PASS**, all 23 acceptance criteria met, 48 of 50 steps ticked in verify.md.",
       "rejected_spans": [
         "The six drift guards were each broken on purpose and confirmed to fail by name, so none of them is a test that cannot fail. The deletion cascade was proved on the real database rather than read off the migration: one throwaway account with a row in all six tables, delete the `auth.users` row alone, all six go. AC-21 and AC-22 were confirmed from outside Google's console, by starting a real sign in against production.",
         "The two unticked steps are recorded there and neither is an acceptance criterion failure; one of them surfaced a **separate, pre existing issue belonging to feature 7**, that the committed `database.types.ts` is missing `before_user_created_hook` and `provider_display_name` in its generated `Functions` block, while the `Tables` block this feature depends on is byte identical to the applied schema"
       ],
-      "known_trap_flags": []
+      "known_trap_flags": [],
+      "unclassified_note": "A stage line reporting a check already performed, per the checking-stage rule; `Verify it` and `Test it` lines are never `BuildStep`."
     }
   ],
   "relationships": [
@@ -218,7 +236,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "unclassified",
-      "source": {"kind": "local", "id": "derived:7"},
+      "source": {"kind": "local", "id": "derived:9"},
       "target": {"kind": "reference", "record": "feature 11", "id": null, "mention": "feature 11"},
       "phrase": "each of those features must add itself to the notice as part of its own build",
       "date": null,
@@ -226,7 +244,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "unclassified",
-      "source": {"kind": "local", "id": "derived:7"},
+      "source": {"kind": "local", "id": "derived:9"},
       "target": {"kind": "reference", "record": "feature 13", "id": null, "mention": "features 13 and 14"},
       "phrase": "each of those features must add itself to the notice as part of its own build",
       "date": null,
@@ -234,7 +252,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "unclassified",
-      "source": {"kind": "local", "id": "derived:7"},
+      "source": {"kind": "local", "id": "derived:9"},
       "target": {"kind": "reference", "record": "feature 14", "id": null, "mention": "features 13 and 14"},
       "phrase": "each of those features must add itself to the notice as part of its own build",
       "date": null,
@@ -242,7 +260,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:10"},
+      "source": {"kind": "local", "id": "derived:12"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-4", "mention": "**AC-4**"},
       "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
       "date": null,
@@ -250,7 +268,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:10"},
+      "source": {"kind": "local", "id": "derived:12"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-5", "mention": "**AC-5**"},
       "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
       "date": null,
@@ -258,7 +276,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:10"},
+      "source": {"kind": "local", "id": "derived:12"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-6", "mention": "**AC-6**"},
       "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
       "date": null,
@@ -266,7 +284,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:10"},
+      "source": {"kind": "local", "id": "derived:12"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-23", "mention": "**AC-23**"},
       "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
       "date": null,
@@ -274,7 +292,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:10"},
+      "source": {"kind": "local", "id": "derived:12"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-14", "mention": "the enforcement half of **AC-14**"},
       "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
       "date": null,
@@ -282,7 +300,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:11"},
+      "source": {"kind": "local", "id": "derived:13"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-1", "mention": "**AC-1**"},
       "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
       "date": null,
@@ -290,7 +308,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:11"},
+      "source": {"kind": "local", "id": "derived:13"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-17", "mention": "**AC-17**"},
       "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
       "date": null,
@@ -298,7 +316,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:11"},
+      "source": {"kind": "local", "id": "derived:13"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-18", "mention": "**AC-18**"},
       "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
       "date": null,
@@ -306,7 +324,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:11"},
+      "source": {"kind": "local", "id": "derived:13"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-19", "mention": "**AC-19**"},
       "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
       "date": null,
@@ -314,7 +332,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:11"},
+      "source": {"kind": "local", "id": "derived:13"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-20", "mention": "**AC-20**"},
       "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
       "date": null,
@@ -322,7 +340,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-2", "mention": "**AC-2**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -330,7 +348,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-3", "mention": "**AC-3**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -338,7 +356,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-7", "mention": "**AC-7**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -346,7 +364,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-8", "mention": "**AC-8**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -354,7 +372,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-10", "mention": "**AC-10**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -362,7 +380,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-11", "mention": "**AC-11**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -370,7 +388,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-12", "mention": "**AC-12**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -378,7 +396,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-13", "mention": "**AC-13**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -386,7 +404,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:12"},
+      "source": {"kind": "local", "id": "derived:14"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-14", "mention": "**AC-14**"},
       "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
       "date": null,
@@ -394,7 +412,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:13"},
+      "source": {"kind": "local", "id": "derived:15"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-15", "mention": "**AC-15**"},
       "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
       "date": null,
@@ -402,7 +420,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:13"},
+      "source": {"kind": "local", "id": "derived:15"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-16", "mention": "**AC-16**"},
       "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
       "date": null,
@@ -410,7 +428,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:13"},
+      "source": {"kind": "local", "id": "derived:15"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-9", "mention": "**AC-9**"},
       "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
       "date": null,
@@ -418,7 +436,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:13"},
+      "source": {"kind": "local", "id": "derived:15"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-21", "mention": "**AC-21**"},
       "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
       "date": null,
@@ -426,7 +444,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
     },
     {
       "type": "satisfies",
-      "source": {"kind": "local", "id": "derived:13"},
+      "source": {"kind": "local", "id": "derived:15"},
       "target": {"kind": "reference", "record": "0009", "id": "AC-22", "mention": "**AC-22**"},
       "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
       "date": null,
@@ -441,6 +459,7 @@ _spec [0009](../specs/0009-terms-and-privacy-notices/index.md) · code in `src/f
 - A scope row is its own Record (`feature-21`), and a reference written the way prose names a row (`feature 7`) resolves to `:Unresolved` until name resolution exists. The link is still emitted with its verbatim mention; a visible gap is the designed outcome, not a defect.
 - A pointer line that code already parses (`_spec [NNNN](…)_` → `SPECIFIED_BY`) produces no entity and no relationship, the same rule that keeps `struck` and `followup_status` out of the model's output.
 - AC citations inside a scope row belong to the spec that row points at, not to the scope document. The record number comes from the unit's own pointer line; nothing else in the row names it.
-- **`Done when:` goes in the span, not in `label`.** It is a sub-label heading a block, and this entity is flagged `multi_condition_split` precisely because a run could split its three conditions — three halves all carrying `label: "Done when"` would tie the label index (AC-7 resolves a tie to `:Unresolved`) and disagree across runs (AC-11e). Carrying `**Done when:**` inline keeps the span readable on its own and stays verbatim-contiguous. `label` is reserved for a name the author gave one item, as the test scenarios in the 0006 example use it.
+- **A bullet or sub-label headed block with no verbatim id splits at its own clause boundaries** (spec 0003, AC-26): `**Done when:**` heads a block of three independently statable conditions, not one item, so it is split three ways rather than kept whole. `**Done when:**` itself goes in the first part's span, not in `label`: it is a block header, never a candidate for one item's own name. Every part carries `multi_condition_split`, so a reviewer sees they were one block. `label` is reserved for a name the author gave one item, as the test scenarios in the 0006 example use it.
 - A stated range is enumerable; a stated total is not. `AC-1 through AC-8` expands to eight links, `all 23 acceptance criteria met` expands to none. **The corpus proves why**: spec 0009 carries 24 acceptance criteria today — AC-24 was added on 2026-09-18 — while this row still reads "all 23". Expanding the total would have invented ids *and* been wrong about the count, in a row that is otherwise accurate. A range names its own endpoints and cannot drift like that; a total is a claim about a set the unit cannot see.
 - `blocked-by` is directional, so a dependency the text says runs "both ways" takes `unclassified` with the verbatim phrase rather than being forced into it.
+- **A stage line that only reports a check is `unclassified`, not `BuildStep`** (spec 0003, AC-27): `Verify it` states a result already reached, not work still to deliver, and the rule now names this directly rather than leaving it to a per-run judgement call.
