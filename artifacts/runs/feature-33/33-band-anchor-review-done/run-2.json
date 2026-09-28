@@ -1,0 +1,514 @@
+{
+  "record": "feature-33",
+  "section": "33. Band anchor review \u00b7 done",
+  "section_slug": "33-band-anchor-review-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-28T22:17:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2258,
+  "output_tokens": 15955,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "ff323834164747698a2f536b93bb7bdd",
+  "artifact_format_version": 2,
+  "unit_sha256": "d52a587bdcff3ad84e8ba490d70a54be5866f1f2e1a822996bdd0c8e1ded5391",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Check the band anchors against what feature 16's harness actually measured, and correct whichever side is wrong. The finding is that the anchors hold and one committed expectation does not, so this corrects the pair and records the anchor rule that was drafted and refused, rather than changing what real users are scored against.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"`control-one-gap` expects `possible_match` and passes a real run,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"`BAND_ANCHORS` and its hash `1b45f524b356` are untouched,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the misread run evidence is corrected everywhere it was repeated,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the set still gives every band an exact expectation.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect band anchor review` \u00b7 written 2026-09-08, 7 acceptance criteria, and the decision is that the anchors do **not** change. Cross checked twice on Fable against an Opus author.\",\"rejected_spans\":[\"The first draft added two anchor rules and was refused on three independent grounds: it contradicted a fourth pair (`weak-match-shallow-overlap`, whose own rationale rejects the test it proposed), it used \\\"a substantial share of the role\\\" when `rubric.ts:58` says anchors are written against the visible posting and never against the role, and it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance. The evidence it rested on was also wrong: the report's `summary` reads `\\\"5 of 5 succeeded\\\"` as a **success denominator**, not a band count, so `key-domain-mismatch` was a 3 to 2 split rather than stable, which is noise and not a defined gap. The second review of the narrowed spec returned sound with seven gaps, all applied\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop band anchor review`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct the pair and its file's own claim: `control-one-gap` to `possible_match` argued from the existing `possible_match` anchor text, and `pairs.ts`'s \\\"before any model was asked\\\" header amended to name its one exception, satisfies AC-1, AC-1b\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct the record: the misread evidence at `scope.md:326`, plus spec 0016's stale table row and its Follow up quote that reads as present tense, satisfies AC-4, AC-4b\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Prove it for free: the drift guard passes untouched, the data quality gate is clean, and every band still has an exact expectation now that `good-match-adjacent` is the only pair expecting `good_match`, satisfies AC-2, AC-3.\",\"rejected_spans\":[\"1178 unit tests green, `git diff main -- src/features/scoring/rubric.ts` empty. The band coverage guard was broken on purpose (pointing `good-match-adjacent` at `possible_match`) and failed by name on both assertions, `band-not-covered` and \\\"covers every band with at least one exact expectation\\\", so the pass is not vacuous\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Confirm it paid: `pnpm eval -t control-one-gap`, five vendor calls rather than eighty, satisfies AC-5.\",\"rejected_spans\":[\"**PASS** 2026-09-09T03:44Z, anchor hash `1b45f524b356` unchanged, exit 0. Distribution `good_match` 2, `possible_match` 3, read from the report's `distribution` field: the pair passes on the strict majority and clears spec 0017's 3 of 5 floor, but by the minimum margin, and the old `good_match` expectation has now lost on all three runs ever taken (4 to 1, 5 to 0, 3 to 2). The five calls were confirmed by measurement rather than by reading the filter output, `ai_scoring global` day 2026-09-09 from absent to 5 and month 1225 to 1230, read through `pg` directly. Note the UTC day had already rolled at 03:44Z, so the 2026-09-08 row stayed at 195 and watching that row would have shown no movement\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify band anchor review` \u00b7 **PASS** 2026-09-09, all 7 acceptance criteria met, 10 of 10 `verify.md` steps run and passed.\",\"rejected_spans\":[\"The branch touches one file under `src/`, `pairs.ts`, and `rubric.ts` is absent from the diff against `main`, which is AC-2's central claim proved by the diff rather than by reading. AC-3 was proved harder than a green suite: `good-match-adjacent` was pointed at `weak_match` on purpose and the guard failed by name on both assertions, `band-not-covered` and \\\"covers every band with at least one exact expectation\\\", naming `good_match`, before being restored. The whole evidence base was re-derived from the two baseline reports rather than trusted: all seven rows of `verify.md`'s distribution table and both run wide band totals match the reports exactly, and all three runs carry anchor hash `1b45f524b356`. The repository was searched again for the misread claim across 416 tracked files and **no surviving assertion of it was found**; every remaining occurrence of \\\"5 of 5\\\" is either a correct success denominator or a passage describing the misread as a misread. Two claims written into the docs were checked against the repo rather than assumed: `pairs.ts` no longer carries the sentence spec 0016 quotes, and no migration holds a `band` or `fit_score` column. AC-5 rests on the confirming run at 03:44Z, which started seven minutes after the commit it scored and against a tree identical to it\"],\"known_trap_flags\":[],\"unclassified_note\":\"A stage line reporting a check already performed rather than delivering one; verify it lines are typed unclassified, not BuildStep.\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test band anchor review` \u00b7 2 tests added to `src/features/scoring/eval/ground-truth.test.ts`, taking it to 26, both tracing to spec 0018.\",\"rejected_spans\":[\"One pins the corrected `possible_match` expectation so a silent revert to `good_match` fails by name; the other is the general form, asserting that **no `control` tagged pair carries `acceptableBands`**, which is spec 0018's Key invariant that a tolerance is not a way to stop a pair failing, grounded in spec 0016's own reasoning for why `mild-stretch-possible-match` takes \\\"no `acceptableBands` and the plain `control` tag rather than `boundary`\\\". Pinning only `control-one-gap` would have left that escape open on every other control. Each was broken on purpose **after** the commit hooks ran, per the 2026-09-05 reflex, and each failed with its own message, the second naming the offending pair id. AC-1b, AC-4 and AC-4b are deliberately **not** automated: the first would be a test reading comment text, which Prettier can silently invalidate, and the other two are prose corrections in docs. All three are proved by `/check verify` instead, and AC-5 is the paid run\"],\"known_trap_flags\":[],\"unclassified_note\":\"A stage line reporting a check already performed rather than delivering one; test it lines are typed unclassified, not BuildStep.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 16\",\"mention\":\"feature 16's harness actually measured\"},\"phrase\":\"against what feature 16's harness actually measured\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-3\",\"mention\":\"spec 0016's accepted AC-3\"},\"phrase\":\"it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-1b\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1b\",\"mention\":\"AC-1b\"},\"phrase\":\"satisfies AC-1, AC-1b\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"satisfies AC-4, AC-4b\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4b\",\"mention\":\"AC-4b\"},\"phrase\":\"satisfies AC-4, AC-4b\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"satisfies AC-2, AC-3\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"satisfies AC-2, AC-3\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"satisfies AC-5\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"mention\":\"spec 0017's 3 of 5 floor\"},\"phrase\":\"clears spec 0017's 3 of 5 floor\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"which is AC-2's central claim proved by the diff rather than by reading\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"AC-3 was proved harder than a green suite\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"AC-5 rests on the confirming run at 03:44Z\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"mention\":\"spec 0018\"},\"phrase\":\"both tracing to spec 0018\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"mention\":\"spec 0016's own reasoning\"},\"phrase\":\"grounded in spec 0016's own reasoning for why `mild-stretch-possible-match` takes \\\"no `acceptableBands` and the plain `control` tag rather than `boundary`\\\"\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1b\",\"mention\":\"AC-1b\"},\"phrase\":\"AC-1b, AC-4 and AC-4b are deliberately **not** automated\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"AC-1b, AC-4 and AC-4b are deliberately **not** automated\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4b\",\"mention\":\"AC-4b\"},\"phrase\":\"AC-1b, AC-4 and AC-4b are deliberately **not** automated\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"AC-5 is the paid run\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Check the band anchors against what feature 16's harness actually measured, and correct whichever side is wrong. The finding is that the anchors hold and one committed expectation does not, so this corrects the pair and records the anchor rule that was drafted and refused, rather than changing what real users are scored against.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "`control-one-gap` expects `possible_match` and passes a real run,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "`BAND_ANCHORS` and its hash `1b45f524b356` are untouched,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the misread run evidence is corrected everywhere it was repeated,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the set still gives every band an exact expectation.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect band anchor review` \u00b7 written 2026-09-08, 7 acceptance criteria, and the decision is that the anchors do **not** change. Cross checked twice on Fable against an Opus author.",
+        "rejected_spans": [
+          "The first draft added two anchor rules and was refused on three independent grounds: it contradicted a fourth pair (`weak-match-shallow-overlap`, whose own rationale rejects the test it proposed), it used \"a substantial share of the role\" when `rubric.ts:58` says anchors are written against the visible posting and never against the role, and it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance. The evidence it rested on was also wrong: the report's `summary` reads `\"5 of 5 succeeded\"` as a **success denominator**, not a band count, so `key-domain-mismatch` was a 3 to 2 split rather than stable, which is noise and not a defined gap. The second review of the narrowed spec returned sound with seven gaps, all applied"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop band anchor review`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct the pair and its file's own claim: `control-one-gap` to `possible_match` argued from the existing `possible_match` anchor text, and `pairs.ts`'s \"before any model was asked\" header amended to name its one exception, satisfies AC-1, AC-1b",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct the record: the misread evidence at `scope.md:326`, plus spec 0016's stale table row and its Follow up quote that reads as present tense, satisfies AC-4, AC-4b",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Prove it for free: the drift guard passes untouched, the data quality gate is clean, and every band still has an exact expectation now that `good-match-adjacent` is the only pair expecting `good_match`, satisfies AC-2, AC-3.",
+        "rejected_spans": [
+          "1178 unit tests green, `git diff main -- src/features/scoring/rubric.ts` empty. The band coverage guard was broken on purpose (pointing `good-match-adjacent` at `possible_match`) and failed by name on both assertions, `band-not-covered` and \"covers every band with at least one exact expectation\", so the pass is not vacuous"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Confirm it paid: `pnpm eval -t control-one-gap`, five vendor calls rather than eighty, satisfies AC-5.",
+        "rejected_spans": [
+          "**PASS** 2026-09-09T03:44Z, anchor hash `1b45f524b356` unchanged, exit 0. Distribution `good_match` 2, `possible_match` 3, read from the report's `distribution` field: the pair passes on the strict majority and clears spec 0017's 3 of 5 floor, but by the minimum margin, and the old `good_match` expectation has now lost on all three runs ever taken (4 to 1, 5 to 0, 3 to 2). The five calls were confirmed by measurement rather than by reading the filter output, `ai_scoring global` day 2026-09-09 from absent to 5 and month 1225 to 1230, read through `pg` directly. Note the UTC day had already rolled at 03:44Z, so the 2026-09-08 row stayed at 195 and watching that row would have shown no movement"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify band anchor review` \u00b7 **PASS** 2026-09-09, all 7 acceptance criteria met, 10 of 10 `verify.md` steps run and passed.",
+        "rejected_spans": [
+          "The branch touches one file under `src/`, `pairs.ts`, and `rubric.ts` is absent from the diff against `main`, which is AC-2's central claim proved by the diff rather than by reading. AC-3 was proved harder than a green suite: `good-match-adjacent` was pointed at `weak_match` on purpose and the guard failed by name on both assertions, `band-not-covered` and \"covers every band with at least one exact expectation\", naming `good_match`, before being restored. The whole evidence base was re-derived from the two baseline reports rather than trusted: all seven rows of `verify.md`'s distribution table and both run wide band totals match the reports exactly, and all three runs carry anchor hash `1b45f524b356`. The repository was searched again for the misread claim across 416 tracked files and **no surviving assertion of it was found**; every remaining occurrence of \"5 of 5\" is either a correct success denominator or a passage describing the misread as a misread. Two claims written into the docs were checked against the repo rather than assumed: `pairs.ts` no longer carries the sentence spec 0016 quotes, and no migration holds a `band` or `fit_score` column. AC-5 rests on the confirming run at 03:44Z, which started seven minutes after the commit it scored and against a tree identical to it"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": "A stage line reporting a check already performed rather than delivering one; verify it lines are typed unclassified, not BuildStep.",
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test band anchor review` \u00b7 2 tests added to `src/features/scoring/eval/ground-truth.test.ts`, taking it to 26, both tracing to spec 0018.",
+        "rejected_spans": [
+          "One pins the corrected `possible_match` expectation so a silent revert to `good_match` fails by name; the other is the general form, asserting that **no `control` tagged pair carries `acceptableBands`**, which is spec 0018's Key invariant that a tolerance is not a way to stop a pair failing, grounded in spec 0016's own reasoning for why `mild-stretch-possible-match` takes \"no `acceptableBands` and the plain `control` tag rather than `boundary`\". Pinning only `control-one-gap` would have left that escape open on every other control. Each was broken on purpose **after** the commit hooks ran, per the 2026-09-05 reflex, and each failed with its own message, the second naming the offending pair id. AC-1b, AC-4 and AC-4b are deliberately **not** automated: the first would be a test reading comment text, which Prettier can silently invalidate, and the other two are prose corrections in docs. All three are proved by `/check verify` instead, and AC-5 is the paid run"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": "A stage line reporting a check already performed rather than delivering one; test it lines are typed unclassified, not BuildStep.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 16",
+          "id": null,
+          "label": null,
+          "mention": "feature 16's harness actually measured"
+        },
+        "phrase": "against what feature 16's harness actually measured",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-3",
+          "label": null,
+          "mention": "spec 0016's accepted AC-3"
+        },
+        "phrase": "it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-1b",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1b",
+          "label": null,
+          "mention": "AC-1b"
+        },
+        "phrase": "satisfies AC-1, AC-1b",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "satisfies AC-4, AC-4b",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4b",
+          "label": null,
+          "mention": "AC-4b"
+        },
+        "phrase": "satisfies AC-4, AC-4b",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "satisfies AC-2, AC-3",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "satisfies AC-2, AC-3",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "satisfies AC-5",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": null,
+          "label": null,
+          "mention": "spec 0017's 3 of 5 floor"
+        },
+        "phrase": "clears spec 0017's 3 of 5 floor",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "which is AC-2's central claim proved by the diff rather than by reading",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "AC-3 was proved harder than a green suite",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "AC-5 rests on the confirming run at 03:44Z",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": null,
+          "label": null,
+          "mention": "spec 0018"
+        },
+        "phrase": "both tracing to spec 0018",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": null,
+          "label": null,
+          "mention": "spec 0016's own reasoning"
+        },
+        "phrase": "grounded in spec 0016's own reasoning for why `mild-stretch-possible-match` takes \"no `acceptableBands` and the plain `control` tag rather than `boundary`\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1b",
+          "label": null,
+          "mention": "AC-1b"
+        },
+        "phrase": "AC-1b, AC-4 and AC-4b are deliberately **not** automated",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "AC-1b, AC-4 and AC-4b are deliberately **not** automated",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4b",
+          "label": null,
+          "mention": "AC-4b"
+        },
+        "phrase": "AC-1b, AC-4 and AC-4b are deliberately **not** automated",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "AC-5 is the paid run",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

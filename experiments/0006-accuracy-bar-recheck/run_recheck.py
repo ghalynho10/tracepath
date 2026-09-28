@@ -59,7 +59,7 @@ from tracepath.extract.schema import ExtractedEntity, ExtractionOutput
 from tracepath.extract.units import Unit, UnitKind, split_units
 from tracepath.pipeline import UnitFailed, UnitResult, run_unit
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "0005-held-out-prompt-examples"))
 import run_units
 from run_units import cache_tokens, describe, move_superseded
 
@@ -67,7 +67,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
 HERE = Path(__file__).resolve().parent
 COMMIT = "2e40bcf"
-SUPERSEDED_DATE = "2026-09-28"
+
+#: `move_superseded()` is `run_units.py`'s own, unchanged (this experiment's data and
+#: scripts are not touched): it dates every move by that module's own `SUPERSEDED_DATE`
+#: constant, not by today. The re check's own before runs land there mislabelled by
+#: date and are relocated by hand afterward, into `artifacts/superseded/<today>-prompt-
+#: 0002.3/`, once the run settles; see this experiment's README.
 
 #: The commit the before calls run under (AC-30), the same one group A's lost links
 #: were measured against.
@@ -87,10 +92,11 @@ STOP_CEILING_USD = 5.70
 #: validation failure path snapshots usage before the API's final usage event lands
 #: (observed: 2 output tokens recorded for a ~15k character near complete response).
 #: For the running totals that gate a real spend, every failed attempt counts at this
-#: flat figure instead, the heaviest measured single call in experiment 0005's data
-#: (recheck-cost-estimate.json's Section-kind wide after figure), never its own,
-#: possibly wrong, recorded tokens. The artifact itself still keeps what the API
-#: actually reported, wrong or not; only the stop-condition accounting is corrected.
+#: flat figure instead, the heaviest measured single call this experiment's own
+#: `data/cost-estimate.json` planned against (its Section-kind wide after figure),
+#: never its own, possibly wrong, recorded tokens. The artifact itself still keeps
+#: what the API actually reported, wrong or not; only the stop-condition accounting
+#: is corrected.
 FAILED_ATTEMPT_FLAT_USD = 0.35
 
 #: The entity/relationship ruling sample sizes (AC-30), and the dropped link sample.
@@ -457,12 +463,10 @@ def main(argv: list[str]) -> None:
         if before_total > STOP_BEFORE_USD:
             print(f"STOP: before total ${before_total:.4f} exceeds ${STOP_BEFORE_USD}")
             (HERE / "data").mkdir(exist_ok=True)
-            (HERE / "data" / "recheck-before.json").write_text(
-                json.dumps(before_report, indent=2) + "\n"
-            )
+            (HERE / "data" / "before.json").write_text(json.dumps(before_report, indent=2) + "\n")
             return
     (HERE / "data").mkdir(exist_ok=True)
-    (HERE / "data" / "recheck-before.json").write_text(json.dumps(before_report, indent=2) + "\n")
+    (HERE / "data" / "before.json").write_text(json.dumps(before_report, indent=2) + "\n")
     print(f"before total: ${before_total:.4f}")
 
     print(f"\n=== after (0003.1, cached), ceiling ${STOP_CEILING_USD} ===")
@@ -494,7 +498,7 @@ def main(argv: list[str]) -> None:
             break
 
     (HERE / "data").mkdir(exist_ok=True)
-    (HERE / "data" / "recheck-after.json").write_text(json.dumps(after_report, indent=2) + "\n")
+    (HERE / "data" / "after.json").write_text(json.dumps(after_report, indent=2) + "\n")
     after_total = sum(float(str(e["safe_cost_usd"])) for e in after_report)
     print(f"\nafter total: ${after_total:.4f}")
     print(f"grand total (before + after): ${before_total + after_total:.4f}")

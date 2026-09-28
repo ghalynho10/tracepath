@@ -113,7 +113,7 @@ def main() -> None:
         "rows": rows,
     }
     (HERE / "data").mkdir(exist_ok=True)
-    (HERE / "data" / "recheck-prefix-count.json").write_text(json.dumps(report, indent=2) + "\n")
+    (HERE / "data" / "prefix-count.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
 
 
