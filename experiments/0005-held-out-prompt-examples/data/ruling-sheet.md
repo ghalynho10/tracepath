@@ -474,17 +474,23 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:1` · Feature
+- [x] disagree · `feature-9#9-profile-entry-done:1` · Feature
+  - reason: should split: what the form covers and excludes (typed by hand, no upload, no extraction) is the feature; "so it makes no external call at all" is its own separately breakable rule (a Constraint); the model flagged embedded_second_claim but kept them together
+
   - span: A form for the flat profile: personal details, skills, one layer of work history, and stated job preferences. Typed by hand, with no resume upload and no extraction, so it makes no external call at all.
   - flags: embedded_second_claim
 - [ ] agree / disagree · `feature-9#9-profile-entry-done:2` · Consequence
   - span: Scoring cannot function without this, and the completion test does not start without a way to get profile data in.
   - flags: multi_condition_split
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:3` · AcceptanceCriterion
+- [x] disagree · `feature-9#9-profile-entry-done:3` · AcceptanceCriterion
+  - reason: should split: six separately checkable conditions (create, edit, survives a reload, validation errors shown, saved shape matches what scoring reads, Server Action driven from a test with no browser); all 3 runs flagged multi_condition_split
+
   - span: **Done when:** a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser.
   - rejected: ["That last clause is spec 0001's third runner constraint, deferred to here by spec 0004 because there was no real write path to drive at feature 8; the technique is recorded in that spec's follow up list."]
   - flags: multi_condition_split, rationale_boundary_call
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:5` · TestScenario
+- [x] disagree · `feature-9#9-profile-entry-done:5` · TestScenario
+  - reason: should be AcceptanceCriterion: it sits in feature 9's Done when as a pass/fail condition for done; runs split TestScenario 1 to Consequence 2, neither matching
+
   - span: **closes the deferred half of spec [0007](../specs/0007-auth-and-per-user-isolation/index.md) AC-15**: two real accounts, on the running app, each reading their OWN profile and not the other's.
   - rejected: ["Feature 7 proved only the negative half, that neither account reaches the other's data, because at that point no `profile` row existed for anyone and both signed in users landed on the same named `record_not_found`. AC-15's wording assumes rows are there to be isolated, and this is the feature that first makes that true, so the proof lands here rather than being re run against the fixture pool it was written to go beyond."]
   - flags: rationale_boundary_call, embedded_second_claim
@@ -494,13 +500,17 @@ Replace each line's marks with one word, and add a few words on why when you dis
   - span: Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) added to `src/components/ui/` · AC-17
   - rejected: ["extending spec 0005's inventory the way spec 0006 added `Logo`"]
   - flags: rationale_boundary_call
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:9` · BuildStep
+- [x] agree · `feature-9#9-profile-entry-done:9` · BuildStep
+  - reason: one build step: a single all-or-nothing checkbox; create, reload and edit describe what "end to end" covers, not separate steps
+
   - span: Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14
 - [ ] agree / disagree · `feature-9#9-profile-entry-done:10` · BuildStep
   - span: Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a
 - [ ] agree / disagree · `feature-9#9-profile-entry-done:12` · BuildStep
   - span: Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass · AC-14, AC-15, AC-17
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:13` · BuildStep
+- [x] disagree · `feature-9#9-profile-entry-done:13` · BuildStep
+   - reason: should be unclassified: "Verify it" is a checking stage, not a step that builds; criteria depend on it only for being checked, never delivered (no Verify it or Test it line in the scope is tagged as delivering one). Also, the rejected story holds a real fact, AC-13 half unbuilt and fixed in 8a59fdf during verification, recorded nowhere else, so it should be its own item, not rejected
+
   - span: Verify it: `/check verify profile entry` · run 2026-09-02, **PASS**, all 18 acceptance criteria met, 51 of 53 steps ticked in [verify.md](../specs/0010-profile-entry/verify.md).
   - rejected: ['A first run on the same day found **AC-13 half unbuilt**: a malformed `entry` id rendered the plain list and said nothing, while a well formed one that matched no row correctly said the entry was gone. `/debug` traced it to `parsePageState` collapsing an unusable id into the plain view, fixed in `8a59fdf`, and this run re-proved all four URL cases. The two unticked steps are recorded at the end of `verify.md` and neither is an acceptance criterion failure. The read failure state was proved by stopping the database container: `/profile` renders the failure treatment and never the first run form']
   - flags: rationale_boundary_call
@@ -509,7 +519,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
 
 5 evenly spaced through the 34 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] disagree · unclassified · written by 2 of 3 runs
+  - reason: too broad: the text names a specific item, "spec 0001's third runner constraint" (a rule in spec 0001's Test runners row, line 58), but the link points at the whole spec; a vocabulary gap, not a model error, since no endpoint shape can name a rule inside a table row
+
   - source: `feature-9#9-profile-entry-done:3` AcceptanceCriterion: **Done when:** a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser.
   - target: reference `0001` (whole record), mention: spec 0001's third runner constraint
   - phrase: That last clause is spec 0001's third runner constraint, deferred to here by spec 0004
@@ -519,7 +531,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     > A form for the flat profile: personal details, skills, one layer of work history, and stated job preferences. Typed by hand, with no resume upload and no extraction, so it makes no external call at all. Scoring cannot function without this, and the completion test does not start without a way to get profile data in.
     > **Done when:** a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser. That last clause is spec 0001's third runner constraint, deferred to here by spec 0004 because there was no real write path to drive at feature 8; the technique is recorded in that spec's follow up list. Also, this feature moves its own claim (`profile`) from planned to working in the entry page's "What's real today" card (spec 0006, **AC-8**). It also **closes the deferred half of spec [0007](../specs/0007-auth-and-per-user-isolation/index.md) AC-15**: two real accounts, on the running app, each reading their OWN profile and not the other's. Feature 7 proved only the negative half, that neither account reaches the other's data, because at that point no `profile` row existed for anyone and both signed in users landed on the same named `record_not_found`. AC-15's wording assumes rows are there to be isolated, and this is the feature that first makes that true, so the proof lands here rather than being re run against the fixture pool it was written to go beyond.
     > _spec [0010](../specs/0010-profile-entry/index.md) · code in `src/features/profile/`, `src/app/(app)/profile/`, `src/components/ui/`, proofs in `test/integration/profile-form.test.ts`_
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
+  - reason: the text tags this step with AC-2 and it builds AC-2's create path; JobHunt observation: AC-2's second sentence (other sections, Tracked applications link) is only delivered by later, untagged steps, and the Tracked applications link has no build step at all
+
   - source: `feature-9#9-profile-entry-done:9` BuildStep: Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14
   - target: reference `0010` AC-2, mention: AC-1 to AC-4, AC-11 to AC-14
   - phrase: AC-1 to AC-4, AC-11 to AC-14
@@ -530,7 +544,8 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   - [x] Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a
     >   - [x] Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16
     >   - [x] Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass · AC-14, AC-15, AC-17
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
+
   - source: `feature-9#9-profile-entry-done:10` BuildStep: Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a
   - target: reference `0010` AC-5, mention: AC-5 to AC-8, AC-7a
   - phrase: AC-5 to AC-8, AC-7a
@@ -541,7 +556,8 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   - [x] Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a
     >   - [x] Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16
     >   - [x] Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass · AC-14, AC-15, AC-17
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
+
   - source: `feature-9#9-profile-entry-done:11` BuildStep: Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16
   - target: reference `0010` AC-16, mention: AC-9, AC-10, AC-16
   - phrase: AC-9, AC-10, AC-16
@@ -552,7 +568,9 @@ Replace each line's marks with one word, and add a few words on why when you dis
     >   - [x] Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a
     >   - [x] Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16
     >   - [x] Proofs: the no browser Server Action test, two account isolation, and the `/ui-preview` keyboard/focus/contrast pass · AC-14, AC-15, AC-17
-- [ ] agree / disagree · unclassified · written by 1 of 3 runs
+- [x] disagree · unclassified · written by 1 of 3 runs
+  - reason: should start from the no-browser rule itself, not the provenance note; the note only says where the connection is, the rule is what comes from spec 0001's runner constraint
+
   - source: `feature-9#9-profile-entry-done:3` Constraint: That last clause is spec 0001's third runner constraint, deferred to here by spec 0004.
   - target: reference `0001` label `third runner constraint`, mention: spec 0001's third runner constraint
   - phrase: spec 0001's third runner constraint

@@ -4,6 +4,12 @@
 
 Each reason is one sub-bullet directly under the mark line, starting `reason:`, holding only the reason (no copied item text). Required on every `disagree` and `unsure` (say what it should have been), and on an `agree` when a rule decided it.
 
+- JobHunt's session reads the live repo, not the pinned snapshot (2e40bcf, 2026-09-18). Spec 0010's AC-5 was superseded on 2026-09-23 (232aba8), after the snapshot; rulings judge the pinned text, so later changes do not count against the model.
+
+## Links start from the connected item, not the sentence that states the connection
+
+A link's source is the item that is actually connected, not a note that describes the connection. Set on group C relationship 5, where one run drew the link from "That last clause is spec 0001's third runner constraint..." (a provenance note) instead of from the no-browser rule it describes.
+
 ## Rule by what the text supports, including its context
 
 The extractor sees only the text, so a ruling judges its cut against what the text and its context support under the three-question test, not against knowledge only the author has. Where the author's knowledge differs, it goes in the reason. Set on group B entity 2 (0013's "dropped and counted"), first ruled a split, then changed to one rule once its context showed counting serves the all-failed exception. Separately, a JobHunt finding: adzuna.ts drops failing listings but counts them only when every listing fails (droppedCount, line 295).
@@ -27,6 +33,9 @@ Struck (superseded) text is ruled as one entity even when it bundles several con
 - AC-4's new text says only its second sentence stopped being true, the first carried over. Splitting struck text would let the graph say exactly which part was superseded. Spec 0002 (AC-5 and its 0021 AC-2 test scenario) currently expects one struck entity per criterion, so the ruling applies the struck text rule consistently and leaves this as a possible spec 0002 amendment. Entity 4 was first ruled "should split" before the rule was set, then changed to agree for consistency.
 - Second example: AC-7's tiebreaker fragment was superseded (single search rank replaced by the interleaved kept walk order), while AC-7 as a whole was amended.
 
+## Open design question: stages and steps
+
+Scope rows mix workflow stages (Design it, Build it, Verify it, Test it) with build steps nested under Build it, and the model types all of them as BuildStep. The stages split into building (Build it, whose sub-steps carry the "· AC-..." tags and satisfy criteria) and checking (Verify it, Test it, which mention criteria only as checked or found failing, never tagged as delivered, across all 22 Verify and 20 Test lines in the scope). Only building maps to BuildStep; checking has no stage-level type, so group C entity 10 was ruled unclassified. Whether to add a stage type, or a part-of link from sub-steps to their stage, is a design question for later.
 
 ## Group A findings
 
@@ -46,6 +55,10 @@ Group A: the old prompt wrote 27 to 35 unclassified links per run, the new promp
 
 Named but unlinkable: AC-17 points to Feature design's "Refresh outcomes" section (0021 lines 388 to 390, decisions ratified from the build), but a sub-section is not a record, an AC id or a label, so AC-7's endpoint shapes cannot name it; run 1 moved the sentence into rejected_spans.
 
+Second example: feature 9's Done when names "spec 0001's third runner constraint", one sentence in spec 0001's Test runners row (line 58); "third" means the one left over after spec 0004 met the other two (spec 0004, line 52), not third in the list. The link can only point at the whole of spec 0001; the deferral itself is captured by a separate link to spec 0004 in all 3 runs.
+
+
 - A reference like "the same convention spec X uses" can import rules from another spec without stating them; by the deletion trick it stays in the span. No run linked 0013 to spec 0007, though the text names 0007's convention as the one it follows.
 
 - Category prefixes are not labels: 0013's test list uses prefixes ("Failure case:" three times, "Happy path:", "Gate:"), and runs 1 and 2 set the label "Failure case" on all three failure bullets, run 3 on none. Spec 0003 AC-6 sets a label only for an item's own name, so a shared prefix gets none (three identical labels would also tie under AC-7). JobHunt observations: the third "Failure case" bullet renders the page normally (AC-1, AC-5), unlike the other two; the first bullet holds two tests ("and, separately"); the "every item fails" branch has no bullet of its own.
+
