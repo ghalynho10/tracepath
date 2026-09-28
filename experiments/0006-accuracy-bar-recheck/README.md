@@ -117,14 +117,16 @@ untested, per feature 12's scope `Done when`, which states that explicitly rathe
 leaving it silently untested.
 
 **Worth reading alongside the spread**: `feature-33`'s after run is `13/13/13`, 0
-entity rows disagreeing, yet only **1** entity accepted, because every run flags 9 to
-11 of its 13 entities with a trap flag (7 to 8 of them `multi_condition_split`); an
-identical count with no disagreement still needs a matching *signature* on every run
-to accept, and a flagged, split-eligible item is exactly where that signature is most
-likely to drift. `0014`'s accepted count fell from 16 (before) to 10 (after), the same
-direction, on a unit whose entity counts held flat at 27/27/27 with 0 rows
-disagreeing both times: prompt `0003.1`'s added rules are producing more items runs
-agree exist but disagree on the exact cut of, not fewer.
+entity rows disagreeing, yet only **1** entity accepted. This is not signature drift:
+every run flags 9 to 11 of its 13 entities with a trap flag (7 to 8 of them
+`multi_condition_split`), and `_entity_reasons()` routes a flagged entity to review on
+the `known_trap_flag` trigger alone, independently of whether it agrees across runs
+(`src/tracepath/extract/compare.py:268-269`; an `unclassified` entity routes the same
+way, line 271). `0014`'s accepted count fell from 16 (before) to 10 (after) the same
+way, on a unit whose entity counts held flat at 27/27/27 with 0 rows disagreeing both
+times: prompt `0003.1`'s added rules are raising how many items get flagged, which
+lowers accepted counts while agreement holds. That is a review volume input for
+feature 11 (review volume and routing policy), not instability.
 
 ## Ruling
 
