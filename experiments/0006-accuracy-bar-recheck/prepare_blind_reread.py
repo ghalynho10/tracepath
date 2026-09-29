@@ -67,11 +67,17 @@ def parse(text: str) -> list[RuledItem]:
             rest = match.group(2)
             mark, _, remainder = rest.partition(" · ")
             if mark not in UNRULED_MARKS:
+                # A block runs to the next top level item or heading, blank lines
+                # included: `report.py`'s own link blocks carry one between the
+                # `reason:` line and `source:`, which a `.startswith("  ")` check
+                # alone would stop at, silently dropping source, target and phrase.
                 sub_lines = []
                 j = i + 1
-                while j < len(lines) and lines[j].startswith("  "):
+                while j < len(lines) and not lines[j].startswith(("- [", "#")):
                     sub_lines.append(lines[j])
                     j += 1
+                while sub_lines and sub_lines[-1].strip() == "":
+                    sub_lines.pop()
                 items.append(RuledItem(group, section, mark, remainder, tuple(sub_lines)))
                 i = j
                 continue
