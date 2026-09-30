@@ -98,6 +98,7 @@ this file instead; /reflex flags it and the engineer moves it.
 
 - **Verify before you recommend.** When recommending anything about something that already exists, read it first and name what you read: a file, migration, config, or current behaviour in the repo, and the vendor's own docs for limits, terms, API shape, or version outside it. Mark each substantive claim verified (naming the file or source) or inferred, and when you cannot verify something that matters, say what you would need rather than filling the gap.
 - **Confirm the specific action.** When beginning a multi step skill, confirm the engineer agreed to that specific action rather than to a summary or a suggestion in passing.
+- **One claim per acceptance criterion.** When writing or reviewing an acceptance criterion, split it until it holds one independently falsifiable claim, and give a claim that relates two states its own criterion, because a test tagged with a criterion's number reads as covering all of it while proving only the clause easiest to observe, and a claim about how two states relate belongs to neither when tests are grouped one block per state. (added 2026 09 30, carried over from a sibling project where four acceptance criteria across three specs shipped with only their easiest clause tested)
 
 ## Context files
 
