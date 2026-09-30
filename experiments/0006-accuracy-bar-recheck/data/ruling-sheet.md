@@ -14,33 +14,52 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `0014#requirements:1` · Feature
+- [x] disagree · `0014#requirements:1` · Feature
+  - reason: the so-that clause states a product rule (no application process of the app's own), stated nowhere else in the unit; it belongs in the span, not rejected
+
   - span: As a job seeker, I want to open the real posting on the source site,
   - rejected: ["so that I apply through the employer's own process rather than through a copy of it."]
-- [ ] agree / disagree · `0014#requirements:3` · Feature
+- [x] agree · `0014#requirements:3` · Feature
+  - reason: the so-that clause reads as rationale; the story's action is delivered by AC-9, and nothing it rules out stands on its own
+
   - span: As a job seeker, I want a search to show me which jobs I already applied to,
   - rejected: ['so that I do not waste an application or a click on a job I already sent.']
-- [ ] agree / disagree · `0014/AC-1` · AcceptanceCriterion
+- [x] agree · `0014/AC-1` · AcceptanceCriterion
+  - reason: bundled AC-N kept whole and flagged, ruled agree by the convention · gap:bundled-ac
+
   - span: **AC-1**: A result card carries a `Mark as applied` control that is separate from feature 11's `View the posting` link. Opening a posting records nothing at all: no row is written by the click through, and no state changes.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0014/AC-4` · AcceptanceCriterion
+- [x] agree · `0014/AC-4` · AcceptanceCriterion
+  - reason: bundled AC-N kept whole and flagged, ruled agree by the convention (sentence 2 is its own condition: the refusal must come from the unique constraint) · gap:bundled-ac
+
   - span: **AC-4**: A second apply to the same `(profile_id, source, source_job_id)` writes no second row and produces a visible expected failure carrying `COPY-2`, kind `validation_failed`, severity `expected`. The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7).
   - flags: multi_condition_split
-- [ ] agree / disagree · `0014/AC-6` · AcceptanceCriterion
+- [x] disagree · `0014/AC-6` · AcceptanceCriterion
+  - reason: minor: bundle correctly kept whole, but "so it never makes a claim about a figure that does not exist" is the reason for null over false (it cannot fail while the rest passes), so it belongs in rejected
+
   - span: **AC-6**: `application.salary_is_predicted` exists as a nullable boolean, and a check constraint makes it present exactly when `salary_min` or `salary_max` is present. When Adzuna stated no pay at all, the column is written `null` and never `false`, so it never makes a claim about a figure that does not exist.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0014/AC-9` · AcceptanceCriterion
+- [x] agree · `0014/AC-9` · AcceptanceCriterion
+  - reason: bundled AC-N kept whole and flagged, ruled agree by the convention · gap:bundled-ac
+
   - span: **AC-9**: A search result the caller has already applied to is visibly marked as applied, and its `Mark as applied` control is disabled. Two paths reach that state and both are covered: a server read at render time (`readAppliedJobIds`, scoped to the `source_job_id` values actually rendered), and the action's own returned state after a successful apply in this render. The applied state is reached only on a confirmed database write, never optimistically.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0014/AC-12` · AcceptanceCriterion
+- [x] agree · `0014/AC-12` · AcceptanceCriterion
+
   - span: **AC-12**: `job_description` holds the Adzuna description snippet the search already parsed, and the spec that describes that column as the full posting text is corrected in every place it says so.
-- [ ] agree / disagree · `0014/AC-14` · AcceptanceCriterion
+- [x] agree · `0014/AC-14` · AcceptanceCriterion
+  - reason: bundled AC-N kept whole and flagged, ruled agree by the convention · gap:bundled-ac
+
   - span: **AC-14**: The four operations this feature adds each open a named span as their first statement, at the moment the operation is first written rather than in a later pass, and are registered in [spans.md](../../observability/spans.md) with `op: "db.query"`: `application.record`, `application.remove`, `application.read_list`, and `search.read_applied`.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0014/AC-17` · AcceptanceCriterion
+- [x] agree · `0014/AC-17` · AcceptanceCriterion
+  - reason: "so the empty state has an exit" is the reason (cannot fail while the link is there), rightly rejected
+
   - span: **AC-17**: `/applications` with no rows keeps its existing promise sentence and adds a link to `/search` carrying `COPY-5`.
   - rejected: ['so the empty state has an exit rather than being a dead end']
-- [ ] agree / disagree · `0014/AC-20` · AcceptanceCriterion
+- [x] disagree · `0014/AC-20` · AcceptanceCriterion
+  - reason: part 2, the premise ("A cookie write inside a Server Action puts a re-render ... a second Adzuna call"), is the reason for the rule and should be in rejected
+
   - span: **AC-20**: The apply action builds its Supabase client with a **read only cookie adapter**, so nothing inside it can write a session cookie. A cookie write inside a Server Action puts a re-render of the current route into the action's response, which on `/search` means a second Adzuna call. **This criterion is defence in depth, and it is NOT what makes AC-10 hold for an expired session** (corrected 2026-09-05, revision 4; the original wording said it was). Measured: with the adapter in place and unchanged, an expired session apply still spent a call, because the write came from `src/proxy.ts`, which runs on the action `POST` too. The adapter closes a door this bug never used, and it stays closed because a later session adding a cookie write inside the action would reopen it. What actually makes AC-10 hold for an expired session is **AC-20a**.
   - flags: multi_condition_split, rationale_boundary_call
 
@@ -48,31 +67,37 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
 
 5 evenly spaced through the 17 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0014/AC-4` AcceptanceCriterion: **AC-4**: A second apply to the same `(profile_id, source, source_job_id)` writes no second row and produces a visible expected failure carrying `COPY-2`, kind `validation_failed`, severity `expected`. The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7).
   - target: reference `0003` AC-7, mention: spec 0003, AC-7
   - phrase: The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7)
   - source text:
     > - **AC-4**: A second apply to the same `(profile_id, source, source_job_id)` writes no second row and produces a visible expected failure carrying `COPY-2`, kind `validation_failed`, severity `expected`. The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7).
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0014/AC-8` AcceptanceCriterion: **AC-8**: Every application row displayed on `/applications` carries its own `Jobs by Adzuna` attribution through `Card.Footer`'s attribution slot, on the same terms spec 0013 AC-6 sets for a search result, with the link target read from `ADZUNA_ATTRIBUTION_URL`. Attribution renders once per displayed row and never once per screen (spec 0013, invariant 4). A page with no rows shows no attribution block.
   - target: reference `0013` AC-6, mention: spec 0013 AC-6
   - phrase: on the same terms spec 0013 AC-6 sets for a search result
   - source text:
     > - **AC-8**: Every application row displayed on `/applications` carries its own `Jobs by Adzuna` attribution through `Card.Footer`'s attribution slot, on the same terms spec 0013 AC-6 sets for a search result, with the link target read from `ADZUNA_ATTRIBUTION_URL`. Attribution renders once per displayed row and never once per screen (spec 0013, invariant 4). A page with no rows shows no attribution block.
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0014/AC-11` AcceptanceCriterion: **AC-11**: An application can be removed from `/applications`. The removal is confirmed first at `/applications?remove=<id>`, that URL mutates nothing on its own, and the question carries `COPY-4`, naming the job being removed rather than asking a bare "are you sure". A removal matching zero rows is a reported failure, not a silent success. On success the remove action **does** call `revalidatePath("/applications")`.
   - target: `0014/AC-10` AcceptanceCriterion: **AC-10**: Marking applied does not re-render `/search`. No second Adzuna call is made, no `job_search` gate check is spent, and the weekly counter does not move. This holds for a fresh session **and for a session whose access token has expired**. Measured against a production build (`pnpm build && pnpm start`), never under `pnpm dev`, for the reason spec 0013's AC-10 records.
   - phrase: the deviation in AC-10 is scoped to the apply action alone
   - source text:
     > - **AC-11**: An application can be removed from `/applications`. The removal is confirmed first at `/applications?remove=<id>`, that URL mutates nothing on its own, and the question carries `COPY-4`, naming the job being removed rather than asking a bare "are you sure". A removal matching zero rows is a reported failure, not a silent success. On success the remove action **does** call `revalidatePath("/applications")`, because that page makes no outbound call and the deviation in AC-10 is scoped to the apply action alone.
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] agree · unclassified · written by 2 of 3 runs
+  - reason: AC-20 still stands in full and its old wording is only described, so no history type fits; a pointer between two standing criteria is unclassified
+
   - source: `0014/AC-20` AcceptanceCriterion: **AC-20**: The apply action builds its Supabase client with a **read only cookie adapter**, so nothing inside it can write a session cookie. A cookie write inside a Server Action puts a re-render of the current route into the action's response, which on `/search` means a second Adzuna call. **This criterion is defence in depth, and it is NOT what makes AC-10 hold for an expired session** (corrected 2026-09-05, revision 4; the original wording said it was). Measured: with the adapter in place and unchanged, an expired session apply still spent a call, because the write came from `src/proxy.ts`, which runs on the action `POST` too. The adapter closes a door this bug never used, and it stays closed because a later session adding a cookie write inside the action would reopen it. What actually makes AC-10 hold for an expired session is **AC-20a**.
   - target: `0014/AC-20a` AcceptanceCriterion: **AC-20a**: `src/proxy.ts` **withholds the refreshed session cookie from the response of a Server Action request**, while still handing the refreshed value to that request's own code through `request.cookies.set()`, so `recordApplication` can verify its caller. The branch keys on the presence of Next's `next-action` request header, never on the route, so binding rule 6's mechanical guard is untouched: the proxy still cannot tell a protected path from a public one. This is the criterion the 25 weekly Adzuna calls actually rest on. **The trade is deliberate**: the browser keeps its stale cookie until its next ordinary request, which refreshes and persists as usual. That refresh reuses a token the action already rotated, which GoTrue accepts inside `refresh_token_reuse_interval` (10 seconds on this project, read from the running container). **Driven, and the first version of this measurement did not cover the case that matters** (found by the fresh model review on 2026-09-05): three applies about six seconds apart all sit INSIDE the reuse interval, and a pause before an ordinary navigation proves nothing about a second action, because the navigation persists a fresh cookie anyway. The shape that actually tests it is two applies **sixteen seconds apart with no request of any kind between them**. Driven: both applies succeeded, both rows landed, no message on either, and the navigation after returned 200 still signed in with a freshly rotated cookie. The token family was not revoked. Amends spec [0008](../0008-app-shell-and-navigation/index.md) AC-10 and spec [0001](../0001-stack-and-architecture/index.md) binding rule 6, both dated the same day.
   - phrase: What actually makes AC-10 hold for an expired session is **AC-20a**.
   - source text:
     > - **AC-20**: The apply action builds its Supabase client with a **read only cookie adapter**, so nothing inside it can write a session cookie. A cookie write inside a Server Action puts a re-render of the current route into the action's response, which on `/search` means a second Adzuna call. **This criterion is defence in depth, and it is NOT what makes AC-10 hold for an expired session** (corrected 2026-09-05, revision 4; the original wording said it was). Measured: with the adapter in place and unchanged, an expired session apply still spent a call, because the write came from `src/proxy.ts`, which runs on the action `POST` too. The adapter closes a door this bug never used, and it stays closed because a later session adding a cookie write inside the action would reopen it. What actually makes AC-10 hold for an expired session is **AC-20a**.
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] agree · unclassified · written by 2 of 3 runs
+
   - source: `0014/AC-1` AcceptanceCriterion: **AC-1**: A result card carries a `Mark as applied` control that is separate from feature 11's `View the posting` link. Opening a posting records nothing at all: no row is written by the click through, and no state changes.
   - target: reference `feature 11` (whole record), mention: feature 11's `View the posting` link
   - phrase: feature 11's `View the posting` link

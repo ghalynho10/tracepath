@@ -5,7 +5,7 @@
 ## Item 1
 _Group C: feature-9 / 9-profile-entry-done (a different scope row than the example's) · Relationships_
 
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
 
   - source: `feature-9#9-profile-entry-done:9` BuildStep: Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14
   - target: reference `0010` AC-2, mention: AC-1 to AC-4, AC-11 to AC-14
@@ -21,14 +21,16 @@ _Group C: feature-9 / 9-profile-entry-done (a different scope row than the examp
 ## Item 2
 _Group C: feature-9 / 9-profile-entry-done (a different scope row than the example's) · Entities_
 
-- [ ] agree / disagree · `feature-9#9-profile-entry-done:9` · BuildStep
+- [x] agree · `feature-9#9-profile-entry-done:9` · BuildStep
 
   - span: Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14
 
 ## Item 3
 _Group A: 0021 / requirements (a unit kind with no worked example) · Links the befores wrote and no after wrote_
 
-- [ ] real link lost / rightly dropped · superseded-by · written by 1 of 3 runs
+- [x] real link lost · superseded-by · written by 1 of 3 runs
+
+    - on review: missed that source and target are the same entity (AC-9 to itself); I stand by the original, rightly dropped
 
   - source: `0021/AC-9` AcceptanceCriterion: ~~The page shows no Adzuna attribution and no salary prediction attribution~~ · **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the "Jobs by Adzuna" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders. The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.
   - target: `0021/AC-9` AcceptanceCriterion: ~~The page shows no Adzuna attribution and no salary prediction attribution~~ · **SUPERSEDED 2026-09-14.** The opposite is now required: every card carries the "Jobs by Adzuna" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders. The listing genuinely came from Adzuna now, so both attributions are load bearing, not decorative.
@@ -46,7 +48,9 @@ _Group A: 0021 / requirements (a unit kind with no worked example) · Links the 
 ## Item 4
 _Group C: feature-9 / 9-profile-entry-done (a different scope row than the example's) · Relationships_
 
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] disagree · unclassified · written by 2 of 3 runs
+  - reason: too broad: the link should point at the named constraint inside spec 0001 ("third runner constraint"), not the whole record
+
 
   - source: `feature-9#9-profile-entry-done:3` AcceptanceCriterion: **Done when:** a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser.
   - target: reference `0001` (whole record), mention: spec 0001's third runner constraint
@@ -61,14 +65,19 @@ _Group C: feature-9 / 9-profile-entry-done (a different scope row than the examp
 ## Item 5
 _Group B: 0013 / feature-design (a kind with an example, different content) · Entities_
 
-- [ ] agree / disagree · `0013#feature-design:25` · TestScenario · label `Failure case`
+- [x] agree · `0013#feature-design:25` · TestScenario · label `Failure case`
+`
 
   - span: Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the "every item fails" branch is a separate case, same kind).
+
+   - on review: I stand by the original disagree: "Failure case" is shared by three bullets, so it is not this item's own name
 
 ## Item 6
 _Group A: 0021 / requirements (a unit kind with no worked example) · Links the befores wrote and no after wrote_
 
-- [ ] real link lost / rightly dropped · unclassified · written by 3 of 3 runs
+- [x] rightly dropped · unclassified · written by 3 of 3 runs
+  - reason: rationale.md is not a record kind yet (feature 10); the pointer survives verbatim in AC-5's rejected_spans, so a later version can recover it by code
+
 
   - source: `0021/AC-5` AcceptanceCriterion: The page offers exactly two example candidate profiles, `backend-engineer` ("Backend engineer", the default) and `frontend-engineer` ("Frontend engineer"), switchable through a `?persona=` link. Any value that is not exactly one of those two slugs (absent, unrecognized, empty, or a repeated query param) shows the default profile rather than erroring.
   - target: reference `rationale.md` (whole record), mention: see `rationale.md`
@@ -85,7 +94,8 @@ _Group A: 0021 / requirements (a unit kind with no worked example) · Links the 
 ## Item 7
 _Group C: feature-9 / 9-profile-entry-done (a different scope row than the example's) · Relationships_
 
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
+
 
   - source: `feature-9#9-profile-entry-done:11` BuildStep: Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16
   - target: reference `0010` AC-16, mention: AC-9, AC-10, AC-16
@@ -101,7 +111,9 @@ _Group C: feature-9 / 9-profile-entry-done (a different scope row than the examp
 ## Item 8
 _Group A: 0021 / requirements (a unit kind with no worked example) · Entities_
 
-- [ ] agree / disagree · `0021/AC-3` · AcceptanceCriterion
+- [x] agree · `0021/AC-3` · AcceptanceCriterion
+  - reason: bundled AC-N kept whole and flagged, ruled agree by the convention · gap:bundled-ac
+
   - span: The opposite
   is now true on purpose: every listing (company name, title, description, location) is real,
   exactly as Adzuna returned it, including a real employer's name on a `weak_match` or
@@ -112,7 +124,9 @@ _Group A: 0021 / requirements (a unit kind with no worked example) · Entities_
 ## Item 9
 _Group B: 0013 / feature-design (a kind with an example, different content) · Relationships_
 
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+  - reason: extraction matches the text; JobHunt: page.test.ts:291 checks only AC-4's first clause, not "distinct from both" (a code gap, not an extraction error)
+
 
   - source: `0013#feature-design:29` TestScenario: Empty: a search that legitimately matches nothing renders the empty state, distinguishable from both the failure and refusal states, verifies **AC-4**.
   - target: reference `0013` AC-4, mention: **AC-4**
@@ -123,7 +137,11 @@ _Group B: 0013 / feature-design (a kind with an example, different content) · R
 ## Item 10
 _Group B: 0013 / feature-design (a kind with an example, different content) · Relationships_
 
-- [ ] agree / disagree · unclassified · written by 2 of 3 runs
+- [x] disagree · unclassified · written by 2 of 3 runs
+    - on review: I stand by today's disagree; the original agree is superseded. gap:reuses-type drops from 3 to 2
+
+  - reason: no link: the sentence only says something is reused in another feature, not a relation between records
+
 
   - source: `0013#feature-design:3` Constraint: Feature 12 imports this exact shape later for its own field mapping (spec 0003 already names feature 11 as owner of that mapping).
   - target: reference `feature 12` (whole record), mention: Feature 12
