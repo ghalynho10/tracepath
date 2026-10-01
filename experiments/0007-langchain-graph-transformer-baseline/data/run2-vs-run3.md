@@ -1,0 +1,5 @@
+# Run 2 vs run 3, as reported
+
+Copied verbatim from the run's chat transcript (`langchain-test-transcript.md`, line 636). The raw `diff` output it summarises (`/tmp/run_diff.txt`) and run 2's full output were not kept, so this summary is all that survives of the comparison.
+
+The diff confirms the two successful runs are **not the same output**. Examples present in run 2 and absent in run 3: nodes `Spec 0007 (Document)`, `Entry Page (Webpage)`, `/ (Route)`; relationships `Entry Page --[USES_STATUS_FROM]--> Docs/Scope/Scope.Md`, `Entry Page --[USES_COPY_FROM]--> Docs/Design/Jobhuntlanding.Tsx`, `Entry Page --[BUILT_WITH]--> Vercel-React-Best-Practices`, `... --[USES_COLOR_TOKENS]--> Src/App/Globals.Css`, `Entry Page --[REQUIRES_PASS]--> Pnpm Lint`. Run 3 instead grew `Jobhunt --[HAS_FEATURE]--> Feature 7/9/11/12/14` and `LINK_UNFURLS_IN`. Even the root node id of the very first file differs between runs (`0006. Entry Page And Link Metadata` vs `Entry Page`). Structured output at temperature 0 is not deterministic here — vocabulary and ids drift run to run.

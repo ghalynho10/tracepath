@@ -1,0 +1,564 @@
+=== /Users/ghaly/Documents/Work/Personal/jobhunt/docs/specs/0006-entry-page-and-link-metadata/index.md ===
+NODES
+  0006. Entry Page And Link Metadata (Document)
+  2026-08-28 (Date)
+  Accepted (Status)
+  Jobhuntlanding.Tsx (File)
+  Feature 5 (Feature)
+  Spec 0005 (Document)
+  Spec 0008 (Document)
+  Jobhunt (Product)
+  Vercel-React-Best-Practices (Skill)
+  Vercel-Labs/Agent-Skills/.Agents/Skills/Vercel-React-Best-Practices/ (File)
+  Canonicalsiteurl (Variable)
+  Src/Lib/Origin.Ts (File)
+  Next_Public_Site_Url (Environment variable)
+  Src/App/Opengraph-Image.Tsx (File)
+  Assets/Spacegrotesk-Semibold.Ttf (File)
+  Assets/Spacegrotesk-Ofl.Txt (File)
+  Docs/Design/Logo/Lockup.Svg (File)
+  Src/Components/Ui/Logo.Tsx (File)
+  Docs/Design/Logo/Mark.Svg (File)
+  Src/App/Layout.Tsx (File)
+  Robots (Variable)
+  Entryheader (Component)
+  Entryfooter (Component)
+  Section (Component)
+  Card (Component)
+  Button (Component)
+  Chip (Component)
+  Text (Component)
+  Heading (Component)
+  Matchbar (Component)
+  Logo (Component)
+  Src/Components/Ui/Agents.Md (File)
+  Copy-1 (String)
+  Copy-2 (String)
+  Copy-3 (String)
+  Copy-4 (String)
+  Ghaly Nicolas Jules (Person)
+  Space Grotesk (Font)
+  Sil Open Font License 1.1 (License)
+  Slack (Software)
+  Imessage (Software)
+  Twitter (Software)
+  Satori (Software)
+  Imageresponse (Software)
+  Public/Mark-512.Png (File)
+  Docs/Scope/Scope.Md (File)
+  Feature 7 (Feature)
+  Feature 9 (Feature)
+  Feature 11 (Feature)
+  Feature 12 (Feature)
+  Feature 14 (Feature)
+RELATIONSHIPS
+  0006. Entry Page And Link Metadata --[DATE]--> 2026-08-28
+  0006. Entry Page And Link Metadata --[STATUS]--> Accepted
+  0006. Entry Page And Link Metadata --[REFERENCES]--> Jobhuntlanding.Tsx
+  0006. Entry Page And Link Metadata --[REFERENCES]--> Feature 5
+  0006. Entry Page And Link Metadata --[REFERENCES]--> Spec 0005
+  0006. Entry Page And Link_Metadata --[REFERENCES]--> Spec 0008
+  0006. Entry Page And Link Metadata --[DESCRIBES]--> Jobhunt
+  0006. Entry Page And Link Metadata --[REQUIRES]--> Vercel-React-Best-Practices
+  Vercel-React-Best-Practices --[DEFINED_IN]--> Vercel-Labs/Agent-Skills/.Agents/Skills/Vercel-React-Best-Practices/
+  0006. Entry Page And Link Metadata --[USES]--> Canonicalsiteurl
+  Canonicalsiteurl --[DEFINED_IN]--> Src/Lib/Origin.Ts
+  Canonicalsiteurl --[DERIVED_FROM]--> Next_Public_Site_Url
+  0006. Entry Page And Link Metadata --[USES]--> Src/App/Opengraph-Image.Tsx
+  Src/App/Opengraph-Image.Tsx --[USES]--> Assets/Spacegrotesk-Semibold.Ttf
+  Assets/Spacegrotesk-Semibold.Ttf --[LICENSED_BY]--> Assets/Spacegrotesk-Ofl.Txt
+  Assets/Spacegrotesk-Ofl.Txt --[IS]--> Sil Open Font License 1.1
+  Src/Components/Ui/Logo.Tsx --[USES]--> Docs/Design/Logo/Lockup.Svg
+  Src/Components/Ui/Logo.Tsx --[USES]--> Docs/Design/Logo/Mark.Svg
+  0006. Entry Page And Link Metadata --[USES]--> Src/App/Layout.Tsx
+  Src/App/Layout.Tsx --[EXPORTS]--> Robots
+  Entryheader --[DEFINED_IN]--> Src/Features/Entry-Page/
+  Entryfooter --[DEFINED_IN]--> Src/Features/Entry-Page/
+  Section --[DEFINED_IN]--> Src/Components/Ui/
+  Card --[DEFINED_IN]--> Src/Components/Ui/
+  Button --[DEFINED_IN]--> Src/Components/Ui/
+  Chip --[DEFINED_IN]--> Src/Components/Ui/
+  Text --[DEFINED_IN]--> Src/Components/Ui/
+  Heading --[DEFINED_IN]--> Src/Components/Ui/
+  Matchbar --[DEFINED_IN]--> Src/Components/Ui/
+  Logo --[DEFINED_IN]--> Src/Components/Ui/Logo.Tsx
+  Src/Components/Ui/Agents.Md --[MENTIONS]--> Logo
+  Copy-1 --[HAS_VALUE]--> Sign In Isn'T Live Yet. Coming Soon With Google And Github.
+  Copy-2 --[HAS_VALUE]--> Example Result
+  Copy-3 --[HAS_VALUE]--> Shows Its Work, Not Just A Score.
+  Copy-4 --[HAS_VALUE]--> © Ghaly Nicolas Jules
+  Copy-4 --[ATTRIBUTED_TO]--> Ghaly Nicolas Jules
+  Space Grotesk --[DISTRIBUTED_AS]--> Assets/Spacegrotesk-Semibold.Ttf
+  Space Grotesk --[LICENSED_BY]--> Sil Open Font License 1.1
+  Src/App/Opengraph-Image.Tsx --[USES]--> Space Grotesk
+  Src/App/Opengraph-Image.Tsx --[USES]--> Docs/Design/Logo/Mark.Svg
+  Src/App/Opengraph-Image.Tsx --[USES]--> Copy-3
+  Src/App/Opengraph-Image.Tsx --[USES]--> Copy-2
+  Src/App/Opengraph-Image.Tsx --[USES]--> Copy-1
+  Src/App/Opengraph-Image.Tsx --[USES]--> Copy-4
+  Src/App/Opengraph-Image.Tsx --[FALLBACK_IMAGE]--> Public/Mark-512.Png
+  Src/App/Opengraph-Image.Tsx --[USES]--> Satori
+  Src/App/Opengraph-Image.Tsx --[USES]--> Imageresponse
+  Jobhunt --[HAS_FEATURE]--> Feature 7
+  Jobhunt --[HAS_FEATURE]--> Feature 9
+  Jobhunt --[HAS_FEATURE]--> Feature 11
+  Jobhunt --[HAS_FEATURE]--> Feature 12
+  Jobhunt --[HAS_FEATURE]--> Feature 14
+  Docs/Scope/Scope.Md --[MENTIONS]--> Feature 9
+  Docs/Scope/Scope.Md --[MENTIONS]--> Feature 11
+  Docs/Scope/Scope.Md --[MENTIONS]--> Feature 12
+  Docs/Scope/Scope.Md --[MENTIONS]--> Feature 14
+  Jobhunt --[LINK_UNFURLS_IN]--> Slack
+  Jobhunt --[LINK_UNFURLS_IN]--> Imessage
+  Jobhunt --[LINK_UNFURLS_IN]--> Twitter
+
+=== /Users/ghaly/Documents/Work/Personal/jobhunt/docs/specs/0007-auth-and-per-user-isolation/index.md ===
+NODES
+  Oauth (Concept)
+  Google (Organization)
+  Github (Organization)
+  Supabase Auth (Service)
+  Sign In (Process)
+  Identity (Concept)
+  Isolation (Concept)
+  Spec 0003 (Document)
+  Spec 0004 (Document)
+  Server (System)
+  Client Javascript (Software)
+  Password Sign In (Process)
+  Database Level Hook (Software)
+  Account (Concept)
+  Job Seeker (Person)
+  Returning User (Person)
+  Signed In User (Person)
+  Operator (Person)
+  /Health (Webpage)
+  / (Webpage)
+  /Profile (Webpage)
+  /Search (Webpage)
+  /Sign-In (Webpage)
+  Src/App/Auth/Callback/Route.Ts (File)
+  Src/App/Api/ (Directory)
+  Src/Features/Auth/ (Directory)
+  Src/Features/Dev-Session/ (Directory)
+  Src/Lib/Supabase/Browser.Ts (File)
+  Src/Env.Ts (File)
+  Src/App/(App)/Health/Page.Tsx (File)
+  Src/Lib/Origin.Ts (File)
+  Src/Lib/Supabase/Server.Ts (File)
+  Src/Lib/Result.Ts (File)
+  Src/Lib/Supabase/Secret.Ts (File)
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb (Function)
+  Auth.Users (Table)
+  Auth.Identities (Table)
+  Profile.Id (Column)
+  Auth.Uid() (Function)
+  Gotrue (Service)
+  Profile (Table)
+  Public.Set_Updated_At() (Function)
+  Security Definer (Concept)
+  Set Search_Path = '' (Concept)
+  Public (Schema)
+  Pg-Functions://Postgres/Public/Before_User_Created_Hook (Uri)
+  Config.Toml (File)
+  Canonicalsiteurl (Variable)
+  Currentorigin() (Function)
+  Exchangecodeforsession (Function)
+  Signinwithgoogle() (Function)
+  Signinwithgithub() (Function)
+  Signinwithoauth (Function)
+  Signout() (Function)
+  Zod (Library)
+  Sentry (Service)
+  Failure() (Function)
+  User:Email (Scope)
+  Session (Concept)
+  Profile.Full_Name (Column)
+  Test Mint (Process)
+  Dev_Session_Enabled (Variable)
+  Jobhunt-Dev (Project)
+  Jobhunt-Prod (Project)
+  Supabase/Seed.Sql (File)
+  .Env.Example (File)
+  Ci (System)
+  Vercel (Service)
+  Google Cloud (Service)
+  Github Developer Settings (Service)
+  Supabase Dashboards (Service)
+  Docs/Observability/Spans.Md (File)
+  Spans (Concept)
+  Session Policy (Concept)
+  Privacy Notice (Document)
+  Feature 21 (Feature)
+  Feature 9 (Feature)
+  Feature 27 (Feature)
+  Feature 32 (Feature)
+  Feature 14 (Feature)
+  Feature 10 (Feature)
+  Feature 8 (Feature)
+  Feature 7 (Feature)
+  Spec 0001 (Document)
+  Spec 0002 (Document)
+  Spec 0005 (Document)
+  Spec 0006 (Document)
+  Spec 0008 (Document)
+  Docs/Archive/App-Shell-Direction.Md (Document)
+  Docs/Experiments/0002-Deployment-And-Environments.Md (Document)
+  Agents.Md (File)
+  Copy-1 (Text)
+  Copy-2 (Text)
+  Copy-3 (Text)
+  Copy-4 (Text)
+  Copy-5 (Text)
+  Copy-6 (Text)
+  Access_Denied (Code)
+  Account_Exists (Code)
+  No_Code (Code)
+  Exchange_Failed (Code)
+  Provider_Unavailable (Code)
+RELATIONSHIPS
+  Sign In --[USES]--> Oauth
+  Sign In --[USES]--> Google
+  Sign In --[USES]--> Github
+  Sign In --[USES]--> Supabase Auth
+  Sign In --[PROVIDES]--> Identity
+  Isolation --[PROVED_BY]--> Spec 0003
+  Isolation --[PROVED_BY]--> Spec 0004
+  Sign In --[RUNS_ON]--> Server
+  Sign In --[DOES_NOT_USE]--> Client Javascript
+  Password Sign In --[REMOVED_FROM]--> Feature 1
+  Database Level Hook --[PREVENTS_DUPLICATE]--> Account
+  Job Seeker --[USES]--> Sign In
+  Returning User --[USES]--> Sign In
+  Signed In User --[USES]--> Sign In
+  Operator --[REMOVES]--> Password Sign In
+  Sign In --[REDIRECTS_TO]--> /Health
+  Sign Out --[REDIRECTS_TO]--> /
+  Sign In --[REDIRECTS_TO]--> /Profile
+  Sign In --[REDIRECTS_TO]--> /Search
+  Sign In --[USES]--> /Sign-In
+  Sign In --[USES]--> Src/App/Auth/Callback/Route.Ts
+  Src/App/Api/ --[DOES_NOT_ACCESS]--> User Data
+  Sign Out --[IMPLEMENTED_IN]--> Src/Features/Auth/
+  Src/Features/Dev-Session/ --[CONTAINS]--> Signinwithdevpassword
+  Src/Lib/Supabase/Browser.Ts --[SUPPORTS]--> Password Sign In
+  Src/Env.Ts --[CONTAINS]--> Dev_Session_Enabled
+  Src/App/(App)/Health/Page.Tsx --[IMPORTS]--> Signout()
+  Src/Lib/Origin.Ts --[CONTAINS]--> Currentorigin()
+  Src/Lib/Supabase/Server.Ts --[CONTAINS]--> Exchangecodeforsession
+  Src/Lib/Result.Ts --[CONTAINS]--> Failure()
+  Src/Lib/Supabase/Secret.Ts --[DELETES]--> Account
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[READS]--> Auth.Users
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[READS]--> Auth.Identities
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[CALLED_BY]--> Gotrue
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[LIVES_IN]--> Public
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[IDENTIFIED_BY]--> Pg-Functions://Postgres/Public/Before_User_Created_Hook
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[USES]--> Security Definer
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[USES]--> Set Search_Path = ''
+  Public.Before_User_Created_Hook(Event Jsonb) Returns Jsonb --[GRANTED_TO]--> Gotrue
+  Profile.Id --[FOREIGN_KEY]--> Auth.Users
+  Profile --[CONTAINS]--> Profile.Id
+  Auth.Users --[REFERENCED_BY]--> Profile.Id
+  Auth.Users --[REFERENCED_BY]--> Auth.Uid()
+  Public.Set_Updated_At() --[DOES_NOT_USE]--> Security Definer
+  Public.Set_Updated_At() --[USES]--> Security Invoker
+  Sign In --[USES]--> Signinwithgoogle()
+  Sign In --[USES]--> Signinwithgithub()
+  Sign In --[USES]--> Signinwithoauth
+  Sign In --[USES]--> Exchangecodeforsession
+  Sign In --[USES]--> Signout()
+  Sign In --[USES]--> Zod
+  Sign In --[REPORTS_TO]--> Sentry
+  Sign In --[USES]--> Failure()
+  Signinwithgithub() --[USES]--> User:Email
+  Sign In --[CREATES]--> Session
+  Profile.Full_Name --[BELONGS_TO]--> Profile
+  Test Mint --[GUARDED_BY]--> Dev_Session_Enabled
+  Jobhunt-Dev --[CONTAINS]--> Auth.Users
+  Jobhunt-Prod --[CONTAINS]--> Auth.Users
+  Supabase/Seed.Sql --[CONTAINS]--> Password Hashes
+  .Env.Example --[CONTAINS]--> Supabase_Auth_External_Google_Client_Id
+  .Env.Example --[CONTAINS]--> Supabase_Auth_External_Google_Secret
+  .Env.Example --[CONTAINS]--> Supabase_Auth_External_Github_Client_Id
+  .Env.Example --[CONTAINS]--> Supabase_Auth_External_Github_Secret
+  Ci --[USES_PLACEHOLDER]--> Supabase_Auth_External_Google_Client_Id
+  Ci --[USES_PLACEHOLDER]--> Supabase_Auth_External_Google_Secret
+  Ci --[USES_PLACEHOLDER]--> Supabase_Auth_External_Github_Client_Id
+  Ci --[USES_PLACEHOLDER]--> Supabase_Auth_External_Github_Secret
+  Vercel --[DEPLOYS]--> Jobhunt-Dev
+  Google Cloud --[OWNED_BY]--> Google
+  Github Developer Settings --[OWNED_BY]--> Github
+  Supabase Dashboards --[MANAGES]--> Jobhunt-Dev
+  Supabase Dashboards --[MANAGES]--> Jobhunt-Prod
+  Docs/Observability/Spans.Md --[CONTAINS]--> Spans
+  Session Policy --[APPLIES_TO]--> Jobhunt-Dev
+  Session Policy --[APPLIES_TO]--> Jobhunt-Prod
+  Privacy Notice --[DESCRIBED_BY]--> Feature 21
+  Sign In --[USES_ON_ERROR]--> Copy-1
+  Sign In --[USES_ON_ERROR]--> Copy-2
+  Sign In --[USES_ON_ERROR]--> Copy-3
+  Sign In --[USES_ON_ERROR]--> Copy-4
+  Sign In --[USES_ON_ERROR]--> Copy-5
+  Sign In --[USES_ON_ERROR]--> Copy-6
+  Access_Denied --[MAPS_TO]--> Copy-1
+  Account_Exists --[MAPS_TO]--> Copy-2
+  No_Code --[MAPS_TO]--> Copy-3
+  Exchange_Failed --[MAPS_TO]--> Copy-4
+  Provider_Unavailable --[MAPS_TO]--> Copy-5
+
+=== /Users/ghaly/Documents/Work/Personal/jobhunt/docs/scope/scope.md ===
+NODES
+  Jobhunt (Web app)
+  Profile (Concept)
+  Job Listing (Concept)
+  Application Record (Concept)
+  User (Person)
+  Recruiter (Person)
+  Author (Person)
+  Tracer Bullet (Concept)
+  Beta (Concept)
+  Ga (Concept)
+  Stack & Architecture (Concept)
+  Coding Standards & Tooling (Concept)
+  Deployment & Environments (Concept)
+  Data Model (Concept)
+  Design System & Ui Foundation (Concept)
+  Entry Page & Link Metadata (Concept)
+  Auth & Per User Isolation (Concept)
+  Test Foundation (Concept)
+  App Shell & Navigation (Concept)
+  Terms & Privacy Notices (Concept)
+  Profile Entry (Concept)
+  Usage Gating & Kill Switch (Concept)
+  Job Search & Results List (Concept)
+  Apply Redirect & Application Record (Concept)
+  Model Client Router (Concept)
+  Fit Scoring With Shown Reasoning (Concept)
+  Eval Ground Truth Set (Concept)
+  Eval Harness Runner (Concept)
+  Cross Vendor Self Check (Concept)
+  Band Anchor Review (Concept)
+  Structured Search Filters (Concept)
+  Listing Data Quality (Concept)
+  Guided Application Capture (Concept)
+  Discard With Reason (Concept)
+  Applications Dashboard (Concept)
+  Master Resume (Concept)
+  Resume Tailoring Per Job (Concept)
+  Profile Depth & Completeness (Concept)
+  Auth Remainder (Concept)
+  Spend Visibility & Gating Polish (Concept)
+  Product Analytics (Concept)
+  Company Research, Lite (Concept)
+  Seeded Demo Account (Concept)
+  Adzuna (Organization)
+  Supabase (Organization)
+  Vercel (Organization)
+  Sentry (Organization)
+  Google (Organization)
+  Github (Organization)
+  Openai (Organization)
+  Google Ai (Organization)
+RELATIONSHIPS
+  Jobhunt --[HAS_FEATURE]--> Profile
+  Jobhunt --[HAS_FEATURE]--> Job Listing
+  Jobhunt --[HAS_FEATURE]--> Application Record
+  Jobhunt --[HAS_USER]--> User
+  Jobhunt --[HAS_USER]--> Recruiter
+  Jobhunt --[HAS_USER]--> Author
+  Jobhunt --[USES_APPROACH]--> Tracer Bullet
+  Jobhunt --[USES_WORKFLOW]--> Beta
+  Jobhunt --[USES_WORKFLOW]--> Ga
+  Jobhunt --[HAS_FEATURE]--> Stack & Architecture
+  Jobhunt --[HAS_FEATURE]--> Coding Standards & Tooling
+  Jobhunt --[HAS_FEATURE]--> Deployment & Environments
+  Jobhunt --[HAS_FEATURE]--> Data Model
+  Jobhunt --[HAS_FEATURE]--> Design System & Ui Foundation
+  Jobhunt --[HAS_FEATURE]--> Entry Page & Link Metadata
+  Jobhunt --[HAS_FEATURE]--> Auth & Per User Isolation
+  Jobhunt --[HAS_FEATURE]--> Test Foundation
+  Jobhunt --[HAS_FEATURE]--> App Shell & Navigation
+  Jobhunt --[HAS_FEATURE]--> Terms & Privacy Notices
+  Jobhunt --[HAS_FEATURE]--> Profile Entry
+  Jobhunt --[HAS_FEATURE]--> Usage Gating & Kill Switch
+  Jobhunt --[HAS_FEATURE]--> Job Search & Results List
+  Jobhunt --[HAS_FEATURE]--> Apply Redirect & Application Record
+  Jobhunt --[HAS_FEATURE]--> Model Client Router
+  Jobhunt --[HAS_FEATURE]--> Fit Scoring With Shown Reasoning
+  Jobhunt --[HAS_FEATURE]--> Eval Ground Truth Set
+  Jobhunt --[HAS_FEATURE]--> Eval Harness Runner
+  Jobhunt --[HAS_FEATURE]--> Cross Vendor Self Check
+  Jobhunt --[HAS_FEATURE]--> Band Anchor Review
+  Jobhunt --[HAS_FEATURE]--> Structured Search Filters
+  Jobhunt --[HAS_FEATURE]--> Listing Data Quality
+  Jobhunt --[HAS_FEATURE]--> Guided Application Capture
+  Jobhunt --[HAS_FEATURE]--> Discard With Reason
+  Jobhunt --[HAS_FEATURE]--> Applications Dashboard
+  Jobhunt --[HAS_FEATURE]--> Master Resume
+  Jobhunt --[HAS_FEATURE]--> Resume Tailoring Per Job
+  Jobhunt --[HAS_FEATURE]--> Profile Depth & Completeness
+  Jobhunt --[HAS_FEATURE]--> Auth Remainder
+  Jobhunt --[HAS_FEATURE]--> Spend Visibility & Gating Polish
+  Jobhunt --[HAS_FEATURE]--> Product Analytics
+  Jobhunt --[HAS_FEATURE]--> Company Research, Lite
+  Jobhunt --[HAS_FEATURE]--> Seeded Demo Account
+  Jobhunt --[USES_SERVICE]--> Adzuna
+  Jobhunt --[USES_SERVICE]--> Supabase
+  Jobhunt --[USES_SERVICE]--> Vercel
+  Jobhunt --[USES_SERVICE]--> Sentry
+  Jobhunt --[USES_SERVICE]--> Google
+  Jobhunt --[USES_SERVICE]--> Github
+  Jobhunt --[USES_SERVICE]--> Openai
+  Jobhunt --[USES_SERVICE]--> Google Ai
+
+=== /Users/ghaly/Documents/Work/Personal/jobhunt/docs/reflexes.md ===
+NODES
+  Reflexes (Concept)
+  Spec (Document)
+  Account (Concept)
+  Project (Concept)
+  Credential (Concept)
+  Git Command (Concept)
+  Git Status (Concept)
+  File (Concept)
+  Commit (Concept)
+  Pull Request (Concept)
+  Repo (Concept)
+  Feature (Concept)
+  Scope.Md (File)
+  Docs (File)
+  Spec Id (Identifier)
+  Acceptance Criterion (Concept)
+  Issue Number (Identifier)
+  Range (Concept)
+  Css Rule (Concept)
+  Shared Token (Concept)
+  Default (Concept)
+  Engineer (Person)
+  Co-Authored-By Trailer (Concept)
+  Portfolio Facing Repo (Repo)
+  Git Add -P (Command)
+  Branch (Concept)
+  Main (Branch)
+  Generated With Claude Code Footer (Concept)
+  Supabase/Config.Toml (File)
+  Container (Concept)
+  Pnpm Db:Start (Command)
+  .Husky/Pre-Push (File)
+  Origin (Repo)
+  Author (Person)
+  Reviewer (Person)
+  Panel (Concept)
+  System-Level Guarantee (Concept)
+  Verify Step (Concept)
+  Revision (Concept)
+  Summary (Concept)
+  Remote (Repo)
+  Follow Up Item (Concept)
+  Done When (Concept)
+  Edit (Concept)
+  Server Action (Concept)
+  Browser (Concept)
+  Http Post (Concept)
+  Server Log (File)
+  Build (Concept)
+  Output Directory (Concept)
+  Test (Concept)
+  Formatter (Concept)
+  Commit Hook (Concept)
+  Playwright (Tool)
+  Page.Keyboard.Press (Command)
+  Page.Evaluate (Command)
+  Document.Activeelement (Concept)
+  Focusin (Event)
+  Listener (Concept)
+  Document.Hasfocus() (Command)
+  Shell Check (Concept)
+  Grep (Command)
+  Zsh (Tool)
+  Advisor Chat (Concept)
+  Json Report (File)
+  Array (Concept)
+  List Command (Command)
+  Ac-N Tag (Identifier)
+  Src/App/(App)/Search/Page.Test.Ts (File)
+  Src/Env.Ts (File)
+  Vercel Environment (Concept)
+  Next (Tool)
+  Test/Helpers/Database.Ts (File)
+  Psql (Tool)
+  Sentry (Tool)
+  Sentry Metric Monitor (Concept)
+  Alert (Concept)
+  Session (Concept)
+  /Overview Story (Command)
+  ../Jobhunt-Notes/ (File)
+  Docs/Project-Story.Md (File)
+  Audit (Concept)
+  Searchpage (Concept)
+  Dev Server (Concept)
+  Port 3000 (Concept)
+  Port 3100 (Concept)
+RELATIONSHIPS
+  Reflexes --[GOVERN]--> Spec
+  Spec --[MENTION]--> Account
+  Spec --[MENTION]--> Project
+  Spec --[MENTION]--> Credential
+  Git Command --[REQUIRE]--> Git Status
+  Git Status --[SHOW]--> File
+  Commit --[AFFECT]--> File
+  Pull Request --[AFFECT]--> Repo
+  Feature --[MENTION]--> Scope.Md
+  Feature --[MENTION]--> Docs
+  Spec Id --[IDENTIFY]--> Spec
+  Acceptance Criterion --[PART_OF]--> Spec
+  Issue Number --[MENTION]--> Spec
+  Range --[INCLUDE]--> Feature
+  Range --[INCLUDE]--> Spec
+  Range --[INCLUDE]--> Acceptance Criterion
+  System-Level Guarantee --[INCLUDE]--> Css Rule
+  System-Level Guarantee --[INCLUDE]--> Shared Token
+  System-Level Guarantee --[INCLUDE]--> Default
+  Engineer --[OWN]--> Portfolio Facing Repo
+  Co-Authored-By Trailer --[OMIT]--> Commit
+  Git Add -P --[NOT_RECOMMENDED_FOR]--> Docs/Scope/Scope.Md
+  Git Add -P --[NOT_RECOMMENDED_FOR]--> Verify.Md
+  Branch --[PROTECT]--> Main
+  Generated With Claude Code Footer --[OMIT]--> Pull Request
+  Supabase/Config.Toml --[CONFIGURE]--> Container
+  Pnpm Db:Start --[RESTART]--> Container
+  .Husky/Pre-Push --[CHECK]--> Origin
+  Author --[EXCLUDE]--> Reviewer
+  Panel --[INCLUDE]--> Reviewer
+  Revision --[AFFECT]--> Spec
+  Summary --[CHECK]--> Remote
+  Follow Up Item --[PART_OF]--> Spec
+  Done When --[REQUIRE]--> Edit
+  Server Action --[VERIFY_WITH]--> Browser
+  Server Action --[NOT_VERIFY_WITH]--> Http Post
+  Build --[DELETE_BEFORE]--> Output Directory
+  Test --[AFFECT]--> Formatter
+  Test --[AFFECT]--> Commit Hook
+  Playwright --[USE]--> Page.Keyboard.Press
+  Playwright --[NOT_USE]--> Page.Evaluate
+  Page.Evaluate --[UPDATE]--> Document.Activeelement
+  Focusin --[TRIGGER]--> Listener
+  Document.Hasfocus() --[CHECK]--> Document.Activeelement
+  Shell Check --[USE]--> Grep
+  Shell Check --[AFFECT]--> Zsh
+  Advisor Chat --[USE]--> Grep
+  Json Report --[INCLUDE]--> Array
+  List Command --[RETURN]--> Array
+  Ac-N Tag --[INCLUDE]--> Src/App/(App)/Search/Page.Test.Ts
+  Src/Env.Ts --[AFFECT]--> Vercel Environment
+  Next --[VALIDATE]--> Src/Env.Ts
+  Test/Helpers/Database.Ts --[ALTERNATIVE_TO]--> Psql
+  Sentry --[MONITOR]--> Sentry Metric Monitor
+  Sentry Metric Monitor --[REQUIRE]--> Alert
+  Session --[FUNCTION_AS]--> Advisor Chat
+  /Overview Story --[WRITE_TO]--> ../Jobhunt-Notes/
+  /Overview Story --[DEFAULT_WRITE_TO]--> Docs/Project-Story.Md
+  Audit --[WRITE_TO]--> ../Jobhunt-Notes/
+  Searchpage --[AFFECT]--> Test
+  Dev Server --[RUN_ON]--> Port 3000
+  Dev Server --[RUN_ON]--> Port 3100

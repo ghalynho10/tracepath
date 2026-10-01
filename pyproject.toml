@@ -45,6 +45,8 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D"]
+# A one-off script kept as it was run, outside this repo, so it is not brought up to house style.
+"experiments/0007-langchain-graph-transformer-baseline/script.py" = ["D100", "I001"]
 
 [tool.mypy]
 strict = true
