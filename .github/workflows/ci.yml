@@ -6,7 +6,9 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Pinned rather than ubuntu-latest, which moves to Ubuntu 26 from 2026-10-19, so
+    # the runner image does not change under an open feature branch.
+    runs-on: ubuntu-24.04
     services:
       # Integration tests run real Cypher against a real Neo4j, never a mocked driver.
       neo4j:
