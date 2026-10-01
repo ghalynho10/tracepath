@@ -130,8 +130,22 @@ feature 11 (review volume and routing policy), not instability.
 
 ## Ruling
 
-Not ruled; that is the engineer's step. Three pieces, none of them pass or fail on
-their own (AC-30):
+**In progress, as of 2026-09-30 (`6de49e6`).** The bar is not applied yet, because
+two of the three units are unruled. State, counted from `data/ruling-sheet.md`'s own
+marks:
+
+| Unit | Entities (10) | Relationships (5) | Dropped links |
+|---|---|---|---|
+| `0014` `## Requirements` | ruled: 7 agree, 3 disagree | ruled: 5 agree | 14, pending |
+| `0015` `## Feature design` | pending | pending | 15, pending |
+| `feature-33` | pending | pending | 15, pending |
+
+The cold read (`data/cold-read.md`) is pending. The blind self agreement check is
+done: 7 of 10 matched, an upper bound (`../0005-held-out-prompt-examples/data/method-notes.md`,
+candidate 4). `0014`'s kind gained a worked example before this run, so its result is
+weaker held out evidence than the other two (see above).
+
+Three pieces, none of them pass or fail on their own (AC-30):
 
 - **The sample**: `prepare_ruling.py` (no API call) rebuilds `data/ruling-sheet.md`:
   10 entities evenly spaced through each unit's after run 1, 5 relationships evenly
