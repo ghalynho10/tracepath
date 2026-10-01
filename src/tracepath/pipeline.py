@@ -335,6 +335,40 @@ def review_rows(
     return tuple(rows)
 
 
+class ProvenanceMismatch(Exception):
+    """A unit's runs do not agree on where they came from, so no one provenance fits."""
+
+
+def unit_provenance(result: UnitResult, accepted_by: str) -> Provenance:
+    """Where one unit's accepted items came from, read off that unit's own run artifacts.
+
+    Per unit, not per load: a graph rebuilt from units extracted under different prompt
+    versions must say which version each node came from, or a prompt change cannot be
+    told apart from a stable one. The timestamp is the first settled run's, since
+    `route_runs()` takes the accepted items from that run.
+
+    Raises:
+        ProvenanceMismatch: the unit has no settled run, or its settled runs name more
+            than one model or prompt version. Runs compared across a prompt change say
+            nothing about stability, so stamping the unit with either would be a guess.
+    """
+    settled = sorted((a for a in result.artifacts if a.output is not None), key=lambda a: a.run)
+    where = f"{result.unit.record_id} {result.unit.section}"
+    if not settled:
+        raise ProvenanceMismatch(f"{where}: no settled run to read provenance from")
+    models = sorted({a.model for a in settled})
+    versions = sorted({a.prompt_version for a in settled})
+    if len(models) > 1 or len(versions) > 1:
+        raise ProvenanceMismatch(f"{where}: runs mix models {models} or prompt versions {versions}")
+    first = settled[0]
+    return Provenance(
+        model=first.model,
+        prompt_version=first.prompt_version,
+        extracted_at=first.extracted_at,
+        accepted_by=accepted_by,
+    )
+
+
 def load(
     driver: Driver,
     database: str,
@@ -342,15 +376,25 @@ def load(
     results: Sequence[UnitResult],
     resolution: Resolution,
     commit: str,
-    provenance: Provenance,
+    accepted_by: str,
 ) -> dict[str, int]:
-    """Write records, entities, unresolved nodes and links, asserting every write."""
+    """Write records, entities, unresolved nodes and links, asserting every write.
+
+    Each entity carries its own unit's provenance (`unit_provenance()`). Every unit's
+    provenance is settled before the first write, so a unit that cannot be stamped
+    stops the load before anything reaches the graph.
+
+    Raises:
+        ProvenanceMismatch: a unit's runs disagree on model or prompt version.
+    """
+    provenances = [unit_provenance(result, accepted_by) for result in results]
+
     written: dict[str, int] = {}
     written["records"] = write_records(driver, database, [record_row(r) for r in records])
 
     by_type: dict[EntityType, list[dict[str, object]]] = {}
     part_of: list[dict[str, str]] = []
-    for result in results:
+    for result, provenance in zip(results, provenances, strict=True):
         for entity in result.routed.accepted_entities:
             by_type.setdefault(entity.entity.type, []).append(
                 entity_row(entity, result.unit, commit, provenance)

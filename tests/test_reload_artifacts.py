@@ -20,7 +20,6 @@ import pytest
 from tracepath.config import load_neo4j_settings
 from tracepath.extract.records import Record
 from tracepath.graph.connection import connect
-from tracepath.graph.model import Provenance
 from tracepath.graph.schema import clear, create_constraints
 from tracepath.pipeline import UnitResult, load, resolve_accepted
 from tracepath.rebuild import committed_units as rebuild_units
@@ -96,12 +95,7 @@ def test_the_full_load_completes_and_every_counter_matches() -> None:
             results,
             corpus.resolution,
             COMMIT,
-            Provenance(
-                model="claude-sonnet-5",
-                prompt_version="0002.2",
-                extracted_at="2026-09-23T00:00:00+00:00",
-                accepted_by="auto",
-            ),
+            accepted_by="auto",
         )
         phantom, _, _ = driver.execute_query(
             "MATCH (n) WHERE n.canonical_id IS NULL RETURN count(n) AS n",
@@ -111,3 +105,47 @@ def test_the_full_load_completes_and_every_counter_matches() -> None:
     assert written["records"] > 0
     assert written["entities"] > 0
     assert phantom[0]["n"] == 0, "AC-13: a phantom node means a write matched nothing"
+
+
+def test_every_loaded_entity_carries_its_own_units_provenance() -> None:
+    """A graph built from units extracted under different prompts says which is which.
+
+    The committed units span more than one prompt version, so one provenance for the
+    whole load would mislabel most of them. The expected values are read straight off
+    each unit's first run artifact, not through the function under test.
+    """
+    results = committed_units()
+    records = records_for_all(results)
+    corpus = resolve_accepted(results, records)
+    settings = load_neo4j_settings()
+
+    expected: dict[str, tuple[str, str, str]] = {}
+    for result in results:
+        first = min(result.artifacts, key=lambda a: a.run)
+        for entity in result.routed.accepted_entities:
+            expected[entity.canonical_id] = (first.model, first.prompt_version, first.extracted_at)
+    assert len({version for _, version, _ in expected.values()}) > 1, (
+        "the committed units should span more than one prompt version"
+    )
+
+    with connect(settings) as driver:
+        clear(driver, settings.database)
+        create_constraints(driver, settings.database)
+        load(
+            driver,
+            settings.database,
+            records,
+            results,
+            corpus.resolution,
+            COMMIT,
+            accepted_by="auto",
+        )
+        rows, _, _ = driver.execute_query(
+            "MATCH (e:Entity) RETURN e.canonical_id AS id, e.model AS model, "
+            "e.prompt_version AS version, e.extracted_at AS at, e.accepted_by AS by",
+            database_=settings.database,
+        )
+
+    loaded = {row["id"]: (row["model"], row["version"], row["at"]) for row in rows}
+    assert loaded == expected
+    assert {row["by"] for row in rows} == {"auto"}
