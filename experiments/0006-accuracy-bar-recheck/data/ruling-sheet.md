@@ -203,64 +203,89 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `0015#feature-design:1` · Constraint
+- [x] disagree · `0015#feature-design:1` · Constraint
+  - reason: should split: "no new database table" and "a score is never persisted / computed for one render" are independently statable (no "so" ties them, unlike 0013); no verbatim id, so the splitting rule applies
+
   - span: **Data model sketch**: No new database table. A score is never persisted (see Consequences); it is an in memory value computed for one render and handed straight to the UI.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:4` · Constraint
+- [x] agree · `0015#feature-design:4` · Constraint
+
   - span: `notMentionedSkills` never renders under any label implying confirmed absence.
-- [ ] agree / disagree · `0015#feature-design:8` · Constraint
+- [x] disagree · `0015#feature-design:8` · Constraint
+  - reason: should split: "never runs for an empty profile" and "the gate is checked once, not per listing" fail independently; no verbatim id, so the splitting rule applies
+
   - span: Scoring never runs at all when the caller has zero skills and zero work experience entries (AC-7); the gate is checked once before the first `ai_scoring` call, not per listing.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:11` · Constraint
+- [x] agree · `0015#feature-design:11` · Constraint
+  - reason: one complete rule on its own; the bullet's other two parts only restate cases it already forbids (not sampled, noted only)
+
   - span: The page never moves a reader's focus except to give back focus it just took away.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:15` · Constraint
+- [x] disagree · `0015#feature-design:15` · Constraint
+  - reason: bad cut: split at "and", it loses its subject ("a batch that ranks nothing") and reads as a broader rule than the text states; spans are verbatim, so it should stay joined to "a batch that ranks nothing announces nothing (AC-16)", with "The second is about the DOM being replaced..." in rejected as the reason
+
   - span: and, having reordered nothing, still restores focus if the reveal orphaned it (AC-17).
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:18` · Constraint
+- [x] disagree · `0015#feature-design:18` · Constraint
+  - reason: should split: "the session check is inherited via callTier() → checkUsageGate() → getClaims()" (a rule about how it is built) and "scoring never runs for a signed out caller" (the outcome) fail independently; no verbatim id, so the splitting rule applies
+
   - span: Session: inherited from `callTier()`'s own `checkUsageGate()` → `getClaims()` check. Scoring never runs for a signed out caller.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:22` · Constraint
+- [x] disagree · `0015#feature-design:22` · Constraint
+  - reason: wrong type: an accepted limitation of the mitigation (instruction level defense, not a sandbox), not a rule; should be Consequence
+
   - span: This is instruction level defense, not a sandbox, the same limit the verified reference project accepts.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:25` · Constraint
+- [x] disagree · `0015#feature-design:25` · Constraint
+  - reason: not a rule: reports current state (the entry already exists, so this feature needs no registry change); no criterion or invariant requires it. Should be Consequence, as the spec files the same kind of fact under Consequences, Positive (line 176)
+
   - span: The `DATA_RECIPIENTS` entry for `openai` already exists (spec 0012, AC-9), so no registry change is needed here.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:29` · Constraint
+- [x] disagree · `0015#feature-design:29` · Constraint
+  - reason: should split: "none new" and "reuses OPENAI_API_KEY, already declared and validated by spec 0012" are two claims (no verbatim id); "none new" is a report filling the template's configuration field, not a rule (same fact at lines 121 and 176, the latter under Consequences, Positive)
+
   - span: **Configuration required**: none new. This feature reuses `OPENAI_API_KEY`, already declared and validated by spec 0012.
   - flags: multi_condition_split
-- [ ] agree / disagree · `0015#feature-design:32` · TestScenario · label `Failure case, vendor error`
+- [x] disagree · `0015#feature-design:32` · TestScenario · label `Failure case, vendor error`
+  - reason: one test, correctly cut and typed, but no label: "Failure case" is the category (shared with "Failure case, refusal") and "vendor error" names which kind of failure is tested; a category plus its kind is not the test's own name
+`
   - span: Failure case, vendor error: a constructed vendor error classified by the router's own `classify()` surfaces as `external_service_failed`, and the affected card alone shows the "could not be scored" state while a sibling card with a successful outcome still renders its band, verifies **AC-10**.
 
 ### Relationships
 
 5 evenly spaced through the 31 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0015#feature-design:2` Constraint: **State transitions**: none. Scoring is stateless per render, matching spec 0012's own router.
   - target: reference `0012` (whole record), mention: spec 0012's own router
   - phrase: matching spec 0012's own router
   - source text:
     > **State transitions**: none. Scoring is stateless per render, matching spec 0012's own router.
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0015#feature-design:7` Constraint: A gate refusal (`{ allowed: false }`) and a vendor failure are never rendered the same way, extending spec 0012's own key invariant (refusal and failure are never the same shape) to the per card versus page level split AC-10 and AC-11 add.
   - target: reference `0015` AC-11, mention: AC-11
   - phrase: the per card versus page level split AC-10 and AC-11 add
   - source text:
     > - A gate refusal (`{ allowed: false }`) and a vendor failure are never rendered the same way, extending spec 0012's own key invariant (refusal and failure are never the same shape) to the per card versus page level split AC-10 and AC-11 add.
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0015#feature-design:14` Constraint: The re-rank announcement and the focus restoration are two answers to the same event and must stay consistent: a batch that ranks nothing announces nothing (AC-16)
   - target: reference `0015` AC-16, mention: AC-16
   - phrase: (AC-16)
   - source text:
     > - The re-rank announcement and the focus restoration are two answers to the same event and must stay consistent: a batch that ranks nothing announces nothing (AC-16) and, having reordered nothing, still restores focus if the reveal orphaned it (AC-17). The second is about the DOM being replaced, which happens on every reveal, not about whether the order changed.
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+
   - source: `0015#feature-design:25` Constraint: The `DATA_RECIPIENTS` entry for `openai` already exists (spec 0012, AC-9), so no registry change is needed here.
   - target: reference `0012` AC-9, mention: spec 0012, AC-9
   - phrase: (spec 0012, AC-9)
   - source text:
     > - Privacy: this is the first feature that actually sends a real user's own summary, skills, and work history to `ai_scoring` in production. The `DATA_RECIPIENTS` entry for `openai` already exists (spec 0012, AC-9), so no registry change is needed here, but the diligence scope.md already owes this feature, reading OpenAI's terms on training and retention before this ships against real data, is carried forward in Follow-up.
-- [ ] agree / disagree · verifies · written by 3 of 3 runs
+- [x] agree · verifies · written by 3 of 3 runs
+  - reason: the text states "verifies AC-8, AC-11" and the link carries it; JobHunt: the scenario covers AC-11's central behaviour only (not the mixed batch or tie-break), a gap in the spec's own claim, not an extraction error
+
   - source: `0015#feature-design:31` TestScenario: Failure case, refusal: a `usage_cap` row zeroed for `ai_scoring` in a test causes every `scoreListing()` call to return `{ allowed: false, reason }` without reaching the vendor, and the page renders the single page level notice from AC-11, never a per card failure note, verifies **AC-8**, **AC-11**.
   - target: reference `0015` AC-11, mention: **AC-11**
   - phrase: verifies **AC-8**, **AC-11**
