@@ -23,7 +23,8 @@ In session residue that no spec, scope row, or `AGENTS.md` owns. Written by `/ch
   - No prompt change made to make this question pass; the eval questions stay held out from prompt tuning.
   - The walk is general (start from the question's item, follow whatever links exist), never a hard coded path.
   - Record the prompt version of every step in the output.
-  - Consider a rebuild manifest: which run files and prompt versions each graph build used."
+  - Consider a rebuild manifest: which run files and prompt versions each graph build used.
+  - Pick the feature 5 question with held-out discipline: examples/0008-preamble.md demonstrates question 2's own links (0014 AC-20a, 0008 AC-10b, spec 0001 binding rule 6), and examples/feature-21-scope-row.md is the scope feature 21 row question 5 passes through; question 1 shares record 0008 in a different section. Question 3 (specs 0002 and 0007) touches no worked example. Prefer question 3, or treat a pass on 2 or 5 as weaker evidence."
   Feature 5 proves the mechanism end to end (the walking skeleton); feature 6, running all five questions, is the real test.
 - Known limitation: the graph mixes prompt versions (`rebuild.py` reads every run in `artifacts/runs/` whatever its prompt; today 6 units at `0002.2`, 2 at `0002.3`, 3 at `0003.0`, 3 at `0003.1`), so a failing chain cannot be pinned on the walk or on an old prompt section. Until feature 9's single prompt run: a measurement counts only when every section it touches is at one prompt version, and feature 6's report shows each step's prompt version (possible since `93a66de` stamps per unit provenance).
 
