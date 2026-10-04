@@ -349,7 +349,9 @@ def test_a_link_shows_its_own_source_paragraph_not_the_first_match_of_a_repeated
     script = load_script(
         EXPERIMENTS / "0005-held-out-prompt-examples" / "report.py", "exp0005_report"
     )
-    runs = script.runs_in(ROOT / "artifacts" / "runs" / "0021" / "requirements")
+    # Experiment 0005's `0003.0` after runs, moved aside by experiment 0008's rerun.
+    moved = ROOT / "artifacts" / "superseded" / "2026-10-04-prompt-0003.0"
+    runs = script.runs_in(moved / "0021" / "requirements")
     unit = script.unit_for(runs[0], script.SNAPSHOT)
     links = script.distinct_links(script.identify(runs))
     (link,) = [
