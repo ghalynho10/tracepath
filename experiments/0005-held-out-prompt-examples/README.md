@@ -7,6 +7,19 @@
 **Note**: this README was written on 2026-10-01, after the fact, from the data this
 experiment already committed. Every number below is copied from `data/`, not
 re-measured. The run logs were not committed.
+**Reproducing commit**: `201fae4`. `report.py` reads the after runs live from
+`artifacts/runs/`, so it reproduces this experiment's numbers only at a commit where
+those runs are still in place. At `201fae4`, checked on 2026-10-04 in a clean worktree
+of that commit: it rebuilt `data/heldout-table.json` byte for byte, sampled the same 55
+items for the ruling sheet, and `report.py tally` rebuilt `data/ruling-tally.json` byte
+for byte. The script refuses to build while `data/ruling-sheet.md` carries a ruling, so
+the check sent the new sheet to a scratch file; the script was not changed.
+**Runs moved later**: experiment 0008 (spec 0003, AC-18) reruns `0021 ## Requirements`
+under `0003.1` and moves group A's after runs from `artifacts/runs/0021/requirements/`
+to `artifacts/superseded/<run date>-prompt-0003.0/0021/requirements/`, the date named in
+experiment 0008's README. From that commit on, run `report.py` from a checkout of
+`201fae4`. Groups B and C (`0013`, `feature-9`) are not in that rerun; their runs stay
+in `artifacts/runs/`.
 
 ## Question
 
