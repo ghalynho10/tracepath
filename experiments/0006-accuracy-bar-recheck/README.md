@@ -130,20 +130,33 @@ feature 11 (review volume and routing policy), not instability.
 
 ## Ruling
 
-**In progress, as of 2026-09-30 (`6de49e6`).** The bar is not applied yet, because
-two of the three units are unruled. State, counted from `data/ruling-sheet.md`'s own
-marks:
+**Complete, 2026-10-03 (`0a9e77d`). The bar fails on 3 of 6 results**, against 5 of 6
+in experiment 0005. All 45 required items are ruled, counted from
+`data/ruling-sheet.md`'s own marks.
 
-| Unit | Entities (10) | Relationships (5) | Dropped links |
-|---|---|---|---|
-| `0014` `## Requirements` | ruled: 7 agree, 3 disagree | ruled: 5 agree | 14, pending |
-| `0015` `## Feature design` | pending | pending | 15, pending |
-| `feature-33` | pending | pending | 15, pending |
+The bar is experiment 0005's (`../0005-held-out-prompt-examples/data/method-notes.md`,
+"Accuracy bar for AC-16"): at least two thirds of entity marks and of relationship
+marks in each unit agree.
 
-The cold read (`data/cold-read.md`) is pending. The blind self agreement check is
-done: 7 of 10 matched, an upper bound (`../0005-held-out-prompt-examples/data/method-notes.md`,
-candidate 4). `0014`'s kind gained a worked example before this run, so its result is
-weaker held out evidence than the other two (see above).
+| Unit | Entities (10) | Relationships (5) |
+|---|---|---|
+| `0014` `## Requirements` | 7 agree, 3 disagree: **pass** | 5 agree: **pass** |
+| `0015` `## Feature design` | 2 agree, 8 disagree: **fail** | 5 agree: **pass** |
+| `feature-33` | 5 agree, 5 disagree: **fail** | 3 agree, 2 disagree: **fail** |
+
+- **Beside it, the blind self agreement check**: 7 of 10 matched, an upper bound, since
+  memory makes a blind re-read look more consistent than an independent one would
+  (method notes, candidate 4).
+- **No disagreement is set aside as knowledge not in the text**, which the bar would
+  report separately: 0 by keyword search of the reasons, the same check experiment
+  0005 made.
+- **Not ruled, by decision** (option A, 2026-10-02): the 44 dropped links (14, 15, 15)
+  and the 9 cold read passages (3 per unit). The bar already fails on entity and
+  relationship marks, so they cannot change the verdict. The bar's third clause, no
+  more than 1 in 5 sampled dropped links real, is therefore unmeasured here.
+- **Not like for like with 0005**: different units, and 0005 ruled 5 to 7 entities per
+  group against 10 here. `0014`'s kind gained a worked example before this run, so its
+  pass is weaker held out evidence than the other two units' results (see above).
 
 Three pieces, none of them pass or fail on their own (AC-30):
 
