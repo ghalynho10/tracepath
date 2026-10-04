@@ -498,3 +498,62 @@ def test_the_raised_units_wider_figures_keep_the_total_inside_the_ceiling() -> N
 
     assert figures["0006 Feature design"][1] == pytest.approx(1.6576, abs=1e-4)
     assert sum(wider for _, wider in figures.values()) <= script.CEILING_USD
+
+
+def test_a_resumed_unit_keeps_its_settled_run_and_continues_the_failed_one(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    folder = tmp_path / "artifacts" / "runs" / "0013" / slug
+    folder.mkdir(parents=True)
+    settled = build_artifact(
+        unit=unit,
+        section_slug=slug,
+        run=1,
+        attempt=1,
+        output=an_output(),
+        model="claude-sonnet-5",
+        prompt_version=script.PROMPT_VERSION,
+        commit="2e40bcf",
+        extracted_at="2026-10-04T00:00:00+00:00",
+        max_output_tokens=64000,
+        effort="medium",
+        input_tokens=4000,
+        output_tokens=20000,
+    )
+    (folder / "run-1.json").write_text(json.dumps(artifact_payload(settled)) + "\n")
+    for attempt in (1, 2):
+        lost = build_artifact(
+            unit=unit,
+            section_slug=slug,
+            run=2,
+            attempt=attempt,
+            output=None,
+            model="claude-sonnet-5",
+            prompt_version=script.PROMPT_VERSION,
+            commit="2e40bcf",
+            extracted_at="2026-10-04T00:00:00+00:00",
+            max_output_tokens=64000,
+            effort="medium",
+            input_tokens=4000,
+            output_tokens=2,
+            error="did not satisfy the schema",
+        )
+        name = f"failed-run-2-attempt-{attempt}.json"
+        (folder / name).write_text(json.dumps(artifact_payload(lost)) + "\n")
+    runner = script.Runner(fake_client(a_response(cache_read=57_494)), settings_for())
+
+    result = runner.run_unit(unit, slug, script.already_written("0013", slug))
+
+    assert len(result.identified) == 3
+    assert runner.calls == 2
+    assert sorted(p.name for p in folder.glob("*.json")) == [
+        "failed-run-2-attempt-1.json",
+        "failed-run-2-attempt-2.json",
+        "run-1.json",
+        "run-2.json",
+        "run-3.json",
+    ]
+    assert script.read_run(folder / "run-2.json").attempt == 3

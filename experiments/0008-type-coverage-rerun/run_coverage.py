@@ -28,6 +28,9 @@ Stop points, each a plain stop with its reason printed, never a crash:
 
 Run from the repository root:
     uv run python <this file> <expected prompt version>
+    uv run python <this file> <expected prompt version> --resume <unit key> [<unit key> ...]
+A resumed unit that already holds this experiment's `0003.1` attempts is not moved
+again: its settled runs are kept, and a run still owed starts at its next attempt number.
 """
 
 import json
@@ -260,14 +263,24 @@ class Runner:
         self.total = 0.0
         self.calls = 0
 
-    def run_unit(self, unit: Unit, slug: str) -> UnitResult:
-        """Three runs, each retried once, every attempt written as it settles."""
-        artifacts: list[RunArtifact] = []
+    def run_unit(self, unit: Unit, slug: str, existing: tuple[RunArtifact, ...] = ()) -> UnitResult:
+        """Three runs, each retried once, every attempt written as it settles.
+
+        `existing` holds this experiment's artifacts already written for the unit, on a
+        resume: a run already settled there is kept, not called again, and a run still
+        owed starts at the attempt number after its last recorded one.
+        """
+        artifacts: list[RunArtifact] = list(existing)
         identified: list[IdentifiedOutput] = []
         extracted_at = now_utc()
         for run in range(1, self.settings.runs_per_unit + 1):
             output: ExtractionOutput | None = None
-            for number in range(1, RETRIES + 2):
+            kept = [a for a in existing if a.run == run and a.output is not None]
+            if kept:
+                output = kept[0].output
+                print(f"  keeping {unit.record_id} run {run}, already settled", flush=True)
+            first = 1 + max((a.attempt for a in existing if a.run == run), default=0)
+            for number in range(first, first + RETRIES + 1) if output is None else ():
                 if self.total + FAILED_ATTEMPT_USD > CEILING_USD:
                     raise Stop(
                         f"one more call could pass ${CEILING_USD} "
@@ -326,21 +339,57 @@ class Runner:
         )
 
 
+def already_written(record: str, slug: str) -> tuple[RunArtifact, ...]:
+    """This experiment's artifacts already in a unit's folder: its `0003.1` attempts.
+
+    None of the eight units held a `0003.1` run before this experiment, so any there
+    were written by it.
+    """
+    directory = ROOT / RUNS_DIR / record / slug
+    found = (read_run(path) for path in sorted(directory.glob("*.json")))
+    return tuple(a for a in found if a.prompt_version == PROMPT_VERSION)
+
+
+def spent_so_far() -> float:
+    """What this experiment's written attempts cost, by the running total's own rule."""
+    total = 0.0
+    for key in UNITS:
+        unit, slug = target(key)
+        total += sum(safe_cost(a) for a in already_written(unit.record_id, slug))
+    return total
+
+
 def main(argv: list[str]) -> None:
-    """Run the eight units in order, stopping at the first stop point reached."""
-    if len(argv) != 1:
+    """Run the units in order, stopping at the first stop point reached.
+
+    `<version>` alone runs all eight. `<version> --resume <unit key> ...` runs only the
+    named units, in the order given, with the running total starting from what this
+    experiment's artifacts already cost.
+    """
+    if len(argv) == 1:
+        keys = UNITS
+    elif len(argv) > 2 and argv[1] == "--resume" and all(k in UNITS for k in argv[2:]):
+        keys = argv[2:]
+    else:
         raise SystemExit(__doc__)
     if argv[0] != PROMPT_VERSION:
         raise SystemExit(f"PROMPT_VERSION is {PROMPT_VERSION}, not {argv[0]}: refusing to run")
     settings = load_anthropic_settings()
     runner = Runner(anthropic.Anthropic(api_key=settings.api_key), settings)
+    runner.total = spent_so_far()
     figures = budgets()
     day = run_date()
-    report: list[dict[str, object]] = []
     (HERE / "data").mkdir(exist_ok=True)
-    print(f"prompt {PROMPT_VERSION}, ceiling ${CEILING_USD}, failed attempt ${FAILED_ATTEMPT_USD}")
+    report_path = HERE / "data" / "run.json"
+    report: list[dict[str, object]] = (
+        json.loads(report_path.read_text()) if report_path.exists() else []
+    )
+    print(
+        f"prompt {PROMPT_VERSION}, ceiling ${CEILING_USD}, failed attempt ${FAILED_ATTEMPT_USD}, "
+        f"already spent ${runner.total:.4f}"
+    )
     try:
-        for key in UNITS:
+        for key in keys:
             unit, slug = target(key)
             name = f"{unit.record_id} {unit.section}"
             central, wider = figures[name]
@@ -350,18 +399,25 @@ def main(argv: list[str]) -> None:
                     f"would pass ${CEILING_USD}"
                 )
             print(f"\n=== {name} (central ${central:.4f}, wider ${wider:.4f}) ===", flush=True)
-            for path in move_superseded(ROOT, unit.record_id, slug, day):
-                print("  moved", path.relative_to(ROOT), flush=True)
+            existing = already_written(unit.record_id, slug)
+            if not existing:
+                for path in move_superseded(ROOT, unit.record_id, slug, day):
+                    print("  moved", path.relative_to(ROOT), flush=True)
             before = runner.total
-            result = runner.run_unit(unit, slug)
+            result = runner.run_unit(unit, slug, existing)
             spent = round(runner.total - before, 4)
             entry = describe(result)
             entry["types_per_run"] = types_per_run(result.identified)
             entry["safe_cost_usd"] = spent
             entry["central_usd"] = central
             entry["wider_usd"] = wider
+            if existing:
+                entry["safe_cost_usd_before_resume"] = round(sum(map(safe_cost, existing)), 4)
+            report = [
+                e for e in report if (e["record"], e["section"]) != (unit.record_id, unit.section)
+            ]
             report.append(entry)
-            (HERE / "data" / "run.json").write_text(json.dumps(report, indent=2) + "\n")
+            report_path.write_text(json.dumps(report, indent=2) + "\n")
             print(
                 f"  {name}: ${spent:.4f} against central ${central:.4f}, wider ${wider:.4f} "
                 f"(running ${runner.total:.4f}, {runner.calls} calls)",
