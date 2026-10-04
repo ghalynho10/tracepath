@@ -364,3 +364,137 @@ def test_a_link_shows_its_own_source_paragraph_not_the_first_match_of_a_repeated
 
     assert text.startswith("- **AC-7**:")
     assert "**AC-2**" not in text
+
+
+# `experiments/0008-type-coverage-rerun/run_coverage.py`, the paid type coverage rerun.
+# Its safeguards are proven here with a fake client before any call is paid for.
+
+
+def coverage_script() -> ModuleType:
+    """The type coverage rerun's script, under its own module name."""
+    return load_script(
+        EXPERIMENTS / "0008-type-coverage-rerun" / "run_coverage.py", "exp0008_run_coverage"
+    )
+
+
+class FakeStream:
+    """A stream that either drops mid way or returns one settled response."""
+
+    def __init__(self, response: object | None) -> None:
+        self.response = response
+        self.current_message_snapshot = None
+
+    def __enter__(self) -> "FakeStream":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def get_final_message(self) -> object:
+        if self.response is None:
+            import httpx2
+
+            raise httpx2.RemoteProtocolError("peer closed connection mid body")
+        return self.response
+
+
+def fake_client(response: object | None) -> Any:
+    """A client whose every call streams `response`, or drops when it is `None`."""
+    return SimpleNamespace(messages=SimpleNamespace(stream=lambda **_: FakeStream(response)))
+
+
+def a_response(cache_read: int) -> SimpleNamespace:
+    """One settled response, its usage reading `cache_read` tokens from the cache."""
+    usage = SimpleNamespace(
+        input_tokens=4000,
+        output_tokens=20000,
+        cache_creation_input_tokens=0,
+        cache_read_input_tokens=cache_read,
+    )
+    return SimpleNamespace(
+        parsed_output=an_output(),
+        usage=usage,
+        content=[SimpleNamespace(type="text", text="{}")],
+        stop_reason="end_turn",
+    )
+
+
+def test_a_connection_dropped_mid_stream_writes_a_failed_attempt_counted_flat(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(None), settings_for())
+    runner.calls = 5  # past the cache check, so only the drop is under test
+
+    with pytest.raises(script.Stop, match="failed after its retry"):
+        runner.run_unit(unit, slug)
+
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json", "failed-run-1-attempt-2.json"]
+    assert runner.total == pytest.approx(2 * script.FAILED_ATTEMPT_USD)
+
+
+def test_the_run_stops_after_a_second_call_that_reads_no_cache(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(a_response(cache_read=0)), settings_for())
+
+    with pytest.raises(script.Stop, match="cache"):
+        runner.run_unit(unit, slug)
+
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["run-1.json", "run-2.json"]
+
+
+def test_a_second_call_that_reads_the_cache_lets_the_unit_finish(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(a_response(cache_read=57_494)), settings_for())
+
+    result = runner.run_unit(unit, slug)
+
+    assert len(result.identified) == 3
+    assert runner.calls == 3
+
+
+def test_a_unit_whose_wider_figure_would_pass_the_ceiling_never_starts(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = coverage_script()
+    names = []
+    for key in script.UNITS:
+        unit, _ = script.target(key)
+        names.append(f"{unit.record_id} {unit.section}")
+    monkeypatch.setattr(
+        script, "budgets", lambda: {n: (1.0, script.CEILING_USD + 0.01) for n in names}
+    )
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    monkeypatch.setattr(script, "HERE", tmp_path)
+
+    def never(*args: object, **kwargs: object) -> None:
+        raise AssertionError("no call may be made")
+
+    monkeypatch.setattr(script, "call_once", never)
+
+    script.main([script.PROMPT_VERSION])
+
+    assert "Stopping here" in capsys.readouterr().out
+    assert not (tmp_path / "artifacts").exists()
+
+
+def test_the_raised_units_wider_figures_keep_the_total_inside_the_ceiling() -> None:
+    script = coverage_script()
+
+    figures = script.budgets()
+
+    assert figures["0006 Feature design"][1] == pytest.approx(1.6576, abs=1e-4)
+    assert sum(wider for _, wider in figures.values()) <= script.CEILING_USD
