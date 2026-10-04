@@ -462,7 +462,9 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
 
 5 evenly spaced through the 22 distinct links the three after runs wrote.
 
-- [ ] agree / disagree · unclassified · written by 3 of 3 runs
+- [x] agree · unclassified · written by 3 of 3 runs
+  - reason: feature 33 uses feature 16's measurements as its evidence; a reference, not a correction (what it corrects belongs mostly to feature 15), so unclassified fits
+
   - source: `feature-33#33-band-anchor-review-done:1` Feature: Check the band anchors against what feature 16's harness actually measured, and correct whichever side is wrong. The finding is that the anchors hold and one committed expectation does not, so this corrects the pair and records the anchor rule that was drafted and refused, rather than changing what real users are scored against.
   - target: reference `feature 16` (whole record), mention: feature 16's harness
   - phrase: against what feature 16's harness actually measured
@@ -472,7 +474,8 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
     > Check the band anchors against what feature 16's harness actually measured, and correct whichever side is wrong. The finding is that the anchors hold and one committed expectation does not, so this corrects the pair and records the anchor rule that was drafted and refused, rather than changing what real users are scored against.
     > **Done when:** `control-one-gap` expects `possible_match` and passes a real run, `BAND_ANCHORS` and its hash `1b45f524b356` are untouched, the misread run evidence is corrected everywhere it was repeated, and the set still gives every band an exact expectation.
     > _spec [0018](../specs/0018-band-anchor-review/index.md) · code in `src/features/scoring/eval/pairs.ts`_
-- [ ] agree / disagree · satisfies · written by 3 of 3 runs
+- [x] agree · satisfies · written by 3 of 3 runs
+
   - source: `feature-33#33-band-anchor-review-done:9` BuildStep: Correct the record: the misread evidence at `scope.md:326`, plus spec 0016's stale table row and its Follow up quote that reads as present tense, satisfies AC-4, AC-4b
   - target: reference `0018` AC-4b, mention: AC-4b
   - phrase: satisfies AC-4, AC-4b
@@ -483,19 +486,25 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
     >   - [x] Correct the record: the misread evidence at `scope.md:326`, plus spec 0016's stale table row and its Follow up quote that reads as present tense, satisfies AC-4, AC-4b
     >   - [x] Prove it for free: the drift guard passes untouched, the data quality gate is clean, and every band still has an exact expectation now that `good-match-adjacent` is the only pair expecting `good_match`, satisfies AC-2, AC-3. 1178 unit tests green, `git diff main -- src/features/scoring/rubric.ts` empty. The band coverage guard was broken on purpose (pointing `good-match-adjacent` at `possible_match`) and failed by name on both assertions, `band-not-covered` and "covers every band with at least one exact expectation", so the pass is not vacuous
     >   - [x] Confirm it paid: `pnpm eval -t control-one-gap`, five vendor calls rather than eighty, satisfies AC-5. **PASS** 2026-09-09T03:44Z, anchor hash `1b45f524b356` unchanged, exit 0. Distribution `good_match` 2, `possible_match` 3, read from the report's `distribution` field: the pair passes on the strict majority and clears spec 0017's 3 of 5 floor, but by the minimum margin, and the old `good_match` expectation has now lost on all three runs ever taken (4 to 1, 5 to 0, 3 to 2). The five calls were confirmed by measurement rather than by reading the filter output, `ai_scoring global` day 2026-09-09 from absent to 5 and month 1225 to 1230, read through `pg` directly. Note the UTC day had already rolled at 03:44Z, so the 2026-09-08 row stayed at 195 and watching that row would have shown no movement
-- [ ] agree / disagree · unclassified · written by 1 of 3 runs
+- [x] disagree · unclassified · written by 1 of 3 runs
+  - reason: wrong ends: "it falsified spec 0016's accepted AC-3" is said of the refused first draft, which never took effect, not of the Design it step; AC-3 was a ground for refusing the draft, so no link from Design it with this phrase
+
   - source: `feature-33#33-band-anchor-review-done:6` BuildStep: Design it (spec): `/architect band anchor review` · written 2026-09-08, 7 acceptance criteria, and the decision is that the anchors do **not** change. Cross checked twice on Fable against an Opus author.
   - target: reference `0016` AC-3, mention: spec 0016's accepted AC-3
   - phrase: it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance
   - source text:
     > - [x] Design it (spec): `/architect band anchor review` · written 2026-09-08, 7 acceptance criteria, and the decision is that the anchors do **not** change. Cross checked twice on Fable against an Opus author. The first draft added two anchor rules and was refused on three independent grounds: it contradicted a fourth pair (`weak-match-shallow-overlap`, whose own rationale rejects the test it proposed), it used "a substantial share of the role" when `rubric.ts:58` says anchors are written against the visible posting and never against the role, and it falsified spec 0016's accepted AC-3 by removing `boundary-seniority-gap`'s tolerance. The evidence it rested on was also wrong: the report's `summary` reads `"5 of 5 succeeded"` as a **success denominator**, not a band count, so `key-domain-mismatch` was a 3 to 2 split rather than stable, which is noise and not a defined gap. The second review of the narrowed spec returned sound with seven gaps, all applied
-- [ ] agree / disagree · unclassified · written by 1 of 3 runs
+- [x] agree · unclassified · written by 1 of 3 runs
+  - reason: a citation: both tests trace to spec 0018
+
   - source: `feature-33#33-band-anchor-review-done:13` unclassified: Test it: `/test band anchor review` · 2 tests added to `src/features/scoring/eval/ground-truth.test.ts`, taking it to 26, both tracing to spec 0018.
   - target: reference `0018` (whole record), mention: spec 0018
   - phrase: both tracing to spec 0018
   - source text:
     > - [x] Test it: `/test band anchor review` · 2 tests added to `src/features/scoring/eval/ground-truth.test.ts`, taking it to 26, both tracing to spec 0018. One pins the corrected `possible_match` expectation so a silent revert to `good_match` fails by name; the other is the general form, asserting that **no `control` tagged pair carries `acceptableBands`**, which is spec 0018's Key invariant that a tolerance is not a way to stop a pair failing, grounded in spec 0016's own reasoning for why `mild-stretch-possible-match` takes "no `acceptableBands` and the plain `control` tag rather than `boundary`". Pinning only `control-one-gap` would have left that escape open on every other control. Each was broken on purpose **after** the commit hooks ran, per the 2026-09-05 reflex, and each failed with its own message, the second naming the offending pair id. AC-1b, AC-4 and AC-4b are deliberately **not** automated: the first would be a test reading comment text, which Prettier can silently invalidate, and the other two are prose corrections in docs. All three are proved by `/check verify` instead, and AC-5 is the paid run
-- [ ] agree / disagree · unclassified · written by 1 of 3 runs
+- [x] disagree · unclassified · written by 1 of 3 runs
+  - reason: no link under the current rule: "deliberately not automated" records that AC-4b is not automated and why (a decision with its rationale); a claim of absence makes no link. Kept deliberately: a "why is AC-4b not automated" question cannot reach its answer from AC-4b; see the candidate in session notes
+
   - source: `feature-33#33-band-anchor-review-done:13` unclassified: Test it: `/test band anchor review` · 2 tests added to `src/features/scoring/eval/ground-truth.test.ts`, taking it to 26, both tracing to spec 0018.
   - target: reference `0018` AC-4b, mention: AC-4b
   - phrase: AC-1b, AC-4 and AC-4b are deliberately **not** automated
