@@ -223,3 +223,149 @@ def test_an_attempt_with_no_usage_reports_zero_rather_than_failing() -> None:
 
     assert (attempt.input_tokens, attempt.cache_read_input_tokens) == (0, 0)
     assert attempt.error == "the call failed"
+
+
+# AC-21 to AC-28: the prompt 0003.1 amendment. Each new rule reaches the model once, in
+# the rules, and the three example changes it made still hold.
+
+
+def example_output(name: str) -> dict[str, list[dict[str, object]]]:
+    """One committed worked example's Output, parsed."""
+    (example,) = [e for e in read_examples(EXAMPLES_DIR) if e.name == name]
+    output: dict[str, list[dict[str, object]]] = json.loads(example.output)
+    return output
+
+
+def flags(item: dict[str, object]) -> list[object]:
+    """An entity's or a link's trap flags, empty when it carries none."""
+    found = item.get("known_trap_flags")
+    return found if isinstance(found, list) else []
+
+
+@pytest.mark.parametrize(
+    ("criterion", "rule"),
+    [
+        ("AC-21", "does the old claim stop standing at all?"),
+        ("AC-22", "repeated word for word before more than one item in the unit"),
+        ("AC-23", "never from a sentence that only describes the connection"),
+        ("AC-24", "or a deliberate hold with a stated condition"),
+        ("AC-27", "A stage line that only reports a check (`Verify it`, `Test it`)"),
+        ("AC-28", "An item that carries a verbatim `AC-N` id is never split"),
+    ],
+)
+def test_each_0003_1_rule_reaches_the_model_exactly_once_and_from_the_rules(
+    criterion: str, rule: str
+) -> None:
+    assert rule in RULES, criterion
+    assert SYSTEM_PROMPT.count(rule) == 1, criterion
+
+
+def test_the_struck_claim_rule_defers_the_link_type_to_the_links_rules() -> None:
+    """covers: AC-21. The struck claim rule used to name `superseded-by` outright."""
+    (bullet,) = [line for line in RULES.split("\n- ") if line.startswith("A struck claim")]
+
+    assert "Links rules" in bullet
+    for named in ("superseded-by", "corrected-by", "amended-by"):
+        assert named not in bullet
+
+
+def test_a_partly_standing_claim_is_amended_before_error_framing_is_ever_weighed() -> None:
+    """covers: AC-21. The ordered test: does the old claim stand at all, then framing."""
+    first = RULES.index("does the old claim stop standing at all?")
+    then = RULES.index("Only when the old claim is fully retired")
+
+    assert first < then
+    assert "the change is `amended-by`, flagged `relationship_type_ambiguous`" in RULES
+
+
+def test_the_build_plan_example_types_its_partial_supersession_as_amended_by() -> None:
+    """covers: AC-21. Step 3's `ai_check` override narrows the old claim, not retires it."""
+    links = example_output("0012-build-plan")["relationships"]
+    (partial,) = [link for link in links if "Superseded for `ai_check`" in str(link["phrase"])]
+
+    assert partial["type"] == "amended-by"
+    assert "relationship_type_ambiguous" in flags(partial)
+
+
+def test_the_scope_row_example_splits_done_when_into_its_three_conditions() -> None:
+    """covers: AC-26. Split at the author's clause separators, each part flagged."""
+    entities = example_output("feature-21-scope-row")["entities"]
+    parts = [
+        e
+        for e in entities
+        if e["type"] == "AcceptanceCriterion" and "multi_condition_split" in flags(e)
+    ]
+
+    assert len(parts) == 3
+    assert str(parts[0]["span"]).startswith("**Done when:** both pages exist and are linked")
+    assert "privacy notice names the real stored fields" in str(parts[1]["span"])
+    assert "request deletion" in str(parts[2]["span"])
+
+
+def test_the_scope_row_example_types_its_verify_line_unclassified_with_a_reason() -> None:
+    """covers: AC-27."""
+    entities = example_output("feature-21-scope-row")["entities"]
+    (verify,) = [e for e in entities if str(e["span"]).startswith("Verify it:")]
+
+    assert verify["type"] == "unclassified"
+    assert verify["unclassified_note"]
+
+
+def test_no_example_types_a_check_reporting_stage_line_as_a_build_step() -> None:
+    """covers: AC-27, across every example, so a later example cannot teach the old cut."""
+    for example in read_examples(EXAMPLES_DIR):
+        for entity in json.loads(example.output)["entities"]:
+            span = str(entity["span"]).lstrip("-[]x ")
+            if span.startswith(("Verify it", "Test it")):
+                assert entity["type"] != "BuildStep", example.name
+
+
+#: Records the seventh example may not be drawn from (spec 0003, AC-25): groups A, B
+#: and C, the re check's records, every record an earlier example draws from, and every
+#: record an eval chain cites.
+EXCLUDED_RECORDS = {
+    "0021", "0013", "feature-9",
+    "0014", "0015", "0018",
+    "0006", "0008", "0012", "feature-21",
+    "0001", "0002", "0003", "0007", "0009", "0011",
+}  # fmt: skip
+
+
+def test_the_seventh_example_comes_from_a_record_no_exclusion_covers() -> None:
+    """covers: AC-25."""
+    (example,) = [e for e in read_examples(EXAMPLES_DIR) if e.name == "0019-requirements"]
+    record = example.input.split("\n", 1)[0].removeprefix("Record: ")
+
+    assert record == "0019"
+    assert record not in EXCLUDED_RECORDS
+
+
+def test_the_seventh_example_links_a_pointer_between_its_own_criteria_unclassified() -> None:
+    """covers: AC-25. No named type fits, so the link keeps the connecting words."""
+    links = example_output("0019-requirements")["relationships"]
+
+    def own_record(end: object) -> bool:
+        return isinstance(end, dict) and (end["kind"] == "local" or end.get("record") == "0019")
+
+    pointers = [
+        link
+        for link in links
+        if link["type"] == "unclassified"
+        and own_record(link["source"])
+        and own_record(link["target"])
+    ]
+
+    assert pointers
+    assert all(link["phrase"] for link in pointers)
+
+
+def test_the_seventh_example_keeps_a_bundled_verbatim_criterion_whole_and_flagged() -> None:
+    """covers: AC-28. Never split, flagged `multi_condition_split` instead."""
+    entities = example_output("0019-requirements")["entities"]
+    bundled = [
+        e for e in entities if e["id_source"] == "verbatim" and "multi_condition_split" in flags(e)
+    ]
+
+    assert bundled
+    for entity in bundled:
+        assert sum(1 for e in entities if e["id"] == entity["id"]) == 1
