@@ -95,15 +95,17 @@ Apply the bar in `method-notes.md` (thresholds unchanged) using the ruled counts
 
 ## Feature 12's Done when, clause by clause (amended 2026-10-03)
 
-Filled at close (Build plan step 33). Each row names the evidence; a row with no evidence holds the close.
+Filled at close (Build plan step 33), 2026-10-04. Each row names the evidence; a row with no evidence holds the close.
 
 | Done when clause (`docs/scope/scope.md`, feature 12) | How it is met | Evidence |
 |---|---|---|
-| Cause 1 (no worked examples) tested against a real second run, with a before and after table in `experiments/` | Met | `experiments/0005-held-out-prompt-examples/data/heldout-table.json` and its README |
-| Cause 2 (heterogeneity) tested | Met as the scope's 2026-09-24 amendment reshaped it: conditional on group B's spread; the trigger fired, the test was not run (AC-31), and its reopen check did not fire (`0015`'s after spread 1) | AC-31; experiment 0005's README; experiment 0006's README |
-| The result changes the prompt, AC-2's unit definition, or is recorded as not the cause | Met: the prompt changed (`0003.0`, then `0003.1`) | `PROMPT_VERSION` in `client.py`; AC-9, AC-29 |
-| AC-14's coverage set run again under the new `PROMPT_VERSION`, the four types stable | Owed: Build plan step 31, judged by AC-36 to AC-38; a failure follows AC-39 | experiment 0008's README (to be written) |
-| Spec 0001's `## Binding rules` and `0008`'s `Preamble` run again, the labelled reference resolving to the entity | Met as the scope's 2026-09-24 amendment reshaped it: proven by rebuilding the committed `0002.3` runs, no paid rerun (AC-12). The reference matches binding rule 6's entity; the link itself is held under `endpoint_not_accepted` on its other endpoint, `0008/AC-10b` | `tests/test_binding_rule_labels.py`; the scope's feature 12 milestone for AC-1 to AC-5, AC-12 |
+| Cause 1 (no worked examples) tested against a real second run, with a before and after table in `experiments/` | Met | `experiments/0005-held-out-prompt-examples/data/heldout-table.json` (`093040f`) and its README (`92d401a`); `report.py` reproduces the table byte for byte at `201fae4`, pinned in the README (`dd08b35`) |
+| Cause 2 (heterogeneity) tested | Met as the scope's 2026-09-24 amendment reshaped it: conditional on group B's spread; the trigger fired, the test was not run (AC-31), and its reopen check did not fire (`0015`'s after spread 1, 35 / 35 / 36) | AC-31; experiment 0005's README (`92d401a`); experiment 0006's README (`efb0205`) |
+| The result changes the prompt, AC-2's unit definition, or is recorded as not the cause | Met: the prompt changed, to `0003.0` (`906e669`), then `0003.1` (`1aa1a10`) | `PROMPT_VERSION` in `client.py` reads `0003.1` at `da5005d`; AC-9, AC-29 |
+| AC-14's coverage set run again under the new `PROMPT_VERSION`, the four types stable | Met, with one AC-37 failure that AC-39 routes. Under `0003.1`: `Consequence` 16 / 16 / 16, `FollowUp` 11 / 11 / 11, `BuildStep` 9 / 9 / 9 pass AC-36 to AC-38; `TestScenario` 16 / 16 / 16 passes AC-36 and AC-38 and fails AC-37 (one `Consequence` in `0006 ## Feature design` run 1 only). AC-39's first check, the disagreement recorded in experiment 0008's README, is met. **Owed: its second check, a spec 0002 Follow up naming the vocabulary revisit** (spec content, `/architect`); none exists at `da5005d` | experiment 0008's README (`78a5570`), `data/run.json` and `data/judgement.json`; runs `ba1f81a` and `184ad34`; estimate `8c7e71f` |
+| Spec 0001's `## Binding rules` and `0008`'s `Preamble` run again, the labelled reference resolving to the entity | Met as the scope's 2026-09-24 amendment reshaped it: proven by rebuilding the committed `0002.3` runs, no paid rerun (AC-12). The reference matches binding rule 6's entity; the link itself is held under `endpoint_not_accepted` on its other endpoint, `0008/AC-10b` | `tests/test_binding_rule_labels.py` (`cc0af24`); the scope's feature 12 milestone for AC-1 to AC-5, AC-12 |
+
+**The rebuild and the suite at the branch head.** CI run `37181006757` passed on `da5005d`: every test, including `tests/test_reload_artifacts.py`, which rebuilds the graph from the committed runs (12 records, 112 accepted entities, 53 unresolved), and `tests/test_review_queue.py`, which checks the queue `da5005d` regenerated: 416 rows against 591 at `5142169`, all of the change in the eight units experiment 0008 reran (`runs_disagree` 439 to 189, `known_trap_flag` 168 to 208, `endpoint_not_accepted` 135 to 120, `span_not_located` 12 to 1, `unclassified_type` 2 to 4; a row can carry more than one reason).
 
 ## Acceptance criteria coverage
 
