@@ -16,7 +16,9 @@ from tracepath.artifacts import (
     ARTIFACT_FORMAT_VERSION,
     ArtifactCollisionError,
     RunArtifact,
+    attempt_paths,
     build_artifact,
+    ensure_attempt_unwritten,
     ensure_review_log,
     read_run,
     run_path,
@@ -131,6 +133,57 @@ def test_write_run_refuses_to_replace_an_existing_artifact(tmp_path: Path) -> No
 
     with pytest.raises(ArtifactCollisionError):
         write_run(tmp_path, artifact(run=1))
+
+
+def test_write_run_refuses_to_replace_an_existing_failed_attempt(tmp_path: Path) -> None:
+    failed = artifact(run=2, attempt=1, output=None, error="did not satisfy the schema")
+    write_run(tmp_path, failed)
+    before = run_path(tmp_path, failed).read_bytes()
+
+    with pytest.raises(ArtifactCollisionError, match=r"failed-run-2-attempt-1\.json"):
+        write_run(tmp_path, failed)
+
+    assert run_path(tmp_path, failed).read_bytes() == before
+
+
+# The same refusal, checked before a paid call rather than after it (the 2026-10-04
+# review): a collision found only by `write_run()` has already spent the call.
+
+
+def test_an_attempt_with_both_paths_free_may_be_paid_for(tmp_path: Path) -> None:
+    ensure_attempt_unwritten(tmp_path, "0012", "requirements", run=1, attempt=1)
+
+
+def test_an_attempt_whose_run_is_already_settled_is_stopped_before_the_call(
+    tmp_path: Path,
+) -> None:
+    write_run(tmp_path, artifact(run=1))
+
+    with pytest.raises(ArtifactCollisionError, match=r"run-1\.json"):
+        ensure_attempt_unwritten(tmp_path, "0012", "requirements", run=1, attempt=2)
+
+
+def test_an_attempt_whose_failed_path_is_taken_is_stopped_before_the_call(
+    tmp_path: Path,
+) -> None:
+    write_run(tmp_path, artifact(run=2, attempt=1, output=None, error="dropped"))
+
+    with pytest.raises(ArtifactCollisionError, match=r"failed-run-2-attempt-1\.json"):
+        ensure_attempt_unwritten(tmp_path, "0012", "requirements", run=2, attempt=1)
+
+
+def test_a_retry_after_a_failed_attempt_is_free_to_be_paid_for(tmp_path: Path) -> None:
+    """The failed attempt keeps its own file; the retry's next attempt number is free."""
+    write_run(tmp_path, artifact(run=2, attempt=1, output=None, error="dropped"))
+
+    ensure_attempt_unwritten(tmp_path, "0012", "requirements", run=2, attempt=2)
+
+
+def test_the_pre_call_check_and_write_run_agree_on_both_paths(tmp_path: Path) -> None:
+    settled, failed = attempt_paths(tmp_path, "0012", "requirements", run=3, attempt=2)
+
+    assert settled == run_path(tmp_path, artifact(run=3, attempt=2))
+    assert failed == run_path(tmp_path, artifact(run=3, attempt=2, output=None, error="x"))
 
 
 def test_a_settled_run_carries_a_run_id_format_version_and_unit_hash(tmp_path: Path) -> None:

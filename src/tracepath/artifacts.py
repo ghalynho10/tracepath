@@ -202,10 +202,38 @@ def run_path(root: Path, artifact: RunArtifact) -> Path:
     A retry that succeeds takes the original `run-N.json`, because the retry replaces
     the failed attempt rather than adding a run.
     """
-    directory = root / RUNS_DIR / artifact.record / artifact.section_slug
-    if artifact.output is None:
-        return directory / f"failed-run-{artifact.run}-attempt-{artifact.attempt}.json"
-    return directory / f"run-{artifact.run}.json"
+    settled, failed = attempt_paths(
+        root, artifact.record, artifact.section_slug, artifact.run, artifact.attempt
+    )
+    return failed if artifact.output is None else settled
+
+
+def attempt_paths(
+    root: Path, record: str, section_slug: str, run: int, attempt: int
+) -> tuple[Path, Path]:
+    """The two paths one attempt can take: settled as `run-N.json`, or failed beside it."""
+    directory = root / RUNS_DIR / record / section_slug
+    return (
+        directory / f"run-{run}.json",
+        directory / f"failed-run-{run}-attempt-{attempt}.json",
+    )
+
+
+def ensure_attempt_unwritten(
+    root: Path, record: str, section_slug: str, run: int, attempt: int
+) -> None:
+    """Check, before a paid call, that neither path the attempt could take is in use.
+
+    `write_run()` refuses an existing file too, but only once the call has been paid
+    for, and then the attempt it was about to record is lost. Calling this first turns
+    that into a stop that costs nothing.
+
+    Raises:
+        ArtifactCollisionError: an artifact already sits at either path.
+    """
+    for path in attempt_paths(root, record, section_slug, run, attempt):
+        if path.exists():
+            raise ArtifactCollisionError(f"an artifact already exists at {path}")
 
 
 def write_run(root: Path, artifact: RunArtifact) -> Path:
