@@ -559,3 +559,27 @@ def test_a_resumed_unit_keeps_its_settled_run_and_continues_the_failed_one(
         "run-3.json",
     ]
     assert script.read_run(folder / "run-2.json").attempt == 3
+
+
+# `experiments/0006-accuracy-bar-recheck/prepare_blind_reread.py`: a re-marked blind
+# sheet is the engineer's evidence, so a rerun refuses rather than writing over it.
+
+
+def test_the_blind_reread_refuses_to_overwrite_a_sheet_the_engineer_re_marked(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = load_script(
+        EXPERIMENTS / "0006-accuracy-bar-recheck" / "prepare_blind_reread.py",
+        "exp0006_prepare_blind_reread",
+    )
+    marked = tmp_path / "blind-reread.md"
+    marked.write_text("## Item 1\n\n- [x] agree · satisfies · written by 3 of 3 runs\n")
+    before = marked.read_bytes()
+    monkeypatch.setattr(script, "BLIND", marked)
+    monkeypatch.setattr(script, "ANSWERS", tmp_path / "blind-reread-answers.md")
+
+    with pytest.raises(SystemExit, match="already carries a ruling"):
+        script.build()
+
+    assert marked.read_bytes() == before
+    assert not (tmp_path / "blind-reread-answers.md").exists()

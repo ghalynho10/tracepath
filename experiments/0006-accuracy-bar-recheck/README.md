@@ -180,7 +180,12 @@ Three pieces, none of them pass or fail on their own (AC-30):
   `ruling-sheet.md` (42 ruled items across groups A, B, C) and writes `data
   /blind-reread.md`, each item's own text with no mark and no reason, next to `data
   /blind-reread-answers.md`, the same 10 items' original mark and reason, meant to
-  stay closed until every item in the first file is re-marked cold.
+  stay closed until every item in the first file is re-marked cold. **Guard added
+  2026-10-04**, after the branch review: the script now refuses to run once
+  `blind-reread.md` carries a mark, the same guard `report.py` and `prepare_ruling.py`
+  already had, because the re-marked sheet holds the engineer's blind rulings and a
+  rerun would have written over them. It changes no output: on an unmarked sheet it
+  still writes both files byte for byte as committed.
 
 Experiment 0005's own data and scripts are unchanged by any of this.
 

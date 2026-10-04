@@ -111,6 +111,14 @@ def answer_lines(item: RuledItem) -> list[str]:
 
 def build() -> None:
     """Draw 10 ruled items at random and write the blind sheet and its answer key."""
+    # The same guard report.py and prepare_ruling.py carry (added 2026-10-04, after
+    # the branch review): a blind sheet the engineer has re-marked is evidence, and a
+    # rerun must never write over it.
+    if BLIND.exists() and any(
+        line.startswith("- [") and not any(mark in line for mark in UNRULED_MARKS)
+        for line in BLIND.read_text().splitlines()
+    ):
+        raise SystemExit(f"{BLIND.name} already carries a ruling; not overwriting it")
     if not SOURCE.exists():
         raise SystemExit(f"no {SOURCE}: run experiment 0005's report.py ruling first")
     items = parse(SOURCE.read_text())
