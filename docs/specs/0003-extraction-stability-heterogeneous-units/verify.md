@@ -60,7 +60,7 @@ stop threshold: if total > $15, stop and re-confirm before running anything
 | `Profile entry` scope row, before and after | 3 + 3 | Before: no · After: yes | 15,711/call, with a wider margin (densely enumerated, a scope row) |
 | Type coverage set, `PROMPT_VERSION 0003.0` | 24 | Yes | 15,711/call, except the three `## Feature design` calls, which carry the wider margin |
 
-18 calls before the type coverage set, 42 total. Confirm this count has not changed (a different unit substituted, a group added or dropped) before running; if it has, recompute. The conditional AC-2 test (AC-17), if triggered, is a separate cost estimate brought fresh at that point, not folded into this total in advance.
+18 calls before the type coverage set, 42 total (superseded 2026-10-03: the type coverage set now runs alone under `0003.1`, costed by the spec's Build plan step 30). Confirm this count has not changed (a different unit substituted, a group added or dropped) before running; if it has, recompute. The conditional AC-2 test (AC-17), if triggered, is a separate cost estimate brought fresh at that point, not folded into this total in advance.
 
 For each `0003.0` session: confirm the second call shows `cache_read_input_tokens` greater than zero, verifying the 1 hour breakpoint actually hit (AC-19), before trusting the cached cost estimate for the remaining calls in that session. The fresh `0021` baseline predates the examples block and is never expected to show a cache hit.
 
@@ -91,6 +91,20 @@ Apply the bar in `method-notes.md` (thresholds unchanged) using the ruled counts
 
 **If the bar fails**: stop. Run the pre sort again, the same fix ladder `method-notes.md` states (rules the model was never given, then prompt or example quality, then vocabulary gaps). No further spend follows automatically; a next amendment, if one is needed, brings its own go ahead.
 
+**Amended 2026-10-03**: the bar failed on 3 of 6 results (experiment 0006's README, `efb0205`). Under AC-33 the stop above does not apply: feature 12 closes, and the fix ladder goes with the accuracy work (Follow up). The dropped link sample and the cold read above are not ruled, by decision (AC-30, amended). What remains to verify before close: AC-18's coverage set under `0003.1` against AC-36 to AC-38, the rebuild, and the Done when checklist below.
+
+## Feature 12's Done when, clause by clause (amended 2026-10-03)
+
+Filled at close (Build plan step 33). Each row names the evidence; a row with no evidence holds the close.
+
+| Done when clause (`docs/scope/scope.md`, feature 12) | How it is met | Evidence |
+|---|---|---|
+| Cause 1 (no worked examples) tested against a real second run, with a before and after table in `experiments/` | Met | `experiments/0005-held-out-prompt-examples/data/heldout-table.json` and its README |
+| Cause 2 (heterogeneity) tested | Met as the scope's 2026-09-24 amendment reshaped it: conditional on group B's spread; the trigger fired, the test was not run (AC-31), and its reopen check did not fire (`0015`'s after spread 1) | AC-31; experiment 0005's README; experiment 0006's README |
+| The result changes the prompt, AC-2's unit definition, or is recorded as not the cause | Met: the prompt changed (`0003.0`, then `0003.1`) | `PROMPT_VERSION` in `client.py`; AC-9, AC-29 |
+| AC-14's coverage set run again under the new `PROMPT_VERSION`, the four types stable | Owed: Build plan step 31, judged by AC-36 to AC-38; a failure follows AC-39 | experiment 0008's README (to be written) |
+| Spec 0001's `## Binding rules` and `0008`'s `Preamble` run again, the labelled reference resolving to the entity | Met as the scope's 2026-09-24 amendment reshaped it: proven by rebuilding the committed `0002.3` runs, no paid rerun (AC-12). The reference matches binding rule 6's entity; the link itself is held under `endpoint_not_accepted` on its other endpoint, `0008/AC-10b` | `tests/test_binding_rule_labels.py`; the scope's feature 12 milestone for AC-1 to AC-5, AC-12 |
+
 ## Acceptance criteria coverage
 
 | AC | How verified |
@@ -113,3 +127,11 @@ Apply the bar in `method-notes.md` (thresholds unchanged) using the ruled counts
 | AC-29 | `PROMPT_VERSION` reads `0003.1`; the example validation test passes; the token count is re measured |
 | AC-30 | The re check (experiment 0006) report per unit (entity and relationship columns), the ruling counts with no unruled items left, the bar applied as `method-notes.md` states it, the dropped link/cold read/blind self agreement checks reported, experiment 0005's README added |
 | AC-31 | The `0015` `## Feature design` after run spread against 2, written to experiment 0005's README either way |
+| AC-32 | `PROMPT_VERSION` in `client.py` reads `0003.1` when feature 12 is marked done |
+| AC-33 | No run artifact with a prompt version after `0003.1` exists under `artifacts/runs/` or `artifacts/superseded/` when feature 12 is marked done |
+| AC-34 | The Done when checklist above has no row that depends on the accuracy bar |
+| AC-35 | Reading feature 12's Done when in `docs/scope/scope.md`: no clause names accuracy or the bar |
+| AC-36 | Experiment 0008's per run counts of each section's own type, in the four named sections: max minus min is at most 1 |
+| AC-37 | Experiment 0008's per run entity type sets, in the four named sections: identical across the three runs |
+| AC-38 | Experiment 0008's per run counts: no run of the four named sections has zero of the section's own type |
+| AC-39 | If AC-36, AC-37 or AC-38 fails: the disagreement is recorded in experiment 0008's README and a spec 0002 Follow up names the vocabulary revisit, and feature 12 still closes |

@@ -7,6 +7,7 @@
 **Amended**: 2026-09-23 by the build of the amendment above, which found two things the row had left unsaid. One amendment, marked inline in the pipeline artifact storage row: token usage is required of the pipeline rather than of every file that already exists, and the failed attempt artifact is given the path and the `error` field it was only sketched with. No API call was made; the evidence is the 24 committed artifacts under `artifacts/runs/` and the build at `f6ad4e9`.
 
 **Amended**: 2026-09-28 by spec [0003](../0003-extraction-stability-heterogeneous-units/index.md)'s AC-16 findings, before the re check they require spends anything. One amendment, marked inline in the pipeline artifact storage row: four further additions, no artifact write overwrites an existing file, a run id and format version on every artifact, a `SHA-256` of the unit text, and the raw response text with its `stop_reason`. No API call was made; experiments 0001 to 0004 are not changed, only the writer new runs use.
+**Amended**: 2026-10-03 by spec [0003](../0003-extraction-stability-heterogeneous-units/index.md), feature 12's close out, with no API call. One amendment, marked inline in [rationale.md](rationale.md): the `LLMGraphTransformer` failure now points to its evidence, [experiment 0007](../../../experiments/0007-langchain-graph-transformer-baseline/README.md).
 
 ## Summary
 

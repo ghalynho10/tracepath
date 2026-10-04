@@ -10,7 +10,7 @@ committed data. Only the last section spends money, and it is marked.
 
 - [x] `uv run pytest -m "not integration"` → all pass, no API key needed → **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-11**, **AC-12**
 - [x] `docker compose up -d` then `uv run pytest` → all pass, integration included → **AC-9**, **AC-13**
-- [x] `uv run pytest tests/test_reload_artifacts.py` → the full load completes from the committed artifacts and no counter mismatch is raised. This is the regression test for `UNCLASSIFIED links: asked to write 7 but the database wrote 2` → **AC-7**, **AC-11**, **AC-13**
+- [x] `uv run pytest tests/test_reload_artifacts.py` → the full load completes from the committed artifacts and no row count mismatch is raised (AC-13, amended 2026-10-03). This is the regression test for `UNCLASSIFIED links: asked to write 7 but the database wrote 2` → **AC-7**, **AC-11**, **AC-13**
 - [x] `uv run mypy` → clean, strict → **AC-1**
 - [x] `uv run ruff check . && uv run ruff format --check .` → clean
 
@@ -120,6 +120,6 @@ AC-11(e), the label joins both comparison signatures:
 - **AC-10** the three uncertainties stay distinct, and holding is not a fourth · reload test; `:Unresolved`'s structured `record`/`label` · see "The label extension" above
 - **AC-11** agreement rests on the stated signature; only accepted items are written · comparator tests + reload test; **(e)** `label` joins both signatures · see "The label extension" above
 - **AC-12** the schema accepts the four valid fixtures and rejects the invalid one · `tests/test_extract_schema.py`
-- **AC-13** every write asserts its counters · integration tests + reload test
+- **AC-13** every batched write asserts its returned row count against the rows given (amended 2026-10-03) · integration tests + reload test
 - **AC-14** seven section kinds, all four new types exercised where they live · experiments 0001 and 0003
 - **AC-8** history links point old to new · covered by the graph model tests; not re-exercised by this build
