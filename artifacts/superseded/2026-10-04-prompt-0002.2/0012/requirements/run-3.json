@@ -1,0 +1,312 @@
+{
+  "record": "0012",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a feature calling the router (feature 14, then feature 17), I want to name a tier and get back data that matches my schema",
+        "rejected_spans": [
+          "so I never have to know or care which vendor or model answers the call"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want a model swap to be a one file change",
+        "rejected_spans": [
+          "so a bad model or a price change does not require touching every caller"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want a provider failure to come back as a visible, typed failure, never as a default value that reads like a working answer.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want every model call to respect the same budget and kill switch feature 10 already built",
+        "rejected_spans": [
+          "so this router cannot become a second, ungoverned way to spend money"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`src/lib/ai/tiers.ts` exports a closed set of tier names, `\"ai_scoring\"` and `\"ai_check\"`, each mapped to a distinct vendor provider instance and a specific model id. The two tiers resolve to two different vendor packages, checked by a test that reads the map itself, not by inspecting a call site.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The router's one exported call function takes a tier name, a Zod schema, and the prompt content, and returns the schema's parsed type inside a `Result`. There is no plain text only call surface.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A caller never supplies a vendor name, a model id, or a generation parameter such as temperature, max output tokens, or retry count; every one of those is fixed per tier in `tiers.ts`. Changing a tier's vendor, model, or generation parameters is an edit to `tiers.ts` alone, proven by a test asserting that no file under `src/` other than `tiers.ts` imports an `@ai-sdk/` package.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Before dispatching a call, the router calls `checkUsageGate()` (feature 10) with the tier name as `callType`. A refusal, `{ allowed: false, reason }`, is returned to the caller as a decided outcome, never as a `Failure`.",
+        "rejected_spans": [
+          "matching feature 10's own AC-5 pattern for the same reason: the gate working exactly as designed must not corrupt this router's own failure ratio"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A provider call that throws or times out becomes a `Failure` with kind `external_service_failed`, severity `unexpected`. Nothing catches this and returns a default value in its place.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A model response that does not validate against the caller's Zod schema becomes a `Failure` with kind `response_malformed`, severity `unexpected`. There is no repair attempt and no retry of a schema mismatch specifically.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The router's own named span opens as the first statement of the call, before the usage gate check and before any guard clause.",
+        "rejected_spans": [
+          "so a total outage of either the gate or a provider leaves a denominator behind"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`usage_cap` holds six seed rows from this feature's migration: `(ai_scoring, account, week, 500)`, `(ai_scoring, global, day, 1320)`, `(ai_scoring, global, month, 40000)`, `(ai_check, account, week, 500)`, `(ai_check, global, day, 1320)`, `(ai_check, global, month, 40000)`. These are `job_search`'s own cadence numbers (25 / 66 / 2000 searches) multiplied by `RESULTS_PER_PAGE` (`src/features/search/adzuna.ts:36`, `= 20`); `ai_check` mirrors `ai_scoring` at its own sample rate of 1.0. Neither tier is `usage_gate_misconfigured` from the moment this feature ships.",
+        "rejected_spans": [
+          "because each `usage_cap` row counts gated calls and this feature's call shape is one `ai_scoring` call per listing, not one per search (see Rationale)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`DATA_RECIPIENTS` gains two new entries, `openai` and `google-ai`, each with the exact `src/env.ts` key that reaches it. The existing `google` entry (Google's sign in purpose) is left untouched. The privacy page's own `notYetRecipients` watchlist (`src/app/(marketing)/privacy/page.test.ts`) no longer names OpenAI, and its comment no longer claims a set of arriving companies this feature's real choice does not match. It keeps naming Anthropic.",
+        "rejected_spans": [
+          "since it is a different, unrelated flow: widening one entry to cover two purposes would make its own \"only if Google is the account chosen\" wording false for the new purpose",
+          "this revision drops Anthropic from the router, so Anthropic stays correctly listed as a company this app does not yet send data to"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` are declared in `src/env.ts`'s server schema as required, non empty strings, and each provider client is built by passing that validated value explicitly. Neither key is left to the provider package's own implicit environment read.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": null,
+          "mention": "feature 14"
+        },
+        "phrase": "As a feature calling the router (feature 14, then feature 17)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": null,
+          "mention": "feature 17"
+        },
+        "phrase": "As a feature calling the router (feature 14, then feature 17)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "mention": "kill switch feature 10 already built"
+        },
+        "phrase": "respect the same budget and kill switch feature 10 already built",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-5",
+          "mention": "feature 10's own AC-5 pattern"
+        },
+        "phrase": "matching feature 10's own AC-5 pattern for the same reason",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "mention": "checkUsageGate() (feature 10)"
+        },
+        "phrase": "the router calls `checkUsageGate()` (feature 10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "job_search",
+          "id": null,
+          "mention": "job_search's own cadence numbers (25 / 66 / 2000 searches)"
+        },
+        "phrase": "multiplied by `RESULTS_PER_PAGE`",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "src/app/(marketing)/privacy/page.test.ts"
+        },
+        "phrase": "The privacy page's own `notYetRecipients` watchlist",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

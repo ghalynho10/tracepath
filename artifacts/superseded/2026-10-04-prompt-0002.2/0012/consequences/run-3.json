@@ -1,0 +1,486 @@
+{
+  "record": "0012",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every future AI caller (feature 14, feature 17, and anything after) gets budget enforcement, a visible failure model, and a config only vendor swap for free, by construction, rather than by remembering to add each one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Positive 1"
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reusing checkUsageGate() unchanged means this feature adds no new database function and no new plpgsql to review; it is entirely new rows in an existing table plus application code.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Positive 2"
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This feature's migration and its integration tests cannot run until feature 10 (usage_cap, checkUsageGate) merges into main; it currently exists only on feat/usage-gating-kill-switch.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Negative 1 (original)"
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "feature 10 merged to main at 5b01b4c (pull request 86), spec 0011 is Accepted, and usage_cap, check_usage_gate, and src/lib/usage-gating/ all exist on main. This feature's build, migration included, is unblocked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Negative 1 (resolution)"
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "src/lib/ai/client.ts imports checkUsageGate and UsageGateReason from src/lib/usage-gating/, not a feature folder: feature 10's pull request 86 (commit d309e65) already moved the module there. No open layering question remains for this feature to inherit.",
+        "rejected_spans": [
+          "on the same reasoning this spec would otherwise have had to raise, that code shared by more than one feature belongs in src/lib (kill-switch.ts already set that precedent, and checkUsageGate() is now shared by features 11, 13, and 14)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "the global day and month caps were originally job_search's own numbers (66, 2000) borrowed unchanged, on the assumption that one ai_scoring call answers one search. Feature 11 shipped since and its real shape (RESULTS_PER_PAGE = 20, src/features/search/adzuna.ts:36) contradicts that: scoring runs one call per listing, not one per search, so the real multiplier is 20. The caps are now job_search's numbers times 20 (1320, 40000), still not derived from any external vendor ceiling the way job_search's own numbers were derived from Adzuna's terms. A reader must not assume these reflect a vendor limit; the number that actually bears on the named risk is the dollar ceiling in rationale.md, which this correction also raised by roughly 10x (see below).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Revised 2026-09-06 caps"
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "checkUsageGate() marks budget consumed as soon as it decides allowed: true, before the vendor is ever called, the same shape job_search already accepts. A vendor outage during a busy week can burn an account's entire weekly ai_scoring budget on calls that returned nothing, exactly as an Adzuna outage could already burn job_search's.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "tiers.ts fixes maxRetries: 0. Restoring the AI SDK's own default of 2 retries would let a single gated call make up to three vendor calls while usage_cap still reads the same 40000 a month, moving the real worst case from about $73.60 and $32 a month to about $220.80 and $96. Do not raise maxRetries above 0 without re-deriving those figures.",
+        "rejected_spans": [
+          "specifically because the dollar ceilings in rationale.md assume one vendor call per gated call"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "With the check tier sampled at 1.0 (every scoring call also gets a check call), every profile and job listing sent to OpenAI for scoring is also sent to Google for the check, not one vendor per call but two, every time, twenty times per search rather than once.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "gpt-5.6-luna is an alias, not a pinned snapshot, the same shape of risk claude-haiku-4-5 carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it (unchanged in kind from the original Haiku follow-up, just moved to the new vendor).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": "New 2026-09-06 (alias risk)"
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "gpt-5.6-luna is a reasoning model: at the fixed reasoningEffort: \"medium\" this spec sets, the OpenAI API rejects an explicit temperature: 0 with an HTTP 400, so ai_scoring's temperature is left unset rather than fixed, meaning this tier's output is not deterministic the way ai_check's is.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This was a decision, not an accepted side effect: the alternative, reasoning.effort: \"none\" with temperature: 0, was rejected because it would forfeit the Intelligence Index comparison (39 vs Claude Haiku 4.5's 30) this spec's ai_scoring pick actually rests on, that figure was measured at \"medium\", not \"none\". Instead, feature 14's band rubric is the instrument that absorbs the nondeterminism: bands are coarse categories, not exact scores, so ordinary sampling variance should only ever flip a boundary-adjacent pair between two neighboring bands, never move a clear-fit pair off its band.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reasoning tokens are also billed as output tokens and are not visible in the returned object, which is why maxOutputTokens for ai_scoring is now 2048 rather than a plain non-reasoning estimate, and why the dollar figures above use a larger, less certain output token placeholder for this tier than for ai_check.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The two vendors and models named here are provisional defaults for feature 16's eval harness to rank against, not a settled choice on accuracy.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The token counts behind the dollar estimates in rationale.md (roughly 2000 input and ~1200 output tokens for a scoring call, once GPT-5.6 Luna's own hidden reasoning tokens are accounted for; 1000 input and 200 output for a check call) are rough placeholders until feature 14 and feature 17's real prompts exist, and the scoring output figure is less certain than the rest, since it depends on how much a real fit-scoring prompt actually makes the model reason at \"medium\" effort.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "mention": "feature 14"
+        },
+        "phrase": "Every future AI caller (feature 14, feature 17, and anything after) gets",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 17",
+          "id": null,
+          "mention": "feature 17"
+        },
+        "phrase": "Every future AI caller (feature 14, feature 17, and anything after) gets",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "mention": "feature 10 (usage_cap, checkUsageGate)"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "phrase": "Resolved 2026-09-04",
+        "date": "2026-09-04",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "mention": "spec 0011 is Accepted"
+        },
+        "phrase": "spec 0011 is Accepted",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "mention": "feature 10 merged to main at 5b01b4c (pull request 86)"
+        },
+        "phrase": "feature 10 merged to main at 5b01b4c (pull request 86)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "mention": "feature 10's pull request 86 (commit d309e65)"
+        },
+        "phrase": "already moved the module there",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "mention": "Feature 11 shipped since and its real shape"
+        },
+        "phrase": "contradicts that",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "mention": "the dollar ceiling in rationale.md"
+        },
+        "phrase": "raised by roughly 10x",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "see the call volume correction above",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "mention": "spec 0001's own stated goal"
+        },
+        "phrase": "sits in tension with",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "mention": "Follow-up"
+        },
+        "phrase": "see Follow-up for the concrete trigger to revisit it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": "The determinism decision",
+          "mention": "rationale.md's \"The determinism decision\""
+        },
+        "phrase": "see rationale.md's \"The determinism decision\" for the full reasoning",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "Follow-up 119",
+          "mention": "Follow-up 119"
+        },
+        "phrase": "narrows Follow-up 119's alias-pin trigger",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 16",
+          "id": null,
+          "mention": "feature 16's eval harness"
+        },
+        "phrase": "provisional defaults for feature 16's eval harness to rank against",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "mention": "see rationale.md"
+        },
+        "phrase": "see rationale.md",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "mention": "the dollar estimates in rationale.md"
+        },
+        "phrase": "behind the dollar estimates in rationale.md",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "mention": "feature 14"
+        },
+        "phrase": "until feature 14 and feature 17's real prompts exist",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 17",
+          "id": null,
+          "mention": "feature 17"
+        },
+        "phrase": "until feature 14 and feature 17's real prompts exist",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

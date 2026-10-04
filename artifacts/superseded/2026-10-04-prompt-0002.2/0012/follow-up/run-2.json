@@ -1,0 +1,376 @@
+{
+  "record": "0012",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "This spec is numbered 0012 rather than 0011. Resolved 2026-09-04: the two branches landed in the expected order (spec 0011 merged and Accepted before this spec merged), so no renumbering is needed.",
+        "rejected_spans": [
+          "because feature 10's own spec already claimed 0011 on the then unmerged `feat/usage-gating-kill-switch` branch."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 14 confirms or corrects the \"one scoring call per search\" assumption behind `ai_scoring`'s account per week cap of 25. Resolved 2026-09-06 by `/architect fit scoring with shown reasoning`: the call shape is one `ai_scoring` call per listing (matching `rationale.md`'s original single-listing token placeholder), not one batched call per search. Feature 11 shipped 2026-09-04 and fixed the real multiplier: `RESULTS_PER_PAGE = 20` (`src/features/search/adzuna.ts:36`), so every listing a search returns is scored, meaning one search now costs 20 `ai_scoring` calls (and, at the existing 1.0 sample rate, 20 `ai_check` calls). `usage_cap`'s six seed rows are corrected accordingly (AC-8), and the dollar ceilings in `rationale.md` are re-derived at the corrected volume. If feature 14's own design later decides not every listing gets scored automatically, that is a `usage_cap` update for feature 14 to make, not a reopening of this item.",
+        "rejected_spans": [
+          "because a shared reasoning trace across twenty listings would degrade the quality of the shown reasoning that is this feature's whole point, would fail all twenty scores on one schema mismatch instead of just one, and would not map onto feature 16's per-pair eval harness."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 17 decides its real sample rate for the check tier. If it drops below 1.0, `ai_check`'s three `usage_cap` rows must be lowered in the same change; a cap left at the scoring tier's level while only a fraction of calls are actually sampled no longer bounds real spend.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 16's eval harness should rank the candidate set recorded in `rationale.md` (GLM 5.3 Flash, Gemini 3.8 Flash, GPT-5.6 Luna, Claude Haiku 4.5, Claude Sonnet 5) on accuracy against the ground truth set from feature 15. The vendor this spec ships with, GPT-5.6 Luna, is the provisional default, not a settled choice; price is a tiebreak only between candidates of equivalent accuracy, never the deciding force on its own, and it does not need to be invoked here regardless.",
+        "rejected_spans": [
+          "since the candidate set's spread is roughly $340 a month at this spec's corrected ceiling (40000 calls/month, not the original 2000), no longer a trivial number to wave off with a tiebreak."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If GLM (Zhipu AI) is ever chosen over its benchmark result, that is a deliberate jurisdiction decision for the engineer, not a call a benchmark result can make on its own.",
+        "rejected_spans": [
+          "since it moves resumes, work history, and locations outside the vendors spec 0009's notice currently names,"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 14's own scope note about the privacy notice's \"not used to train models\" claim is unchanged by this feature; this spec's own test calls carry no real user data. Verifying each vendor's training and retention terms before real profile data flows through `ai_scoring` in production remains feature 14's responsibility.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Revised 2026-09-06 (vendor changed, trigger unchanged): revisit pinning `ai_scoring` to a dated snapshot instead of the alias `gpt-5.6-luna` when feature 16's eval harness reports a pair falling outside its expected band that cannot be attributed to a prompt change or a ground truth change; that shape is what a silent alias repoint looks like from inside this system, and it is the concrete trigger to pin, not a vague \"if it ever becomes a problem.\" Pinning has its own honest cost: a dated snapshot eventually retires, and nothing in this repo would warn you before a call to it started failing, which is why the alias plus the harness is the better default rather than a compromise.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "New 2026-09-06: the corrected `usage_cap` ceiling (about $105.60 a month worst case, up from the original spec's $10.60) assumes every listing a search returns gets scored automatically. Feature 14's own design should confirm that is really the intended UX rather than inherit it silently from this spec's arithmetic.",
+        "rejected_spans": [
+          "(it is what \"every score displays its matched and missing skills\" in scope.md's Done-when clause, and the \"ranked results\" claim, both imply, since ranking needs every result scored)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "New 2026-09-06, corrected by `/check review` on the same date: `.env.local` currently holds `ANTHROPIC_API_KEY`, set ahead of this spec's original vendor pick; this revision leaves it with no consumer anywhere in this codebase. Before `/develop model client router` can run against a real vendor and before the pull request for this revision opens, both `OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` must be set in `.env.local` and in all three Vercel environments (development, preview, production), per this project's own standing reflex that a new `src/env.ts` variable needs setting in every environment the branch will deploy to. This item originally named only `OPENAI_API_KEY`; both are equally required by AC-10, and a preview build with only one set fails the same way a build with neither set would. `ANTHROPIC_API_KEY` can stay in `.env.local` harmlessly (nothing reads it), but should not be assumed to still matter when reasoning about this feature's configuration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "mention": "spec 0011 merged and Accepted"
+        },
+        "phrase": "landed in the expected order (spec 0011 merged and Accepted before this spec merged)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "mention": "AC-8"
+        },
+        "phrase": "corrected accordingly",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "mention": "Feature 11"
+        },
+        "phrase": "fixed the real multiplier",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 16",
+          "id": null,
+          "mention": "feature 16's per-pair eval harness"
+        },
+        "phrase": "would not map onto",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "mention": "rationale.md's original single-listing token placeholder"
+        },
+        "phrase": "matching rationale.md's original single-listing token placeholder",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 15",
+          "id": null,
+          "mention": "the ground truth set from feature 15"
+        },
+        "phrase": "against the ground truth set from",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 16",
+          "id": null,
+          "mention": "Feature 16's eval harness"
+        },
+        "phrase": "should rank the candidate set",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "rationale.md",
+          "id": null,
+          "mention": "the candidate set recorded in rationale.md"
+        },
+        "phrase": "recorded in rationale.md",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": null,
+          "mention": "spec 0009's notice"
+        },
+        "phrase": "outside the vendors spec 0009's notice currently names",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "mention": "feature 14's responsibility"
+        },
+        "phrase": "remains feature 14's responsibility",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 16",
+          "id": null,
+          "mention": "feature 16's eval harness"
+        },
+        "phrase": "reports a pair falling outside its expected band",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "mention": "Feature 14's own design"
+        },
+        "phrase": "should confirm that is really the intended UX",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "scope.md",
+          "id": null,
+          "mention": "scope.md's Done-when clause"
+        },
+        "phrase": "every score displays its matched and missing skills",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "mention": "AC-10"
+        },
+        "phrase": "both are equally required by AC-10",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "/check review"
+        },
+        "phrase": "corrected by `/check review`",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
