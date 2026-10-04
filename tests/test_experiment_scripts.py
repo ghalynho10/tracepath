@@ -35,6 +35,7 @@ import pytest
 
 from tracepath.artifacts import RunArtifact, artifact_payload, build_artifact
 from tracepath.config import AnthropicSettings
+from tracepath.extract import client
 from tracepath.extract.client import Attempt, ExtractionFailed, RunOutcome
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit
@@ -583,3 +584,26 @@ def test_the_blind_reread_refuses_to_overwrite_a_sheet_the_engineer_re_marked(
 
     assert marked.read_bytes() == before
     assert not (tmp_path / "blind-reread-answers.md").exists()
+
+
+# The two frozen measurement scripts import `SYSTEM_PROMPT` by name. They are never
+# edited, so `client` keeps that name importable, built on first use rather than at
+# import. Loading a script runs its imports only, never its `main()`, so no API call.
+
+
+@pytest.mark.parametrize(
+    ("path", "name"),
+    [
+        ("0005-held-out-prompt-examples/measure_prefix.py", "exp0005_measure_prefix"),
+        ("0006-accuracy-bar-recheck/measure_recheck.py", "exp0006_measure_recheck"),
+    ],
+)
+def test_a_frozen_measurement_script_still_imports_the_system_prompt(path: str, name: str) -> None:
+    script = load_script(EXPERIMENTS / path, name)
+
+    assert client.system_prompt() == script.SYSTEM_PROMPT
+
+
+def test_any_other_missing_name_on_the_client_module_is_still_an_attribute_error() -> None:
+    with pytest.raises(AttributeError, match="NOT_A_PROMPT"):
+        _ = client.NOT_A_PROMPT
