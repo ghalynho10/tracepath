@@ -407,36 +407,54 @@ Not built here, needed before the bar can be applied (AC-30): the cold read (3 p
 
 10 evenly spaced through after run 1's located order.
 
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:1` · Feature
+- [x] disagree · `feature-33#33-band-anchor-review-done:1` · Feature
+  - reason: should split: sentence 1 is the Feature (check the anchors, correct whichever side is wrong); sentence 2 is separate claims (the findings, the corrections, and "rather than changing what real users are scored against"), not an explanation of the first
+
   - span: Check the band anchors against what feature 16's harness actually measured, and correct whichever side is wrong. The finding is that the anchors hold and one committed expectation does not, so this corrects the pair and records the anchor rule that was drafted and refused, rather than changing what real users are scored against.
   - flags: embedded_second_claim
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:2` · AcceptanceCriterion
+- [x] agree · `feature-33#33-band-anchor-review-done:2` · AcceptanceCriterion
+
   - span: `control-one-gap` expects `possible_match` and passes a real run,
   - flags: multi_condition_split
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:3` · AcceptanceCriterion
+- [x] agree · `feature-33#33-band-anchor-review-done:3` · AcceptanceCriterion
+  - reason: a checkable done condition (a guard: diff of rubric.ts empty, hash unchanged), so AcceptanceCriterion fits
+
   - span: `BAND_ANCHORS` and its hash `1b45f524b356` are untouched,
   - flags: multi_condition_split
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:4` · AcceptanceCriterion
+- [x] agree · `feature-33#33-band-anchor-review-done:4` · AcceptanceCriterion
+
   - span: the misread run evidence is corrected everywhere it was repeated,
   - flags: multi_condition_split
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:6` · BuildStep
+- [x] disagree · `feature-33#33-band-anchor-review-done:6` · BuildStep
+  - reason: span and type fine, but the rejected text holds checkable facts of its own (the refused draft's two anchor rules and three grounds, "5 of 5" as a success count, the 3 to 2 split, seven gaps applied); they should be items, not rejected, as ruled for feature 9's Verify it in experiment 0005
+
   - span: Design it (spec): `/architect band anchor review` · written 2026-09-08, 7 acceptance criteria, and the decision is that the anchors do **not** change.
   - rejected: ['Cross checked twice on Fable against an Opus author. The first draft added two anchor rules and was refused on three independent grounds: it contradicted a fourth pair (`weak-match-shallow-overlap`, whose own rationale rejects the test it proposed), it used "a substantial share of the role" when `rubric.ts:58` says anchors are written against the visible posting and never against the role, and it falsified spec 0016\'s accepted AC-3 by removing `boundary-seniority-gap`\'s tolerance. The evidence it rested on was also wrong: the report\'s `summary` reads `"5 of 5 succeeded"` as a **success denominator**, not a band count, so `key-domain-mismatch` was a 3 to 2 split rather than stable, which is noise and not a defined gap. The second review of the narrowed spec returned sound with seven gaps, all applied']
   - flags: rationale_boundary_call
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:7` · BuildStep
+- [x] agree · `feature-33#33-band-anchor-review-done:7` · BuildStep
+
   - span: Build it: `/develop band anchor review`
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:8` · BuildStep
+- [x] agree · `feature-33#33-band-anchor-review-done:8` · BuildStep
+  - reason: one task as the author framed it ("Correct the pair and its file's own claim:"), one continuous sentence and one checkbox; the separate AC-1 and AC-1b tags noted
+
   - span: Correct the pair and its file's own claim: `control-one-gap` to `possible_match` argued from the existing `possible_match` anchor text, and `pairs.ts`'s "before any model was asked" header amended to name its one exception, satisfies AC-1, AC-1b
   - flags: multi_condition_split
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:10` · BuildStep
+- [x] disagree · `feature-33#33-band-anchor-review-done:10` · BuildStep
+  - reason: type is right (a Build it sub-step that satisfies AC-2, AC-3), but the rejected text holds checkable facts (1178 tests green, rubric.ts diff empty, the deliberate guard break) that should be items, not rejected
+
+
   - span: Prove it for free: the drift guard passes untouched, the data quality gate is clean, and every band still has an exact expectation now that `good-match-adjacent` is the only pair expecting `good_match`, satisfies AC-2, AC-3.
   - rejected: ['1178 unit tests green, `git diff main -- src/features/scoring/rubric.ts` empty. The band coverage guard was broken on purpose (pointing `good-match-adjacent` at `possible_match`) and failed by name on both assertions, `band-not-covered` and "covers every band with at least one exact expectation", so the pass is not vacuous']
   - flags: multi_condition_split, rationale_boundary_call
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:11` · BuildStep
+- [x] disagree · `feature-33#33-band-anchor-review-done:11` · BuildStep
+  - reason: type is right (it satisfies AC-5, which is the run itself), but its outcome (PASS at 03:44Z, distribution 2 to 3, five calls measured) sits in rejected and is the evidence AC-5 was met; it should be an item. The margin judgement, run history and UTC note can stay rejected
+
   - span: Confirm it paid: `pnpm eval -t control-one-gap`, five vendor calls rather than eighty, satisfies AC-5.
   - rejected: ["**PASS** 2026-09-09T03:44Z, anchor hash `1b45f524b356` unchanged, exit 0. Distribution `good_match` 2, `possible_match` 3, read from the report's `distribution` field: the pair passes on the strict majority and clears spec 0017's 3 of 5 floor, but by the minimum margin, and the old `good_match` expectation has now lost on all three runs ever taken (4 to 1, 5 to 0, 3 to 2). The five calls were confirmed by measurement rather than by reading the filter output, `ai_scoring global` day 2026-09-09 from absent to 5 and month 1225 to 1230, read through `pg` directly. Note the UTC day had already rolled at 03:44Z, so the 2026-09-08 row stayed at 195 and watching that row would have shown no movement"]
   - flags: rationale_boundary_call
-- [ ] agree / disagree · `feature-33#33-band-anchor-review-done:12` · unclassified
+- [x] disagree · `feature-33#33-band-anchor-review-done:12` · unclassified
+  - reason: type right (a Verify it line), but the rejected paragraph holds checkable facts of its own, three explicitly the proof of AC-2 (rubric.ts absent from the diff), AC-3 (the deliberate guard break) and AC-5 (the 03:44Z run); they should be items, not rejected
+
   - span: Verify it: `/check verify band anchor review` · **PASS** 2026-09-09, all 7 acceptance criteria met, 10 of 10 `verify.md` steps run and passed.
   - rejected: ['The branch touches one file under `src/`, `pairs.ts`, and `rubric.ts` is absent from the diff against `main`, which is AC-2\'s central claim proved by the diff rather than by reading. AC-3 was proved harder than a green suite: `good-match-adjacent` was pointed at `weak_match` on purpose and the guard failed by name on both assertions, `band-not-covered` and "covers every band with at least one exact expectation", naming `good_match`, before being restored. The whole evidence base was re-derived from the two baseline reports rather than trusted: all seven rows of `verify.md`\'s distribution table and both run wide band totals match the reports exactly, and all three runs carry anchor hash `1b45f524b356`. The repository was searched again for the misread claim across 416 tracked files and **no surviving assertion of it was found**; every remaining occurrence of "5 of 5" is either a correct success denominator or a passage describing the misread as a misread. Two claims written into the docs were checked against the repo rather than assumed: `pairs.ts` no longer carries the sentence spec 0016 quotes, and no migration holds a `band` or `fit_score` column. AC-5 rests on the confirming run at 03:44Z, which started seven minutes after the commit it scored and against a tree identical to it']
 
