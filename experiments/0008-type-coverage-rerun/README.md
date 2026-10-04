@@ -118,8 +118,40 @@ settled. Both failed attempts are kept as
 `artifacts/runs/0021/requirements/failed-run-2-attempt-{1,2}.json`, raw response
 included.
 
+The paragraph is the struck text inside `0021`'s AC-13 (`specs/0021-*/index.md`, lines
+113 to 116), the item behind group A relationship 4 in experiment 0005's ruling, which
+is the evidence spec 0003's ledger gives for AC-24's `blocked-by` rule.
+
 Whether code should strip such a flag, as the binding rule pre check clears stray
 labels (spec 0003, AC-4), is for `/debug` or feature 13, not this experiment.
+
+## Two observations for feature 13
+
+Recorded on 2026-10-04, after the queue rebuild (`da5005d`). Both are agreement
+figures; neither is an accuracy result.
+
+1. **`0021 ## Requirements` was less stable under `0003.1` than under `0003.0`**, and
+   it is the unit whose rulings shaped most of `0003.1`: four of the seven rows in
+   spec 0003's change ledger cite group A (`0021`) evidence (AC-21, AC-24, AC-25,
+   AC-26 with AC-28).
+
+   | `0021 ## Requirements` | `0003.0` (experiment 0005) | `0003.1` (here) |
+   |---|---|---|
+   | Entities per run | 29 / 29 / 28 | 27 / 28 / 32 |
+   | Entity rows `runs_disagree` | 2 | 0 |
+   | Relationships per run | 9 / 7 / 8 | 31 / 31 / 33 |
+   | Relationship rows `runs_disagree` | 10 | 29 |
+   | Review queue rows | 37 (`5142169`) | 71 (`da5005d`) |
+
+   The runs write about four times as many links under `0003.1`, and the extra links
+   are where they disagree. This is also the unit whose run 2 broke the flag rule twice
+   (Finding above).
+2. **`0006 ## Feature design`'s total entity count still spreads, 54 / 46 / 50**, almost
+   all of it in `Constraint` (37 / 30 / 34), though its `TestScenario` count is stable
+   at 16 / 16 / 16. One sentence ("That is deliberate and recorded here: spec 0005
+   parked logo work by the engineer's own constraint...") was typed `Consequence` in
+   run 1 only; that is the AC-37 failure above, which AC-39 sends to the vocabulary
+   revisit before feature 5.
 
 ## Cost
 
