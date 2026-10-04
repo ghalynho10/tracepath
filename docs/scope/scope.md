@@ -26,7 +26,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
-| 12 | Extraction stability on heterogeneous units | before feature 11 | in-progress |
+| 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | planned |
 
 ## Foundations
@@ -132,7 +132,7 @@ Widen extraction to each spec's `rationale.md`, with an `Alternative` entity typ
 **Done when:** a "why not X" question returns a chain that reaches the rejected option and its reason, each link citing its record, and an option whose outcome fits neither chosen nor rejected is visible as such rather than forced into one.
 - [ ] Design it (spec): `/architect rationale extraction`
 
-### 12. Extraction stability on heterogeneous units · from spec 0002
+### 12. Extraction stability on heterogeneous units · done · from spec 0002
 **Two questions now, not one.** Whether the run to run disagreement is a fact about the corpus or a fixable defect in how units are cut and prompted, and whether a worked example fixes the AC-7 labelled reference path specifically, since [experiment 0004](../../experiments/0004-label-round-trip/README.md) found a concrete, separate cause for that one: `SYSTEM_PROMPT` (`client.py` lines 65 to 66) mentions `label` only from the reference side, "the same `label` you would give that item as an entity", which assumes an entity labelling instruction that exists nowhere in the prompt. That is why a real run of spec 0001's binding rule 6 and its reference from `0008`'s preamble never matched: the reference wrote `label: "binding rule 6"` stably three times, the entity that is binding rule 6 never wrote a `label` at all.
 
 It is the single largest cost in the pipeline: 340 of the 403 queue rows were `runs_disagree`, before feature 4's build plan tasks 16 and 17 landed. **Added 2026-09-23**: those tasks are built, `AC-11e` now puts a `label` into the comparison signature, and the queue stands at **464 rows across 9 units** (`artifacts/review-queue.json`, rebuilt the same day). Run the prompt examples experiment this feature is built on against the current 464, not the pre amendment 403; the earlier figure was recorded under a signature that no longer exists.
