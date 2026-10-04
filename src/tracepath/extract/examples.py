@@ -64,7 +64,14 @@ def read_examples(directory: Path) -> tuple[WorkedExample, ...]:
     paths = sorted(directory.glob("*.md"))
     if not paths:
         raise ExampleError(f"no worked examples found in {directory}")
-    return tuple(parse_example(path.stem, path.read_text()) for path in paths)
+    examples: list[WorkedExample] = []
+    for path in paths:
+        try:
+            text = path.read_text()
+        except OSError as exc:
+            raise ExampleError(f"{path.stem}: the example file cannot be read ({exc})") from exc
+        examples.append(parse_example(path.stem, text))
+    return tuple(examples)
 
 
 def few_shot_block(examples: Sequence[WorkedExample], notes: Mapping[str, str]) -> str:

@@ -16,9 +16,9 @@ from tracepath.config import (
 from tracepath.extract.client import (
     MAX_TOKENS,
     PROMPT_VERSION,
-    SYSTEM_PROMPT,
     ExtractionFailed,
     extract_once,
+    system_prompt,
     user_prompt,
 )
 from tracepath.extract.units import split_units
@@ -98,10 +98,10 @@ def test_the_prompt_carries_the_unit_and_everything_a_citation_needs() -> None:
 
 
 def test_the_prompt_tells_the_model_not_to_own_identity_or_the_markers() -> None:
-    assert "Never invent an id" in SYSTEM_PROMPT
-    assert "derived:N" in SYSTEM_PROMPT
-    assert "read from the characters by code" in SYSTEM_PROMPT
-    assert "unclassified" in SYSTEM_PROMPT
+    assert "Never invent an id" in system_prompt()
+    assert "derived:N" in system_prompt()
+    assert "read from the characters by code" in system_prompt()
+    assert "unclassified" in system_prompt()
 
 
 def test_the_prompt_version_is_recorded_so_a_prompt_change_is_visible() -> None:

@@ -21,12 +21,14 @@ A terminal tool that answers "why was this built this way?" by walking a chain a
 uv sync                          # install
 uv run pre-commit install        # once per clone: enables the commit hook
 docker compose up -d             # start Neo4j (Browser: http://localhost:7474)
-uv run tracepath status          # run the CLI
+uv run tracepath status          # run the CLI, from the repo root (see below)
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 ```
+
+tracepath runs from this repository with `uv run`, not as an installed tool: the extraction prompt reads `examples/` relative to the repo root (`EXAMPLES_DIR` in `src/tracepath/extract/examples.py`), and `examples/` is not part of the built package. The prompt is built on first use, so a command that makes no extraction call (`status`, `review-queue`) never reads it.
 
 ## Layout
 

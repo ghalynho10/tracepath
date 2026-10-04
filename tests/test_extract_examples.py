@@ -8,7 +8,12 @@ every time, which is what the prompt cache needs to hit.
 Nothing here calls the API.
 """
 
+import hashlib
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -17,9 +22,9 @@ from tracepath.extract.client import (
     CACHE_TTL,
     EXAMPLE_NOTES,
     RULES,
-    SYSTEM_PROMPT,
     _attempt_from_usage,
     system_blocks,
+    system_prompt,
 )
 from tracepath.extract.examples import (
     EXAMPLES_DIR,
@@ -143,29 +148,29 @@ def test_a_note_for_an_example_that_does_not_exist_is_refused_not_dropped() -> N
 def test_the_examples_appear_in_the_prompt_in_filename_order() -> None:
     names = sorted(path.stem for path in EXAMPLES_DIR.glob("*.md"))
 
-    positions = [SYSTEM_PROMPT.index(f'<example name="{name}">') for name in names]
+    positions = [system_prompt().index(f'<example name="{name}">') for name in names]
 
     assert positions == sorted(positions)
 
 
 def test_the_excerpt_note_sits_beside_its_own_example_only() -> None:
     (name,) = EXAMPLE_NOTES
-    start = SYSTEM_PROMPT.index(f'<example name="{name}">')
-    own = SYSTEM_PROMPT[start : SYSTEM_PROMPT.index("</example>", start)]
+    start = system_prompt().index(f'<example name="{name}">')
+    own = system_prompt()[start : system_prompt().index("</example>", start)]
 
-    assert SYSTEM_PROMPT.count("<note>") == 1
+    assert system_prompt().count("<note>") == 1
     assert "contiguous verbatim excerpt" in own
 
 
 def test_no_reasoning_note_or_project_history_reaches_the_model() -> None:
     for leaked in ("Reasoning notes", "Validation caveat", "build plan task", "AC-11e"):
-        assert leaked not in SYSTEM_PROMPT
+        assert leaked not in system_prompt()
 
 
 def test_the_assembled_prompt_is_the_same_bytes_every_time() -> None:
     again = RULES + "\n" + few_shot_block(read_examples(EXAMPLES_DIR), EXAMPLE_NOTES) + "\n"
 
-    assert again == SYSTEM_PROMPT
+    assert again == system_prompt()
 
 
 # AC-6 and AC-8: the two general rules the examples alone could not state.
@@ -198,7 +203,7 @@ def test_the_entity_label_sample_is_a_label_the_corpus_really_writes() -> None:
 def test_the_system_prompt_is_sent_as_one_block_cached_for_an_hour() -> None:
     (block,) = system_blocks()
 
-    assert block["text"] == SYSTEM_PROMPT
+    assert block["text"] == system_prompt()
     assert block["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
     assert CACHE_TTL == "1h"
 
@@ -257,7 +262,7 @@ def test_each_0003_1_rule_reaches_the_model_exactly_once_and_from_the_rules(
     criterion: str, rule: str
 ) -> None:
     assert rule in RULES, criterion
-    assert SYSTEM_PROMPT.count(rule) == 1, criterion
+    assert system_prompt().count(rule) == 1, criterion
 
 
 def test_the_struck_claim_rule_defers_the_link_type_to_the_links_rules() -> None:
@@ -369,3 +374,54 @@ def test_the_seventh_example_keeps_a_bundled_verbatim_criterion_whole_and_flagge
     assert bundled
     for entity in bundled:
         assert sum(1 for e in entities if e["id"] == entity["id"]) == 1
+
+
+# The prompt is built on first use, never at import (the 2026-10-04 review). Its bytes
+# must not move while `PROMPT_VERSION` says `0003.1`: the cache prefix and every
+# committed `0003.1` run were made with exactly this text.
+
+#: SHA-256 and length of the assembled `0003.1` prompt, taken 2026-10-04 at `9dfaa52`,
+#: the prompt experiments 0006 and 0008 ran under. A deliberate prompt change bumps
+#: `PROMPT_VERSION` and this pin together.
+PROMPT_0003_1_SHA256 = "1098f8426c24966321270b50fc67ff68c762aa3836fa4c58f633b10feaeba878"
+PROMPT_0003_1_LENGTH = 141207
+
+
+def test_the_assembled_prompt_is_byte_identical_to_the_one_the_0003_1_runs_used() -> None:
+    prompt = system_prompt()
+
+    assert len(prompt) == PROMPT_0003_1_LENGTH
+    assert hashlib.sha256(prompt.encode()).hexdigest() == PROMPT_0003_1_SHA256
+
+
+def test_importing_the_cli_reads_no_worked_example() -> None:
+    """A fresh process, so no earlier import has already built the prompt."""
+    probe = (
+        "import tracepath.extract.examples as examples\n"
+        "def refuse(*args, **kwargs):\n"
+        "    raise SystemExit('read_examples was called at import')\n"
+        "examples.read_examples = refuse\n"
+        "import tracepath.cli\n"
+    )
+
+    done = subprocess.run([sys.executable, "-c", probe], capture_output=True, text=True)
+
+    assert done.returncode == 0, done.stderr
+
+
+def test_a_missing_examples_directory_is_a_typed_error(tmp_path: Path) -> None:
+    with pytest.raises(ExampleError, match="no worked examples found"):
+        read_examples(tmp_path / "missing")
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root reads files whatever their mode")
+def test_an_unreadable_example_file_is_a_typed_error_naming_it(tmp_path: Path) -> None:
+    locked = tmp_path / "0001-locked.md"
+    locked.write_text(EXAMPLE)
+    locked.chmod(0)
+
+    try:
+        with pytest.raises(ExampleError, match="0001-locked: the example file cannot be read"):
+            read_examples(tmp_path)
+    finally:
+        locked.chmod(0o600)

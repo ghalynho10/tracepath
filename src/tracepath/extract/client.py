@@ -9,6 +9,7 @@ variation between runs; on this model the sampling parameters are rejected outri
 so leaving them off is both what the spec asked for and the only thing that works.
 """
 
+import functools
 import logging
 import uuid
 from collections.abc import Sequence
@@ -231,9 +232,20 @@ EXAMPLE_NOTES = {
     ),
 }
 
-#: The whole system prompt: the rules, then the worked examples, in filename order.
-#: Byte identical on every call, which is what lets the cache prefix hit (AC-19).
-SYSTEM_PROMPT = RULES + "\n" + few_shot_block(read_examples(EXAMPLES_DIR), EXAMPLE_NOTES) + "\n"
+
+@functools.cache
+def system_prompt() -> str:
+    """The whole system prompt: the rules, then the worked examples, in filename order.
+
+    Built on first use, not at import, so a command that makes no extraction call never
+    reads `examples/`. Cached, so it is byte identical on every call in a process, which
+    is what lets the cache prefix hit (AC-19).
+
+    Raises:
+        ExampleError: an example is missing, unreadable or malformed.
+    """
+    return RULES + "\n" + few_shot_block(read_examples(EXAMPLES_DIR), EXAMPLE_NOTES) + "\n"
+
 
 #: How long the cached system prompt lives. One call's output can outlast the 5 minute
 #: default, and a cache lifetime runs from the start of the request that last read it
@@ -347,11 +359,15 @@ def build_client(settings: AnthropicSettings) -> anthropic.Anthropic:
 
 
 def system_blocks() -> list[TextBlockParam]:
-    """The system prompt as one block, cached for `CACHE_TTL` (spec 0003, AC-19)."""
+    """The system prompt as one block, cached for `CACHE_TTL` (spec 0003, AC-19).
+
+    Raises:
+        ExampleError: the worked examples cannot be read into the prompt.
+    """
     return [
         {
             "type": "text",
-            "text": SYSTEM_PROMPT,
+            "text": system_prompt(),
             "cache_control": {"type": "ephemeral", "ttl": CACHE_TTL},
         }
     ]
