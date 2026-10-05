@@ -1,0 +1,408 @@
+{
+  "record": "feature-9",
+  "section": "9. Profile entry \u00b7 done",
+  "section_slug": "9-profile-entry-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.3",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-24T18:08:21+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 5462,
+  "output_tokens": 11659,
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A form for the flat profile: personal details, skills, one layer of work history, and stated job preferences. Typed by hand, with no resume upload and no extraction, so it makes no external call at all.",
+        "rejected_spans": [
+          "Scoring cannot function without this, and the completion test does not start without a way to get profile data in."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a signed in user can create and edit their profile, it survives a reload, validation errors are shown rather than swallowed, the saved shape is exactly what scoring will later read, and the profile form's Server Action is driven once from a test with no browser",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "two real accounts, on the running app, each reading their OWN profile and not the other's",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): /architect profile entry",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: /develop profile entry",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Four new base components (Input, Textarea, Select, a Field/Label wrapper) added to src/components/ui/",
+        "rejected_spans": [
+          "extending spec 0005's inventory the way spec 0006 added Logo"
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Thin slice: the identity section end to end (create, reload, edit) via saveIdentity and the URL driven /profile page",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Thicken: search preferences, the new spans registered, and the entry page's profile claim moved to working",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Proofs: the no browser Server Action test, two account isolation, and the /ui-preview keyboard/focus/contrast pass",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Verify it: /check verify profile entry \u00b7 run 2026-09-02, PASS, all 18 acceptance criteria met, 51 of 53 steps ticked in verify.md. The two unticked steps are recorded at the end of verify.md and neither is an acceptance criterion failure. The read failure state was proved by stopping the database container: /profile renders the failure treatment and never the first run form",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A first run on the same day found AC-13 half unbuilt: a malformed entry id rendered the plain list and said nothing, while a well formed one that matched no row correctly said the entry was gone. /debug traced it to parsePageState collapsing an unusable id into the plain view, fixed in 8a59fdf, and this run re-proved all four URL cases.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Test it: /test profile entry \u00b7 run 2026-09-02, 222 new tests across 12 files, all passing (unit 751, integration 58). Covers the validation rules behind AC-3, AC-5 to AC-7a and AC-9 at the schema boundary, the four new base components against their own AGENTS.md convention, the work history section's four states, and the AC-13 regression at both the parser and the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "third runner constraint",
+          "mention": "spec 0001's third runner constraint"
+        },
+        "phrase": "is spec 0001's third runner constraint, deferred to here by spec 0004",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": null,
+          "label": null,
+          "mention": "that spec's follow up list"
+        },
+        "phrase": "the technique is recorded in that spec's follow up list",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, AC-8"
+        },
+        "phrase": "moves its own claim (`profile`) from planned to working in the entry page's \"What's real today\" card",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-15",
+          "label": null,
+          "mention": "closes the deferred half of spec 0007 AC-15"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "reference",
+          "record": "feature-7",
+          "id": null,
+          "label": null,
+          "mention": "Feature 7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "proved only the negative half of",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "label": null,
+          "mention": "AC-1 to AC-4, AC-11 to AC-14"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "label": null,
+          "mention": "AC-5 to AC-8, AC-7a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "label": null,
+          "mention": "AC-9, AC-10, AC-16"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "label": null,
+          "mention": "AC-14, AC-15, AC-17"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "phrase": "found AC-13 half unbuilt",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": null,
+          "mention": "8a59fdf"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "label": null,
+          "mention": "the two steps /check verify could not observe from outside the app"
+        },
+        "phrase": "closes the two steps /check verify could not observe from outside the app",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

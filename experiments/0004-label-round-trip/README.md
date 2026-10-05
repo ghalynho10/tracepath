@@ -12,6 +12,15 @@ per `experiments/README.md`'s rule (never delete a run's artifacts, move them), 
 this run's own artifacts take their place. Anything measured from the old Preamble
 runs (entity counts, agreement, the AC-14 coverage figures) is not comparable with
 anything measured here; this run only speaks to the `label` question.
+**Runs moved later**: experiment 0008 (spec 0003, AC-18) reruns `0008 ## Preamble`
+under `0003.1` and moves this run's three `0002.3` Preamble runs from
+`artifacts/runs/0008/preamble/` to
+`artifacts/superseded/<run date>-prompt-0002.3/0008/preamble/`, the date named in
+experiment 0008's README. From that commit on, the `artifacts/runs/0008/preamble/`
+links below show the newer runs, not this one's; read this run's Preamble runs from the
+superseded folder, or from any commit up to `201fae4`. This experiment's script writes
+runs and reads none, so nothing here needs rerunning. `artifacts/runs/0001/binding-rules/`
+is not in that rerun and stays where it is.
 
 ## Question
 

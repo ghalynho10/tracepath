@@ -1,0 +1,538 @@
+{
+  "record": "0012",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-22T23:42:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `@ai-sdk/openai`, `@ai-sdk/google`, and `ai` to `package.json`, none pinned, matching this spec's original style. Confirm after running `pnpm install` that the resolved `@ai-sdk/openai` version still shares its `@ai-sdk/provider`/`@ai-sdk/provider-utils` versions with whatever `@ai-sdk/google` and `ai` resolve to. Add `OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` to `src/env.ts`'s server schema (required, non empty), to its `runtimeEnv` block, and to `.env.example` and `.env.test.example`.",
+        "rejected_spans": [
+          "`4.0.60` is the `@ai-sdk/openai` version this revision checked at design time (see `rationale.md`), not a version this project's `pnpm install` has actually resolved, since this project has no `ai` or `@ai-sdk/*` dependency yet, adding them is this very step.",
+          "a mismatch there is what an actual incompatibility would look like, and neither `npm view` nor this spec can rule that out ahead of a real install.",
+          "(the drift guard in `recipients.test.ts` only reads that block)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write the migration seeding the six `usage_cap` rows for `ai_scoring` and `ai_check` at the corrected values (`500` / `1320` / `40000`, see Rationale).",
+        "rejected_spans": [
+          "Blocked until feature 10's `usage_cap` table exists on `main` (see Consequences)."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/lib/ai/tiers.ts`: the `Tier` union, and the checked in map from tier to `{ model, temperature?, maxOutputTokens, maxRetries: 0, timeoutMs: 30_000, providerOptions? }`. `temperature` is `number | undefined` in the type, not a plain `number`: `ai_check` (Gemini) sets it to `0`, but `ai_scoring` (GPT-5.6 Luna, a reasoning model) leaves it `undefined`. `ai_scoring`'s entry instead sets `providerOptions: { openai: { reasoningEffort: \"medium\" } }`, passed through unchanged to `generateObject`; `ai_check` has no `providerOptions`. `maxOutputTokens` is `2048` for `ai_scoring` and `512` for `ai_check`, unchanged. Construct each vendor's provider instance (`createOpenAI`, `createGoogle`) by passing the validated `env.OPENAI_API_KEY` / `env.GOOGLE_GENERATIVE_AI_API_KEY` explicitly; calling the returned `OpenAIProvider` instance directly with a model id (`createOpenAI({ apiKey })(\"gpt-5.6-luna\")`) already resolves to the Responses API model, so no separate `.responses()` call is needed. The map stores `timeoutMs`, a plain number, never a constructed `AbortSignal`. `callTier()` builds a fresh `AbortSignal.timeout(tier.timeoutMs)` on every call.",
+        "rejected_spans": [
+          "because the OpenAI API rejects `temperature: 0` outright (HTTP 400) whenever `reasoning.effort` is anything other than `\"none\"`, and `\"none\"` effort is not chosen here (see Rationale)",
+          "(up from a plain non-reasoning estimate, to leave headroom for GPT-5.6 Luna's own hidden reasoning tokens, which are billed as output and count against this ceiling)",
+          "the shape OpenAI's own reasoning model guidance recommends",
+          "since `AbortSignal.timeout()` starts counting the moment it is called, so one built at module load time would already read as expired for every call made after the first thirty seconds of the process's life",
+          "Superseded for `ai_check` by spec [0019](../0019-cross-vendor-self-check/index.md) AC-6 on 2026-09-09: that tier's `timeoutMs` is now 20000, derived from five live latency measurements rather than shared with `ai_scoring` by default. `ai_scoring` still reads 30000."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/lib/ai/failures.ts`, a fixed, non secret message per new failure kind used here, mirroring the shape of `USAGE_GATE_FAILURES`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/lib/ai/client.ts`: `callTier()`, opening the named span `ai.call_tier` (`op: \"function\"`, `tier` as a span attribute, one name for both tiers) as the first statement, then passing the vendor call to `withUsageGate(tier, fn, cookieAdapter)` (spec 0011's inversion-of-control helper, already `job_search`'s own caller shape in `src/features/search/adzuna.ts`). The thunk calls `generateObject` with a freshly built `AbortSignal.timeout(tier.timeoutMs)` inside a single `try`/`catch` with the tier's fixed vendor, model and parameters and the caller's schema, spreading `tier.providerOptions` into the call only when the tier defines one and passing `temperature` through as-is (`undefined` for `ai_scoring` is dropped by serialization, never coerced to `0`); on a caught error, `classify()` (a pure function, mirroring `src/features/auth/callback.ts`) reads it, the active span gets `span.setAttribute(\"stage\", \"vendor\")`, and exactly one `failure()` call follows, `response_malformed` for `NoObjectGeneratedError.isInstance(error)`, `external_service_failed` otherwise.",
+        "rejected_spans": [
+          "rather than calling `checkUsageGate()` and branching on its decision by hand: `withUsageGate()` invokes its `fn` thunk only once the gate has already decided `allowed: true`, so the vendor being unreachable on a refusal is a structural guarantee of the call shape, not a fact depending on the branching being written correctly at every call site.",
+          "(not `attempt()`, which carries one fixed kind)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write a test asserting no file under `src/` other than `src/lib/ai/tiers.ts` and `src/lib/ai/client.ts` imports an `@ai-sdk/` package or the plain `ai` package.",
+        "rejected_spans": [
+          "Corrected 2026-09-06 by `/check review` round 2: this step originally named only `tiers.ts` and only `@ai-sdk/`, understating the guard on both axes after a later fix widened it to also allow `client.ts` (the router itself, the one file that legitimately calls `generateObject`) and to also ban the plain `ai` package (a caller could otherwise import `generateObject` from `ai` directly and call it on `TIERS.ai_scoring.model`, an already exported live model instance, bypassing both the router and the usage gate)."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Register the `ai.call_tier` span in `docs/observability/spans.md`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add two new `DATA_RECIPIENTS` entries, `openai` and `google-ai`, leaving the existing `google` entry untouched; remove `\"OpenAI\"` from `notYetRecipients` in `src/app/(marketing)/privacy/page.test.ts` (leave `\"Anthropic\"` in place) and correct its comment; update the id array assertion in `recipients.test.ts` (line 110) to include both new ids.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write the critical test scenarios above: the `classify()` unit tests (no vendor call needed), a zeroed cap refusing without reaching a vendor, and, gated behind `TEST_LIVE_MODEL_CALLS_ENABLED`, both tiers reaching two real, different vendors.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "mention": "AC-10"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "mention": "AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": null,
+          "mention": "feature 10's `usage_cap` table exists on `main`"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-1",
+          "mention": "AC-1"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "mention": "AC-3"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "mention": "AC-10"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-6",
+          "mention": "spec [0019](../0019-cross-vendor-self-check/index.md) AC-6"
+        },
+        "phrase": null,
+        "date": "2026-09-09",
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "the Value sourcing row for a provider failure's message"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-2",
+          "mention": "AC-2"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "mention": "AC-4"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-5",
+          "mention": "AC-5"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-6",
+          "mention": "AC-6"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "mention": "AC-7"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "mention": "AC-3"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "mention": "`/check review` round 2"
+        },
+        "phrase": null,
+        "date": "2026-09-06",
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "mention": "AC-7"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-9",
+          "mention": "AC-9"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-1",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-2",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-5",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-6",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

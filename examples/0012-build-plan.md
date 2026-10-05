@@ -13,7 +13,7 @@ First example covering `satisfies`, and also the first to carry `blocked-by` and
 - **A later status annotation is different, and is rejected.** Step 3's trailing `_Superseded for `ai_check` by spec 0019 AC-6 on 2026-09-09: …_` fails the deletion trick as part of the step's own work — the step stands complete without it — and it describes history, the same category as "corrected … an earlier version read" in the 0012 Follow-up example. It goes to `rejected_spans` *and* produces the `superseded-by` link. The distinction from the pointer above: `satisfies` is part of what the author wrote the step to say; `Superseded` is an annotation added later about the step's status.
 - **Step 9's range is enumerated into eight links.** `satisfies **AC-1** through **AC-8**` names both endpoints, and this record's criteria run AC-1…AC-10 with no letter suffixes, so the range expands with nothing invented. Enumeration also fails safe: the model sees only this unit and cannot confirm each id exists, but a wrong id resolves to `:Unresolved` (AC-7) — visible — whereas not enumerating would silently lose eight real edges. No flag is set, because none of the seven covers "endpoint inferred from a stated range" (see the finding below).
 - **Step 2's `Blocked until feature 10's `usage_cap` table exists on `main`` is a `blocked-by`**, direction blocked → blocker per spec 0002's relationship table. The endpoint is written as the text names it (`feature 10`), per the schema's own instruction for `record`. **Its expected outcome today is an `:Unresolved` node, not the feature 10 row** — a scope feature Record's `canonical_id` is `feature-10`, hyphenated, and the `feature N` form lives in that Record's `aliases`, whose stated job is to carry alternative names *until name resolution (feature 7) does the matching*. Feature 7 is not built, so nothing matches an alias yet. That is the correct behaviour, not a defect in the extraction: the link is preserved with its verbatim mention and the gap is visible, which is exactly what `:Unresolved` is for.
-- **Step 3's supersession is partial** ("Superseded **for `ai_check`**"), which spec 0002's own Follow-up already records as a known corpus shape with no partial semantics in the schema. The type follows the text's own word, so the phrase is what carries the partiality; it is flagged anyway so a reviewer sees that the link is narrower than its type implies.
+- **Step 3's change is partial** ("Superseded **for `ai_check`**"): only `ai_check`'s tier changed, `ai_scoring`'s stands untouched, so part of the step's original content still stands. Spec 0003's ordered test types this `amended-by`, not `superseded-by`, whatever the author's own stamp word says; the stamp word survives only in `phrase`. It is flagged `relationship_type_ambiguous` anyway so a reviewer sees the type reflects only part of the step.
 - **Step 6's correction produces no second entity and no link.** "this step originally named only `tiers.ts` and only `@ai-sdk/`" describes the old version without quoting it, and `/check review` round 2 is not one of the three Record kinds — the same two rules as 0012 Follow-up bullet 9 and 0008's cited review file, applied together.
 
 ### Step 4's link, settled by AC-7's `label` amendment
@@ -27,9 +27,9 @@ Worth noting what this example does *not* prove: whether the `## Feature design`
 Two candidates, on evidence from this unit, recorded the way `resolved-by` was recorded — not promotions argued for here:
 
 1. **An endpoint inferred from a stated range.** Step 9's `satisfies **AC-1** through **AC-8**` expands to eight endpoints, none of them written individually in the text.
-2. **A supersession whose stated type is wider than its actual scope.** Step 3's `Superseded for `ai_check`` uses the word plainly, but only one of the two tiers is superseded. Spec 0002's Follow-up already records partial supersession as a known corpus shape, so this candidate has a home there.
+2. **A supersession whose stated type was wider than its actual scope.** Step 3's `Superseded for `ai_check`` used the word plainly, but only one of the two tiers was superseded. This is no longer an open gap: spec 0003's AC-21 ordered test resolves it directly, typing the link `amended-by` because part of the step still stands, rather than leaving the wider `superseded-by` type standing on borrowed evidence.
 
-Per the closed-set rule, nothing was invented: step 9 carries no flag, step 3 borrows `relationship_type_ambiguous`.
+Per the closed-set rule, nothing was invented: step 9 carries no flag, step 3 carries `relationship_type_ambiguous`.
 
 ## Input
 
@@ -200,7 +200,7 @@ Unit kind: Section
       "known_trap_flags": []
     },
     {
-      "type": "superseded-by",
+      "type": "amended-by",
       "source": {"kind": "local", "id": "derived:3"},
       "target": {"kind": "reference", "record": "0019", "id": "AC-6", "mention": "spec 0019 AC-6"},
       "phrase": "Superseded for `ai_check` by spec 0019 AC-6 on 2026-09-09: that tier's `timeoutMs` is now 20000",
@@ -352,7 +352,7 @@ Unit kind: Section
 - A numbered list's own numbering is the entity boundary. A step stays one `BuildStep` however much it bundles, flagged `multi_condition_split` rather than split, so the `satisfies` links written on a step keep their one-to-one correspondence to it.
 - A `satisfies`/`blocked-by` pointer written as part of the step stays in the span **and** produces a link. A later status annotation about the step (`_Superseded … on 2026-09-09_`) is rejected from the span and produces a link. The test is the deletion trick plus who wrote it when: the step's own statement of its work, or a note added later about its status.
 - A stated range (`**AC-1** through **AC-8**`) is enumerated into one link per id when both endpoints are named and the record's numbering has no gaps or suffixes, because a wrong id fails safe to `:Unresolved` while a skipped range silently loses every edge. Each enumerated link keeps the whole range as its `phrase`, so the expansion is auditable back to the one sentence that authorised it.
-- Direction follows spec 0002's relationship table without exception: `satisfies` is BuildStep → AcceptanceCriterion, `blocked-by` is blocked → blocker, `superseded-by` is old → new.
+- History link types follow what actually changed, not the author's stamp word: step 3's "Superseded for `ai_check`" retires only part of the step, so the ordered test types it `amended-by`, flagged `relationship_type_ambiguous`, and the stamp word survives only in `phrase`. Direction still follows spec 0002's relationship table without exception: `satisfies` is BuildStep → AcceptanceCriterion, `blocked-by` is blocked → blocker, `amended-by` is amended → amending, `superseded-by` is old → new.
 - A relationship whose target is named but unnumbered (a "Value sourcing row") uses a `{record, label}` reference endpoint, per AC-7, rather than collapsing to the bare Record or dropping to `:Unresolved`. The `label` is the author's own words for the item, copied exactly; matching is exact, never fuzzy, and a miss falls to `:Unresolved` keeping both `record` and `label`.
 - A `{record, label}` endpoint works the same way inside the unit's own record as across records. Step 4 points at a row in `0012` while 0008's preamble points at an item in `0001`; nothing about the shape changes.
 - When a real judgement call matches no flag in the closed set, nothing is invented: the call is made, the reasoning is written down here, and the gap is recorded as a candidate on evidence.

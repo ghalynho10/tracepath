@@ -1,0 +1,48 @@
+{
+  "purpose": "AC-30/AC-20 go ahead figure for experiment 0006, the accuracy bar re check (18 calls: 3 before + 3 after, per each of 3 fresh held out units), computed once the 0003.1 prompt's token count was measured. This is a planning computation only; no paid call has run.",
+  "method": "Input tokens: measured directly with the free token counting endpoint (measure_recheck.py, this commit's recheck-prefix-count.json), so those figures carry no error. Output tokens per call cannot be measured without a real call, so they are read from experiment 0005's own committed after/before run costs, split by unit kind (Section vs FeatureRow) and by era (0002.3 before vs 0003.0 after, the closest available after-era measurement to 0003.1): central = the average of the available same-kind data points, wide = the maximum of them. Cache: the 9 after calls are assumed to run in one sequence sharing one cache prefix (as experiment 0005's own after runs did), so only the first after call writes the cache (0003.1's measured prefix, 54279 tokens) and the remaining 8 read it. Rates: $2.00 / $10.00 / $4.00 / $0.20 per million input / output / 1h cache write / cache read tokens (Sonnet 5, the same rates run_units.py uses, reproduced against experiment 0004's bill).",
+  "prompt_version": "0003.1",
+  "measured_prefix_tokens": 54279,
+  "units": [
+    {
+      "unit": "0014 Requirements",
+      "kind": "Section",
+      "measured_before_input_tokens_per_call": 7531,
+      "measured_after_uncached_input_tokens_per_call": 6829,
+      "before_output_tokens_per_call_source": "experiment 0005 before-bc.json (0013) and baseline-0021.json (0021), both Section kind",
+      "before_output_tokens_per_call_central": 17485,
+      "before_output_tokens_per_call_wide": 20853,
+      "after_output_tokens_per_call_source": "experiment 0005 after-heldout.log (0021 and 0013 after runs), both Section kind",
+      "after_output_tokens_per_call_central": 26348,
+      "after_output_tokens_per_call_wide": 32390
+    },
+    {
+      "unit": "0015 Feature design",
+      "kind": "Section",
+      "measured_before_input_tokens_per_call": 8792,
+      "measured_after_uncached_input_tokens_per_call": 8090,
+      "before_output_tokens_per_call_source": "experiment 0005 before-bc.json (0013) and baseline-0021.json (0021), both Section kind",
+      "before_output_tokens_per_call_central": 17485,
+      "before_output_tokens_per_call_wide": 20853,
+      "after_output_tokens_per_call_source": "experiment 0005 after-heldout.log (0021 and 0013 after runs), both Section kind",
+      "after_output_tokens_per_call_central": 26348,
+      "after_output_tokens_per_call_wide": 32390
+    },
+    {
+      "unit": "feature-33 Band anchor review",
+      "kind": "FeatureRow",
+      "measured_before_input_tokens_per_call": 6175,
+      "measured_after_uncached_input_tokens_per_call": 5473,
+      "before_output_tokens_per_call_source": "experiment 0005 before-bc.json (feature-9), the only FeatureRow before data point",
+      "before_output_tokens_per_call_central": 13160,
+      "before_output_tokens_per_call_wide": 13160,
+      "after_output_tokens_per_call_source": "experiment 0005 after-heldout-c.log (feature-9), the only FeatureRow after data point",
+      "after_output_tokens_per_call_central": 17937,
+      "after_output_tokens_per_call_wide": 17937
+    }
+  ],
+  "before_total_9_calls": {"central_usd": 1.5789, "wide_usd": 1.781},
+  "after_total_9_calls_including_cache": {"central_usd": 2.5453, "wide_usd": 2.9078},
+  "manifest_total_18_calls": {"central_usd": 4.1242, "wide_usd": 4.6888},
+  "compare_to_spec_0003_ac30_planning_figures": {"planning_central_usd": 4.1, "planning_wide_usd": 5.1}
+}

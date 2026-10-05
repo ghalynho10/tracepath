@@ -71,7 +71,15 @@ def failure(number: int, used_in: int, used_out: int) -> ExtractionFailed:
     message = f"attempt {number} did not satisfy the schema"
     return ExtractionFailed(
         message,
-        (Attempt(number=number, input_tokens=used_in, output_tokens=used_out, error=message),),
+        (
+            Attempt(
+                number=number,
+                run_id="test-run",
+                input_tokens=used_in,
+                output_tokens=used_out,
+                error=message,
+            ),
+        ),
     )
 
 
@@ -83,9 +91,27 @@ def test_a_retried_run_writes_both_attempts_with_their_own_numbers(
         monkeypatch,
         [
             failure(1, 500, 64000),
-            Attempt(number=2, input_tokens=500, output_tokens=9000, output=an_output()),
-            Attempt(number=1, input_tokens=500, output_tokens=9100, output=an_output()),
-            Attempt(number=1, input_tokens=500, output_tokens=9200, output=an_output()),
+            Attempt(
+                number=2,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9000,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9100,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9200,
+                output=an_output(),
+            ),
         ],
     )
 
@@ -111,9 +137,27 @@ def test_the_unit_total_counts_the_failed_attempt_too(
         monkeypatch,
         [
             failure(1, 500, 64000),
-            Attempt(number=2, input_tokens=500, output_tokens=9000, output=an_output()),
-            Attempt(number=1, input_tokens=500, output_tokens=9000, output=an_output()),
-            Attempt(number=1, input_tokens=500, output_tokens=9000, output=an_output()),
+            Attempt(
+                number=2,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9000,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9000,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=500,
+                output_tokens=9000,
+                output=an_output(),
+            ),
         ],
     )
 
@@ -160,9 +204,27 @@ def test_every_artifact_a_successful_run_writes_carries_integer_token_counts(
         monkeypatch,
         [
             failure(1, 500, 64000),
-            Attempt(number=2, input_tokens=511, output_tokens=9000, output=an_output()),
-            Attempt(number=1, input_tokens=522, output_tokens=9100, output=an_output()),
-            Attempt(number=1, input_tokens=533, output_tokens=9200, output=an_output()),
+            Attempt(
+                number=2,
+                run_id="test-run",
+                input_tokens=511,
+                output_tokens=9000,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=522,
+                output_tokens=9100,
+                output=an_output(),
+            ),
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=533,
+                output_tokens=9200,
+                output=an_output(),
+            ),
         ],
     )
 

@@ -1,6 +1,7 @@
 import json
 import logging
 import shutil
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,8 @@ from tracepath import __version__, config
 from tracepath.artifacts import REVIEW_LOG, REVIEW_QUEUE, RUNS_DIR
 from tracepath.cli import app
 from tracepath.config import Neo4jSettings
+from tracepath.extract import client
+from tracepath.extract.examples import ExampleError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -193,3 +196,36 @@ def test_review_queue_run_twice_leaves_the_same_bytes(repo: Path) -> None:
     runner.invoke(app, ["review-queue", "--root", str(repo)])
 
     assert (repo / REVIEW_QUEUE).read_bytes() == first
+
+
+# Commands that make no extraction call never read `examples/` (the 2026-10-04 review):
+# the system prompt is built on first use, so a broken example can only stop the
+# command that needs it.
+
+
+@pytest.fixture
+def examples_unreadable(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Iterator[None]:
+    """Point the prompt at an empty directory, with the cached prompt forgotten both ways."""
+    client.system_prompt.cache_clear()
+    monkeypatch.setattr(client, "EXAMPLES_DIR", tmp_path / "no-examples-here")
+    with pytest.raises(ExampleError):
+        client.system_prompt()
+    yield
+    client.system_prompt.cache_clear()
+
+
+@pytest.mark.integration
+@pytest.mark.usefixtures("examples_unreadable")
+def test_status_runs_with_the_worked_examples_unreadable(neo4j_settings: Neo4jSettings) -> None:
+    result = runner.invoke(app, ["status"])
+
+    assert result.exit_code == 0
+    assert f"reachable at {neo4j_settings.uri}" in flat(result.stdout)
+
+
+@pytest.mark.usefixtures("examples_unreadable")
+def test_review_queue_runs_with_the_worked_examples_unreadable(repo: Path) -> None:
+    result = runner.invoke(app, ["review-queue", "--root", str(repo)])
+
+    assert result.exit_code == 0
+    assert (repo / REVIEW_QUEUE).exists()

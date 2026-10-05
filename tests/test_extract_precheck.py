@@ -4,6 +4,7 @@ from tracepath.extract.precheck import (
     checkbox_status_at,
     is_struck,
     mark_struck,
+    read_binding_rules,
     read_checkbox,
     read_checkboxes,
 )
@@ -127,3 +128,46 @@ def test_every_follow_up_section_in_the_corpus_parses_a_status_for_every_item() 
                 1 for line in unit.text.splitlines() if line.lstrip().startswith(("- [", "* ["))
             )
             assert len(items) == bullets, f"{path.parent.name}: {len(items)} against {bullets}"
+
+
+# Spec 0003, AC-1: a binding rule's leading span is read from the characters.
+
+
+def test_a_rule_leading_span_ends_at_the_first_blank_line_after_its_marker() -> None:
+    text = "## Binding rules\n\n**1. First.** Body.\nMore body.\n\nA second paragraph.\n"
+
+    (rule,) = read_binding_rules(text)
+
+    assert rule.number == 1
+    assert rule.label == "binding rule 1"
+    assert text[rule.start : rule.end] == "**1. First.** Body.\nMore body."
+
+
+def test_a_rule_with_no_blank_line_before_the_next_marker_ends_at_that_marker() -> None:
+    text = "**1. First.** Body.\n**2. Second.** Body."
+
+    first, second = read_binding_rules(text)
+
+    assert text[first.start : first.end] == "**1. First.** Body.\n"
+    assert text[second.start : second.end] == "**2. Second.** Body."
+
+
+def test_a_rule_marker_inside_a_fenced_block_is_text_not_a_rule() -> None:
+    text = "**1. Real.** Body.\n\n```\n**2. Not a rule.**\n```\n"
+
+    assert [rule.number for rule in read_binding_rules(text)] == [1]
+
+
+def test_a_unit_with_no_bold_numbered_item_reports_no_rules() -> None:
+    assert read_binding_rules("## Binding rules\n\n- a plain bullet\n") == ()
+
+
+def test_the_real_binding_rules_of_spec_0001_read_eight_rules_in_order() -> None:
+    unit = unit_named("0001", "Binding rules")
+
+    rules = read_binding_rules(unit.text)  # type: ignore[attr-defined]
+
+    assert [rule.number for rule in rules] == list(range(1, 9))
+    six = unit.text[rules[5].start : rules[5].end]  # type: ignore[attr-defined]
+    assert six.startswith("**6. Authorisation is never decided in the proxy.**")
+    assert "\n\n" not in six

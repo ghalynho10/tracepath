@@ -1,12 +1,24 @@
 from pathlib import Path
+from types import SimpleNamespace
+from typing import cast
 
+import anthropic
+import httpx2
 import pytest
 
-from tracepath.config import DEFAULT_MODEL, RUNS_PER_UNIT, SettingsInvalid, load_anthropic_settings
+from tracepath.config import (
+    DEFAULT_MODEL,
+    RUNS_PER_UNIT,
+    AnthropicSettings,
+    SettingsInvalid,
+    load_anthropic_settings,
+)
 from tracepath.extract.client import (
     MAX_TOKENS,
     PROMPT_VERSION,
-    SYSTEM_PROMPT,
+    ExtractionFailed,
+    extract_once,
+    system_prompt,
     user_prompt,
 )
 from tracepath.extract.units import split_units
@@ -86,12 +98,61 @@ def test_the_prompt_carries_the_unit_and_everything_a_citation_needs() -> None:
 
 
 def test_the_prompt_tells_the_model_not_to_own_identity_or_the_markers() -> None:
-    assert "Never invent an id" in SYSTEM_PROMPT
-    assert "derived:N" in SYSTEM_PROMPT
-    assert "read from the characters by code" in SYSTEM_PROMPT
-    assert "unclassified" in SYSTEM_PROMPT
+    assert "Never invent an id" in system_prompt()
+    assert "derived:N" in system_prompt()
+    assert "read from the characters by code" in system_prompt()
+    assert "unclassified" in system_prompt()
 
 
 def test_the_prompt_version_is_recorded_so_a_prompt_change_is_visible() -> None:
     assert PROMPT_VERSION
     assert MAX_TOKENS >= 16000
+
+
+# Known defect, owed to /debug on its own fix/ branch (docs/session-notes.md): a
+# connection that drops mid stream escapes `extract_once()` as a raw transport error,
+# so the attempt is never recorded and `run_with_retry()` never retries it. Experiment
+# 0006 lost a paid call to this. Strict, so the fix turns it into a failing XPASS and
+# the marker gets removed with it.
+
+
+class DroppedStream:
+    """A stream that opens, then loses its connection before the final message."""
+
+    current_message_snapshot = None
+
+    def __enter__(self) -> "DroppedStream":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def get_final_message(self) -> object:
+        raise httpx2.RemoteProtocolError(
+            "peer closed connection without sending complete message body"
+        )
+
+
+@pytest.mark.xfail(
+    strict=True,
+    raises=httpx2.RemoteProtocolError,
+    reason="owed to /debug: extract_once() does not catch a mid stream transport error",
+)
+def test_a_connection_dropped_mid_stream_is_recorded_as_a_failed_attempt() -> None:
+    path = SNAPSHOT / "specs" / "0012-model-client-router" / "index.md"
+    unit = next(
+        u
+        for u in split_units("specs/0012-model-client-router/index.md", path.read_text())
+        if u.section == "Requirements"
+    )
+    settings = AnthropicSettings(
+        api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
+    )
+    client = SimpleNamespace(messages=SimpleNamespace(stream=lambda **_: DroppedStream()))
+
+    with pytest.raises(ExtractionFailed) as failed:
+        extract_once(cast("anthropic.Anthropic", client), settings, unit)
+
+    (attempt,) = failed.value.attempts
+    assert attempt.error is not None
+    assert attempt.output is None

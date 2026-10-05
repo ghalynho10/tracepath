@@ -21,12 +21,14 @@ A terminal tool that answers "why was this built this way?" by walking a chain a
 uv sync                          # install
 uv run pre-commit install        # once per clone: enables the commit hook
 docker compose up -d             # start Neo4j (Browser: http://localhost:7474)
-uv run tracepath status          # run the CLI
+uv run tracepath status          # run the CLI, from the repo root (see below)
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 ```
+
+tracepath runs from this repository with `uv run`, not as an installed tool: the extraction prompt reads `examples/` relative to the repo root (`EXAMPLES_DIR` in `src/tracepath/extract/examples.py`), and `examples/` is not part of the built package. The prompt is built on first use, so a command that makes no extraction call (`status`, `review-queue`) never reads it.
 
 ## Layout
 
@@ -34,7 +36,8 @@ uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 - `corpus/`: the pinned JobHunt snapshot, tracked in git.
 - `eval/`: the eval set, tracked in git.
 - `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
-- `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `SYSTEM_PROMPT` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`.
+- `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `system_prompt()` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`. Only the `text` fence under `## Input` and the `json` fence under `## Output` reach the model, read in filename order by `src/tracepath/extract/examples.py`; a file missing either fence fails the prompt build.
+- `artifacts/`: the JSON run artifacts and review queue, tracked in git, the source of truth the graph is rebuilt from. Append only: `write_run()` raises `ArtifactCollisionError` rather than replace an existing file. Runs replaced by a newer prompt move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted (`experiments/README.md`).
 
 ## Specs
 
@@ -50,7 +53,7 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 - **Functional core, imperative shell.** Pipeline steps (extract, resolve, traverse) are pure functions. Neo4j, the Claude API, files, and the clock live at the edges and are passed in, not reached for.
 - **Immutable data.** Frozen dataclasses or frozen Pydantic models, tuples over lists in return values. Never mutate an argument. Module level names are constants only.
 - **Uncertainty is a value, failure is an exception.** "Unresolved" and "unclassified" are real values in the model, never guessed away or dropped. Real failures raise typed exceptions (like `GraphUnavailable`); the CLI turns them into a clear message and exit code 1, never a raw traceback.
-- **Every Cypher write asserts its own result** (`summary.counters`) and raises on mismatch. Neo4j has no foreign keys, so a missed check silently corrupts the graph.
+- **Every Cypher write asserts its own result.** Each batched write returns how many of its input rows it matched or wrote (`RETURN count(...) AS written`), and `_write()` in `src/tracepath/graph/load.py` raises `GraphWriteFailed` when that differs from the number of rows it was given. Neo4j has no foreign keys, so a row whose endpoint is missing writes nothing and says so only in that count. `summary.counters` cannot serve as this check: a `MERGE` that matches an existing node or link reports zero created, exactly as one whose endpoint is missing does.
 - **Strict types**: every function fully annotated, `mypy --strict` clean, no bare `Any`.
 - **Layout by pipeline stage**: one module or subpackage per stage under `src/tracepath/` (extract, resolve, graph, traverse), with `cli.py` as the shell.
 - **Validate settings at startup**: a missing or bad env var fails with a clear message before any work starts.
@@ -98,6 +101,7 @@ this file instead; /reflex flags it and the engineer moves it.
 
 - **Verify before you recommend.** When recommending anything about something that already exists, read it first and name what you read: a file, migration, config, or current behaviour in the repo, and the vendor's own docs for limits, terms, API shape, or version outside it. Mark each substantive claim verified (naming the file or source) or inferred, and when you cannot verify something that matters, say what you would need rather than filling the gap.
 - **Confirm the specific action.** When beginning a multi step skill, confirm the engineer agreed to that specific action rather than to a summary or a suggestion in passing.
+- **One claim per acceptance criterion.** When writing or reviewing an acceptance criterion, split it until it holds one independently falsifiable claim, and give a claim that relates two states its own criterion, because a test tagged with a criterion's number reads as covering all of it while proving only the clause easiest to observe, and a claim about how two states relate belongs to neither when tests are grouped one block per state. (added 2026 09 30, carried over from a sibling project where four acceptance criteria across three specs shipped with only their easiest clause tested)
 
 ## Context files
 

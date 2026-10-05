@@ -1,0 +1,1040 @@
+{
+  "record": "0006",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.2",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-23T00:00:00+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "GET `/` takes no key inputs, returns the page, is public with no session, and defines no key errors.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The `/opengraph-image` route is GET, public, takes no key inputs, and returns a 1200 by 630 PNG.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A missing font file throws, naming the file and how to get it; do not remove the guard on the belief that the framework already fails here.",
+        "rejected_spans": [
+          "That is the explicit guard in `opengraph-image.tsx`, not Next.js behaviour: `next/og` bundles `Geist-Regular.ttf` and silently falls back to it, so without the guard the build succeeds and ships an off brand card.",
+          "See that file's own header comment."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Exactly one hairline divider exists on the page.",
+        "rejected_spans": [
+          "A second one means the background alternation was changed without applying spec 0005's adjacency rule."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The page renders no \"use client\" file.",
+        "rejected_spans": [
+          "Any future interactivity here opens its own narrow boundary and states why, rather than making the page a client component the way the prototype was."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing appears under `working` in the status card that is not `done` in `docs/scope/scope.md`.",
+        "rejected_spans": [
+          "The page's own About copy makes this a promise, not a preference."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing on the page that cannot work is a link. That covers the two sign in controls and the apply control alike; the header's anchors and the footer are the only real links, and both go somewhere real.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The elevated card idiom appears exactly once on this page, on the hero result card.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The font guard in `opengraph-image.tsx` stays.",
+        "rejected_spans": [
+          "It looks like a redundant try/catch around a file read and it is not: it is the only thing standing between a missing font and a silently off brand preview card, because next/og falls back to its bundled Geist rather than failing.",
+          "Removing it does not surface an error, it removes one."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The page is public and reads nothing. No session check, no Supabase client, no Server Action, no user data of any kind.",
+        "rejected_spans": [
+          "It renders no personal data, so no compliance scope applies."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Binding rule 6 is untouched: no route handler under `src/app/api/` is added, and the image generator is a metadata file convention, not a data endpoint.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No Sentry span.",
+        "rejected_spans": [
+          "The project's span rule covers operations whose failure rate matters; a static prerender has no runtime failure rate to alert on, and spec 0002 already points the uptime monitor at this page, which is the truer signal."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new environment variable, no credential, no third party account required; `NEXT_PUBLIC_SITE_URL` already exists and is already validated in `src/env.ts`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The eyebrow appears only on the two `generous` sections, hero and the reasoning. How it works and about open on their heading alone.",
+        "rejected_spans": [
+          "This turns the eyebrow into a marker of the page's two peaks instead of boilerplate above every section, and it costs nothing."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Eyebrow placement (Tell #4)"
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The five `aria-hidden` pills in step 01 reading \"Location / Remote / hybrid / Seniority / Salary / Job type\" are deleted.",
+        "rejected_spans": [
+          "The step's own prose already names those filters, so the pills were texture shaped like UI."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Decorative chips (Tell #10)"
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "All body copy uses the measure `brand-tokens.md` sets (65ch) through `Text`, replacing the prototype's ad hoc `54ch`, `60ch` and `46ch`. The h1 loses `max-w-[16ch]` and wraps on its own.",
+        "rejected_spans": [
+          "since a character count sets the break point by accident rather than by sense."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Prose measure (Weaknesses #7, #8)"
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The two hand drawn `my-5 border-t` rules inside the hero card are replaced by `Card.Header`, `Card.Body` and `Card.Footer`.",
+        "rejected_spans": [
+          "so the card has one border, not five levels of hairline at one weight."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Hero card internals (Weakness #4)"
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The \"Most tools\" percentage bar is a different object from `MatchBar` and is drawn to look like one: a single continuous bar, visibly distinct in shape from the segmented match cells, rather than the same height at a different radius. The two cards' bars are no longer expected to align across the gutter.",
+        "rejected_spans": [
+          "because they are no longer the same object."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Comparison bars (Weaknesses #5, #6)"
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`twitter.card` is set to `summary_large_image` in the page metadata. No separate `twitter-image` file is added: the platform is understood to fall back to `og:image`.",
+        "rejected_spans": [
+          "and a second generated image would be a second thing to keep in sync for no gain.",
+          "That fallback is inferred, not verified, so it is checked by hand in the same pass as the unfurl check (see ## Follow-up)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Twitter card"
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "`Logo` (`variant`: `lockup` | `mark`), in `src/components/ui/logo.tsx`, is net new.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "`EntryHeader`, `EntryFooter`, and one module per body section, in `src/features/entry-page/`, are net new, feature local.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The image generator, in `src/app/opengraph-image.tsx`, is net new.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A later reader comparing that table against the directory will find one more file than the table lists, and this paragraph is why.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Do not widen spec 0005's `as` union for this one caller.",
+        "rejected_spans": [
+          "Card's `as` prop accepts `div`, `article`, `section` or `li` (`src/components/ui/card.tsx` line 52) and not `figure`, so the hero card is composed as a plain `<figure>` wrapping `<Card tone=\"elevated\">`."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The bare `<figure>` carries no rounded or bordered styling of its own, only the `aria-label` from AC-9, so it is not a hand composed container and trips neither AC-1 nor the `no-restricted-syntax` rule, which matches a `rounded-*` class paired with `border` in one `className` literal.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The apply control, on an example listing, renders as an inert `Text`, with no destination.",
+        "rejected_spans": [
+          "because an example listing has none"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Sign in isn't live yet. Coming soon with Google and GitHub.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
+        "label": "COPY-1atch check flag placeholder"
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Example result.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
+        "label": "COPY-2"
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Shows its work, not just a score.",
+        "rejected_spans": [
+          "It may differ from the page's h1, because a link card is read at a glance and the h1 is not."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
+        "label": "COPY-3"
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "\u00a9 Ghaly Nicolas Jules, with no year.",
+        "rejected_spans": [
+          "A hard coded year goes stale silently and a year computed at build time makes two builds of the same commit differ, so neither is offered as the default."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
+        "label": "COPY-4"
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Structural: exactly one `divider=\"hairline\"` is passed across the whole composed page. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Drift guard, with its own vacuousness check: changing any one of the five named tokens in `globals.css` without touching `opengraph-image.tsx` must fail the test. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Regression: nothing the route renders carries \"use client\". (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Rhythm and background: each section receives the tier and background this spec assigns. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "No dead controls: no apply control renders as an anchor. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: the page renders at 1440 and at 320 pixels with no horizontal overflow and the three rhythm tiers measurably distinct in computed style. (manual)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Keyboard: every control is reachable in order with a visible focus ring, and the header's sign in anchor moves focus to the band. (manual)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Link card: the deployed preview URL unfurls with a real 1200 by 630 image, a title and a description, in at least two clients. (manual)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Honesty, both directions: the status card's `working` list contains nothing the scope still marks `planned`, and its `planned` list contains nothing that has no scope row at all. (manual)",
+        "rejected_spans": [
+          "Deliberately a human read: the source is prose in `docs/scope/scope.md`, and a test asserting against it would only encode the same reading twice."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Lint: `pnpm lint` passes with `--max-warnings=0`, which is what actually enforces the no hand composed container rule. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:41",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Card idioms: exactly one `tone=\"elevated\"` is rendered on the page, and the comparison and status cards are all `tone=\"flat\"`. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:42",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Band: the sign in band renders neither a centring nor a narrowing class, so Tell #7's two removed axes cannot creep back. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:43",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Example label: the hero `<figure>` carries its `aria-label` and the `COPY-2` eyebrow is present. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:44",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Robots: `layout.tsx` still exports `robots: { index: false, follow: false }`, and no `robots.ts` or `robots.txt` exists anywhere in the repo. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:45",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Footer: it renders the lockup and the copyright and nothing between them. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:46",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Font licence: the committed `.ttf` has a licence file beside it, so the binary can never land alone. (automated)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "mention": "the uptime monitor from spec 0002 reports on"
+        },
+        "phrase": "a non 200 is what the uptime monitor from spec 0002 reports on",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "mention": "extends spec 0005's component inventory"
+        },
+        "phrase": "extends",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": null,
+          "mention": "see ## Follow-up"
+        },
+        "phrase": "checked by hand in the same pass as the unfurl check",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-7",
+          "mention": "AC-7"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-9",
+          "mention": "AC-9"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-11",
+          "mention": "AC-11"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "mention": "AC-13"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-17",
+          "mention": "AC-17"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-3",
+          "mention": "AC-3"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:32"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-16",
+          "mention": "AC-16"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:33"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "mention": "AC-4"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:34"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-2",
+          "mention": "AC-2"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:34"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-3",
+          "mention": "AC-3"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:35"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-17",
+          "mention": "AC-17"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:35"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "mention": "Split 2026-08-29 by spec [0007](../0007-auth-and-per-user-isolation/index.md)"
+        },
+        "phrase": null,
+        "date": "2026-08-29",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:35"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-7",
+          "mention": "AC-7"
+        },
+        "phrase": "the sign in half of this check retires with AC-7",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-2",
+          "mention": "AC-2"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-14",
+          "mention": "AC-14"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:37"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-14",
+          "mention": "AC-14"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:38"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-10",
+          "mention": "AC-10"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:38"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-11",
+          "mention": "AC-11"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:39"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "mention": "AC-8"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:40"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-1",
+          "mention": "AC-1"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:41"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-5",
+          "mention": "AC-5"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:42"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-6",
+          "mention": "AC-6"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:43"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-9",
+          "mention": "AC-9"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:44"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-12",
+          "mention": "AC-12"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:45"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "mention": "AC-13"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:46"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-15",
+          "mention": "AC-15"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

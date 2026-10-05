@@ -5,29 +5,42 @@
   "file": "specs/0006-entry-page-and-link-metadata/index.md",
   "unit_kind": "Section",
   "run": 2,
+  "attempt": 1,
   "model": "claude-sonnet-5",
-  "prompt_version": "0002.2",
+  "prompt_version": "0003.1",
   "commit": "2e40bcf",
-  "extracted_at": "2026-09-23T00:00:00+00:00",
+  "extracted_at": "2026-10-04T05:22:16+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
+  "input_tokens": 5276,
+  "output_tokens": 25365,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "68fd6686019d4bfe9d40e6ff3ec37605",
+  "artifact_format_version": 2,
+  "unit_sha256": "863711f51ab4d788fa284158d5e0742962cedc0aa23c2f187b9adb679b15ba23",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Data model sketch**: Not applicable. The page persists nothing, reads no table, and holds no state. The result card's contents are fixed illustrative copy that lives in the page's own module, not a fixture loaded from anywhere.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: Not applicable. No entity, no lifecycle.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**API surface**: No new endpoint. The page is a statically prerendered Server Component at `/` in the `(marketing)` group, whose layout checks no session.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Title: `JobHunt`, with a `template` of `%s \u00b7 JobHunt`\",\"rejected_spans\":[\"so later pages inherit the suffix\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Title\"},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Description: `Ranks real job openings against your profile and shows which skills matched, which are missing, and why. Not a score you have to take on trust.`\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Description\"},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"OG image alt: `JobHunt. Shows its work, not just a score. An example match of 8 out of 11 skills.` If `COPY-3` ever changes, this changes with it.\",\"rejected_spans\":[\"It describes what the card actually renders (the mark, the `COPY-3` headline, the match chip), because alt text is what a screen reader user gets instead of the image.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"OG image alt\"},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The four strings below are user facing product voice rather than technical values. **All four are now final** (written 2026-08-28) and the build uses them verbatim. Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.\",\"rejected_spans\":[\"so they were written by the engineer rather than invented here\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-1`, the sign in line** (**AC-7**), shown beside the two provider controls in both the hero and the sign in band. It must say that accounts are not open yet without using an internal feature number. `Sign in isn't live yet. Coming soon with Google and GitHub.`\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"`COPY-1`, the sign in line\"},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-2`, the example label** (**AC-9**), the `Text` eyebrow on the hero card and the `<figure>`'s `aria-label`. `Example result`.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"`COPY-2`, the example label\"},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-3`, the OG image headline** (**AC-11**), the line set in Space Grotesk on the preview card. It may differ from the page's h1. `Shows its work, not just a score.`\",\"rejected_spans\":[\"because a link card is read at a glance and the h1 is not\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"`COPY-3`, the OG image headline\"},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-4`, the footer copyright** (**AC-13**). `\u00a9 Ghaly Nicolas Jules`, with no year.\",\"rejected_spans\":[\"A hard coded year goes stale silently and a year computed at build time makes two builds of the same commit differ, so neither is offered as the default.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"`COPY-4`, the footer copyright\"},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Eyebrow placement (Tell #4).** The eyebrow appears only on the two `generous` sections, hero and the reasoning. How it works and about open on their heading alone.\",\"rejected_spans\":[\"This turns the eyebrow into a marker of the page's two peaks instead of boilerplate above every section, and it costs nothing.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Eyebrow placement (Tell #4).\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Decorative chips (Tell #10).** The five `aria-hidden` pills in step 01 reading \\\"Location / Remote / hybrid / Seniority / Salary / Job type\\\" are deleted.\",\"rejected_spans\":[\"The step's own prose already names those filters, so the pills were texture shaped like UI.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Decorative chips (Tell #10).\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Prose measure (Weaknesses #7, #8).** All body copy uses the measure `brand-tokens.md` sets (65ch) through `Text`, replacing the prototype's ad hoc `54ch`, `60ch` and `46ch`. The h1 loses `max-w-[16ch]` and wraps on its own.\",\"rejected_spans\":[\"since a character count sets the break point by accident rather than by sense.\"],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"Prose measure (Weaknesses #7, #8).\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Hero card internals (Weakness #4).** The two hand drawn `my-5 border-t` rules inside the hero card are replaced by `Card.Header`, `Card.Body` and `Card.Footer`.\",\"rejected_spans\":[\"so the card has one border, not five levels of hairline at one weight.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Hero card internals (Weakness #4).\"},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Comparison bars (Weaknesses #5, #6).** The \\\"Most tools\\\" percentage bar is a different object from `MatchBar` and is drawn to look like one: a single continuous bar, visibly distinct in shape from the segmented match cells, rather than the same height at a different radius. The two cards' bars are no longer expected to align across the gutter.\",\"rejected_spans\":[\"because they are no longer the same object.\"],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"Comparison bars (Weaknesses #5, #6).\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Twitter card.** `twitter.card` is set to `summary_large_image` in the page metadata. No separate `twitter-image` file is added: the platform is understood to fall back to `og:image`. That fallback is **inferred, not verified**, so it is checked by hand in the same pass as the unfurl check (see `## Follow-up`).\",\"rejected_spans\":[\"and a second generated image would be a second thing to keep in sync for no gain\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"],\"label\":\"Twitter card.\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`Logo` is a base component that spec 0005's inventory does not list, in either its `index.md` table or `src/components/ui/AGENTS.md`. That is deliberate and recorded here. `Logo` earns its place in `src/components/ui/` because it has three consumers on day one (header, footer, image generator) and the application shell will be a fourth.\",\"rejected_spans\":[\"spec 0005 parked logo work by the engineer's own constraint, the engineer lifted that constraint during this spec's design conversation\",\"A later reader comparing that table against the directory will find one more file than the table lists, and this paragraph is why.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The hero card's `<figure>` wrapper**: `Card`'s `as` prop accepts `div`, `article`, `section` or `li` (`src/components/ui/card.tsx` line 52) and not `figure`, so the hero card is composed as a plain `<figure>` wrapping `<Card tone=\\\"elevated\\\">`. Do **not** widen spec 0005's `as` union for this one caller. The bare `<figure>` carries no rounded or bordered styling of its own, only the `aria-label` from **AC-9**, so it is not a hand composed container and trips neither **AC-1** nor the `no-restricted-syntax` rule, which matches a `rounded-*` class paired with `border` in one `className` literal.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Exactly one hairline divider exists on the page.\",\"rejected_spans\":[\"A second one means the background alternation was changed without applying spec 0005's adjacency rule.\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The page renders no `\\\"use client\\\"` file. Any future interactivity here opens its own narrow boundary and states why\",\"rejected_spans\":[\"rather than making the page a client component the way the prototype was\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing appears under `working` in the status card that is not `done` in `docs/scope/scope.md`.\",\"rejected_spans\":[\"The page's own About copy makes this a promise, not a preference.\"],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing on the page that cannot work is a link. That covers the two sign in controls and the apply control alike; the header's anchors and the footer are the only real links, and both go somewhere real.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The elevated card idiom appears exactly once on this page, on the hero result card.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The font guard in `opengraph-image.tsx` stays.\",\"rejected_spans\":[\"It looks like a redundant `try`/`catch` around a file read and it is not: it is the only thing standing between a missing font and a silently off brand preview card, because `next/og` falls back to its bundled Geist rather than failing. Removing it does not surface an error, it removes one.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: The page is public and reads nothing. No session check, no Supabase client, no Server Action, no user data of any kind. It renders no personal data, so no compliance scope applies.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Binding rule 6 is untouched: no route handler under `src/app/api/` is added, and the image generator is a metadata file convention, not a data endpoint.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Observability**: No Sentry span.\",\"rejected_spans\":[\"The project's span rule covers operations whose failure rate matters; a static prerender has no runtime failure rate to alert on, and spec 0002 already points the uptime monitor at this page, which is the truer signal.\"],\"known_trap_flags\":[]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: None. `NEXT_PUBLIC_SITE_URL` already exists and is already validated in `src/env.ts`. No new environment variable, no credential, no third party account.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Critical test scenarios**. Each is tagged with where it lives. `automated` means it belongs in the Vitest unit suite and fails in CI. `manual` means it belongs in this spec's `verify.md`, written later by `/check verify`, and no CI job enforces it.\",\"rejected_spans\":[\"because spec 0005 keeps a clean split between what its unit suite can prove and what only a real browser can, and this feature keeps that split\"],\"known_trap_flags\":[]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Structural: exactly one `divider=\\\"hairline\\\"` is passed across the whole composed page, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Structural\"},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Drift guard, with its own vacuousness check: changing any one of the five named tokens in `globals.css` without touching `opengraph-image.tsx` must fail the test, verifies **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Drift guard\"},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Regression: nothing the route renders carries `\\\"use client\\\"`, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Regression\"},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Rhythm and background: each section receives the tier and background this spec assigns, verifies **AC-2**, **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Rhythm and background\"},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` No dead controls: no apply control renders as an anchor, verifies **AC-17**.\",\"rejected_spans\":[\"**Split 2026-08-29 by spec 0007**: the sign in half of this check retires with **AC-7**, because feature 7 turns those two controls into real submits. The apply half stays and still runs.\"],\"known_trap_flags\":[],\"label\":\"No dead controls\"},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`manual` Happy path: the page renders at 1440 and at 320 pixels with no horizontal overflow and the three rhythm tiers measurably distinct in computed style, verifies **AC-2**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`manual` Keyboard: every control is reachable in order with a visible focus ring, and the header's sign in anchor moves focus to the band, verifies **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Keyboard\"},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`manual` Link card: the deployed preview URL unfurls with a real 1200 by 630 image, a title and a description, in at least two clients, verifies **AC-10**, **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Link card\"},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`manual` Honesty, both directions: the status card's `working` list contains nothing the scope still marks `planned`, and its `planned` list contains nothing that has no scope row at all, verifies **AC-8**.\",\"rejected_spans\":[\"Deliberately a human read: the source is prose in `docs/scope/scope.md`, and a test asserting against it would only encode the same reading twice\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Honesty, both directions\"},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Lint: `pnpm lint` passes with `--max-warnings=0`, verifies **AC-1**.\",\"rejected_spans\":[\"which is what actually enforces the no hand composed container rule\"],\"known_trap_flags\":[],\"label\":\"Lint\"},{\"id\":\"derived:41\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Card idioms: exactly one `tone=\\\"elevated\\\"` is rendered on the page, and the comparison and status cards are all `tone=\\\"flat\\\"`, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Card idioms\"},{\"id\":\"derived:42\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Band: the sign in band renders neither a centring nor a narrowing class, verifies **AC-6**.\",\"rejected_spans\":[\"so Tell #7's two removed axes cannot creep back\"],\"known_trap_flags\":[],\"label\":\"Band\"},{\"id\":\"derived:43\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Example label: the hero `<figure>` carries its `aria-label` and the `COPY-2` eyebrow is present, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Example label\"},{\"id\":\"derived:44\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Robots: `layout.tsx` still exports `robots: { index: false, follow: false }`, and no `robots.ts` or `robots.txt` exists anywhere in the repo, verifies **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Robots\"},{\"id\":\"derived:45\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Footer: it renders the lockup and the copyright and nothing between them, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Footer\"},{\"id\":\"derived:46\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`automated` Font licence: the committed `.ttf` has a licence file beside it, verifies **AC-15**.\",\"rejected_spans\":[\"so the binary can never land alone\"],\"known_trap_flags\":[],\"label\":\"Font licence\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"(**AC-7**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"(**AC-9**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"(**AC-11**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"(**AC-13**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"phrase\":\"If `COPY-3` ever changes, this changes with it.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"mention\":\"spec 0005's inventory\"},\"phrase\":\"a base component that spec 0005's inventory does not list\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"only the `aria-label` from **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"trips neither **AC-1** nor the `no-restricted-syntax` rule\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"verifies **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:33\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:34\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:34\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-2**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:35\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:35\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"mention\":\"spec 0007\"},\"phrase\":\"**Split 2026-08-29 by spec 0007**: the sign in half of this check retires with **AC-7**\",\"date\":\"2026-08-29\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-2**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:37\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:38\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:38\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-10**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:39\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:40\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:41\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:42\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:43\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:44\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:45\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:46\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
   "output": {
     "entities": [
       {
         "id": "derived:1",
         "id_source": "derived",
-        "type": "Feature",
-        "span": "GET `/` takes no key inputs, returns the page, is public with no session, and defines no key errors.",
+        "type": "Constraint",
+        "span": "**Data model sketch**: Not applicable. The page persists nothing, reads no table, and holds no state. The result card's contents are fixed illustrative copy that lives in the page's own module, not a fixture loaded from anywhere.",
         "rejected_spans": [],
-        "known_trap_flags": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
         "unclassified_note": null,
         "label": null
       },
       {
         "id": "derived:2",
         "id_source": "derived",
-        "type": "Feature",
-        "span": "The `/opengraph-image` route is GET, public, takes no key inputs, and returns a 1200 by 630 PNG.",
+        "type": "Constraint",
+        "span": "**State transitions**: Not applicable. No entity, no lifecycle.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
@@ -37,13 +50,10 @@
         "id": "derived:3",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "A missing font file throws, naming the file and how to get it; do not remove the guard on the belief that the framework already fails here.",
-        "rejected_spans": [
-          "That is the explicit guard in `opengraph-image.tsx`, not Next.js behaviour: `next/og` bundles `Geist-Regular.ttf` and silently falls back to it, so without the guard the build succeeds and ships an off brand card.",
-          "See that file's own header comment."
-        ],
+        "span": "**API surface**: No new endpoint. The page is a statically prerendered Server Component at `/` in the `(marketing)` group, whose layout checks no session.",
+        "rejected_spans": [],
         "known_trap_flags": [
-          "rationale_boundary_call"
+          "multi_condition_split"
         ],
         "unclassified_note": null,
         "label": null
@@ -52,23 +62,237 @@
         "id": "derived:4",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "Exactly one hairline divider exists on the page.",
+        "span": "Title: `JobHunt`, with a `template` of `%s \u00b7 JobHunt`",
         "rejected_spans": [
-          "A second one means the background alternation was changed without applying spec 0005's adjacency rule."
+          "so later pages inherit the suffix"
         ],
         "known_trap_flags": [
           "rationale_boundary_call"
         ],
         "unclassified_note": null,
-        "label": null
+        "label": "Title"
       },
       {
         "id": "derived:5",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "The page renders no \"use client\" file.",
+        "span": "Description: `Ranks real job openings against your profile and shows which skills matched, which are missing, and why. Not a score you have to take on trust.`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Description"
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "OG image alt: `JobHunt. Shows its work, not just a score. An example match of 8 out of 11 skills.` If `COPY-3` ever changes, this changes with it.",
         "rejected_spans": [
-          "Any future interactivity here opens its own narrow boundary and states why, rather than making the page a client component the way the prototype was."
+          "It describes what the card actually renders (the mark, the `COPY-3` headline, the match chip), because alt text is what a screen reader user gets instead of the image."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "OG image alt"
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The four strings below are user facing product voice rather than technical values. **All four are now final** (written 2026-08-28) and the build uses them verbatim. Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.",
+        "rejected_spans": [
+          "so they were written by the engineer rather than invented here"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-1`, the sign in line** (**AC-7**), shown beside the two provider controls in both the hero and the sign in band. It must say that accounts are not open yet without using an internal feature number. `Sign in isn't live yet. Coming soon with Google and GitHub.`",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "`COPY-1`, the sign in line"
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-2`, the example label** (**AC-9**), the `Text` eyebrow on the hero card and the `<figure>`'s `aria-label`. `Example result`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "`COPY-2`, the example label"
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-3`, the OG image headline** (**AC-11**), the line set in Space Grotesk on the preview card. It may differ from the page's h1. `Shows its work, not just a score.`",
+        "rejected_spans": [
+          "because a link card is read at a glance and the h1 is not"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "`COPY-3`, the OG image headline"
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-4`, the footer copyright** (**AC-13**). `\u00a9 Ghaly Nicolas Jules`, with no year.",
+        "rejected_spans": [
+          "A hard coded year goes stale silently and a year computed at build time makes two builds of the same commit differ, so neither is offered as the default."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "`COPY-4`, the footer copyright"
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Eyebrow placement (Tell #4).** The eyebrow appears only on the two `generous` sections, hero and the reasoning. How it works and about open on their heading alone.",
+        "rejected_spans": [
+          "This turns the eyebrow into a marker of the page's two peaks instead of boilerplate above every section, and it costs nothing."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Eyebrow placement (Tell #4)."
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Decorative chips (Tell #10).** The five `aria-hidden` pills in step 01 reading \"Location / Remote / hybrid / Seniority / Salary / Job type\" are deleted.",
+        "rejected_spans": [
+          "The step's own prose already names those filters, so the pills were texture shaped like UI."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Decorative chips (Tell #10)."
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Prose measure (Weaknesses #7, #8).** All body copy uses the measure `brand-tokens.md` sets (65ch) through `Text`, replacing the prototype's ad hoc `54ch`, `60ch` and `46ch`. The h1 loses `max-w-[16ch]` and wraps on its own.",
+        "rejected_spans": [
+          "since a character count sets the break point by accident rather than by sense."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Prose measure (Weaknesses #7, #8)."
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Hero card internals (Weakness #4).** The two hand drawn `my-5 border-t` rules inside the hero card are replaced by `Card.Header`, `Card.Body` and `Card.Footer`.",
+        "rejected_spans": [
+          "so the card has one border, not five levels of hairline at one weight."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Hero card internals (Weakness #4)."
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Comparison bars (Weaknesses #5, #6).** The \"Most tools\" percentage bar is a different object from `MatchBar` and is drawn to look like one: a single continuous bar, visibly distinct in shape from the segmented match cells, rather than the same height at a different radius. The two cards' bars are no longer expected to align across the gutter.",
+        "rejected_spans": [
+          "because they are no longer the same object."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Comparison bars (Weaknesses #5, #6)."
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Twitter card.** `twitter.card` is set to `summary_large_image` in the page metadata. No separate `twitter-image` file is added: the platform is understood to fall back to `og:image`. That fallback is **inferred, not verified**, so it is checked by hand in the same pass as the unfurl check (see `## Follow-up`).",
+        "rejected_spans": [
+          "and a second generated image would be a second thing to keep in sync for no gain"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Twitter card."
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`Logo` is a base component that spec 0005's inventory does not list, in either its `index.md` table or `src/components/ui/AGENTS.md`. That is deliberate and recorded here. `Logo` earns its place in `src/components/ui/` because it has three consumers on day one (header, footer, image generator) and the application shell will be a fourth.",
+        "rejected_spans": [
+          "spec 0005 parked logo work by the engineer's own constraint, the engineer lifted that constraint during this spec's design conversation",
+          "A later reader comparing that table against the directory will find one more file than the table lists, and this paragraph is why."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The hero card's `<figure>` wrapper**: `Card`'s `as` prop accepts `div`, `article`, `section` or `li` (`src/components/ui/card.tsx` line 52) and not `figure`, so the hero card is composed as a plain `<figure>` wrapping `<Card tone=\"elevated\">`. Do **not** widen spec 0005's `as` union for this one caller. The bare `<figure>` carries no rounded or bordered styling of its own, only the `aria-label` from **AC-9**, so it is not a hand composed container and trips neither **AC-1** nor the `no-restricted-syntax` rule, which matches a `rounded-*` class paired with `border` in one `className` literal.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Exactly one hairline divider exists on the page.",
+        "rejected_spans": [
+          "A second one means the background alternation was changed without applying spec 0005's adjacency rule."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The page renders no `\"use client\"` file. Any future interactivity here opens its own narrow boundary and states why",
+        "rejected_spans": [
+          "rather than making the page a client component the way the prototype was"
         ],
         "known_trap_flags": [
           "rationale_boundary_call"
@@ -77,31 +301,31 @@
         "label": null
       },
       {
-        "id": "derived:6",
+        "id": "derived:22",
         "id_source": "derived",
         "type": "Constraint",
         "span": "Nothing appears under `working` in the status card that is not `done` in `docs/scope/scope.md`.",
         "rejected_spans": [
           "The page's own About copy makes this a promise, not a preference."
         ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:7",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "Nothing on the page that cannot work is a link. That covers the two sign in controls and the apply control alike; the header's anchors and the footer are the only real links, and both go somewhere real.",
-        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:8",
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing on the page that cannot work is a link. That covers the two sign in controls and the apply control alike; the header's anchors and the footer are the only real links, and both go somewhere real.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
         "id_source": "derived",
         "type": "Constraint",
         "span": "The elevated card idiom appears exactly once on this page, on the hero result card.",
@@ -111,222 +335,15 @@
         "label": null
       },
       {
-        "id": "derived:9",
+        "id": "derived:25",
         "id_source": "derived",
         "type": "Constraint",
         "span": "The font guard in `opengraph-image.tsx` stays.",
         "rejected_spans": [
-          "It looks like a redundant try/catch around a file read and it is not: it is the only thing standing between a missing font and a silently off brand preview card, because next/og falls back to its bundled Geist rather than failing.",
-          "Removing it does not surface an error, it removes one."
+          "It looks like a redundant `try`/`catch` around a file read and it is not: it is the only thing standing between a missing font and a silently off brand preview card, because `next/og` falls back to its bundled Geist rather than failing. Removing it does not surface an error, it removes one."
         ],
         "known_trap_flags": [
           "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:10",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The page is public and reads nothing. No session check, no Supabase client, no Server Action, no user data of any kind.",
-        "rejected_spans": [
-          "It renders no personal data, so no compliance scope applies."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:11",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "Binding rule 6 is untouched: no route handler under `src/app/api/` is added, and the image generator is a metadata file convention, not a data endpoint.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:12",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "No Sentry span.",
-        "rejected_spans": [
-          "The project's span rule covers operations whose failure rate matters; a static prerender has no runtime failure rate to alert on, and spec 0002 already points the uptime monitor at this page, which is the truer signal."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:13",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "No new environment variable, no credential, no third party account required; `NEXT_PUBLIC_SITE_URL` already exists and is already validated in `src/env.ts`.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:14",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The eyebrow appears only on the two `generous` sections, hero and the reasoning. How it works and about open on their heading alone.",
-        "rejected_spans": [
-          "This turns the eyebrow into a marker of the page's two peaks instead of boilerplate above every section, and it costs nothing."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Eyebrow placement (Tell #4)"
-      },
-      {
-        "id": "derived:15",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The five `aria-hidden` pills in step 01 reading \"Location / Remote / hybrid / Seniority / Salary / Job type\" are deleted.",
-        "rejected_spans": [
-          "The step's own prose already names those filters, so the pills were texture shaped like UI."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Decorative chips (Tell #10)"
-      },
-      {
-        "id": "derived:16",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "All body copy uses the measure `brand-tokens.md` sets (65ch) through `Text`, replacing the prototype's ad hoc `54ch`, `60ch` and `46ch`. The h1 loses `max-w-[16ch]` and wraps on its own.",
-        "rejected_spans": [
-          "since a character count sets the break point by accident rather than by sense."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Prose measure (Weaknesses #7, #8)"
-      },
-      {
-        "id": "derived:17",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The two hand drawn `my-5 border-t` rules inside the hero card are replaced by `Card.Header`, `Card.Body` and `Card.Footer`.",
-        "rejected_spans": [
-          "so the card has one border, not five levels of hairline at one weight."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Hero card internals (Weakness #4)"
-      },
-      {
-        "id": "derived:18",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The \"Most tools\" percentage bar is a different object from `MatchBar` and is drawn to look like one: a single continuous bar, visibly distinct in shape from the segmented match cells, rather than the same height at a different radius. The two cards' bars are no longer expected to align across the gutter.",
-        "rejected_spans": [
-          "because they are no longer the same object."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Comparison bars (Weaknesses #5, #6)"
-      },
-      {
-        "id": "derived:19",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "`twitter.card` is set to `summary_large_image` in the page metadata. No separate `twitter-image` file is added: the platform is understood to fall back to `og:image`.",
-        "rejected_spans": [
-          "and a second generated image would be a second thing to keep in sync for no gain.",
-          "That fallback is inferred, not verified, so it is checked by hand in the same pass as the unfurl check (see ## Follow-up)."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call",
-          "granularity_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": "Twitter card"
-      },
-      {
-        "id": "derived:20",
-        "id_source": "derived",
-        "type": "Feature",
-        "span": "`Logo` (`variant`: `lockup` | `mark`), in `src/components/ui/logo.tsx`, is net new.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:21",
-        "id_source": "derived",
-        "type": "Feature",
-        "span": "`EntryHeader`, `EntryFooter`, and one module per body section, in `src/features/entry-page/`, are net new, feature local.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:22",
-        "id_source": "derived",
-        "type": "Feature",
-        "span": "The image generator, in `src/app/opengraph-image.tsx`, is net new.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:23",
-        "id_source": "derived",
-        "type": "Consequence",
-        "span": "A later reader comparing that table against the directory will find one more file than the table lists, and this paragraph is why.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:24",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "Do not widen spec 0005's `as` union for this one caller.",
-        "rejected_spans": [
-          "Card's `as` prop accepts `div`, `article`, `section` or `li` (`src/components/ui/card.tsx` line 52) and not `figure`, so the hero card is composed as a plain `<figure>` wrapping `<Card tone=\"elevated\">`."
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:25",
-        "id_source": "derived",
-        "type": "Consequence",
-        "span": "The bare `<figure>` carries no rounded or bordered styling of its own, only the `aria-label` from AC-9, so it is not a hand composed container and trips neither AC-1 nor the `no-restricted-syntax` rule, which matches a `rounded-*` class paired with `border` in one `className` literal.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "granularity_boundary_call"
         ],
         "unclassified_note": null,
         "label": null
@@ -335,12 +352,10 @@
         "id": "derived:26",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "The apply control, on an example listing, renders as an inert `Text`, with no destination.",
-        "rejected_spans": [
-          "because an example listing has none"
-        ],
+        "span": "**Security model**: The page is public and reads nothing. No session check, no Supabase client, no Server Action, no user data of any kind. It renders no personal data, so no compliance scope applies.",
+        "rejected_spans": [],
         "known_trap_flags": [
-          "rationale_boundary_call"
+          "multi_condition_split"
         ],
         "unclassified_note": null,
         "label": null
@@ -348,210 +363,220 @@
       {
         "id": "derived:27",
         "id_source": "derived",
-        "type": "unclassified",
-        "span": "Sign in isn't live yet. Coming soon with Google and GitHub.",
+        "type": "Constraint",
+        "span": "Binding rule 6 is untouched: no route handler under `src/app/api/` is added, and the image generator is a metadata file convention, not a data endpoint.",
         "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
-        "label": "COPY-1atch check flag placeholder"
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
       },
       {
         "id": "derived:28",
         "id_source": "derived",
-        "type": "unclassified",
-        "span": "Example result.",
-        "rejected_spans": [],
+        "type": "Constraint",
+        "span": "**Observability**: No Sentry span.",
+        "rejected_spans": [
+          "The project's span rule covers operations whose failure rate matters; a static prerender has no runtime failure rate to alert on, and spec 0002 already points the uptime monitor at this page, which is the truer signal."
+        ],
         "known_trap_flags": [],
-        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
-        "label": "COPY-2"
+        "unclassified_note": null,
+        "label": null
       },
       {
         "id": "derived:29",
         "id_source": "derived",
-        "type": "unclassified",
-        "span": "Shows its work, not just a score.",
-        "rejected_spans": [
-          "It may differ from the page's h1, because a link card is read at a glance and the h1 is not."
-        ],
+        "type": "Constraint",
+        "span": "**Configuration required**: None. `NEXT_PUBLIC_SITE_URL` already exists and is already validated in `src/env.ts`. No new environment variable, no credential, no third party account.",
+        "rejected_spans": [],
         "known_trap_flags": [],
-        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
-        "label": "COPY-3"
+        "unclassified_note": null,
+        "label": null
       },
       {
         "id": "derived:30",
         "id_source": "derived",
-        "type": "unclassified",
-        "span": "\u00a9 Ghaly Nicolas Jules, with no year.",
+        "type": "Constraint",
+        "span": "**Critical test scenarios**. Each is tagged with where it lives. `automated` means it belongs in the Vitest unit suite and fails in CI. `manual` means it belongs in this spec's `verify.md`, written later by `/check verify`, and no CI job enforces it.",
         "rejected_spans": [
-          "A hard coded year goes stale silently and a year computed at build time makes two builds of the same commit differ, so neither is offered as the default."
+          "because spec 0005 keeps a clean split between what its unit suite can prove and what only a real browser can, and this feature keeps that split"
         ],
         "known_trap_flags": [],
-        "unclassified_note": "Verbatim UI copy content; not a feature, constraint, AC, consequence, follow-up, build step, or test scenario.",
-        "label": "COPY-4"
+        "unclassified_note": null,
+        "label": null
       },
       {
         "id": "derived:31",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Structural: exactly one `divider=\"hairline\"` is passed across the whole composed page. (automated)",
+        "span": "`automated` Structural: exactly one `divider=\"hairline\"` is passed across the whole composed page, verifies **AC-3**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Structural"
       },
       {
         "id": "derived:32",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Drift guard, with its own vacuousness check: changing any one of the five named tokens in `globals.css` without touching `opengraph-image.tsx` must fail the test. (automated)",
+        "span": "`automated` Drift guard, with its own vacuousness check: changing any one of the five named tokens in `globals.css` without touching `opengraph-image.tsx` must fail the test, verifies **AC-16**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Drift guard"
       },
       {
         "id": "derived:33",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Regression: nothing the route renders carries \"use client\". (automated)",
+        "span": "`automated` Regression: nothing the route renders carries `\"use client\"`, verifies **AC-4**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Regression"
       },
       {
         "id": "derived:34",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Rhythm and background: each section receives the tier and background this spec assigns. (automated)",
+        "span": "`automated` Rhythm and background: each section receives the tier and background this spec assigns, verifies **AC-2**, **AC-3**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Rhythm and background"
       },
       {
         "id": "derived:35",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "No dead controls: no apply control renders as an anchor. (automated)",
-        "rejected_spans": [],
+        "span": "`automated` No dead controls: no apply control renders as an anchor, verifies **AC-17**.",
+        "rejected_spans": [
+          "**Split 2026-08-29 by spec 0007**: the sign in half of this check retires with **AC-7**, because feature 7 turns those two controls into real submits. The apply half stays and still runs."
+        ],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "No dead controls"
       },
       {
         "id": "derived:36",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Happy path: the page renders at 1440 and at 320 pixels with no horizontal overflow and the three rhythm tiers measurably distinct in computed style. (manual)",
+        "span": "`manual` Happy path: the page renders at 1440 and at 320 pixels with no horizontal overflow and the three rhythm tiers measurably distinct in computed style, verifies **AC-2**, **AC-14**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Happy path"
       },
       {
         "id": "derived:37",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Keyboard: every control is reachable in order with a visible focus ring, and the header's sign in anchor moves focus to the band. (manual)",
+        "span": "`manual` Keyboard: every control is reachable in order with a visible focus ring, and the header's sign in anchor moves focus to the band, verifies **AC-14**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Keyboard"
       },
       {
         "id": "derived:38",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Link card: the deployed preview URL unfurls with a real 1200 by 630 image, a title and a description, in at least two clients. (manual)",
+        "span": "`manual` Link card: the deployed preview URL unfurls with a real 1200 by 630 image, a title and a description, in at least two clients, verifies **AC-10**, **AC-11**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Link card"
       },
       {
         "id": "derived:39",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Honesty, both directions: the status card's `working` list contains nothing the scope still marks `planned`, and its `planned` list contains nothing that has no scope row at all. (manual)",
+        "span": "`manual` Honesty, both directions: the status card's `working` list contains nothing the scope still marks `planned`, and its `planned` list contains nothing that has no scope row at all, verifies **AC-8**.",
         "rejected_spans": [
-          "Deliberately a human read: the source is prose in `docs/scope/scope.md`, and a test asserting against it would only encode the same reading twice."
+          "Deliberately a human read: the source is prose in `docs/scope/scope.md`, and a test asserting against it would only encode the same reading twice"
         ],
         "known_trap_flags": [
           "rationale_boundary_call"
         ],
         "unclassified_note": null,
-        "label": null
+        "label": "Honesty, both directions"
       },
       {
         "id": "derived:40",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Lint: `pnpm lint` passes with `--max-warnings=0`, which is what actually enforces the no hand composed container rule. (automated)",
-        "rejected_spans": [],
+        "span": "`automated` Lint: `pnpm lint` passes with `--max-warnings=0`, verifies **AC-1**.",
+        "rejected_spans": [
+          "which is what actually enforces the no hand composed container rule"
+        ],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Lint"
       },
       {
         "id": "derived:41",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Card idioms: exactly one `tone=\"elevated\"` is rendered on the page, and the comparison and status cards are all `tone=\"flat\"`. (automated)",
+        "span": "`automated` Card idioms: exactly one `tone=\"elevated\"` is rendered on the page, and the comparison and status cards are all `tone=\"flat\"`, verifies **AC-5**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Card idioms"
       },
       {
         "id": "derived:42",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Band: the sign in band renders neither a centring nor a narrowing class, so Tell #7's two removed axes cannot creep back. (automated)",
-        "rejected_spans": [],
+        "span": "`automated` Band: the sign in band renders neither a centring nor a narrowing class, verifies **AC-6**.",
+        "rejected_spans": [
+          "so Tell #7's two removed axes cannot creep back"
+        ],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Band"
       },
       {
         "id": "derived:43",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Example label: the hero `<figure>` carries its `aria-label` and the `COPY-2` eyebrow is present. (automated)",
+        "span": "`automated` Example label: the hero `<figure>` carries its `aria-label` and the `COPY-2` eyebrow is present, verifies **AC-9**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Example label"
       },
       {
         "id": "derived:44",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Robots: `layout.tsx` still exports `robots: { index: false, follow: false }`, and no `robots.ts` or `robots.txt` exists anywhere in the repo. (automated)",
+        "span": "`automated` Robots: `layout.tsx` still exports `robots: { index: false, follow: false }`, and no `robots.ts` or `robots.txt` exists anywhere in the repo, verifies **AC-12**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Robots"
       },
       {
         "id": "derived:45",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Footer: it renders the lockup and the copyright and nothing between them. (automated)",
+        "span": "`automated` Footer: it renders the lockup and the copyright and nothing between them, verifies **AC-13**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Footer"
       },
       {
         "id": "derived:46",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Font licence: the committed `.ttf` has a licence file beside it, so the binary can never land alone. (automated)",
-        "rejected_spans": [],
+        "span": "`automated` Font licence: the committed `.ttf` has a licence file beside it, verifies **AC-15**.",
+        "rejected_spans": [
+          "so the binary can never land alone"
+        ],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": null
+        "label": "Font licence"
       }
     ],
     "relationships": [
@@ -559,15 +584,16 @@
         "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "derived:1"
+          "id": "derived:7"
         },
         "target": {
           "kind": "reference",
-          "record": "0002",
-          "id": null,
-          "mention": "the uptime monitor from spec 0002 reports on"
+          "record": "0006",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
         },
-        "phrase": "a non 200 is what the uptime monitor from spec 0002 reports on",
+        "phrase": "Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.",
         "date": null,
         "known_trap_flags": []
       },
@@ -575,15 +601,149 @@
         "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "derived:20"
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Changing one later is a copy change, not a spec decision, but **AC-7**, **AC-9**, **AC-11** and **AC-13** each depend on the string being present.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "(**AC-7**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "(**AC-9**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "(**AC-11**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "(**AC-13**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "phrase": "If `COPY-3` ever changes, this changes with it.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
         },
         "target": {
           "kind": "reference",
           "record": "0005",
           "id": null,
-          "mention": "extends spec 0005's component inventory"
+          "label": null,
+          "mention": "spec 0005's inventory"
         },
-        "phrase": "extends",
+        "phrase": "a base component that spec 0005's inventory does not list",
         "date": null,
         "known_trap_flags": []
       },
@@ -596,90 +756,28 @@
         "target": {
           "kind": "reference",
           "record": "0006",
-          "id": null,
-          "mention": "see ## Follow-up"
-        },
-        "phrase": "checked by hand in the same pass as the unfurl check",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "satisfies",
-        "source": {
-          "kind": "local",
-          "id": "derived:27"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0006",
-          "id": "AC-7",
-          "mention": "AC-7"
-        },
-        "phrase": null,
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "satisfies",
-        "source": {
-          "kind": "local",
-          "id": "derived:28"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0006",
           "id": "AC-9",
-          "mention": "AC-9"
+          "label": null,
+          "mention": "**AC-9**"
         },
-        "phrase": null,
+        "phrase": "only the `aria-label` from **AC-9**",
         "date": null,
         "known_trap_flags": []
       },
       {
-        "type": "satisfies",
+        "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "derived:29"
+          "id": "derived:19"
         },
         "target": {
           "kind": "reference",
           "record": "0006",
-          "id": "AC-11",
-          "mention": "AC-11"
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
         },
-        "phrase": null,
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "satisfies",
-        "source": {
-          "kind": "local",
-          "id": "derived:30"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0006",
-          "id": "AC-13",
-          "mention": "AC-13"
-        },
-        "phrase": null,
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "satisfies",
-        "source": {
-          "kind": "local",
-          "id": "derived:26"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0006",
-          "id": "AC-17",
-          "mention": "AC-17"
-        },
-        "phrase": null,
+        "phrase": "trips neither **AC-1** nor the `no-restricted-syntax` rule",
         "date": null,
         "known_trap_flags": []
       },
@@ -693,9 +791,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-3",
-          "mention": "AC-3"
+          "label": null,
+          "mention": "**AC-3**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-3**",
         "date": null,
         "known_trap_flags": []
       },
@@ -709,9 +808,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-16",
-          "mention": "AC-16"
+          "label": null,
+          "mention": "**AC-16**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-16**",
         "date": null,
         "known_trap_flags": []
       },
@@ -725,9 +825,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-4",
-          "mention": "AC-4"
+          "label": null,
+          "mention": "**AC-4**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-4**",
         "date": null,
         "known_trap_flags": []
       },
@@ -741,13 +842,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-2",
-          "mention": "AC-2"
+          "label": null,
+          "mention": "**AC-2**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-2**, **AC-3**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -759,13 +859,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-3",
-          "mention": "AC-3"
+          "label": null,
+          "mention": "**AC-3**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-2**, **AC-3**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -777,9 +876,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-17",
-          "mention": "AC-17"
+          "label": null,
+          "mention": "**AC-17**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-17**",
         "date": null,
         "known_trap_flags": []
       },
@@ -793,28 +893,11 @@
           "kind": "reference",
           "record": "0007",
           "id": null,
-          "mention": "Split 2026-08-29 by spec [0007](../0007-auth-and-per-user-isolation/index.md)"
+          "label": null,
+          "mention": "spec 0007"
         },
-        "phrase": null,
+        "phrase": "**Split 2026-08-29 by spec 0007**: the sign in half of this check retires with **AC-7**",
         "date": "2026-08-29",
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:35"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0006",
-          "id": "AC-7",
-          "mention": "AC-7"
-        },
-        "phrase": "the sign in half of this check retires with AC-7",
-        "date": null,
         "known_trap_flags": [
           "relationship_type_ambiguous"
         ]
@@ -829,13 +912,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-2",
-          "mention": "AC-2"
+          "label": null,
+          "mention": "**AC-2**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-2**, **AC-14**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -847,13 +929,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-14",
-          "mention": "AC-14"
+          "label": null,
+          "mention": "**AC-14**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-2**, **AC-14**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -865,9 +946,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-14",
-          "mention": "AC-14"
+          "label": null,
+          "mention": "**AC-14**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-14**",
         "date": null,
         "known_trap_flags": []
       },
@@ -881,13 +963,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-10",
-          "mention": "AC-10"
+          "label": null,
+          "mention": "**AC-10**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-10**, **AC-11**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -899,13 +980,12 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-11",
-          "mention": "AC-11"
+          "label": null,
+          "mention": "**AC-11**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-10**, **AC-11**",
         "date": null,
-        "known_trap_flags": [
-          "multi_condition_split"
-        ]
+        "known_trap_flags": []
       },
       {
         "type": "verifies",
@@ -917,9 +997,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-8",
-          "mention": "AC-8"
+          "label": null,
+          "mention": "**AC-8**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-8**",
         "date": null,
         "known_trap_flags": []
       },
@@ -933,9 +1014,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-1",
-          "mention": "AC-1"
+          "label": null,
+          "mention": "**AC-1**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-1**",
         "date": null,
         "known_trap_flags": []
       },
@@ -949,9 +1031,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-5",
-          "mention": "AC-5"
+          "label": null,
+          "mention": "**AC-5**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-5**",
         "date": null,
         "known_trap_flags": []
       },
@@ -965,9 +1048,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-6",
-          "mention": "AC-6"
+          "label": null,
+          "mention": "**AC-6**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-6**",
         "date": null,
         "known_trap_flags": []
       },
@@ -981,9 +1065,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-9",
-          "mention": "AC-9"
+          "label": null,
+          "mention": "**AC-9**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-9**",
         "date": null,
         "known_trap_flags": []
       },
@@ -997,9 +1082,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-12",
-          "mention": "AC-12"
+          "label": null,
+          "mention": "**AC-12**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-12**",
         "date": null,
         "known_trap_flags": []
       },
@@ -1013,9 +1099,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-13",
-          "mention": "AC-13"
+          "label": null,
+          "mention": "**AC-13**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-13**",
         "date": null,
         "known_trap_flags": []
       },
@@ -1029,9 +1116,10 @@
           "kind": "reference",
           "record": "0006",
           "id": "AC-15",
-          "mention": "AC-15"
+          "label": null,
+          "mention": "**AC-15**"
         },
-        "phrase": null,
+        "phrase": "verifies **AC-15**",
         "date": null,
         "known_trap_flags": []
       }

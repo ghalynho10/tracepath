@@ -1,0 +1,644 @@
+{
+  "record": "0015",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0002.3",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-09-28T21:45:45+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 9115,
+  "output_tokens": 12704,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "run_id": "1843d4225c1b4f6c8f60289671256508",
+  "artifact_format_version": 2,
+  "unit_sha256": "30101d147a26194f79f7e029c350851dc40249764e172cec45bbb1d67887ebc2",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"`scoreListing()` (`src/features/scoring/score.ts`) is a server function taking `profile: ScoringProfile` (the bounded shape from AC-13) and `listing: Listing`, returning `Result<{ allowed: true; value: FitScore } | { allowed: false; reason: UsageGateReason }>`, with auth inherited from `callTier()`, which verifies the caller through `checkUsageGate()`'s `getClaims()` before any vendor is reached\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"`scoreListings()` (`src/features/scoring/score-listings.ts`) is a server function taking `profile: ScoringProfile` and `listings: readonly Listing[]`, returning `readonly ScoreOutcome[]`, one per listing, order preserved, each element being `scoreListing()`'s own `Result`\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"`FocusRecorder` / `FocusRestorer` (`src/features/search/focus-keeper.tsx`) are client components in one module; `FocusRecorder` takes nothing and is rendered OUTSIDE the Suspense boundary so the reveal never unmounts it, and `FocusRestorer` takes nothing and is rendered INSIDE the resolved content so mounting it IS the signal that the reveal happened; nothing is rendered and the only effect is a `.focus()` call, only under AC-17's four rules\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No call ever scores more than one listing\",\"rejected_spans\":[\"mirrors spec 0012's settled call shape, AC-3\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`notMentionedSkills` never renders under any label implying confirmed absence.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The band is decided by skill and experience alignment only. Stated preferences (`desired_titles`, `desired_locations`, `remote_preference`, `minimum_pay`) and the sponsorship signal are instructed to be context for the written reasoning only, never inputs the model uses to select the band itself.\",\"rejected_spans\":[\"This is instruction level, not structurally enforced (the same limit AC-12's prompt injection defense accepts): nothing in the schema stops the model from letting a preference mismatch influence the band anyway.\",\"See Follow-up for how feature 15's ground truth set is asked to give feature 16's eval harness a real chance to catch it if it happens.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A gate refusal (`{ allowed: false }`) and a vendor failure are never rendered the same way\",\"rejected_spans\":[\"extending spec 0012's own key invariant (refusal and failure are never the same shape) to the per card versus page level split AC-10 and AC-11 add.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Scoring never runs at all when the caller has zero skills and zero work experience entries (AC-7); the gate is checked once before the first `ai_scoring` call, not per listing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A score is never persisted. Every `/search` render that has results and clears the AC-7 gate recomputes every score\",\"rejected_spans\":[\"matching `job_search`'s own existing non caching behavior (spec 0013) and the `usage_cap` volume spec 0012 already seeded on that same assumption.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The page never moves a reader's focus except to give back focus it just took away. Restoration runs only when the reveal orphaned the active element (AC-17); it is never a \\\"focus the results\\\" convenience, and it never fires on a render that had no pending state to begin with (the thin profile gate, an unscored list, the empty state).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The re-rank announcement and the focus restoration are two answers to the same event and must stay consistent: a batch that ranks nothing announces nothing (AC-16) and, having reordered nothing, still restores focus if the reveal orphaned it (AC-17).\",\"rejected_spans\":[\"The second is about the DOM being replaced, which happens on every reveal, not about whether the order changed.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Firing 20 `scoreListing()` calls concurrently does not let the batch spend past `usage_cap`: `check_usage_gate`'s own row lock and `on conflict do update` increment the consumed count inside one transaction (spec 0011), so concurrent calls serialize at that point and cannot overshoot the cap between them.\",\"rejected_spans\":[\"Verified by direct read of the function during this spec's cross check (2026-09-06), not by a new test this spec adds.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`ai_scoring` sets `providerOptions: { openai: { store: false } }` (`src/lib/ai/tiers.ts`), opting out of the Responses API's default 30 day retention of the full request and response.\",\"rejected_spans\":[\"Nothing is lost by it, because scoring is stateless per render and never references a prior response by id, so the retention the default buys has no caller here.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"unclassified_note\":null,\"label\":null},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the diligence scope.md already owes this feature, reading OpenAI's terms on training and retention before this ships against real data, is carried forward in Follow-up.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `scoreListing()` with a real bounded profile and a real fixture listing returns a parsed `FitScore` whose `band` is one of the five defined values\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, refusal: a `usage_cap` row zeroed for `ai_scoring` in a test causes every `scoreListing()` call to return `{ allowed: false, reason }` without reaching the vendor, and the page renders the single page level notice from AC-11, never a per card failure note\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, vendor error: a constructed vendor error classified by the router's own `classify()` surfaces as `external_service_failed`, and the affected card alone shows the \\\"could not be scored\\\" state while a sibling card with a successful outcome still renders its band\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Thin profile: a profile with zero skill rows and zero work experience rows performs zero `ai_scoring` calls for a search that returns listings, and the page renders the unscored list plus the link to `/profile`; a profile with one skill and no work history, or one work history entry and no skills, scores normally\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Truncation handling: building the prompt for a fixture listing whose `descriptionSnippet` ends in \\\"\u2026\\\" includes the explicit truncation caveat from AC-4; this is a unit test on the prompt builder itself, needing no live call\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: `scoreListing()` called with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"inherited from `callTier()`\"},\"phrase\":\"inherited from `callTier()`\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"all inherited unchanged from spec 0012\"},\"phrase\":\"all inherited unchanged from spec 0012\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-17\",\"mention\":\"under AC-17's four rules\"},\"phrase\":\"under AC-17's four rules\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"mirrors spec 0012's settled call shape\"},\"phrase\":\"mirrors spec 0012's settled call shape, AC-3\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-12\",\"mention\":\"the same limit AC-12's prompt injection defense accepts\"},\"phrase\":\"the same limit AC-12's prompt injection defense accepts\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"mention\":\"feature 16's eval harness\"},\"phrase\":\"See Follow-up for how feature 15's ground truth set is asked to give feature 16's eval harness a real chance to catch it if it happens.\",\"known_trap_flags\":[\"embedded_second_claim\",\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"extending spec 0012's own key invariant\"},\"phrase\":\"extending spec 0012's own key invariant (refusal and failure are never the same shape)\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"mention\":\"matching `job_search`'s own existing non caching behavior (spec 0013)\"},\"phrase\":\"matching `job_search`'s own existing non caching behavior (spec 0013)\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"the `usage_cap` volume spec 0012 already seeded on that same assumption\"},\"phrase\":\"the `usage_cap` volume spec 0012 already seeded on that same assumption\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"mention\":\"spec 0011\"},\"phrase\":\"inside one transaction (spec 0011)\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"label\":\"Follow-up first item\",\"mention\":\"(Follow-up, first item)\"},\"phrase\":\"Decided and recorded 2026-09-06 (Follow-up, first item).\",\"date\":\"2026-09-06\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"label\":\"Follow-up\",\"mention\":\"carried forward in Follow-up\"},\"phrase\":\"carried forward in Follow-up\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-1\",\"mention\":\"verifies **AC-1**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[\"multi_condition_split\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-3\",\"mention\":\"verifies **AC-3**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[\"multi_condition_split\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-8\",\"mention\":\"verifies **AC-8**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[\"multi_condition_split\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-11\",\"mention\":\"verifies **AC-11**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[\"multi_condition_split\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-10\",\"mention\":\"verifies **AC-10**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"verifies **AC-7**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-4\",\"mention\":\"verifies **AC-4**\"},\"phrase\":\"verifies\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"mention\":\"inherited unchanged from `checkUsageGate()`\"},\"phrase\":\"inherited unchanged from `checkUsageGate()`\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "`scoreListing()` (`src/features/scoring/score.ts`) is a server function taking `profile: ScoringProfile` (the bounded shape from AC-13) and `listing: Listing`, returning `Result<{ allowed: true; value: FitScore } | { allowed: false; reason: UsageGateReason }>`, with auth inherited from `callTier()`, which verifies the caller through `checkUsageGate()`'s `getClaims()` before any vendor is reached",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "`scoreListings()` (`src/features/scoring/score-listings.ts`) is a server function taking `profile: ScoringProfile` and `listings: readonly Listing[]`, returning `readonly ScoreOutcome[]`, one per listing, order preserved, each element being `scoreListing()`'s own `Result`",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "`FocusRecorder` / `FocusRestorer` (`src/features/search/focus-keeper.tsx`) are client components in one module; `FocusRecorder` takes nothing and is rendered OUTSIDE the Suspense boundary so the reveal never unmounts it, and `FocusRestorer` takes nothing and is rendered INSIDE the resolved content so mounting it IS the signal that the reveal happened; nothing is rendered and the only effect is a `.focus()` call, only under AC-17's four rules",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No call ever scores more than one listing",
+        "rejected_spans": [
+          "mirrors spec 0012's settled call shape, AC-3"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`notMentionedSkills` never renders under any label implying confirmed absence.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The band is decided by skill and experience alignment only. Stated preferences (`desired_titles`, `desired_locations`, `remote_preference`, `minimum_pay`) and the sponsorship signal are instructed to be context for the written reasoning only, never inputs the model uses to select the band itself.",
+        "rejected_spans": [
+          "This is instruction level, not structurally enforced (the same limit AC-12's prompt injection defense accepts): nothing in the schema stops the model from letting a preference mismatch influence the band anyway.",
+          "See Follow-up for how feature 15's ground truth set is asked to give feature 16's eval harness a real chance to catch it if it happens."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A gate refusal (`{ allowed: false }`) and a vendor failure are never rendered the same way",
+        "rejected_spans": [
+          "extending spec 0012's own key invariant (refusal and failure are never the same shape) to the per card versus page level split AC-10 and AC-11 add."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Scoring never runs at all when the caller has zero skills and zero work experience entries (AC-7); the gate is checked once before the first `ai_scoring` call, not per listing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A score is never persisted. Every `/search` render that has results and clears the AC-7 gate recomputes every score",
+        "rejected_spans": [
+          "matching `job_search`'s own existing non caching behavior (spec 0013) and the `usage_cap` volume spec 0012 already seeded on that same assumption."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The page never moves a reader's focus except to give back focus it just took away. Restoration runs only when the reveal orphaned the active element (AC-17); it is never a \"focus the results\" convenience, and it never fires on a render that had no pending state to begin with (the thin profile gate, an unscored list, the empty state).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The re-rank announcement and the focus restoration are two answers to the same event and must stay consistent: a batch that ranks nothing announces nothing (AC-16) and, having reordered nothing, still restores focus if the reveal orphaned it (AC-17).",
+        "rejected_spans": [
+          "The second is about the DOM being replaced, which happens on every reveal, not about whether the order changed."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Firing 20 `scoreListing()` calls concurrently does not let the batch spend past `usage_cap`: `check_usage_gate`'s own row lock and `on conflict do update` increment the consumed count inside one transaction (spec 0011), so concurrent calls serialize at that point and cannot overshoot the cap between them.",
+        "rejected_spans": [
+          "Verified by direct read of the function during this spec's cross check (2026-09-06), not by a new test this spec adds."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`ai_scoring` sets `providerOptions: { openai: { store: false } }` (`src/lib/ai/tiers.ts`), opting out of the Responses API's default 30 day retention of the full request and response.",
+        "rejected_spans": [
+          "Nothing is lost by it, because scoring is stateless per render and never references a prior response by id, so the retention the default buys has no caller here."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the diligence scope.md already owes this feature, reading OpenAI's terms on training and retention before this ships against real data, is carried forward in Follow-up.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `scoreListing()` with a real bounded profile and a real fixture listing returns a parsed `FitScore` whose `band` is one of the five defined values",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, refusal: a `usage_cap` row zeroed for `ai_scoring` in a test causes every `scoreListing()` call to return `{ allowed: false, reason }` without reaching the vendor, and the page renders the single page level notice from AC-11, never a per card failure note",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, vendor error: a constructed vendor error classified by the router's own `classify()` surfaces as `external_service_failed`, and the affected card alone shows the \"could not be scored\" state while a sibling card with a successful outcome still renders its band",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Thin profile: a profile with zero skill rows and zero work experience rows performs zero `ai_scoring` calls for a search that returns listings, and the page renders the unscored list plus the link to `/profile`; a profile with one skill and no work history, or one work history entry and no skills, scores normally",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Truncation handling: building the prompt for a fixture listing whose `descriptionSnippet` ends in \"\u2026\" includes the explicit truncation caveat from AC-4; this is a unit test on the prompt builder itself, needing no live call",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: `scoreListing()` called with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "inherited from `callTier()`"
+        },
+        "phrase": "inherited from `callTier()`",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "all inherited unchanged from spec 0012"
+        },
+        "phrase": "all inherited unchanged from spec 0012",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-17",
+          "label": null,
+          "mention": "under AC-17's four rules"
+        },
+        "phrase": "under AC-17's four rules",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "mirrors spec 0012's settled call shape"
+        },
+        "phrase": "mirrors spec 0012's settled call shape, AC-3",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-12",
+          "label": null,
+          "mention": "the same limit AC-12's prompt injection defense accepts"
+        },
+        "phrase": "the same limit AC-12's prompt injection defense accepts",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": null,
+          "label": null,
+          "mention": "feature 16's eval harness"
+        },
+        "phrase": "See Follow-up for how feature 15's ground truth set is asked to give feature 16's eval harness a real chance to catch it if it happens.",
+        "date": null,
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "extending spec 0012's own key invariant"
+        },
+        "phrase": "extending spec 0012's own key invariant (refusal and failure are never the same shape)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": null,
+          "mention": "matching `job_search`'s own existing non caching behavior (spec 0013)"
+        },
+        "phrase": "matching `job_search`'s own existing non caching behavior (spec 0013)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "the `usage_cap` volume spec 0012 already seeded on that same assumption"
+        },
+        "phrase": "the `usage_cap` volume spec 0012 already seeded on that same assumption",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011"
+        },
+        "phrase": "inside one transaction (spec 0011)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": "Follow-up first item",
+          "mention": "(Follow-up, first item)"
+        },
+        "phrase": "Decided and recorded 2026-09-06 (Follow-up, first item).",
+        "date": "2026-09-06",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": "Follow-up",
+          "mention": "carried forward in Follow-up"
+        },
+        "phrase": "carried forward in Follow-up",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-1",
+          "label": null,
+          "mention": "verifies **AC-1**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-3",
+          "label": null,
+          "mention": "verifies **AC-3**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-8",
+          "label": null,
+          "mention": "verifies **AC-8**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-11",
+          "label": null,
+          "mention": "verifies **AC-11**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": [
+          "multi_condition_split"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-10",
+          "label": null,
+          "mention": "verifies **AC-10**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "verifies **AC-7**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-4",
+          "label": null,
+          "mention": "verifies **AC-4**"
+        },
+        "phrase": "verifies",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "inherited unchanged from `checkUsageGate()`"
+        },
+        "phrase": "inherited unchanged from `checkUsageGate()`",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

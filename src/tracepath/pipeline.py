@@ -31,7 +31,12 @@ from tracepath.extract.compare import (
     relationship_signature,
     route_runs,
 )
-from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
+from tracepath.extract.ids import (
+    IdentifiedOutput,
+    assign_ids,
+    label_binding_rules,
+    locate_output,
+)
 from tracepath.extract.records import Record
 from tracepath.extract.schema import (
     EntityType,
@@ -92,6 +97,8 @@ class UnitResult:
     routed: RoutedUnit
     input_tokens: int
     output_tokens: int
+    cache_creation_input_tokens: int = 0
+    cache_read_input_tokens: int = 0
 
 
 class UnitFailed(Exception):
@@ -130,6 +137,8 @@ def run_unit(
     identified: list[IdentifiedOutput] = []
     input_tokens = 0
     output_tokens = 0
+    cache_written = 0
+    cache_read = 0
 
     def record(run: int, attempt: Attempt) -> None:
         artifacts.append(
@@ -147,7 +156,12 @@ def run_unit(
                 effort=settings.effort or "default",
                 input_tokens=attempt.input_tokens,
                 output_tokens=attempt.output_tokens,
+                run_id=attempt.run_id,
+                raw_response=attempt.raw_response,
+                stop_reason=attempt.stop_reason,
                 error=attempt.error,
+                cache_creation_input_tokens=attempt.cache_creation_input_tokens,
+                cache_read_input_tokens=attempt.cache_read_input_tokens,
             )
         )
 
@@ -162,9 +176,10 @@ def run_unit(
             record(run, attempt)
             input_tokens += attempt.input_tokens
             output_tokens += attempt.output_tokens
-        identified.append(
-            assign_ids(locate_output(unit, outcome.output), unit.record_id, section_slug)
-        )
+            cache_written += attempt.cache_creation_input_tokens
+            cache_read += attempt.cache_read_input_tokens
+        located = label_binding_rules(unit, locate_output(unit, outcome.output))
+        identified.append(assign_ids(located, unit.record_id, section_slug))
     return UnitResult(
         unit=unit,
         section_slug=section_slug,
@@ -173,6 +188,8 @@ def run_unit(
         routed=route_runs(identified),
         input_tokens=input_tokens,
         output_tokens=output_tokens,
+        cache_creation_input_tokens=cache_written,
+        cache_read_input_tokens=cache_read,
     )
 
 
@@ -318,6 +335,40 @@ def review_rows(
     return tuple(rows)
 
 
+class ProvenanceMismatch(Exception):
+    """A unit's runs do not agree on where they came from, so no one provenance fits."""
+
+
+def unit_provenance(result: UnitResult, accepted_by: str) -> Provenance:
+    """Where one unit's accepted items came from, read off that unit's own run artifacts.
+
+    Per unit, not per load: a graph rebuilt from units extracted under different prompt
+    versions must say which version each node came from, or a prompt change cannot be
+    told apart from a stable one. The timestamp is the first settled run's, since
+    `route_runs()` takes the accepted items from that run.
+
+    Raises:
+        ProvenanceMismatch: the unit has no settled run, or its settled runs name more
+            than one model or prompt version. Runs compared across a prompt change say
+            nothing about stability, so stamping the unit with either would be a guess.
+    """
+    settled = sorted((a for a in result.artifacts if a.output is not None), key=lambda a: a.run)
+    where = f"{result.unit.record_id} {result.unit.section}"
+    if not settled:
+        raise ProvenanceMismatch(f"{where}: no settled run to read provenance from")
+    models = sorted({a.model for a in settled})
+    versions = sorted({a.prompt_version for a in settled})
+    if len(models) > 1 or len(versions) > 1:
+        raise ProvenanceMismatch(f"{where}: runs mix models {models} or prompt versions {versions}")
+    first = settled[0]
+    return Provenance(
+        model=first.model,
+        prompt_version=first.prompt_version,
+        extracted_at=first.extracted_at,
+        accepted_by=accepted_by,
+    )
+
+
 def load(
     driver: Driver,
     database: str,
@@ -325,15 +376,25 @@ def load(
     results: Sequence[UnitResult],
     resolution: Resolution,
     commit: str,
-    provenance: Provenance,
+    accepted_by: str,
 ) -> dict[str, int]:
-    """Write records, entities, unresolved nodes and links, asserting every write."""
+    """Write records, entities, unresolved nodes and links, asserting every write.
+
+    Each entity carries its own unit's provenance (`unit_provenance()`). Every unit's
+    provenance is settled before the first write, so a unit that cannot be stamped
+    stops the load before anything reaches the graph.
+
+    Raises:
+        ProvenanceMismatch: a unit's runs disagree on model or prompt version.
+    """
+    provenances = [unit_provenance(result, accepted_by) for result in results]
+
     written: dict[str, int] = {}
     written["records"] = write_records(driver, database, [record_row(r) for r in records])
 
     by_type: dict[EntityType, list[dict[str, object]]] = {}
     part_of: list[dict[str, str]] = []
-    for result in results:
+    for result, provenance in zip(results, provenances, strict=True):
         for entity in result.routed.accepted_entities:
             by_type.setdefault(entity.entity.type, []).append(
                 entity_row(entity, result.unit, commit, provenance)

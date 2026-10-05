@@ -28,12 +28,12 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import Any
 
 import pytest
 
-from tracepath.artifacts import RunArtifact, build_artifact
+from tracepath.artifacts import RunArtifact, artifact_payload, build_artifact
 from tracepath.config import AnthropicSettings
 from tracepath.extract.client import Attempt, ExtractionFailed, RunOutcome
 from tracepath.extract.schema import ExtractionOutput
@@ -142,7 +142,15 @@ def test_the_calibration_writes_an_artifact_per_attempt_rather_than_raising_type
         EXPERIMENTS / "0002-effort-low-fidelity" / "calibrate_effort.py", "exp0002"
     )
     settled = RunOutcome(
-        attempts=(Attempt(number=1, input_tokens=4211, output_tokens=9012, output=an_output()),)
+        attempts=(
+            Attempt(
+                number=1,
+                run_id="test-run",
+                input_tokens=4211,
+                output_tokens=9012,
+                output=an_output(),
+            ),
+        )
     )
 
     monkeypatch.setattr(script, "run_with_retry", lambda *a, **k: settled)
@@ -171,8 +179,20 @@ def test_a_calibration_that_fails_still_writes_every_attempt_it_paid_for(
         EXPERIMENTS / "0002-effort-low-fidelity" / "calibrate_effort.py", "exp0002_fail"
     )
     attempts = (
-        Attempt(number=1, input_tokens=4211, output_tokens=64000, error="malformed output"),
-        Attempt(number=2, input_tokens=4211, output_tokens=63000, error="malformed output"),
+        Attempt(
+            number=1,
+            run_id="test-run",
+            input_tokens=4211,
+            output_tokens=64000,
+            error="malformed output",
+        ),
+        Attempt(
+            number=2,
+            run_id="test-run",
+            input_tokens=4211,
+            output_tokens=63000,
+            error="malformed output",
+        ),
     )
 
     def fails(*args: Any, **kwargs: Any) -> RunOutcome:
@@ -193,3 +213,373 @@ def test_a_calibration_that_fails_still_writes_every_attempt_it_paid_for(
         for p in sorted((tmp_path / "effort-medium").rglob("*.json"))
     ]
     assert costs == [64000, 63000], "each attempt's own cost, never a running total"
+
+
+# `experiments/0005-held-out-prompt-examples/baseline_0021.py`, which calls `run_unit()`
+# and moves the unit's committed runs aside first (spec 0003, AC-13).
+
+
+def baseline_script() -> ModuleType:
+    return load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "baseline_0021.py", "exp0005_baseline"
+    )
+
+
+def test_the_baseline_moves_the_committed_runs_aside_before_a_failed_call_writes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A failed run writes into the unit's directory, so the old runs must be gone first."""
+    script = baseline_script()
+    unit, slug = script.target()
+    committed = tmp_path / "artifacts" / "runs" / "0021" / slug
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text('{"prompt_version": "0002.2"}\n')
+    lost = (an_artifact(unit, run=1, attempt=1), an_artifact(unit, run=1, attempt=2))
+
+    def fails(*args: Any, **kwargs: Any) -> None:
+        raise UnitFailed("run 1 failed again after its retry", lost)
+
+    monkeypatch.setattr(script, "run_unit", fails)
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    # The script ran once, under `0002.3`, before the prompt moved on; pin it back.
+    monkeypatch.setattr(script, "PROMPT_VERSION", script.BASELINE_PROMPT)
+
+    with pytest.raises(UnitFailed):
+        script.main()
+
+    moved = tmp_path / script.SUPERSEDED / "0021" / slug
+    assert json.loads((moved / "run-1.json").read_text()) == {"prompt_version": "0002.2"}
+    assert (moved / "NOTE.md").read_text().startswith("Prompt `0002.2` runs")
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json", "failed-run-1-attempt-2.json"]
+
+
+def test_the_baseline_refuses_to_run_under_any_prompt_but_the_one_it_measures(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Run after the prompt bump, it would measure the new prompt and call it the before."""
+    script = baseline_script()
+    committed = tmp_path / "artifacts" / "runs" / "0021" / "requirements"
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text("{}\n")
+    monkeypatch.setattr(script, "PROMPT_VERSION", "0003.0")
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match=r"0003\.0"):
+        script.main()
+
+    assert (committed / "run-1.json").exists()
+
+
+# `experiments/0005-held-out-prompt-examples/run_units.py`, the runner for every paid
+# run of experiment 0005 after the baseline.
+
+
+def units_script() -> ModuleType:
+    return load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "run_units.py", "exp0005_run_units"
+    )
+
+
+def test_the_runner_refuses_a_prompt_version_it_was_not_asked_to_measure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = units_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(SystemExit, match=r"not 0002\.3"):
+        script.main(["0002.3", "before", "0013:Feature design"])
+
+
+def test_the_runner_files_old_runs_under_their_own_prompt_before_a_failed_call(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = units_script()
+    unit, slug = script.target("0013:Feature design")
+    old = an_artifact(unit, run=1, attempt=1)
+    committed = tmp_path / "artifacts" / "runs" / "0013" / slug
+    committed.mkdir(parents=True)
+    (committed / "run-1.json").write_text(
+        json.dumps({**artifact_payload(old), "output": json.loads(an_output().model_dump_json())})
+        + "\n"
+    )
+    lost = (an_artifact(unit, run=1, attempt=1),)
+
+    def fails(*args: Any, **kwargs: Any) -> None:
+        raise UnitFailed("run 1 failed again after its retry", lost)
+
+    monkeypatch.setattr(script, "run_unit", fails)
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+
+    with pytest.raises(UnitFailed):
+        script.main([script.PROMPT_VERSION, "after", "0013:Feature design"])
+
+    moved = tmp_path / "artifacts" / "superseded" / "2026-09-24-prompt-0002.2" / "0013" / slug
+    assert (moved / "run-1.json").exists()
+    assert (moved / "NOTE.md").exists()
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json"]
+
+
+def test_the_runner_prices_every_kind_of_token_at_its_own_rate() -> None:
+    script = units_script()
+    result = SimpleNamespace(
+        input_tokens=1_000_000,
+        output_tokens=1_000_000,
+        cache_creation_input_tokens=1_000_000,
+        cache_read_input_tokens=1_000_000,
+    )
+
+    assert script.cost(result) == 2.0 + 10.0 + 4.0 + 0.2
+
+
+# `experiments/0005-held-out-prompt-examples/report.py`, which builds the ruling sheet
+# from committed artifacts with no API call.
+
+
+def test_a_link_shows_its_own_source_paragraph_not_the_first_match_of_a_repeated_phrase() -> None:
+    """The defect: "revised 2026-09-15" recurs in `0021 ## Requirements`, first inside AC-2.
+
+    Locating by that phrase put AC-2's paragraph under a link whose source is AC-7's old
+    version, so the engineer would have ruled on the wrong text. The source entity's own
+    location decides first; a phrase is used only when it occurs once in the unit.
+    """
+    script = load_script(
+        EXPERIMENTS / "0005-held-out-prompt-examples" / "report.py", "exp0005_report"
+    )
+    # Experiment 0005's `0003.0` after runs, moved aside by experiment 0008's rerun.
+    moved = ROOT / "artifacts" / "superseded" / "2026-10-04-prompt-0003.0"
+    runs = script.runs_in(moved / "0021" / "requirements")
+    unit = script.unit_for(runs[0], script.SNAPSHOT)
+    links = script.distinct_links(script.identify(runs))
+    (link,) = [
+        link
+        for link in links
+        if link.relationship.phrase == "revised 2026-09-15"
+        and getattr(link.relationship.source, "id", None) == "0021#requirements:7"
+    ]
+    assert unit.text.count("revised 2026-09-15") > 1
+
+    text = script.source_text(unit, link)
+
+    assert text.startswith("- **AC-7**:")
+    assert "**AC-2**" not in text
+
+
+# `experiments/0008-type-coverage-rerun/run_coverage.py`, the paid type coverage rerun.
+# Its safeguards are proven here with a fake client before any call is paid for.
+
+
+def coverage_script() -> ModuleType:
+    """The type coverage rerun's script, under its own module name."""
+    return load_script(
+        EXPERIMENTS / "0008-type-coverage-rerun" / "run_coverage.py", "exp0008_run_coverage"
+    )
+
+
+class FakeStream:
+    """A stream that either drops mid way or returns one settled response."""
+
+    def __init__(self, response: object | None) -> None:
+        self.response = response
+        self.current_message_snapshot = None
+
+    def __enter__(self) -> "FakeStream":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def get_final_message(self) -> object:
+        if self.response is None:
+            import httpx2
+
+            raise httpx2.RemoteProtocolError("peer closed connection mid body")
+        return self.response
+
+
+def fake_client(response: object | None) -> Any:
+    """A client whose every call streams `response`, or drops when it is `None`."""
+    return SimpleNamespace(messages=SimpleNamespace(stream=lambda **_: FakeStream(response)))
+
+
+def a_response(cache_read: int) -> SimpleNamespace:
+    """One settled response, its usage reading `cache_read` tokens from the cache."""
+    usage = SimpleNamespace(
+        input_tokens=4000,
+        output_tokens=20000,
+        cache_creation_input_tokens=0,
+        cache_read_input_tokens=cache_read,
+    )
+    return SimpleNamespace(
+        parsed_output=an_output(),
+        usage=usage,
+        content=[SimpleNamespace(type="text", text="{}")],
+        stop_reason="end_turn",
+    )
+
+
+def test_a_connection_dropped_mid_stream_writes_a_failed_attempt_counted_flat(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(None), settings_for())
+    runner.calls = 5  # past the cache check, so only the drop is under test
+
+    with pytest.raises(script.Stop, match="failed after its retry"):
+        runner.run_unit(unit, slug)
+
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["failed-run-1-attempt-1.json", "failed-run-1-attempt-2.json"]
+    assert runner.total == pytest.approx(2 * script.FAILED_ATTEMPT_USD)
+
+
+def test_the_run_stops_after_a_second_call_that_reads_no_cache(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(a_response(cache_read=0)), settings_for())
+
+    with pytest.raises(script.Stop, match="cache"):
+        runner.run_unit(unit, slug)
+
+    written = sorted(p.name for p in (tmp_path / "artifacts" / "runs").rglob("*.json"))
+    assert written == ["run-1.json", "run-2.json"]
+
+
+def test_a_second_call_that_reads_the_cache_lets_the_unit_finish(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    runner = script.Runner(fake_client(a_response(cache_read=57_494)), settings_for())
+
+    result = runner.run_unit(unit, slug)
+
+    assert len(result.identified) == 3
+    assert runner.calls == 3
+
+
+def test_a_unit_whose_wider_figure_would_pass_the_ceiling_never_starts(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    script = coverage_script()
+    names = []
+    for key in script.UNITS:
+        unit, _ = script.target(key)
+        names.append(f"{unit.record_id} {unit.section}")
+    monkeypatch.setattr(
+        script, "budgets", lambda: {n: (1.0, script.CEILING_USD + 0.01) for n in names}
+    )
+    monkeypatch.setattr(script, "load_anthropic_settings", settings_for)
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    monkeypatch.setattr(script, "HERE", tmp_path)
+
+    def never(*args: object, **kwargs: object) -> None:
+        raise AssertionError("no call may be made")
+
+    monkeypatch.setattr(script, "call_once", never)
+
+    script.main([script.PROMPT_VERSION])
+
+    assert "Stopping here" in capsys.readouterr().out
+    assert not (tmp_path / "artifacts").exists()
+
+
+def test_the_raised_units_wider_figures_keep_the_total_inside_the_ceiling() -> None:
+    script = coverage_script()
+
+    figures = script.budgets()
+
+    assert figures["0006 Feature design"][1] == pytest.approx(1.6576, abs=1e-4)
+    assert sum(wider for _, wider in figures.values()) <= script.CEILING_USD
+
+
+def test_a_resumed_unit_keeps_its_settled_run_and_continues_the_failed_one(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = coverage_script()
+    monkeypatch.setattr(script, "ROOT", tmp_path)
+    unit, slug = script.target("0013:Feature design")
+    folder = tmp_path / "artifacts" / "runs" / "0013" / slug
+    folder.mkdir(parents=True)
+    settled = build_artifact(
+        unit=unit,
+        section_slug=slug,
+        run=1,
+        attempt=1,
+        output=an_output(),
+        model="claude-sonnet-5",
+        prompt_version=script.PROMPT_VERSION,
+        commit="2e40bcf",
+        extracted_at="2026-10-04T00:00:00+00:00",
+        max_output_tokens=64000,
+        effort="medium",
+        input_tokens=4000,
+        output_tokens=20000,
+    )
+    (folder / "run-1.json").write_text(json.dumps(artifact_payload(settled)) + "\n")
+    for attempt in (1, 2):
+        lost = build_artifact(
+            unit=unit,
+            section_slug=slug,
+            run=2,
+            attempt=attempt,
+            output=None,
+            model="claude-sonnet-5",
+            prompt_version=script.PROMPT_VERSION,
+            commit="2e40bcf",
+            extracted_at="2026-10-04T00:00:00+00:00",
+            max_output_tokens=64000,
+            effort="medium",
+            input_tokens=4000,
+            output_tokens=2,
+            error="did not satisfy the schema",
+        )
+        name = f"failed-run-2-attempt-{attempt}.json"
+        (folder / name).write_text(json.dumps(artifact_payload(lost)) + "\n")
+    runner = script.Runner(fake_client(a_response(cache_read=57_494)), settings_for())
+
+    result = runner.run_unit(unit, slug, script.already_written("0013", slug))
+
+    assert len(result.identified) == 3
+    assert runner.calls == 2
+    assert sorted(p.name for p in folder.glob("*.json")) == [
+        "failed-run-2-attempt-1.json",
+        "failed-run-2-attempt-2.json",
+        "run-1.json",
+        "run-2.json",
+        "run-3.json",
+    ]
+    assert script.read_run(folder / "run-2.json").attempt == 3
+
+
+# `experiments/0006-accuracy-bar-recheck/prepare_blind_reread.py`: a re-marked blind
+# sheet is the engineer's evidence, so a rerun refuses rather than writing over it.
+
+
+def test_the_blind_reread_refuses_to_overwrite_a_sheet_the_engineer_re_marked(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    script = load_script(
+        EXPERIMENTS / "0006-accuracy-bar-recheck" / "prepare_blind_reread.py",
+        "exp0006_prepare_blind_reread",
+    )
+    marked = tmp_path / "blind-reread.md"
+    marked.write_text("## Item 1\n\n- [x] agree · satisfies · written by 3 of 3 runs\n")
+    before = marked.read_bytes()
+    monkeypatch.setattr(script, "BLIND", marked)
+    monkeypatch.setattr(script, "ANSWERS", tmp_path / "blind-reread-answers.md")
+
+    with pytest.raises(SystemExit, match="already carries a ruling"):
+        script.build()
+
+    assert marked.read_bytes() == before
+    assert not (tmp_path / "blind-reread-answers.md").exists()
