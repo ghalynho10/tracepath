@@ -57,9 +57,10 @@ class RunArtifact:
       because an artifact that only exists for calls that succeeded is exactly what
       made the first 21 call run's cost unrecoverable.
     * `error` says why, so a failed artifact is a record rather than a blank.
-    * `input_tokens` and `output_tokens` are null only on an artifact written before
-      the amendment that added them, where the numbers are unrecoverable. Null there
-      means unmeasured, and the pipeline never writes one.
+    * `input_tokens` and `output_tokens` are null when unmeasured: on an artifact
+      written before the amendment that added them, where the numbers are
+      unrecoverable, and on a call whose connection dropped before the API reported
+      that count. A zero there would claim a measurement that was never made.
 
     The two cache counts are the system prompt written to the prompt cache and read
     from it, apart from `input_tokens` because each bills at its own rate (spec 0003,
@@ -118,8 +119,8 @@ def build_artifact(
     extracted_at: str,
     max_output_tokens: int,
     effort: str,
-    input_tokens: int,
-    output_tokens: int,
+    input_tokens: int | None,
+    output_tokens: int | None,
     attempt: int = 1,
     run_id: str | None = None,
     raw_response: str | None = None,

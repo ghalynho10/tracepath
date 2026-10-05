@@ -17,9 +17,11 @@ from dataclasses import dataclass
 from typing import Literal, cast
 
 import anthropic
+import httpx2
 from anthropic.types import (
     ContentBlock,
     JSONOutputFormatParam,
+    Message,
     OutputConfigParam,
     TextBlockParam,
     Usage,
@@ -269,6 +271,8 @@ class Attempt:
     unmeasured. Usage counts **this attempt alone**, never a running total.
     `input_tokens` is the uncached input only; the cached system prompt is counted
     apart, as written to the cache or read from it, because each bills at its own rate.
+    Either token count is null when the connection dropped before the API reported it:
+    unmeasured, not zero.
 
     `run_id` is a fresh identifier minted for this one call, distinct from `number`
     (the retry accounting within a run) and from `attempt` (`pipeline.py`'s own count):
@@ -280,8 +284,8 @@ class Attempt:
     """
 
     number: int
-    input_tokens: int
-    output_tokens: int
+    input_tokens: int | None
+    output_tokens: int | None
     run_id: str
     output: ExtractionOutput | None = None
     error: str | None = None
@@ -329,24 +333,24 @@ class RunOutcome:
         return settled
 
     @property
-    def input_tokens(self) -> int:
+    def input_tokens(self) -> int | None:
         """What the settling attempt read, alone."""
         return self.attempts[-1].input_tokens if self.attempts else 0
 
     @property
-    def output_tokens(self) -> int:
+    def output_tokens(self) -> int | None:
         """What the settling attempt wrote, alone."""
         return self.attempts[-1].output_tokens if self.attempts else 0
 
     @property
     def wasted_input_tokens(self) -> int:
-        """What every attempt before the settling one read."""
-        return sum(attempt.input_tokens for attempt in self.attempts[:-1])
+        """What every attempt before the settling one read, where it was measured."""
+        return sum(attempt.input_tokens or 0 for attempt in self.attempts[:-1])
 
     @property
     def wasted_output_tokens(self) -> int:
-        """What every attempt before the settling one wrote."""
-        return sum(attempt.output_tokens for attempt in self.attempts[:-1])
+        """What every attempt before the settling one wrote, where it was measured."""
+        return sum(attempt.output_tokens or 0 for attempt in self.attempts[:-1])
 
 
 @dataclass(frozen=True)
@@ -424,6 +428,36 @@ def _attempt_from_usage(
     )
 
 
+def _dropped_attempt(number: int, message: str, snapshot: Message | None) -> Attempt:
+    """A call whose connection dropped, with only the usage that had arrived.
+
+    `message_start` reports the input and cache counts, so they are real once it has
+    arrived. The output count is final only once `message_delta` has, which also sets
+    the stop reason; before that it is `message_start`'s placeholder, so it stays null.
+    With no snapshot at all, nothing was reported and both counts are null.
+    """
+    if snapshot is None:
+        return Attempt(
+            number=number,
+            input_tokens=None,
+            output_tokens=None,
+            run_id=uuid.uuid4().hex,
+            error=message,
+        )
+    usage = snapshot.usage
+    return Attempt(
+        number=number,
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens if snapshot.stop_reason is not None else None,
+        run_id=uuid.uuid4().hex,
+        error=message,
+        cache_creation_input_tokens=usage.cache_creation_input_tokens or 0,
+        cache_read_input_tokens=usage.cache_read_input_tokens or 0,
+        raw_response=_raw_text(snapshot.content),
+        stop_reason=snapshot.stop_reason,
+    )
+
+
 def output_format() -> JSONOutputFormatParam:
     """The output schema exactly as the SDK builds it from `output_format=ExtractionOutput`.
 
@@ -453,9 +487,9 @@ def extract_once(
     """Make one extraction call and return it as an attempt carrying its token usage.
 
     Raises:
-        ExtractionFailed: the call failed, or its output did not satisfy the schema.
-            The exception carries this attempt, usage included, so the caller can
-            still write its artifact.
+        ExtractionFailed: the call failed, its connection dropped mid stream, or its
+            output did not satisfy the schema. The exception carries this attempt,
+            usage included, so the caller can still write its artifact.
     """
     # The schema is the one the SDK builds from `output_format` (`output_format()`): the
     # models generate a discriminated union, which Pydantic renders as `oneOf`, and the
@@ -473,7 +507,22 @@ def extract_once(
             messages=[{"role": "user", "content": user_prompt(unit)}],
             output_config=config,
         ) as stream:
-            response = stream.get_final_message()
+            try:
+                response = stream.get_final_message()
+            except httpx2.TransportError as exc:
+                # The SDK wraps a transport error as `APIConnectionError` only while it
+                # sends the request; one that breaks the response body arrives raw.
+                # Recorded as a failed attempt, so the run's one retry covers it.
+                try:
+                    snapshot: Message | None = stream.current_message_snapshot
+                except AssertionError:  # the SDK holds none before `message_start`
+                    snapshot = None
+                message = (
+                    f"{unit.record_id} {unit.section}: the connection dropped mid stream ({exc})"
+                )
+                raise ExtractionFailed(
+                    message, (_dropped_attempt(number, message, snapshot),)
+                ) from exc
     except anthropic.APIError as exc:
         # Nothing came back, so the API reported no usage to record. Zero here means
         # "nothing was billed that we were told about", and the error says why.
