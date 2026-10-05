@@ -72,7 +72,7 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
 
 ### 5. First traced chain · in progress
 The walking skeleton. Take a few hand picked records, match them by explicit identifiers only, store them, and walk a chain. The terminal prints the answer to one eval question, with each link citing its record. Every layer is real, and the scope is narrow.
-**Done when:** one eval question whose answer spans three records returns that chain in the terminal, each link cites its source record, and running it again gives the same chain.
+**Done when:** one eval question whose answer spans two or more Records returns that chain in the terminal, each link cites its source record, and running it again gives the same chain. _Reworded 2026-10-05 from "three records": "record" means a Record node (spec 0002), and question 3, the one chosen for held out reasons, spans two, spec 0002 and spec 0007. See spec [0004](../specs/0004-first-traced-chain/index.md) AC-2a and AC-2b._
 **Before it** (spec 0002's vocabulary revisit Follow up, `8bcd9df`, decided 2026-10-04): the only revisit owed before this feature is ruling the type of experiment 0008's one `0006 ## Feature design` sentence (typed `Consequence` in run 1 only; `0006` is on no eval chain), with the ruling added to feature 13's evidence. The types on the chosen question's chain are not checked beforehand, and no prompt, rule or type change is made for any eval question. This feature reports what it finds as it runs.
 spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath/` (`traverse/`, `graph/read.py`, `report.py`, `cli.py`)
 - [x] Design it (spec): `/architect first traced chain`
@@ -90,6 +90,7 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
 ### 6. Eval runner
 One small script that runs the five eval questions and compares each returned chain to its expected chain. From here on, every later slice is measured by it.
 **Done when:** one command prints pass or fail per question with the difference shown, and the slice 1 question passes.
+**Carried from spec [0004](../specs/0004-first-traced-chain/index.md) (2026-10-05):** apply its locked rules unchanged to all five questions (start rule, matching rule, reason codes). Question 4 has no `trace` list and question 5's first entry is not a `spec NNNN AC-N` item, so decide how those two start. Question 5 passes through a feature row, and `pipeline.load()` writes no `SPECIFIED_BY` or feature `PART_OF` links yet. Spec 0007's two `Build plan` units share a section name, which `unit_for()` cannot tell apart.
 - [ ] Build it: `/develop eval runner`
 
 ## Slice 3: Name resolution
@@ -105,6 +106,7 @@ Match records that name the same thing by number, nickname, or file name, so a c
 Follow supersession, amendment, and correction correctly. A fact that was later replaced must never come back as current.
 **Done when:** a chain that crosses a superseded or corrected record shows the replacement as current and marks the older one as history.
 **Known risk, recorded 2026-09-23 from the first real extraction runs:** extraction can keep a struck claim and lose its replacement, storing both as one span marked struck, so the current fact arrives already labelled obsolete. Measured on bullet 3 of spec 0012's `## Consequences`, 1 of 3 runs at `medium` effort and 2 of 3 at `low`. Only run disagreement caught it, which is not a guarantee. This row's Done when must hold against that input, not just against a correctly split one. See spec [0002](../specs/0002-data-model/index.md) `## Consequences` and [experiment 0002](../../experiments/0002-effort-low-fidelity/README.md).
+**Handoff from spec [0004](../specs/0004-first-traced-chain/index.md) (2026-10-05):** the first walk stops at a whole Record and prints only the stored `struck` flag. Finding the replacement inside a Record that a supersession link lands on, and showing it as current, is this feature's job.
 - [ ] Design it (spec): `/architect history aware traversal`
 
 ## Slice 5: Whole corpus
