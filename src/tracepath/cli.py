@@ -20,6 +20,7 @@ from tracepath.config import SettingsInvalid, load_neo4j_settings
 from tracepath.extract.records import RecordError
 from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
+from tracepath.graph.read import read_graph
 from tracepath.pipeline import (
     ProvenanceMismatch,
     collapsed_links,
@@ -30,6 +31,9 @@ from tracepath.pipeline import (
     unit_provenance,
 )
 from tracepath.rebuild import RebuildFailed, committed_units, partial_units, records_for_units
+from tracepath.traverse.graph_slice import SliceError
+from tracepath.traverse.render import render_chain
+from tracepath.traverse.walk import StartNotInGraph, walk
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 console = Console()
@@ -181,3 +185,25 @@ def load_graph(
             "settled runs of 3, so it is not extracted."
         )
     _say(f"Build manifest: {path.relative_to(base).as_posix()}")
+
+
+@app.command()
+def trace(
+    start: str = typer.Argument(
+        ..., help="A canonical id: an entity, such as 0012/AC-3, or a record."
+    ),
+) -> None:
+    """Walk the chain from one item and print every step, each citing its record.
+
+    Breadth first along the seven typed links, both ways, at most three hops. A Record
+    or Unresolved node is printed and not expanded. Reads the graph only.
+    """
+    try:
+        settings = load_neo4j_settings()
+        with connect(settings) as driver:
+            graph = read_graph(driver, settings.database)
+        chain = walk(graph, start)
+    except (SettingsInvalid, GraphUnavailable, SliceError, StartNotInGraph) as exc:
+        _fail(str(exc))
+    for line in render_chain(chain):
+        _say(line)
