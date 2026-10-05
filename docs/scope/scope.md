@@ -76,12 +76,12 @@ The walking skeleton. Take a few hand picked records, match them by explicit ide
 **Before it** (spec 0002's vocabulary revisit Follow up, `8bcd9df`, decided 2026-10-04): the only revisit owed before this feature is ruling the type of experiment 0008's one `0006 ## Feature design` sentence (typed `Consequence` in run 1 only; `0006` is on no eval chain), with the ruling added to feature 13's evidence. The types on the chosen question's chain are not checked beforehand, and no prompt, rule or type change is made for any eval question. This feature reports what it finds as it runs.
 spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath/` (`traverse/`, `graph/read.py`, `report.py`, `cli.py`)
 - [x] Design it (spec): `/architect first traced chain`
-- [ ] Build it: `/develop first traced chain`
+- [x] Build it: `/develop first traced chain`
   - [x] `load` command, link provenance, `file_line` and the build manifest, tested over the 14 committed units with no API call (AC-15 to AC-19, AC-50, AC-51)
   - [x] The walk, its Cypher read and the fixture graph tests, then `trace START` smoke tested away from specs 0002 and 0007 (AC-20 to AC-33)
   - [x] `extract` with its error handling, collision preflight, estimate, ceiling and per attempt writes, tested with a fake client (AC-3 to AC-14, AC-48, AC-49)
   - [x] The report step, the only reader of `eval/` (AC-34 to AC-41, AC-52)
-  - [ ] Gate, then the paid run on question 3's four sections and the recorded result in `experiments/0009-first-traced-chain/` (AC-41 to AC-47, AC-53, AC-54). The engineer approves the measured estimate and a ceiling first; `src/` is committed before the first run artifact
+  - [x] Gate, then the paid run on question 3's four sections and the recorded result in `experiments/0009-first-traced-chain/` (AC-41 to AC-47, AC-53, AC-54). The engineer approves the measured estimate and a ceiling first; `src/` is committed before the first run artifact
 - [ ] Verify it: `/check verify first traced chain`
 - [ ] Test it: `/test first traced chain`
 
