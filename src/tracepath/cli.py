@@ -51,10 +51,24 @@ from tracepath.pipeline import (
     review_rows,
     unit_provenance,
 )
-from tracepath.rebuild import RebuildFailed, committed_units, partial_units, records_for_units
+from tracepath.rebuild import (
+    RebuildFailed,
+    committed_units,
+    partial_units,
+    records_for_units,
+    settled_run_counts,
+)
+from tracepath.report import (
+    EVAL_FILE,
+    EvalEntryUnusable,
+    holding_units,
+    read_question,
+    report_lines,
+    score,
+)
 from tracepath.traverse.graph_slice import SliceError
 from tracepath.traverse.render import render_chain
-from tracepath.traverse.walk import StartNotInGraph, walk
+from tracepath.traverse.walk import Chain, StartNotInGraph, walk
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 console = Console()
@@ -210,24 +224,71 @@ def load_graph(
 
 @app.command()
 def trace(
-    start: str = typer.Argument(
-        ..., help="A canonical id: an entity, such as 0012/AC-3, or a record."
+    start: str | None = typer.Argument(
+        None, help="A canonical id: an entity, such as 0012/AC-3, or a record."
     ),
+    eval_question: int | None = typer.Option(
+        None,
+        "--eval",
+        help="Score the chain of eval question N; its start comes from the eval set.",
+    ),
+    eval_file: str = typer.Option(
+        str(EVAL_FILE), "--eval-file", help="The eval set, relative to --root."
+    ),
+    root: str = typer.Option(".", "--root", help="The repository root to read."),
+    snapshot: str = typer.Option(
+        "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
+    ),
+    commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
 ) -> None:
     """Walk the chain from one item and print every step, each citing its record.
 
     Breadth first along the seven typed links, both ways, at most three hops. A Record
-    or Unresolved node is printed and not expanded. Reads the graph only.
+    or Unresolved node is printed and not expanded. With `--eval N`, the start is
+    question N's first trace entry, and the chain is then scored against its expected
+    items. The walk never reads the eval set; only the scoring after it does.
     """
+    if (start is None) == (eval_question is None):
+        _fail("give one START id or --eval N, not both and not neither.")
+    base = Path(root)
     try:
+        question = (
+            read_question(base / eval_file, eval_question) if eval_question is not None else None
+        )
         settings = load_neo4j_settings()
         with connect(settings) as driver:
             graph = read_graph(driver, settings.database)
-        chain = walk(graph, start)
-    except (SettingsInvalid, GraphUnavailable, SliceError, StartNotInGraph) as exc:
+    except (EvalEntryUnusable, SettingsInvalid, GraphUnavailable, SliceError) as exc:
         _fail(str(exc))
-    for line in render_chain(chain):
+
+    begin = question.start if question is not None else str(start)
+    chain: Chain | None
+    try:
+        chain = walk(graph, begin)
+    except StartNotInGraph as exc:
+        if question is None:
+            _fail(str(exc))
+        chain, missing = None, str(exc)
+    if chain is not None:
+        for line in render_chain(chain):
+            _say(line)
+    if question is None:
+        return
+
+    corpus_snapshot = base / snapshot
+    try:
+        results = committed_units(base, corpus_snapshot)
+        corpus = resolve_accepted(results, records_for_units(results, corpus_snapshot, commit))
+        split = holding_units(corpus_snapshot, (item.file for item in question.items))
+    except (RebuildFailed, RecordError, OSError) as exc:
+        _fail(str(exc))
+    report = score(question, chain, results, corpus, settled_run_counts(base), split)
+    if chain is not None:
+        _say("")
+    for line in report_lines(report):
         _say(line)
+    if chain is None:
+        _fail(missing)
 
 
 @app.command()
