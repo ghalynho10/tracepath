@@ -77,10 +77,10 @@ The walking skeleton. Take a few hand picked records, match them by explicit ide
 spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath/` (`traverse/`, `graph/read.py`, `report.py`, `cli.py`)
 - [x] Design it (spec): `/architect first traced chain`
 - [ ] Build it: `/develop first traced chain`
-  - [ ] `load` command, link provenance, `file_line` and the build manifest, tested over the 14 committed units with no API call (AC-15 to AC-19, AC-50, AC-51)
-  - [ ] The walk, its Cypher read and the fixture graph tests, then `trace START` smoke tested away from specs 0002 and 0007 (AC-20 to AC-33)
-  - [ ] `extract` with its error handling, collision preflight, estimate, ceiling and per attempt writes, tested with a fake client (AC-3 to AC-14, AC-48, AC-49)
-  - [ ] The report step, the only reader of `eval/` (AC-34 to AC-41, AC-52)
+  - [x] `load` command, link provenance, `file_line` and the build manifest, tested over the 14 committed units with no API call (AC-15 to AC-19, AC-50, AC-51)
+  - [x] The walk, its Cypher read and the fixture graph tests, then `trace START` smoke tested away from specs 0002 and 0007 (AC-20 to AC-33)
+  - [x] `extract` with its error handling, collision preflight, estimate, ceiling and per attempt writes, tested with a fake client (AC-3 to AC-14, AC-48, AC-49)
+  - [x] The report step, the only reader of `eval/` (AC-34 to AC-41, AC-52)
   - [ ] Gate, then the paid run on question 3's four sections and the recorded result in `experiments/0009-first-traced-chain/` (AC-41 to AC-47, AC-53, AC-54). The engineer approves the measured estimate and a ceiling first; `src/` is committed before the first run artifact
 - [ ] Verify it: `/check verify first traced chain`
 - [ ] Test it: `/test first traced chain`
