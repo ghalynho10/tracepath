@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from typing import cast
@@ -5,6 +6,7 @@ from typing import cast
 import anthropic
 import httpx2
 import pytest
+from pydantic import ValidationError
 
 from tracepath.config import (
     DEFAULT_MODEL,
@@ -18,10 +20,12 @@ from tracepath.extract.client import (
     PROMPT_VERSION,
     ExtractionFailed,
     extract_once,
+    system_blocks,
     system_prompt,
     user_prompt,
 )
-from tracepath.extract.units import split_units
+from tracepath.extract.schema import ExtractionOutput
+from tracepath.extract.units import Unit, split_units
 
 SNAPSHOT = Path(__file__).resolve().parents[1] / "corpus" / "jobhunt" / "docs"
 
@@ -156,3 +160,142 @@ def test_a_connection_dropped_mid_stream_is_recorded_as_a_failed_attempt() -> No
     (attempt,) = failed.value.attempts
     assert attempt.error is not None
     assert attempt.output is None
+
+
+# A schema failure is recorded with the whole response's usage, not the placeholder
+# `message_start` carries. Driven through the real SDK stream over a mocked transport,
+# replaying a committed failed attempt's own response text, so no paid call is made.
+
+FAILED_ATTEMPT = (
+    Path(__file__).resolve().parents[1]
+    / "artifacts"
+    / "runs"
+    / "0021"
+    / "requirements"
+    / "failed-run-2-attempt-1.json"
+)
+
+
+def recorded_stream(text: str, output_tokens: int) -> bytes:
+    """The server sent events of one response: `text`, then its final usage."""
+    events: list[tuple[str, dict[str, object]]] = [
+        (
+            "message_start",
+            {
+                "type": "message_start",
+                "message": {
+                    "id": "msg_recorded",
+                    "type": "message",
+                    "role": "assistant",
+                    "model": "claude-sonnet-5",
+                    "content": [],
+                    "stop_reason": None,
+                    "stop_sequence": None,
+                    "usage": {
+                        "input_tokens": 4357,
+                        "output_tokens": 2,
+                        "cache_creation_input_tokens": 0,
+                        "cache_read_input_tokens": 49114,
+                    },
+                },
+            },
+        ),
+        (
+            "content_block_start",
+            {
+                "type": "content_block_start",
+                "index": 0,
+                "content_block": {"type": "text", "text": ""},
+            },
+        ),
+        (
+            "content_block_delta",
+            {
+                "type": "content_block_delta",
+                "index": 0,
+                "delta": {"type": "text_delta", "text": text},
+            },
+        ),
+        ("content_block_stop", {"type": "content_block_stop", "index": 0}),
+        (
+            "message_delta",
+            {
+                "type": "message_delta",
+                "delta": {"stop_reason": "end_turn", "stop_sequence": None},
+                "usage": {"output_tokens": output_tokens},
+            },
+        ),
+        ("message_stop", {"type": "message_stop"}),
+    ]
+    return "".join(f"event: {name}\ndata: {json.dumps(data)}\n\n" for name, data in events).encode()
+
+
+def replaying_client(body: bytes, requests: list[httpx2.Request]) -> anthropic.Anthropic:
+    """A real client whose every request gets `body` back, and is kept in `requests`."""
+
+    def respond(request: httpx2.Request) -> httpx2.Response:
+        requests.append(request)
+        return httpx2.Response(200, headers={"content-type": "text/event-stream"}, content=body)
+
+    return anthropic.Anthropic(
+        api_key="sk-ant-test",
+        http_client=httpx2.Client(transport=httpx2.MockTransport(respond)),
+        max_retries=0,
+    )
+
+
+def requirements_0021() -> Unit:
+    """`0021 ## Requirements`, the unit the recorded failure was made against."""
+    path = SNAPSHOT / "specs" / "0021-seeded-demo-account" / "index.md"
+    return next(
+        u
+        for u in split_units("specs/0021-seeded-demo-account/index.md", path.read_text())
+        if u.section == "Requirements"
+    )
+
+
+def test_a_schema_failure_records_the_whole_responses_output_tokens() -> None:
+    recorded = json.loads(FAILED_ATTEMPT.read_text())
+    client = replaying_client(recorded_stream(recorded["raw_response"], 8123), [])
+    settings = AnthropicSettings(
+        api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
+    )
+
+    with pytest.raises(ExtractionFailed, match="did not satisfy the schema") as failed:
+        extract_once(client, settings, requirements_0021())
+
+    (attempt,) = failed.value.attempts
+    assert attempt.output is None
+    assert attempt.output_tokens == 8123
+    assert attempt.stop_reason == "end_turn"
+    assert attempt.input_tokens == 4357
+    assert attempt.cache_read_input_tokens == 49114
+    assert attempt.raw_response == recorded["raw_response"]
+
+
+def test_the_request_is_the_one_the_sdk_builds_from_output_format() -> None:
+    recorded = json.loads(FAILED_ATTEMPT.read_text())
+    body = recorded_stream(recorded["raw_response"], 8123)
+    settings = AnthropicSettings(
+        api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
+    )
+    unit = requirements_0021()
+    ours: list[httpx2.Request] = []
+    sdk: list[httpx2.Request] = []
+
+    with pytest.raises(ExtractionFailed):
+        extract_once(replaying_client(body, ours), settings, unit)
+    with (
+        pytest.raises(ValidationError),
+        replaying_client(body, sdk).messages.stream(
+            model=settings.model,
+            max_tokens=MAX_TOKENS,
+            system=system_blocks(),
+            messages=[{"role": "user", "content": user_prompt(unit)}],
+            output_format=ExtractionOutput,
+            output_config={"effort": "medium"},
+        ) as stream,
+    ):
+        stream.get_final_message()
+
+    assert json.loads(ours[0].content) == json.loads(sdk[0].content)
