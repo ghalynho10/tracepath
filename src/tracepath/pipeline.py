@@ -174,8 +174,10 @@ def run_unit(
             raise UnitFailed(str(exc), tuple(artifacts)) from exc
         for attempt in outcome.attempts:
             record(run, attempt)
-            input_tokens += attempt.input_tokens
-            output_tokens += attempt.output_tokens
+            # A dropped attempt's unmeasured (null) count adds nothing here; its own
+            # artifact keeps the null.
+            input_tokens += attempt.input_tokens or 0
+            output_tokens += attempt.output_tokens or 0
             cache_written += attempt.cache_creation_input_tokens
             cache_read += attempt.cache_read_input_tokens
         located = label_binding_rules(unit, locate_output(unit, outcome.output))

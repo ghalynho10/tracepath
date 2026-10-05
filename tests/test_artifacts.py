@@ -278,7 +278,7 @@ def test_a_run_that_failed_after_its_retry_still_carries_both_attempts() -> None
 
     failure = ExtractionFailed("run 1 failed after its retry", attempts)
 
-    assert sum(a.output_tokens for a in failure.attempts) == 1850
+    assert [a.output_tokens for a in failure.attempts] == [900, 950]
 
 
 def test_an_outcome_with_no_successful_attempt_raises_rather_than_returning_nothing() -> None:

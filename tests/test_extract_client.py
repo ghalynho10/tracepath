@@ -1,4 +1,5 @@
 import json
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from types import SimpleNamespace
 from typing import cast
@@ -8,6 +9,7 @@ import httpx2
 import pytest
 from pydantic import ValidationError
 
+from tracepath.artifacts import now_utc, write_run
 from tracepath.config import (
     DEFAULT_MODEL,
     RUNS_PER_UNIT,
@@ -20,12 +22,14 @@ from tracepath.extract.client import (
     PROMPT_VERSION,
     ExtractionFailed,
     extract_once,
+    run_with_retry,
     system_blocks,
     system_prompt,
     user_prompt,
 )
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit, split_units
+from tracepath.pipeline import run_unit
 
 SNAPSHOT = Path(__file__).resolve().parents[1] / "corpus" / "jobhunt" / "docs"
 
@@ -113,11 +117,9 @@ def test_the_prompt_version_is_recorded_so_a_prompt_change_is_visible() -> None:
     assert MAX_TOKENS >= 16000
 
 
-# Known defect, owed to /debug on its own fix/ branch (docs/session-notes.md): a
-# connection that drops mid stream escapes `extract_once()` as a raw transport error,
-# so the attempt is never recorded and `run_with_retry()` never retries it. Experiment
-# 0006 lost a paid call to this. Strict, so the fix turns it into a failing XPASS and
-# the marker gets removed with it.
+# A connection that drops mid stream used to escape `extract_once()` as a raw transport
+# error, so the attempt was never recorded and `run_with_retry()` never retried it.
+# Experiment 0006 lost a paid call to this.
 
 
 class DroppedStream:
@@ -137,11 +139,6 @@ class DroppedStream:
         )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=httpx2.RemoteProtocolError,
-    reason="owed to /debug: extract_once() does not catch a mid stream transport error",
-)
 def test_a_connection_dropped_mid_stream_is_recorded_as_a_failed_attempt() -> None:
     path = SNAPSHOT / "specs" / "0012-model-client-router" / "index.md"
     unit = next(
@@ -299,3 +296,131 @@ def test_the_request_is_the_one_the_sdk_builds_from_output_format() -> None:
         stream.get_final_message()
 
     assert json.loads(ours[0].content) == json.loads(sdk[0].content)
+
+
+# A connection that drops mid stream is recorded as a failed attempt and retried once.
+# Driven through the real SDK over a mocked transport whose body breaks partway, the
+# way experiment 0006's `0015` call broke, so no paid call is made.
+
+SETTLED_RUN = FAILED_ATTEMPT.with_name("run-1.json")
+
+DROP = "peer closed connection without sending complete message body"
+
+
+def first_events(body: bytes, count: int) -> bytes:
+    """The first `count` server sent events of `body`, as the wire carried them."""
+    return b"".join(event + b"\n\n" for event in body.split(b"\n\n")[:count])
+
+
+def dropping(body: bytes) -> httpx2.Response:
+    """A response that sends `body`, then loses its connection before the rest."""
+
+    def chunks() -> Iterator[bytes]:
+        if body:
+            yield body
+        raise httpx2.RemoteProtocolError(DROP)
+
+    return httpx2.Response(200, headers={"content-type": "text/event-stream"}, content=chunks())
+
+
+def settled(body: bytes) -> httpx2.Response:
+    """A response that sends all of `body`."""
+    return httpx2.Response(200, headers={"content-type": "text/event-stream"}, content=body)
+
+
+def answering(*responses: Callable[[], httpx2.Response]) -> anthropic.Anthropic:
+    """A real client that answers each request with the next response, in order."""
+    queue = list(responses)
+
+    def respond(request: httpx2.Request) -> httpx2.Response:
+        return queue.pop(0)()
+
+    return anthropic.Anthropic(
+        api_key="sk-ant-test",
+        http_client=httpx2.Client(transport=httpx2.MockTransport(respond)),
+        max_retries=0,
+    )
+
+
+def settings_for(runs: int = 3) -> AnthropicSettings:
+    """The settings the recorded calls were made under."""
+    return AnthropicSettings(
+        api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=runs, effort="medium"
+    )
+
+
+def test_a_drop_before_any_event_records_null_usage() -> None:
+    client = answering(lambda: dropping(b""))
+
+    with pytest.raises(ExtractionFailed, match="connection dropped") as failed:
+        extract_once(client, settings_for(), requirements_0021())
+
+    (attempt,) = failed.value.attempts
+    assert attempt.output is None
+    assert attempt.input_tokens is None
+    assert attempt.output_tokens is None
+    assert attempt.raw_response is None
+    assert attempt.stop_reason is None
+    assert attempt.error is not None
+    assert DROP in attempt.error
+
+
+def test_a_drop_mid_response_keeps_the_usage_that_arrived() -> None:
+    text = json.loads(SETTLED_RUN.read_text())["raw_response"]
+    partial = first_events(recorded_stream(text, 9000), 3)
+    client = answering(lambda: dropping(partial))
+
+    with pytest.raises(ExtractionFailed, match="connection dropped") as failed:
+        extract_once(client, settings_for(), requirements_0021())
+
+    (attempt,) = failed.value.attempts
+    assert attempt.input_tokens == 4357
+    assert attempt.cache_read_input_tokens == 49114
+    assert attempt.raw_response == text
+    assert attempt.stop_reason is None
+
+
+def test_a_drop_mid_response_records_no_output_count() -> None:
+    text = json.loads(SETTLED_RUN.read_text())["raw_response"]
+    partial = first_events(recorded_stream(text, 9000), 3)
+    client = answering(lambda: dropping(partial))
+
+    with pytest.raises(ExtractionFailed) as failed:
+        extract_once(client, settings_for(), requirements_0021())
+
+    (attempt,) = failed.value.attempts
+    # `message_start`'s placeholder of 2 is not what the call wrote, so nothing is.
+    assert attempt.output_tokens is None
+
+
+def test_a_dropped_call_counts_as_an_attempt_for_the_one_retry() -> None:
+    text = json.loads(SETTLED_RUN.read_text())["raw_response"]
+    client = answering(lambda: dropping(b""), lambda: settled(recorded_stream(text, 9000)))
+
+    outcome = run_with_retry(client, settings_for(), requirements_0021(), run=0)
+
+    first, second = outcome.attempts
+    assert (first.number, first.output, first.error is not None) == (1, None, True)
+    assert (second.number, second.output is not None) == (2, True)
+
+
+def test_a_dropped_call_writes_a_failed_attempt_artifact_with_null_usage(
+    tmp_path: Path,
+) -> None:
+    text = json.loads(SETTLED_RUN.read_text())["raw_response"]
+    client = answering(
+        lambda: dropping(b""),
+        lambda: settled(recorded_stream(text, 9000)),
+        lambda: settled(recorded_stream(text, 9000)),
+    )
+
+    # Two runs, the fewest the run comparison accepts; the first drops once.
+    result = run_unit(
+        client, settings_for(runs=2), requirements_0021(), "requirements", "2e40bcf", now_utc()
+    )
+    paths = [write_run(tmp_path, artifact) for artifact in result.artifacts]
+
+    assert [p.name for p in paths] == ["failed-run-1-attempt-1.json", "run-1.json", "run-2.json"]
+    failed = json.loads(paths[0].read_text())
+    assert (failed["input_tokens"], failed["output_tokens"], failed["output"]) == (None, None, None)
+    assert DROP in failed["error"]

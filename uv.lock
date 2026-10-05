@@ -845,6 +845,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
+    { name = "httpx2" },
     { name = "neo4j" },
     { name = "pydantic" },
     { name = "python-dotenv" },
@@ -863,6 +864,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=1.8.0" },
+    { name = "httpx2", specifier = ">=2.13.0" },
     { name = "neo4j", specifier = ">=6.3.1" },
     { name = "pydantic", specifier = ">=2.13.5" },
     { name = "python-dotenv", specifier = ">=1.2.3" },
