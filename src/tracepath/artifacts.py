@@ -25,6 +25,10 @@ RUNS_DIR = ARTIFACTS_DIR / "runs"
 REVIEW_QUEUE = ARTIFACTS_DIR / "review-queue.json"
 REVIEW_LOG = ARTIFACTS_DIR / "review-log.json"
 
+#: The build manifest every `load` rewrites (spec 0004 AC-17). Derived, like the graph,
+#: so it is replaced rather than appended to; it is not a run artifact.
+GRAPH_BUILD = ARTIFACTS_DIR / "graph-build.json"
+
 #: Bumped whenever `RunArtifact`'s own field shape changes, so a reader can tell which
 #: shape one artifact was written under (spec 0001's storage row, amended 2026-09-28).
 #: `2` is the first version to carry `run_id`, `artifact_format_version` itself, a
@@ -348,3 +352,20 @@ def ensure_review_log(root: Path) -> Path:
     if path.exists():
         return path
     return write_review_log(root, [])
+
+
+def review_log_entries(root: Path) -> int:
+    """How many rulings the review log holds; a missing log holds none."""
+    path = root / REVIEW_LOG
+    if not path.exists():
+        return 0
+    entries = json.loads(path.read_text())
+    return len(entries) if isinstance(entries, list) else 0
+
+
+def write_graph_build(root: Path, manifest: dict[str, Any]) -> Path:
+    """Write the build manifest, replacing the last one, with a stable byte layout."""
+    path = root / GRAPH_BUILD
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
+    return path

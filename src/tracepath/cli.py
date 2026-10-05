@@ -2,20 +2,54 @@
 
 import logging
 from pathlib import Path
+from typing import NoReturn
 
 import typer
 from rich.console import Console
 
 from tracepath import __version__
-from tracepath.artifacts import REVIEW_LOG, REVIEW_QUEUE, ensure_review_log, write_review_queue
+from tracepath.artifacts import (
+    REVIEW_LOG,
+    REVIEW_QUEUE,
+    ensure_review_log,
+    review_log_entries,
+    write_graph_build,
+    write_review_queue,
+)
 from tracepath.config import SettingsInvalid, load_neo4j_settings
+from tracepath.extract.records import RecordError
 from tracepath.graph import GraphUnavailable, connect, server_version
-from tracepath.pipeline import resolve_accepted, review_rows
-from tracepath.rebuild import RebuildFailed, committed_units, records_for_units
+from tracepath.graph.load import GraphWriteFailed
+from tracepath.pipeline import (
+    ProvenanceMismatch,
+    collapsed_links,
+    graph_build,
+    load,
+    resolve_accepted,
+    review_rows,
+    unit_provenance,
+)
+from tracepath.rebuild import RebuildFailed, committed_units, partial_units, records_for_units
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 console = Console()
 err_console = Console(stderr=True)
+
+#: Who accepted what a load writes. Nothing is reviewed by hand yet (spec 0002), so
+#: every accepted item was accepted by the three run agreement rule.
+ACCEPTED_BY = "auto"
+
+
+def _say(text: str) -> None:
+    """Print one plain line to stdout: corpus text is never read as Rich markup."""
+    console.print(text, markup=False, highlight=False, soft_wrap=True)
+
+
+def _fail(message: str) -> NoReturn:
+    """Print a failure to stderr and exit 1, with no traceback (spec 0004 AC-44)."""
+    err_console.print("[red]✗[/red] ", end="")
+    err_console.print(message, markup=False, highlight=False, soft_wrap=True)
+    raise typer.Exit(code=1)
 
 
 def _show_version(value: bool) -> None:
@@ -86,3 +120,64 @@ def review_queue(
         f"[green]✓[/green] {len(rows)} held items from {len(results)} units "
         f"→ {REVIEW_QUEUE}, log at {REVIEW_LOG}"
     )
+
+
+@app.command(name="load")
+def load_graph(
+    root: str = typer.Option(".", "--root", help="The repository root to read and write."),
+    snapshot: str = typer.Option(
+        "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
+    ),
+    commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+) -> None:
+    """Rebuild the graph from the committed run artifacts. No API call.
+
+    Clears the graph, creates the constraints and loads every fully extracted unit,
+    every write asserting its own row count, then writes `artifacts/graph-build.json`.
+    """
+    base = Path(root)
+    corpus_snapshot = base / snapshot
+    try:
+        settings = load_neo4j_settings()
+        results = committed_units(base, corpus_snapshot)
+        records = records_for_units(results, corpus_snapshot, commit)
+        corpus = resolve_accepted(results, records)
+        provenances = [unit_provenance(result, ACCEPTED_BY) for result in results]
+        manifest = graph_build(results, corpus, provenances, commit, review_log_entries(base))
+        with connect(settings) as driver:
+            written = load(
+                driver,
+                settings.database,
+                records,
+                results,
+                corpus.resolution,
+                commit,
+                ACCEPTED_BY,
+                clear_first=True,
+            )
+    except (
+        SettingsInvalid,
+        RebuildFailed,
+        RecordError,
+        ProvenanceMismatch,
+        GraphUnavailable,
+        GraphWriteFailed,
+    ) as exc:
+        _fail(str(exc))
+
+    path = write_graph_build(base, manifest)
+    _say(
+        f"Loaded {len(results)} units: {written['records']} records, "
+        f"{written['entities']} entities, {written['unresolved']} unresolved, "
+        f"{written['links']} links written ({collapsed_links(corpus.resolution.links)} "
+        "collapsed into an existing relationship), "
+        f"{len(corpus.held)} links held across units."
+    )
+    versions = ", ".join(f"{v}: {n}" for v, n in manifest["prompt_versions"].items())
+    _say(f"Units per prompt version: {versions}.")
+    for partial in partial_units(base):
+        _say(
+            f"Not loaded: {partial.record} {partial.section} has {partial.settled_runs} "
+            "settled runs of 3, so it is not extracted."
+        )
+    _say(f"Build manifest: {path.relative_to(base).as_posix()}")
