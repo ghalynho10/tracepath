@@ -1,0 +1,342 @@
+{
+  "record": "0002",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-05T21:38:39+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1596,
+  "output_tokens": 6996,
+  "cache_creation_input_tokens": 57494,
+  "cache_read_input_tokens": 0,
+  "run_id": "19445e990cc04b3f840e7e297a020d6c",
+  "artifact_format_version": 2,
+  "unit_sha256": "c55280fbd38b3609d67debbb1977ac5b36de8c87d1b818b4ccb8acc508468a97",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the author, I want a merge to `main` to reach a real public URL,\",\"rejected_spans\":[\"so the portfolio link exists from week one instead of at the end.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the author, I want preview deployments reading a separate database,\",\"rejected_spans\":[\"so a half built branch can never touch a real resume.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the author, I want one switch I can flip from outside the app,\",\"rejected_spans\":[\"so I can stop spending money in seconds without waiting for a build.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the author, I want to know the site is down before a recruiter does.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a recruiter opening the link, I want the page to load.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: A merge to `main` deploys automatically, and the production URL serves the application over HTTPS with no manual step.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: A push to any branch other than `main` produces a preview deployment that reads the development Supabase project. No preview ever holds credentials for the production project.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: A preview URL is not reachable without a Vercel login. The production URL is public.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: Every secret is set per environment in Vercel and none is committed. A deployed build never sets `SKIP_ENV_VALIDATION`, so a missing or malformed variable fails the build by name rather than booting into a confusing runtime error.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: The full feature 1 thread is proved against a real deployed URL, not locally: sign in, the protected layout's session check, a read of one row through the real server client under row level security, and the row rendered. Two different seeded users see two different rows.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: The kill switch flag exists in both hosted databases, and its current value is displayed on the deployed scaffold check page, read through the secret key client.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: Flipping the flag in the Supabase dashboard changes what the deployed page shows on the next request, with no deploy and no build.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: A failed read of the flag is treated as switched on, and is rendered as a visible failure. It is never reported as \\\"off\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: A query carrying a user's token cannot read the settings row at all, proved against the real database rather than asserted.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: Password sign in is impossible on production, in both places it is guarded: the sign in page does not render and the Server Action refuses to run. The enabling variable is absent there, both guards fail closed, and neither depends any longer on how a build labels `NODE_ENV`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Feature 7 deleted the password path outright, page and action alike, so password sign in is now impossible in EVERY environment rather than blocked in one, and there are no two guards left to fail closed. The goal is met more completely than the criterion asked for; the mechanism it named no longer exists. What survives from it is the fail closed default itself, which is now the session mint's guarantee (spec 0007 **AC-13**).\",\"rejected_spans\":[\"Kept rather than deleted, because it was met as written and the reason it stopped applying is worth reading.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: Migrations reach the hosted databases through CI: the development project on a pull request, production on merge to `main`. A migration that fails to apply fails the workflow visibly and does not silently leave the two projects on different schemas.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `main` cannot be pushed to directly. A merge requires a pull request and a green CI check.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: Sentry receives events from both production and preview, each tagged with its environment and with a release matching the deployed commit, and a stack trace points at real source lines rather than bundled output. A deployed build with no DSN configured fails the build by name rather than deploying with reporting silently switched off.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: Trace sampling is 1.0 in production and lower in preview, read from validated configuration rather than hardcoded in two files.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: Sentry quota approaching exhaustion reaches a human before it is exhausted,\",\"rejected_spans\":[\"because binding rule 4's alert going silent is the failure this project is written against.\"],\"known_trap_flags\":[]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: Both ways this app can go dark reach a human. An uptime monitor running outside Vercel watches the production URL and notifies when it stops answering, and Supabase's pause warning emails for both projects arrive at an address that is actually read. The two are not interchangeable: the monitor watches Vercel and will report the site up while a database underneath it is paused.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-17**: The Supabase MCP server, if connected, is scoped to the development project with `read_only=true` and per call confirmation left on. No production project ref is configured anywhere.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-18\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-18**: A broken production deployment can be recovered by promoting the previous one, and the written procedure states plainly that promoting does not undo a migration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"phrase\":\"**SUPERSEDED 2026-08-30 by spec 0007.**\",\"date\":\"2026-08-30\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-13\",\"mention\":\"spec 0007 **AC-13**\"},\"phrase\":\"which is now the session mint's guarantee (spec 0007 **AC-13**)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the author, I want a merge to `main` to reach a real public URL,",
+        "rejected_spans": [
+          "so the portfolio link exists from week one instead of at the end."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the author, I want preview deployments reading a separate database,",
+        "rejected_spans": [
+          "so a half built branch can never touch a real resume."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the author, I want one switch I can flip from outside the app,",
+        "rejected_spans": [
+          "so I can stop spending money in seconds without waiting for a build."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the author, I want to know the site is down before a recruiter does.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a recruiter opening the link, I want the page to load.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: A merge to `main` deploys automatically, and the production URL serves the application over HTTPS with no manual step.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: A push to any branch other than `main` produces a preview deployment that reads the development Supabase project. No preview ever holds credentials for the production project.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: A preview URL is not reachable without a Vercel login. The production URL is public.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: Every secret is set per environment in Vercel and none is committed. A deployed build never sets `SKIP_ENV_VALIDATION`, so a missing or malformed variable fails the build by name rather than booting into a confusing runtime error.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: The full feature 1 thread is proved against a real deployed URL, not locally: sign in, the protected layout's session check, a read of one row through the real server client under row level security, and the row rendered. Two different seeded users see two different rows.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: The kill switch flag exists in both hosted databases, and its current value is displayed on the deployed scaffold check page, read through the secret key client.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: Flipping the flag in the Supabase dashboard changes what the deployed page shows on the next request, with no deploy and no build.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: A failed read of the flag is treated as switched on, and is rendered as a visible failure. It is never reported as \"off\".",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: A query carrying a user's token cannot read the settings row at all, proved against the real database rather than asserted.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: Password sign in is impossible on production, in both places it is guarded: the sign in page does not render and the Server Action refuses to run. The enabling variable is absent there, both guards fail closed, and neither depends any longer on how a build labels `NODE_ENV`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Feature 7 deleted the password path outright, page and action alike, so password sign in is now impossible in EVERY environment rather than blocked in one, and there are no two guards left to fail closed. The goal is met more completely than the criterion asked for; the mechanism it named no longer exists. What survives from it is the fail closed default itself, which is now the session mint's guarantee (spec 0007 **AC-13**).",
+        "rejected_spans": [
+          "Kept rather than deleted, because it was met as written and the reason it stopped applying is worth reading."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: Migrations reach the hosted databases through CI: the development project on a pull request, production on merge to `main`. A migration that fails to apply fails the workflow visibly and does not silently leave the two projects on different schemas.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `main` cannot be pushed to directly. A merge requires a pull request and a green CI check.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: Sentry receives events from both production and preview, each tagged with its environment and with a release matching the deployed commit, and a stack trace points at real source lines rather than bundled output. A deployed build with no DSN configured fails the build by name rather than deploying with reporting silently switched off.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: Trace sampling is 1.0 in production and lower in preview, read from validated configuration rather than hardcoded in two files.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: Sentry quota approaching exhaustion reaches a human before it is exhausted,",
+        "rejected_spans": [
+          "because binding rule 4's alert going silent is the failure this project is written against."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: Both ways this app can go dark reach a human. An uptime monitor running outside Vercel watches the production URL and notifies when it stops answering, and Supabase's pause warning emails for both projects arrive at an address that is actually read. The two are not interchangeable: the monitor watches Vercel and will report the site up while a database underneath it is paused.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-17**: The Supabase MCP server, if connected, is scoped to the development project with `read_only=true` and per call confirmation left on. No production project ref is configured anywhere.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-18",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-18**: A broken production deployment can be recovered by promoting the previous one, and the written procedure states plainly that promoting does not undo a migration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "**SUPERSEDED 2026-08-30 by spec 0007.**",
+        "date": "2026-08-30",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-13",
+          "label": null,
+          "mention": "spec 0007 **AC-13**"
+        },
+        "phrase": "which is now the session mint's guarantee (spec 0007 **AC-13**)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

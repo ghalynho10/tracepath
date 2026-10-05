@@ -1,0 +1,1469 @@
+{
+  "record": "0007",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-05T21:38:39+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 10371,
+  "output_tokens": 39467,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "f8298eed7f4f4ee0ab2e2948b29b6e68",
+  "artifact_format_version": 2,
+  "unit_sha256": "cd94e659338254fa9701e5ae1c51e255ad0c0d59e65dc6d25d6fb98b6fbe1c91",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This feature adds **no table and no column**. The only new database object is one function:\",\"rejected_spans\":[\"Spec 0003's six tables already key off `profile.id`, which is the `auth.users` id, and their policies already compare against `auth.uid()`.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`security definer`**, deliberately, with the reason stated in the function's own comment. This one does: it reads `auth.users` and `auth.identities`, which the calling role cannot.\",\"rejected_spans\":[\"`set_updated_at` is `security invoker` precisely because, as its comment says, it \\\"does nothing that needs elevated rights\\\".\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`set search_path = ''`** with every name written fully qualified.\",\"rejected_spans\":[\"the same reason `set_updated_at` gives.\",\"On a definer function this is not hygiene, it is the difference between a safe function and a privilege escalation.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Explicit `revoke` from `public` and a `grant` to only the role GoTrue calls it as.**\",\"rejected_spans\":[\"A definer function reachable by the wrong role is a different risk class from the invoker function beside it, so the grant is written out rather than inherited.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It lives in the **`public` schema, not `auth`**, and the URI is `pg-functions://postgres/public/before_user_created_hook`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`config.toml`'s commented template shows `pg-functions://postgres/auth/before-user-created-hook`, which is wrong twice over for this project: the hyphenated name is not a legal unquoted Postgres identifier, and `auth` is Supabase's own schema, changeable by a platform upgrade.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This project's migrations own `public`, where all six tables and `public.set_updated_at()` already live, and the dashboard's own schema selector defaults to `public`. Do not copy the template.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The hook decides by reading `auth.identities` and `auth.users`. Those are not static rows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Verified 2026-08-30 with P7: when GoTrue makes an automatic link it \\\"will remove any other unconfirmed identities linked to an existing user\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"So the very table the hook queries is rewritten by the linking path the hook does not itself run on, and a later signup reads a table an earlier link already pruned.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The hook has to be correct against that, not only against a clean fixture, which is why AC-9's integration test covers the interaction explicitly rather than testing the hook in isolation.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Rollback, one step**: set `enabled = false` on the `[auth.hook.before_user_created]` stanza. A broken hook stops new signups while existing users keep signing in, so the failure is loud, noticed on the first attempt, and reversed without a migration.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Deliberately not added**: a trigger on `auth.users` creating a `profile` row.\",\"rejected_spans\":[\"Rejected for four reasons recorded in rationale.md; the short version is that `profile.full_name` is `not null` with a non blank check, so a provider that returns no name would make the trigger raise inside the signup transaction and surface as an opaque \\\"Database error saving new user\\\".\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Profile creation stays with feature 9, exactly as spec 0003's value sourcing table already assigns it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"signed out\\n  -> (submit provider form)      -> at the provider\\n  -> (consent granted)           -> at GoTrue, /auth/v1/callback\\n  -> (identity resolved)         -> back at /auth/callback with a code\\n  -> (code exchanged)            -> signed in, at /health\\n  -> (sign out)                  -> signed out, at /\\n\\n  the action cannot reach the provider -> /sign-in?error=provider_unavailable\\n  at the provider, consent cancelled   -> /sign-in?error=access_denied\\n  at GoTrue, signup refused            -> /sign-in?error=account_exists\\n  at /auth/callback, no code           -> /sign-in?error=no_code\\n  at /auth/callback, exchange fails    -> /sign-in?error=exchange_failed\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two thin actions rather than one taking a provider argument, on purpose: a provider name arriving from a form is untrusted input needing its own boundary parse, and there is nothing to gain from it when the set is closed at two.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No password path exists anywhere in the product.** Not disabled, not flagged, absent. The only remaining credential path is the test mint, which lives outside `src/` and is guarded by `DEV_SESSION_ENABLED`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**One person, one account, per verified email.** Enforced in the database by the refusal hook, not by application code that a later caller could forget.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`redirectTo` never carries untrusted input.** It is derived from validated environment variables, so the allowlist is a second line of defence rather than the only one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No provider text reaches a rendered page.** Provider strings go to Sentry as context.\",\"rejected_spans\":[\"This is the same untrusted input reaching a surface shape that feature 14 will meet again with job descriptions, arriving one layer earlier.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The two origin values never substitute for each other.** `currentOrigin()` for `redirectTo`, `canonicalSiteUrl` for metadata. [src/app/layout.test.ts](../../../src/app/layout.test.ts) already fails if `layout.tsx` so much as mentions `currentOrigin`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Sign out is best effort but never silent.** A failing `signOut` still clears what it can and still redirects, and it still reports.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every route under `(app)` requires a session, checked in its layout, with row level security in Postgres as the real guarantee behind it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`/` and `/sign-in` are public and read nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Route handlers under `src/app/api/` are untouched by this feature; the callback deliberately sits at `src/app/auth/callback/route.ts` instead.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`/sign-in` stops reading nothing. Spec 0008 AC-20 has it read the session, so a visitor who is already signed in is bounced to the landing rule rather than shown the provider buttons again, and that bounce also reads profile row existence through the landing rule.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`/` is not affected and its half of this sentence stands unchanged: it still reads no session, mounts no Supabase client, and stays statically prerendered, which spec 0008 AC-19 restates and holds itself to.\",\"rejected_spans\":[\"The distinction matters, because `/` being session free is the accepted contract spec 0008 rejected three of its four options to preserve.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The data this feature newly touches is the identity itself: an email address, a display name, and an avatar URL, arriving from the provider into `auth.users`. That is personal data, and the privacy notice describing it belongs to feature 21, which this spec does not pre empt.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new compliance scope is triggered here beyond what spec 0003 already carries.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`redirectTo` takes no untrusted input, so there is no open redirect surface to guard.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The Supabase allowlist still exists and still matters, as defence in depth and as the thing that stops a stolen client id being used against a different origin.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"New environment variables, local stack only, consumed by `config.toml` through `env()` substitution: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET`, `SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET`\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The exact names the Supabase CLI expects must be read off the CLI's own convention at build time rather than guessed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both pairs go into `.env.example`\",\"rejected_spans\":[\"since `.gitignore` ignores `.env*` with only `.env.example` and `.env.test.example` excepted, so an undocumented variable is invisible to a fresh clone.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Confirm which file the Supabase CLI actually reads them from when running `supabase start`; it is not necessarily the file Next.js reads.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"This reports a check to perform during the build rather than delivering a build result, per the checking-stage rule.\"},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"CI gets placeholder values for all four, so `supabase start` succeeds on a job that never drives a real handshake.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A real user row now exists in `jobhunt-dev`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Completing the Google sign in during P1 created at least one row in that project's `auth.users`, carrying a real personal email address.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"It is **kept deliberately**, not inherited: it is the identity AC-8 is proved with, and P8's residual risk is only exercised by a real account with private email on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It lives in the hosted development project **only**, never production.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:41\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It is not fixture data, so it never enters `supabase/seed.sql`, never enters a recorded fixture, and AGENTS.md's rule that fixtures carry no real personal data is unaffected because this is not one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:42\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"And the integration suite is untouched by it, because that suite runs against the local stack rather than this project.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:43\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Removed**: `DEV_SESSION_ENABLED` from the Vercel Preview scope.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:44\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Nothing deployed reads it after this feature, and CI sets it on the test jobs itself.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:45\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**P1 to P9 are complete**, worked 2026-08-29 and 2026-08-30.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:46\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Several are *exercised* rather than inspected: a real sign in was driven through both providers against `jobhunt-dev`, so P1, P2 and P3 rest on the handshake actually completing, not on a settings page reading correctly.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:47\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**P10 sits outside AC-20 and blocks nothing**: it cannot be answered until the hook exists, it is answered at milestone 4, and both of its answers are already handled below.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:48\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"P6 is now **verified available**, so this is no longer a live branch of the build: it is the contingency for the hook being withdrawn or changed on a surface the vendor marks beta.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:49\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"If it is ever taken, AC-9 is met in the callback instead.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:50\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Read the freshly signed in user, and where the email already belonged to another identity, refuse and sign back out, removing the partial account through [src/lib/supabase/secret.ts](../../../src/lib/supabase/secret.ts).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:51\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Spec 0001 binding rule 1 closes the secret key allow list at three named callers (the test mint, the kill switch read, feature 31's demo account) and says in terms: \\\"Adding a fourth caller means editing this spec.\\\"\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:52\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The callback would be a fourth.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:53\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"So taking this path means **amending spec 0001 first**, as part of the same change, not as a footnote discovered mid build.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:54\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Sequencing: this stays a contingency while the hook works, and the moment it is taken it becomes the primary path, so the spec 0001 edit has to land with it rather than after it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:55\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"That fallback also has a window worth naming: by the time the application can read the freshly signed in user, `exchangeCodeForSession` has already written real session cookies, so the account and a live session exist briefly before the check deletes the row.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:56\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A crash between those two steps leaves a browser holding a session pointing at a deleted user.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:57\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`supabase/config.toml` governs the **local Docker stack only**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:58\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The two hosted projects carry their own settings in their own dashboards and nothing in this repository constrains them, so recording the local file as though it were the product's policy would document the wrong environment, the exact failure written up in [docs/experiments/0002-deployment-and-environments.md](../../experiments/0002-deployment-and-environments.md): \\\"A verification pointed at the wrong environment returns a perfectly real result about the wrong thing, and it reads as success.\\\"\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:59\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`enable_manual_linking` stays `false` on purpose and is recorded here so a later reader does not flip it thinking it is what makes linking work.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:60\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Verified 2026-08-30 (P7): it is **off by default**, so `false` is confirming the default rather than changing it, and it governs the `linkIdentity` API for linking a **different** email while already signed in, a separate beta feature from the automatic linking this decision rests on.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:61\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Automatic linking has no setting at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:62\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`skip_nonce_check` is the one row where local must differ from both hosted projects.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:63\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`config.toml`'s own comment on the provider stanzas says it plainly: \\\"If enabled, the nonce check will be skipped. Required for local sign in with Google auth.\\\"\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:64\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both hosted projects keep it off, correctly.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:65\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Local needs it on, and discovering that from a failed handshake rather than from this table is exactly the cost this row exists to avoid.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:66\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This spec records keeping the session defaults as a judgement about a product whose users come back to check applications, and that reasoning holds.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:67\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"But it should not read as a free choice, because it was not one: both projects show \\\"Configuring user sessions is only available on the Pro Plan and above\\\", so the timebox and inactivity timeout were never available to set.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:68\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Recorded alongside the judgement so a later reader on a paid plan knows it has become a real decision rather than a settled one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:69\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The hook **function** ships in a migration, so it is versioned, reviewed and applied the same way as everything else.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:70\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Its **enablement** on `jobhunt-dev` and `jobhunt-prod` is dashboard state that no file here records, so the two can drift: a migration can land with the hook switched off on production and nothing in this repository would say so.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:71\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"That is the same drift shape as the deferred alert rule detection item, and it is why the row is written out rather than assumed to follow the migration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:72\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path, manual: sign in with Google on a deployed URL, land on `/health`, sign out, land on `/` signed out. Repeat with GitHub, verifies **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path, manual\"},{\"id\":\"derived:73\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path, automated: an unauthenticated request to `/health` redirects to `/sign-in`, verifies **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path, automated\"},{\"id\":\"derived:74\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: the callback with `error=access_denied` redirects to `/sign-in?error=access_denied`, renders this product's sentence, and emits **no** Sentry alert, verifies **AC-5**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:75\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: the callback with no `code` and with an unusable `code` each redirect to their own code, and the failing exchange reports as `external_service_failed`, verifies **AC-5**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:76\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: `/sign-in?error=<junk>` renders the generic sentence and never echoes the junk, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:77\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a hook made to error internally still **refuses**, with its own distinct message, rather than failing open and admitting the signup, verifies **AC-10**.\",\"rejected_spans\":[\"A hook that failed open would recreate the silent empty account this whole mechanism exists to prevent\"],\"known_trap_flags\":[]},{\"id\":\"derived:78\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth and permission: two real OAuth accounts each read only their own rows, verifies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:79\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth and permission: a second provider on the same verified email reaches the same account, verifies **AC-8**; and on an unverified or absent email is refused with the owning provider named, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:80\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: the hook still decides correctly **after** GoTrue has pruned unconfirmed identities during an earlier automatic link. Driven against the real local stack, not a clean fixture, verifies **AC-9**.\",\"rejected_spans\":[\"since that prune rewrites the `auth.identities` rows the hook reads\"],\"known_trap_flags\":[]},{\"id\":\"derived:81\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Regression: nothing reachable from `/` or `/sign-in` carries `\\\"use client\\\"`, verifies **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:82\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Regression: `grep` finds no `signInWithDevPassword`, no `src/features/dev-session/`, and no `src/lib/supabase/browser.ts`, verifies **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"AC-9's integration test\"},\"phrase\":\"which is why AC-9's integration test covers the interaction explicitly rather than testing the hook in isolation\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"mention\":\"feature 9\"},\"phrase\":\"Profile creation stays with feature 9\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"mention\":\"spec 0003's value sourcing table\"},\"phrase\":\"exactly as spec 0003's value sourcing table already assigns it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"mention\":\"feature 14\"},\"phrase\":\"This is the same untrusted input reaching a surface shape that feature 14 will meet again with job descriptions, arriving one layer earlier.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"phrase\":\"AMENDED, 2026-08-31, by spec 0008, which is Accepted and shipped.\",\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-20\",\"mention\":\"Spec 0008 AC-20\"},\"phrase\":\"Spec 0008 AC-20 has it read the session\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-19\",\"mention\":\"spec 0008 AC-19\"},\"phrase\":\"which spec 0008 AC-19 restates and holds itself to\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"feature 21\"},\"phrase\":\"the privacy notice describing it belongs to feature 21, which this spec does not pre empt\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"mention\":\"spec 0003\"},\"phrase\":\"beyond what spec 0003 already carries\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:39\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"it is the identity AC-8 is proved with\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:46\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-20\",\"mention\":\"AC-20\"},\"phrase\":\"That is what AC-20 covers.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-20\",\"mention\":\"AC-20\"},\"phrase\":\"P10 sits outside AC-20 and blocks nothing\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:49\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"AC-9 is met in the callback instead\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:51\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 1\",\"mention\":\"Spec 0001 binding rule 1\"},\"phrase\":\"Spec 0001 binding rule 1 closes the secret key allow list at three named callers\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:51\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 31\",\"mention\":\"feature 31's demo account\"},\"phrase\":\"(the test mint, the kill switch read, feature 31's demo account)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:53\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 1\",\"mention\":\"amending spec 0001\"},\"phrase\":\"So taking this path means amending spec 0001 first, as part of the same change, not as a footnote discovered mid build.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:54\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"mention\":\"spec 0001\"},\"phrase\":\"the spec 0001 edit has to land with it rather than after it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:71\"},\"target\":{\"kind\":\"reference\",\"mention\":\"the deferred alert rule detection item\"},\"phrase\":\"That is the same drift shape as the deferred alert rule detection item\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:72\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:73\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:74\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:74\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:75\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:75\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:76\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:77\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:78\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:79\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:79\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:80\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:81\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:82\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-12**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This feature adds **no table and no column**. The only new database object is one function:",
+        "rejected_spans": [
+          "Spec 0003's six tables already key off `profile.id`, which is the `auth.users` id, and their policies already compare against `auth.uid()`."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`security definer`**, deliberately, with the reason stated in the function's own comment. This one does: it reads `auth.users` and `auth.identities`, which the calling role cannot.",
+        "rejected_spans": [
+          "`set_updated_at` is `security invoker` precisely because, as its comment says, it \"does nothing that needs elevated rights\"."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`set search_path = ''`** with every name written fully qualified.",
+        "rejected_spans": [
+          "the same reason `set_updated_at` gives.",
+          "On a definer function this is not hygiene, it is the difference between a safe function and a privilege escalation."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Explicit `revoke` from `public` and a `grant` to only the role GoTrue calls it as.**",
+        "rejected_spans": [
+          "A definer function reachable by the wrong role is a different risk class from the invoker function beside it, so the grant is written out rather than inherited."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It lives in the **`public` schema, not `auth`**, and the URI is `pg-functions://postgres/public/before_user_created_hook`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`config.toml`'s commented template shows `pg-functions://postgres/auth/before-user-created-hook`, which is wrong twice over for this project: the hyphenated name is not a legal unquoted Postgres identifier, and `auth` is Supabase's own schema, changeable by a platform upgrade.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This project's migrations own `public`, where all six tables and `public.set_updated_at()` already live, and the dashboard's own schema selector defaults to `public`. Do not copy the template.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The hook decides by reading `auth.identities` and `auth.users`. Those are not static rows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Verified 2026-08-30 with P7: when GoTrue makes an automatic link it \"will remove any other unconfirmed identities linked to an existing user\".",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "So the very table the hook queries is rewritten by the linking path the hook does not itself run on, and a later signup reads a table an earlier link already pruned.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The hook has to be correct against that, not only against a clean fixture, which is why AC-9's integration test covers the interaction explicitly rather than testing the hook in isolation.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Rollback, one step**: set `enabled = false` on the `[auth.hook.before_user_created]` stanza. A broken hook stops new signups while existing users keep signing in, so the failure is loud, noticed on the first attempt, and reversed without a migration.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Deliberately not added**: a trigger on `auth.users` creating a `profile` row.",
+        "rejected_spans": [
+          "Rejected for four reasons recorded in rationale.md; the short version is that `profile.full_name` is `not null` with a non blank check, so a provider that returns no name would make the trigger raise inside the signup transaction and surface as an opaque \"Database error saving new user\"."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Profile creation stays with feature 9, exactly as spec 0003's value sourcing table already assigns it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "signed out\n  -> (submit provider form)      -> at the provider\n  -> (consent granted)           -> at GoTrue, /auth/v1/callback\n  -> (identity resolved)         -> back at /auth/callback with a code\n  -> (code exchanged)            -> signed in, at /health\n  -> (sign out)                  -> signed out, at /\n\n  the action cannot reach the provider -> /sign-in?error=provider_unavailable\n  at the provider, consent cancelled   -> /sign-in?error=access_denied\n  at GoTrue, signup refused            -> /sign-in?error=account_exists\n  at /auth/callback, no code           -> /sign-in?error=no_code\n  at /auth/callback, exchange fails    -> /sign-in?error=exchange_failed",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two thin actions rather than one taking a provider argument, on purpose: a provider name arriving from a form is untrusted input needing its own boundary parse, and there is nothing to gain from it when the set is closed at two.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No password path exists anywhere in the product.** Not disabled, not flagged, absent. The only remaining credential path is the test mint, which lives outside `src/` and is guarded by `DEV_SESSION_ENABLED`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**One person, one account, per verified email.** Enforced in the database by the refusal hook, not by application code that a later caller could forget.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`redirectTo` never carries untrusted input.** It is derived from validated environment variables, so the allowlist is a second line of defence rather than the only one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No provider text reaches a rendered page.** Provider strings go to Sentry as context.",
+        "rejected_spans": [
+          "This is the same untrusted input reaching a surface shape that feature 14 will meet again with job descriptions, arriving one layer earlier."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The two origin values never substitute for each other.** `currentOrigin()` for `redirectTo`, `canonicalSiteUrl` for metadata. [src/app/layout.test.ts](../../../src/app/layout.test.ts) already fails if `layout.tsx` so much as mentions `currentOrigin`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Sign out is best effort but never silent.** A failing `signOut` still clears what it can and still redirects, and it still reports.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every route under `(app)` requires a session, checked in its layout, with row level security in Postgres as the real guarantee behind it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`/` and `/sign-in` are public and read nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Route handlers under `src/app/api/` are untouched by this feature; the callback deliberately sits at `src/app/auth/callback/route.ts` instead.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`/sign-in` stops reading nothing. Spec 0008 AC-20 has it read the session, so a visitor who is already signed in is bounced to the landing rule rather than shown the provider buttons again, and that bounce also reads profile row existence through the landing rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`/` is not affected and its half of this sentence stands unchanged: it still reads no session, mounts no Supabase client, and stays statically prerendered, which spec 0008 AC-19 restates and holds itself to.",
+        "rejected_spans": [
+          "The distinction matters, because `/` being session free is the accepted contract spec 0008 rejected three of its four options to preserve."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The data this feature newly touches is the identity itself: an email address, a display name, and an avatar URL, arriving from the provider into `auth.users`. That is personal data, and the privacy notice describing it belongs to feature 21, which this spec does not pre empt.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new compliance scope is triggered here beyond what spec 0003 already carries.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`redirectTo` takes no untrusted input, so there is no open redirect surface to guard.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The Supabase allowlist still exists and still matters, as defence in depth and as the thing that stops a stolen client id being used against a different origin.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "New environment variables, local stack only, consumed by `config.toml` through `env()` substitution: `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET`, `SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET`",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The exact names the Supabase CLI expects must be read off the CLI's own convention at build time rather than guessed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both pairs go into `.env.example`",
+        "rejected_spans": [
+          "since `.gitignore` ignores `.env*` with only `.env.example` and `.env.test.example` excepted, so an undocumented variable is invisible to a fresh clone."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Confirm which file the Supabase CLI actually reads them from when running `supabase start`; it is not necessarily the file Next.js reads.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "This reports a check to perform during the build rather than delivering a build result, per the checking-stage rule.",
+        "label": null
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "CI gets placeholder values for all four, so `supabase start` succeeds on a job that never drives a real handshake.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A real user row now exists in `jobhunt-dev`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Completing the Google sign in during P1 created at least one row in that project's `auth.users`, carrying a real personal email address.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "It is **kept deliberately**, not inherited: it is the identity AC-8 is proved with, and P8's residual risk is only exercised by a real account with private email on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It lives in the hosted development project **only**, never production.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:41",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It is not fixture data, so it never enters `supabase/seed.sql`, never enters a recorded fixture, and AGENTS.md's rule that fixtures carry no real personal data is unaffected because this is not one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:42",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "And the integration suite is untouched by it, because that suite runs against the local stack rather than this project.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:43",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Removed**: `DEV_SESSION_ENABLED` from the Vercel Preview scope.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:44",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Nothing deployed reads it after this feature, and CI sets it on the test jobs itself.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:45",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**P1 to P9 are complete**, worked 2026-08-29 and 2026-08-30.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:46",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Several are *exercised* rather than inspected: a real sign in was driven through both providers against `jobhunt-dev`, so P1, P2 and P3 rest on the handshake actually completing, not on a settings page reading correctly.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:47",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**P10 sits outside AC-20 and blocks nothing**: it cannot be answered until the hook exists, it is answered at milestone 4, and both of its answers are already handled below.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:48",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "P6 is now **verified available**, so this is no longer a live branch of the build: it is the contingency for the hook being withdrawn or changed on a surface the vendor marks beta.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:49",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "If it is ever taken, AC-9 is met in the callback instead.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:50",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Read the freshly signed in user, and where the email already belonged to another identity, refuse and sign back out, removing the partial account through [src/lib/supabase/secret.ts](../../../src/lib/supabase/secret.ts).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:51",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Spec 0001 binding rule 1 closes the secret key allow list at three named callers (the test mint, the kill switch read, feature 31's demo account) and says in terms: \"Adding a fourth caller means editing this spec.\"",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:52",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The callback would be a fourth.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:53",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "So taking this path means **amending spec 0001 first**, as part of the same change, not as a footnote discovered mid build.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:54",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Sequencing: this stays a contingency while the hook works, and the moment it is taken it becomes the primary path, so the spec 0001 edit has to land with it rather than after it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:55",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "That fallback also has a window worth naming: by the time the application can read the freshly signed in user, `exchangeCodeForSession` has already written real session cookies, so the account and a live session exist briefly before the check deletes the row.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:56",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A crash between those two steps leaves a browser holding a session pointing at a deleted user.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:57",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`supabase/config.toml` governs the **local Docker stack only**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:58",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The two hosted projects carry their own settings in their own dashboards and nothing in this repository constrains them, so recording the local file as though it were the product's policy would document the wrong environment, the exact failure written up in [docs/experiments/0002-deployment-and-environments.md](../../experiments/0002-deployment-and-environments.md): \"A verification pointed at the wrong environment returns a perfectly real result about the wrong thing, and it reads as success.\"",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:59",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`enable_manual_linking` stays `false` on purpose and is recorded here so a later reader does not flip it thinking it is what makes linking work.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:60",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Verified 2026-08-30 (P7): it is **off by default**, so `false` is confirming the default rather than changing it, and it governs the `linkIdentity` API for linking a **different** email while already signed in, a separate beta feature from the automatic linking this decision rests on.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:61",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Automatic linking has no setting at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:62",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`skip_nonce_check` is the one row where local must differ from both hosted projects.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:63",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`config.toml`'s own comment on the provider stanzas says it plainly: \"If enabled, the nonce check will be skipped. Required for local sign in with Google auth.\"",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:64",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both hosted projects keep it off, correctly.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:65",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Local needs it on, and discovering that from a failed handshake rather than from this table is exactly the cost this row exists to avoid.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:66",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This spec records keeping the session defaults as a judgement about a product whose users come back to check applications, and that reasoning holds.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:67",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "But it should not read as a free choice, because it was not one: both projects show \"Configuring user sessions is only available on the Pro Plan and above\", so the timebox and inactivity timeout were never available to set.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:68",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Recorded alongside the judgement so a later reader on a paid plan knows it has become a real decision rather than a settled one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:69",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The hook **function** ships in a migration, so it is versioned, reviewed and applied the same way as everything else.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:70",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Its **enablement** on `jobhunt-dev` and `jobhunt-prod` is dashboard state that no file here records, so the two can drift: a migration can land with the hook switched off on production and nothing in this repository would say so.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:71",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "That is the same drift shape as the deferred alert rule detection item, and it is why the row is written out rather than assumed to follow the migration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:72",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path, manual: sign in with Google on a deployed URL, land on `/health`, sign out, land on `/` signed out. Repeat with GitHub, verifies **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path, manual"
+      },
+      {
+        "id": "derived:73",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path, automated: an unauthenticated request to `/health` redirects to `/sign-in`, verifies **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path, automated"
+      },
+      {
+        "id": "derived:74",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: the callback with `error=access_denied` redirects to `/sign-in?error=access_denied`, renders this product's sentence, and emits **no** Sentry alert, verifies **AC-5**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:75",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: the callback with no `code` and with an unusable `code` each redirect to their own code, and the failing exchange reports as `external_service_failed`, verifies **AC-5**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:76",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: `/sign-in?error=<junk>` renders the generic sentence and never echoes the junk, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:77",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a hook made to error internally still **refuses**, with its own distinct message, rather than failing open and admitting the signup, verifies **AC-10**.",
+        "rejected_spans": [
+          "A hook that failed open would recreate the silent empty account this whole mechanism exists to prevent"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:78",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth and permission: two real OAuth accounts each read only their own rows, verifies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:79",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth and permission: a second provider on the same verified email reaches the same account, verifies **AC-8**; and on an unverified or absent email is refused with the owning provider named, verifies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:80",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: the hook still decides correctly **after** GoTrue has pruned unconfirmed identities during an earlier automatic link. Driven against the real local stack, not a clean fixture, verifies **AC-9**.",
+        "rejected_spans": [
+          "since that prune rewrites the `auth.identities` rows the hook reads"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:81",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Regression: nothing reachable from `/` or `/sign-in` carries `\"use client\"`, verifies **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:82",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Regression: `grep` finds no `signInWithDevPassword`, no `src/features/dev-session/`, and no `src/lib/supabase/browser.ts`, verifies **AC-12**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9's integration test"
+        },
+        "phrase": "which is why AC-9's integration test covers the interaction explicitly rather than testing the hook in isolation",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "feature 9"
+        },
+        "phrase": "Profile creation stays with feature 9",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": null,
+          "label": null,
+          "mention": "spec 0003's value sourcing table"
+        },
+        "phrase": "exactly as spec 0003's value sourcing table already assigns it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "feature 14"
+        },
+        "phrase": "This is the same untrusted input reaching a surface shape that feature 14 will meet again with job descriptions, arriving one layer earlier.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "phrase": "AMENDED, 2026-08-31, by spec 0008, which is Accepted and shipped.",
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-20",
+          "label": null,
+          "mention": "Spec 0008 AC-20"
+        },
+        "phrase": "Spec 0008 AC-20 has it read the session",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-19",
+          "label": null,
+          "mention": "spec 0008 AC-19"
+        },
+        "phrase": "which spec 0008 AC-19 restates and holds itself to",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21"
+        },
+        "phrase": "the privacy notice describing it belongs to feature 21, which this spec does not pre empt",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": null,
+          "label": null,
+          "mention": "spec 0003"
+        },
+        "phrase": "beyond what spec 0003 already carries",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:39"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "it is the identity AC-8 is proved with",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:46"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20"
+        },
+        "phrase": "That is what AC-20 covers.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20"
+        },
+        "phrase": "P10 sits outside AC-20 and blocks nothing",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:49"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "AC-9 is met in the callback instead",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:51"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 1",
+          "mention": "Spec 0001 binding rule 1"
+        },
+        "phrase": "Spec 0001 binding rule 1 closes the secret key allow list at three named callers",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:51"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 31",
+          "id": null,
+          "label": null,
+          "mention": "feature 31's demo account"
+        },
+        "phrase": "(the test mint, the kill switch read, feature 31's demo account)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:53"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 1",
+          "mention": "amending spec 0001"
+        },
+        "phrase": "So taking this path means amending spec 0001 first, as part of the same change, not as a footnote discovered mid build.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:54"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001"
+        },
+        "phrase": "the spec 0001 edit has to land with it rather than after it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:71"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": null,
+          "mention": "the deferred alert rule detection item"
+        },
+        "phrase": "That is the same drift shape as the deferred alert rule detection item",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:72"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:73"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:74"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:74"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:75"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:75"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:76"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:77"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:78"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "verifies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:79"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:79"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:80"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:81"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:82"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "verifies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
