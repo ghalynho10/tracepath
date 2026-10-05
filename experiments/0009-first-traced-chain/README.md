@@ -150,11 +150,23 @@ Read from the rebuilt results, with no API call:
 | Spent, by the running total | $3.7143, 12 calls |
 | Summed artifact usage | 69,927 input, 321,796 output, 57,494 cache write, 632,434 cache read: $3.7143 |
 
-**Console reconciliation (AC-54): not yet done.** The record must compare the summed
-artifact usage above with the Console's usage for 2026-10-05. That comparison needs the
-engineer's Console, which this session cannot read. Today's other tracepath API use was
-free token counting only (the dry runs), plus the test suite, which makes no real call.
-Add the Console figure and any gap here, without explaining the gap away.
+**Console reconciliation (AC-54).** Read by the engineer from the Console's Usage page
+for 2026-10-05 UTC, model Sonnet 5, all workspaces and API keys:
+
+| | Console | Artifacts | Gap |
+|---|---|---|---|
+| Tokens in | 759,855 | 759,855 (69,927 input + 57,494 cache write + 632,434 cache read) | 0 |
+| Tokens out | 321,796 | 321,796 | 0 |
+
+No call reached the API that the artifacts do not record. The day's other tracepath API
+use was free token counting only (the dry runs), which does not appear on the Usage page.
+The Cost page did not yet show the day's USD figure when read; at the rates in
+`src/tracepath/extract/cost.py` these tokens price at $3.7143.
+
+One difference in timing, stated as found: the engineer read both usage bars as falling
+between 21:00 and 22:00 UTC, while the artifacts were written from 21:39:44 to 22:24:11
+UTC, so part of the run ran in the 22:00 hour. The token totals match exactly whatever
+the bars' labels mean, so this does not change the reconciliation.
 
 ## Findings on the spec's own figures
 
