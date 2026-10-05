@@ -247,22 +247,6 @@ def system_prompt() -> str:
     return RULES + "\n" + few_shot_block(read_examples(EXAMPLES_DIR), EXAMPLE_NOTES) + "\n"
 
 
-def __getattr__(name: str) -> str:
-    """`SYSTEM_PROMPT`, still importable by name, built only when it is asked for.
-
-    Experiments 0005 and 0006 import `SYSTEM_PROMPT` from here in measurement scripts
-    that are frozen and must not be edited. This keeps that import working at HEAD
-    without reading `examples/` at import.
-
-    Raises:
-        AttributeError: for any other name, as a missing module attribute always does.
-        ExampleError: the worked examples cannot be read into the prompt.
-    """
-    if name == "SYSTEM_PROMPT":
-        return system_prompt()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 #: How long the cached system prompt lives. One call's output can outlast the 5 minute
 #: default, and a cache lifetime runs from the start of the request that last read it
 #: (spec 0003, AC-19).

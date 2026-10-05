@@ -5,6 +5,15 @@
 **Before commit**: `972907b` (prompt `0002.3`, the commit group A's lost links were measured against)
 **After prompt**: `0003.1`
 **Spec**: [0003, AC-30, AC-31](../../docs/specs/0003-extraction-stability-heterogeneous-units/index.md), the AC-16 findings amendment (2026-09-28)
+**Measurement script**: `measure_recheck.py` imports `SYSTEM_PROMPT` by name from
+`tracepath.extract.client`, and the script is not changed. That name was replaced by
+`system_prompt()` in `d3d106f`, so the script imports at no later commit. Run it from a
+checkout of its own commit, `5142169`, where it measured the `0003.1` prompt (141,207
+characters), as experiment 0005's `report.py` runs from `201fae4`. The last commit
+where the name is a module constant is `e86ca80`, with the same prompt. A shim kept the
+name importable from `2bff29d` to `9f745e6`; it was removed because it let strict mypy
+accept any name imported from that module. Checked 2026-10-05 by importing the script
+at each commit, with no API call.
 
 ## What this is
 

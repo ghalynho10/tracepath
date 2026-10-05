@@ -20,6 +20,15 @@ to `artifacts/superseded/<run date>-prompt-0003.0/0021/requirements/`, the date 
 experiment 0008's README. From that commit on, run `report.py` from a checkout of
 `201fae4`. Groups B and C (`0013`, `feature-9`) are not in that rerun; their runs stay
 in `artifacts/runs/`.
+**Measurement script**: `measure_prefix.py` imports `SYSTEM_PROMPT` by name from
+`tracepath.extract.client`, and the script is not changed. That name was replaced by
+`system_prompt()` in `d3d106f`, so the script imports at no later commit. Run it from a
+checkout of its own commit, `906e669`, where it measured the `0003.0` prompt (118,651
+characters), as `report.py` runs from `201fae4`. The last commit where the name is a
+module constant is `e86ca80` (the `0003.1` prompt there). A shim kept the name
+importable from `2bff29d` to `9f745e6`; it was removed because it let strict mypy accept
+any name imported from that module. Checked 2026-10-05 by importing the script at each
+commit, with no API call.
 
 ## Question
 
