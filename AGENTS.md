@@ -36,7 +36,8 @@ tracepath runs from this repository with `uv run`, not as an installed tool: the
 - `corpus/`: the pinned JobHunt snapshot, tracked in git.
 - `eval/`: the eval set, tracked in git.
 - `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
-- `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `SYSTEM_PROMPT` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`.
+- `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `system_prompt()` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`. Only the `text` fence under `## Input` and the `json` fence under `## Output` reach the model, read in filename order by `src/tracepath/extract/examples.py`; a file missing either fence fails the prompt build.
+- `artifacts/`: the JSON run artifacts and review queue, tracked in git, the source of truth the graph is rebuilt from. Append only: `write_run()` raises `ArtifactCollisionError` rather than replace an existing file. Runs replaced by a newer prompt move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted (`experiments/README.md`).
 
 ## Specs
 
