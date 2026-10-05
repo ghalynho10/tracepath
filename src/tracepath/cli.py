@@ -2,8 +2,9 @@
 
 import logging
 from pathlib import Path
-from typing import NoReturn
+from typing import Annotated, NoReturn
 
+import anthropic
 import typer
 from rich.console import Console
 
@@ -11,12 +12,32 @@ from tracepath import __version__
 from tracepath.artifacts import (
     REVIEW_LOG,
     REVIEW_QUEUE,
+    ArtifactCollisionError,
     ensure_review_log,
+    now_utc,
     review_log_entries,
     write_graph_build,
     write_review_queue,
 )
-from tracepath.config import SettingsInvalid, load_neo4j_settings
+from tracepath.config import SettingsInvalid, load_anthropic_settings, load_neo4j_settings
+from tracepath.extract.address import UnitAddressError, resolve_address, resolve_addresses
+from tracepath.extract.client import build_client, system_prompt
+from tracepath.extract.cost import (
+    CALIBRATION_ADDRESS,
+    EstimateUnavailable,
+    UnitCount,
+    check_calibration,
+    estimate,
+    estimate_lines,
+)
+from tracepath.extract.examples import ExampleError
+from tracepath.extract.metered import (
+    calls_through,
+    count_input,
+    preflight,
+    run_metered,
+    summary_lines,
+)
 from tracepath.extract.records import RecordError
 from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
@@ -207,3 +228,81 @@ def trace(
         _fail(str(exc))
     for line in render_chain(chain):
         _say(line)
+
+
+@app.command()
+def extract(
+    units: Annotated[
+        list[str],
+        typer.Argument(
+            help='Unit addresses, RECORD:SECTION, e.g. 0002:Requirements "0007:Feature design".'
+        ),
+    ],
+    ceiling: float | None = typer.Option(
+        None, "--ceiling", help="The most this command may spend, in USD. Required."
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Count and price only: no extraction call is made."
+    ),
+    root: str = typer.Option(".", "--root", help="The repository root to write artifacts under."),
+    snapshot: str = typer.Option(
+        "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
+    ),
+    commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+) -> None:
+    """Extract units with the model, three runs each, every attempt written as it settles.
+
+    Spends API credit unless `--dry-run`. Prints a measured estimate first and refuses
+    to start when its wider total is above `--ceiling`; stops before any call that one
+    more failure could carry past it.
+    """
+    if ceiling is None:
+        _fail("--ceiling USD is required: the most this command may spend.")
+    base = Path(root)
+    corpus_snapshot = base / snapshot
+    try:
+        targets = resolve_addresses(corpus_snapshot, units)
+        calibration = resolve_address(corpus_snapshot, CALIBRATION_ADDRESS)
+        system_prompt()
+        settings = load_anthropic_settings()
+        preflight(base, targets, settings.runs_per_unit)
+    except (UnitAddressError, ExampleError, SettingsInvalid, ArtifactCollisionError) as exc:
+        _fail(str(exc))
+
+    client = build_client(settings)
+    try:
+        check_calibration(count_input(client, settings, calibration.unit))
+        counts = [
+            UnitCount(t.address, t.unit.section, count_input(client, settings, t.unit))
+            for t in targets
+        ]
+        priced = estimate(counts, settings.runs_per_unit)
+    except EstimateUnavailable as exc:
+        _fail(str(exc))
+    except anthropic.APIError as exc:
+        _fail(f"the token count endpoint failed, so nothing is priced ({exc})")
+    for line in estimate_lines(priced, ceiling):
+        _say(line)
+    if dry_run:
+        _say("Dry run: no extraction call made.")
+        return
+    if priced.wider_usd > ceiling:
+        _fail(
+            f"the wider estimate ${priced.wider_usd:.4f} is above the ceiling ${ceiling:.2f}, "
+            "so no call is made."
+        )
+
+    outcome = run_metered(
+        targets,
+        calls_through(client, settings),
+        settings,
+        base,
+        commit,
+        now_utc(),
+        ceiling,
+        _say,
+    )
+    for line in summary_lines(outcome):
+        _say(line)
+    if outcome.stop is not None:
+        _fail(outcome.stop)
