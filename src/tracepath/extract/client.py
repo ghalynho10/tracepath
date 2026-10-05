@@ -17,8 +17,14 @@ from dataclasses import dataclass
 from typing import Literal, cast
 
 import anthropic
-from anthropic.types import ContentBlock, OutputConfigParam, TextBlockParam, Usage
-from pydantic import ValidationError
+from anthropic.types import (
+    ContentBlock,
+    JSONOutputFormatParam,
+    OutputConfigParam,
+    TextBlockParam,
+    Usage,
+)
+from pydantic import TypeAdapter, ValidationError
 
 from tracepath.config import AnthropicSettings
 from tracepath.extract.examples import EXAMPLES_DIR, few_shot_block, read_examples
@@ -418,6 +424,18 @@ def _attempt_from_usage(
     )
 
 
+def output_format() -> JSONOutputFormatParam:
+    """The output schema exactly as the SDK builds it from `output_format=ExtractionOutput`.
+
+    Sent through `output_config` instead, so the request is unchanged but the stream no
+    longer validates the output itself. The SDK validates at the text block's end,
+    before the final usage event, so a schema failure there lost the attempt's real
+    output count and stop reason. `extract_once()` validates once the stream is done.
+    """
+    schema = anthropic.transform_schema(TypeAdapter(ExtractionOutput).json_schema())
+    return {"type": "json_schema", "schema": schema}
+
+
 def user_prompt(unit: Unit) -> str:
     """The message one extraction call is made from."""
     return (
@@ -439,12 +457,12 @@ def extract_once(
             The exception carries this attempt, usage included, so the caller can
             still write its artifact.
     """
-    # The schema travels as `output_format`, not as a raw `output_config.format.schema`.
-    # The models generate a discriminated union, which Pydantic renders as `oneOf`, and
-    # the API rejects that keyword outright; the SDK's own path normalises it. `effort`
-    # rides alongside in `output_config`, because thinking is billed as output and so
-    # effort is the cost dial this pipeline actually turns.
-    config: OutputConfigParam = {}
+    # The schema is the one the SDK builds from `output_format` (`output_format()`): the
+    # models generate a discriminated union, which Pydantic renders as `oneOf`, and the
+    # API rejects that keyword unless the SDK's transform normalises it. `effort` rides
+    # alongside in `output_config`, because thinking is billed as output and so effort is
+    # the cost dial this pipeline actually turns.
+    config: OutputConfigParam = {"format": output_format()}
     if settings.effort is not None:
         config["effort"] = cast("Effort", settings.effort)
     try:
@@ -453,31 +471,9 @@ def extract_once(
             max_tokens=MAX_TOKENS,
             system=system_blocks(),
             messages=[{"role": "user", "content": user_prompt(unit)}],
-            output_format=ExtractionOutput,
             output_config=config,
         ) as stream:
-            try:
-                response = stream.get_final_message()
-            except ValidationError as exc:
-                # The parse raises before the message is returned, so the cost would
-                # vanish with it. The snapshot still holds what the call really used.
-                snapshot = stream.current_message_snapshot
-                message = (
-                    f"{unit.record_id} {unit.section}: the output did not satisfy "
-                    f"the schema ({exc})"
-                )
-                raise ExtractionFailed(
-                    message,
-                    (
-                        _attempt_from_usage(
-                            number,
-                            snapshot.usage if snapshot else None,
-                            error=message,
-                            raw_response=_raw_text(snapshot.content) if snapshot else None,
-                            stop_reason=snapshot.stop_reason if snapshot else None,
-                        ),
-                    ),
-                ) from exc
+            response = stream.get_final_message()
     except anthropic.APIError as exc:
         # Nothing came back, so the API reported no usage to record. Zero here means
         # "nothing was billed that we were told about", and the error says why.
@@ -495,7 +491,25 @@ def extract_once(
             ),
         ) from exc
 
-    parsed = response.parsed_output
+    # Validated only now, with the whole response in hand, so a failure still records
+    # the usage and stop reason of the full call.
+    text = next((block.text for block in response.content if block.type == "text"), None)
+    try:
+        parsed = None if text is None else ExtractionOutput.model_validate_json(text)
+    except ValidationError as exc:
+        message = f"{unit.record_id} {unit.section}: the output did not satisfy the schema ({exc})"
+        raise ExtractionFailed(
+            message,
+            (
+                _attempt_from_usage(
+                    number,
+                    response.usage,
+                    error=message,
+                    raw_response=_raw_text(response.content),
+                    stop_reason=response.stop_reason,
+                ),
+            ),
+        ) from exc
     if parsed is None:
         message = (
             f"{unit.record_id} {unit.section}: the model returned no parsed output "
