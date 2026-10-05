@@ -122,7 +122,7 @@ Filled at close (Build plan step 33), 2026-10-04. Each row names the evidence; a
 | AC-19 | `cache_read_input_tokens` on the second call of each `0003.x` session |
 | AC-20 | The measured token count and computed cost (the formula above), confirmed before the first paid call |
 | AC-21 | Inspection of the reworded struck claim and partial retirement rules in `RULES`, and of `examples/0012-build-plan.md` step 3's retyped link |
-| AC-22 to AC-24, AC-27 | Inspection of the assembled `0003.1` prompt: each new rule appears once, no example file repeats one |
+| AC-22 to AC-24, AC-27 | Inspection of the assembled `0003.1` prompt: each new rule appears once in the prompt the model receives. An example file may restate a rule in its own "Rules this example demonstrates" section, which never reaches the prompt (`examples/feature-21-scope-row.md` restates AC-27's), so that is not a failure. Reworded 2026-10-05 by spec [0004](../0004-first-traced-chain/index.md), from `docs/reviews/2026-10-04-check-verify-extraction-stability.md` note 2 |
 | AC-25 | Example validation test, plus inspection: the seventh example's source record is on none of the excluded lists and its unclassified pointer is real |
 | AC-26 | Inspection: `feature-21-scope-row.md` shows the `Done when` block split at its clause boundaries into three parts |
 | AC-28 | The test that every example's Output holds at most one **unstruck** entity per verbatim `AC-N` id; the seventh example contains at least one bundled, flagged `AC-N`; `method-notes.md` carries the ruling convention |
