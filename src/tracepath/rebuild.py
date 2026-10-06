@@ -12,9 +12,11 @@ belongs to the run that made the calls, and adding it up again here would double
 a cost that was never paid twice.
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from tracepath.artifacts import RUNS_DIR, RunArtifact, read_run
+from tracepath.config import RUNS_PER_UNIT
 from tracepath.extract.compare import route_runs
 from tracepath.extract.ids import assign_ids, label_binding_rules, locate_output
 from tracepath.extract.records import Record, records_for
@@ -50,24 +52,71 @@ def unit_for(artifact: RunArtifact, snapshot: Path) -> Unit:
     return found[0]
 
 
-def committed_units(root: Path, snapshot: Path) -> tuple[UnitResult, ...]:
-    """Every committed unit of a run, re-identified from its artifacts. No API calls.
+@dataclass(frozen=True)
+class PartialUnit:
+    """A unit with fewer settled runs than the run policy asks for, so never loaded."""
 
-    Only settled runs are read. A failed attempt is written under its own name, which
-    this glob does not match, so it is counted in the cost and never mistaken for a run.
+    record: str
+    section: str
+    section_slug: str
+    settled_runs: int
 
-    Raises:
-        RebuildFailed: there are no artifacts to rebuild from.
+
+def _settled_by_unit(root: Path) -> dict[tuple[str, str], list[RunArtifact]]:
+    """Every settled run artifact, grouped by `(record, section_slug)` in path order.
+
+    A failed attempt is written under its own name, which this glob does not match, so
+    it is counted in the cost and never mistaken for a run.
     """
     by_unit: dict[tuple[str, str], list[RunArtifact]] = {}
     for path in sorted((root / RUNS_DIR).glob("*/*/run-*.json")):
         artifact = read_run(path)
         by_unit.setdefault((artifact.record, artifact.section_slug), []).append(artifact)
+    return by_unit
+
+
+def settled_run_counts(root: Path) -> dict[tuple[str, str], int]:
+    """How many settled runs each unit holds, keyed by `(record, section_slug)`."""
+    return {key: len(artifacts) for key, artifacts in _settled_by_unit(root).items()}
+
+
+def partial_units(root: Path) -> tuple[PartialUnit, ...]:
+    """Every unit an interrupted or failed extraction left short of its runs.
+
+    Such a unit is never resumed (spec 0004 AC-48), so it is not extracted: it stays
+    out of the graph and the report names it `section_not_extracted`.
+    """
+    return tuple(
+        PartialUnit(
+            record=record,
+            section=artifacts[0].section,
+            section_slug=slug,
+            settled_runs=len(artifacts),
+        )
+        for (record, slug), artifacts in _settled_by_unit(root).items()
+        if len(artifacts) < RUNS_PER_UNIT
+    )
+
+
+def committed_units(root: Path, snapshot: Path) -> tuple[UnitResult, ...]:
+    """Every fully extracted unit, re-identified from its artifacts. No API calls.
+
+    Only settled runs are read, and only a unit holding the run policy's full count of
+    them is rebuilt. A unit cut short is not extracted (`partial_units()`): comparing
+    fewer runs than the policy asks for says nothing about stability, and one run
+    cannot be compared at all.
+
+    Raises:
+        RebuildFailed: there are no artifacts to rebuild from.
+    """
+    by_unit = _settled_by_unit(root)
     if not by_unit:
         raise RebuildFailed(f"no run artifacts found under {root / RUNS_DIR}")
 
     results: list[UnitResult] = []
     for artifacts in by_unit.values():
+        if len(artifacts) < RUNS_PER_UNIT:
+            continue
         ordered = sorted(artifacts, key=lambda a: a.run)
         unit = unit_for(ordered[0], snapshot)
         identified = tuple(

@@ -1,0 +1,1577 @@
+{
+  "record": "0002",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-05T21:38:39+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 8473,
+  "output_tokens": 50849,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "490bbc134a9d4cd19f73eec93bc55edb",
+  "artifact_format_version": 2,
+  "unit_sha256": "19a71e6bd46faab3beec143904a0eb20da28cb40268a467a0e5cd04709d99b7e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Vercel functions run in `iad1`.\",\"rejected_spans\":[\"to sit beside both databases.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Node 24, matching `.nvmrc` and `engines`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The runtime stays Node, never Edge, per spec 0001.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The development project holds synthetic data only.\",\"rejected_spans\":[\"That is not a promise to keep in mind: it holds because previews are the only deployed surface reading it and previews require a Vercel login, so nobody but the author can enter anything into it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"If preview protection is ever turned off, this guarantee and binding rule 7's fifth condition both fail together.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"This section was written before any of it existed. It now records real values. Every line below was confirmed by the engineer on 2026-08-21, in the dashboards or in a browser.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A provenance note about how the following table was confirmed; it states no requirement, outcome, build step or test of its own.\"},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing in the build environment can read Vercel or Supabase state directly.\",\"rejected_spans\":[\"so these rest on that check and not on a tool's reading.\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The one value this section left unconfirmed, the framework prefixed system variable names, was settled during the build on 2026-08-21 against Vercel's own framework environment variables reference.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"All three (`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`) exist for the Next.js framework preset, are populated by the same \\\"enable access to system environment variables\\\" setting, and are documented as available at both build time and runtime.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No explicit per environment fallback variable is needed, so task 3's fallback is not exercised.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The two URL values carry no protocol scheme.\",\"rejected_spans\":[\"which is why the origin resolver adds one.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One new table, plus one existing table gaining a fixture path.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`public.app_settings`, the single row that holds the global kill switch.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Row level security enabled and forced, with **zero policies**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A table with row level security on and no policy denies every action to every role that respects policies.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No `grant` to `anon` and none to `authenticated`.\",\"rejected_spans\":[\"Two independent gates, matching the pattern already used by `scaffold_check`.\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**One explicit `grant select` to `service_role`**, the role the secret key authenticates as.\",\"rejected_spans\":[\"This is a correction to the original wording of \\\"no grants\\\",\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`BYPASSRLS` bypasses policies but not table privileges. Those are two separate checks in Postgres, and only the first is bypassed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"With the Data API set not to expose new tables, a newly created table starts with no privileges for any Data API role, so without this grant the one intended reader is refused at the privilege check before row level security is ever consulted.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The only reader is a client built with the secret key, which carries `BYPASSRLS`.\",\"rejected_spans\":[\"That is exactly the caller binding rule 1 already names.\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"a refused read is a failure, and invariant 3 defines a failed read as \\\"switched on\\\". A missing grant would therefore not look like a missing grant. It would look like a kill switch stuck permanently on, in a deployed application, with AC-8's visible failure rendering exactly as designed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Task 10 writes the grant and task 11 proves the read by hand before anything trusts it.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A forward pointer to build steps outside this section, recording sequencing only, not a requirement, outcome, build step or test itself.\"},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Whether Supabase's setting withholds privileges from `service_role` as well as from `anon` and `authenticated` was not confirmable from inside this repository, and the evidence available leaned the other way: the installed `supabase` skill describes the setting as affecting `anon` and `authenticated` only.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The grant was written anyway.\",\"rejected_spans\":[\"on the grounds that it costs one line, grants nothing the design did not already intend, and is expensive to diagnose when absent.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Confirmed on 2026-08-22, and the grant was necessary.** `has_table_privilege('service_role', 'public.scaffold_check', 'select')` returns **false** on the hosted development project, and false locally.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`scaffold_check` is granted to `authenticated` only, so it is the table that isolates the question, and the answer is that the setting withholds privileges from `service_role` too.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The skill's description is wrong, or at least incomplete, for a project configured this way.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Without this grant the kill switch read would have been refused in production, and invariant 3 defines a refused read as switched on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The switch would have sat permanently engaged with the visible failure rendering exactly as designed, which is the failure this section was written to prevent and which the available documentation would have talked you out of preventing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Invariant 6 is therefore load bearing rather than cautious, and feature 4 inherits it as a real build step on every table.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**table privileges** decide whether a role may touch the table at all, and are what the Data API setting governs. **Row level security**, including `force row level security` applying to the table owner, decides which rows are visible once the table is reachable. Postgres checks privileges first.\",\"rejected_spans\":[\"Two separate mechanisms are in play here and they are easy to run together, so to be explicit:\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Fixing one never resolves the other, which is why task 10's statement order and task 10's grant are two independent corrections rather than one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`public.scaffold_check` is unchanged. Its rows carry a foreign key to `auth.users`.\",\"rejected_spans\":[\"which is why the fixture reaches hosted projects the way described below rather than through a migration.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"a `scaffold_check` row cannot exist without an owning user, and creating fake users in production through a migration would be a worse outcome than the problem it solves.\",\"rejected_spans\":[\"This amends the interview answer, and the reason is a constraint the question missed:\"],\"known_trap_flags\":[]},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Schema** reaches every project through migrations, always.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The `app_settings` row** is inserted by its own migration, so it exists in every project including production. It has no foreign key and nothing fake about it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The `scaffold_check` fixture and its two seeded users** stay in `supabase/seed.sql`, made idempotent, and the migration workflow applies that file to the **development project only**, never production.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Production carries no fake users and no scaffold row.\",\"rejected_spans\":[\"which is correct: production has no sign in path at all until feature 7, so the thread is proved on a preview against the development project.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The seed is applied with `psql \\\"$SUPABASE_DB_URL_DEV\\\" -f supabase/seed.sql`, a direct connection using a stored connection string.\",\"rejected_spans\":[\"because `supabase db push` does not run seed files.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`supabase db reset --linked` would run it but wipes the database first, which is not acceptable against a shared project even a development one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:41\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Whether that insert is actually permitted on a hosted project is unconfirmed, which is why build task 5 proves it by hand before task 6 puts it in CI.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:42\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither can quietly stand in for the other. A canonical link that points at a preview is wrong; a redirect that points at production from a preview is broken.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:43\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new HTTP endpoint.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:44\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Binding rule 6 forbids route handlers under `src/app/api/` from touching user data, and nothing here needs one: the uptime monitor watches the public marketing page.\",\"rejected_spans\":[\"which is a truer signal than a route that only reports on itself.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:45\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Preview deployments**: Vercel Authentication, standard protection. Only the account owner reaches them. Production stays public, and that is a checked fact rather than an assumption: standard protection leaves the generated production URL reachable with no Vercel session, confirmed in a private window on 2026-08-21.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:46\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Raising protection to cover all deployments would take production private and break AC-1, AC-3 and the uptime monitor in one move.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:47\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`app_settings`**: unreadable and unwritable by any user token. Readable by the secret key client, which is constructible in exactly one file. Writable in practice only through the Supabase dashboard or a direct database connection, which is the point: flipping the switch requires access to the deployment, not a privilege inside the product.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:48\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`scaffold_check`**: unchanged, one row per user under an ownership policy, `anon` deliberately ungranted so a request without a session gets a hard denial rather than an empty result.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:49\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Dev password sign in**: enabled by an explicit variable that defaults to false, set only on the Vercel Preview environment and locally. Production never carries it. Feature 7 deletes the whole feature folder.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:50\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Supabase MCP**: scoped with `project_ref` to the development project, `read_only=true`, per call confirmation on, no other MCP server connected alongside it, and the production ref configured nowhere.\",\"rejected_spans\":[\"This closes the environment half of binding rule 7 that spec 0001 assigned to this feature.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:51\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Personal data**: none in the development project by construction.\",\"rejected_spans\":[\"since previews are the only surface that reads it and they require a Vercel login.\"],\"known_trap_flags\":[]},{\"id\":\"derived:52\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`DEV_SESSION_ENABLED` guards the test layer's secret key client in `test/helpers/admin.ts`. Defaults to false. Nothing deployed reads it now, and CI sets it on the test jobs itself.\",\"rejected_spans\":[\"it used to enable the development password sign in, which feature 7 deletes, and it used to be set on Preview.\",\"so a value set where nothing reads it would be its own small untruth\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:53\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`DEV_SESSION_ENABLED` (server, boolean from string, default `false`)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:54\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`NEXT_PUBLIC_SITE_URL` (client, URL, required)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:55\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` (client, number between 0 and 1, default `1`)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:56\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` (client, all optional, absent when running locally)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:57\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN` stop being plainly optional. They become **conditionally required**: optional when `NEXT_PUBLIC_VERCEL_ENV` is absent (local work, and a fresh clone before anyone has a Sentry project), required when it is present.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:58\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Without this, a deployed build with no DSN succeeds and ships with error reporting silently off, which is the failure shape the whole error model exists to prevent, and it would leave AC-13 passing on paper while nothing reported.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:59\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SUPABASE_ACCESS_TOKEN`: a personal access token for the Supabase CLI\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:60\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SUPABASE_PROJECT_ID_DEV`, `SUPABASE_PROJECT_ID_PROD`: the two project refs\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:61\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SUPABASE_DB_PASSWORD_DEV`, `SUPABASE_DB_PASSWORD_PROD`: the two database passwords, used by `supabase db push`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:62\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SUPABASE_DB_URL_DEV`: the development project's connection string, used only by the seed step\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:63\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Prerequisites before coding begins**, each producing values the build then needs. **All four are satisfied as of 2026-08-21**.\",\"rejected_spans\":[\"and the values they produced are in the table under What is actually provisioned. They are kept here rather than deleted, because a later reader needs to know what this feature depended on and did not create.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:64\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A Vercel account (confirmed to exist). **Satisfied**: project `jobhunt`, region `iad1`, preview protection on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:65\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two Supabase projects in `us-east-1`, development and production. Each yields a project URL, a publishable key, a secret key, a project ref, a database password and a connection string. **Satisfied**, both created, both with the Data API set not to expose new tables automatically.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:66\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Confirm the region on each before skipping task 1.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A stage line that only reports a check to perform before relying on prior work; it delivers nothing itself, so it is not a BuildStep.\"},{\"id\":\"derived:67\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A Sentry account with an organisation and a project. Yields `SENTRY_ORG`, `SENTRY_PROJECT`, the DSN, and an auth token for source map upload. Nothing in this feature creates these, and four required variables come from them. **Satisfied**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:68\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A free uptime monitoring account. **Satisfied**, UptimeRobot, with a monitor already pointed at the production origin.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:69\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a merge to `main` deploys and the production URL serves the marketing page, verifies **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:70\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: on a preview URL, signing in as `dev-one` shows dev one's row, and signing in as `dev-two` shows a different row, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:71\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: with `app_settings` unreachable, the deployed page renders a visible failure and the app treats the switch as on, verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:72\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: flip the flag in the dashboard, reload the deployed page, and the displayed value changes with no deploy, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:73\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a migration written to fail is pushed, and the workflow fails visibly rather than reporting success, verifies **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:74\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: a query with a signed in user's token against `app_settings` returns a permission denial, not an empty result, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:75\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: an anonymous request to a preview URL is stopped by Vercel Authentication, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:76\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"a POST to the sign in action on production is refused because `DEV_SESSION_ENABLED` is absent, verifies **AC-10**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:77\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**UNRUNNABLE SINCE 2026-08-30**, and see AC-10 above. Spec 0007 deleted the Server Action this scenario posts to, so there is nothing left to refuse. Struck rather than rewritten because the property it tested, that no environment can accept a password, stopped being a guard and became structural: the code path does not exist. Spec 0007's own `verify.md` greps for its absence instead.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A status note explaining why a test scenario became unrunnable; it is not itself a test scenario, requirement, build step or outcome.\"},{\"id\":\"derived:78\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Destructive migrations are asymmetric.** A migration may add in the same commit as the code that uses it. A migration may drop only after a previous deploy has already stopped reading the thing being dropped. Never add and drop in one commit. Feature 4 owns the real schema and must carry this rule in its own spec, not inherit it by memory.\",\"rejected_spans\":[\"Vercel and GitHub Actions build the same commit in parallel, so an additive migration arriving late causes a brief visible error that self heals, while a drop arriving early breaks running code with nothing to catch it.\"],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:79\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`SKIP_ENV_VALIDATION` is never set on a deployed build.** It exists for the CI job that holds no secrets, and nowhere else.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:80\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The kill switch fails closed.** Anything other than a successful read of `false` means gated calls stop.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:81\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Only `src/lib/kill-switch.ts` reads `app_settings`,** and it is the module that holds binding rule 1's named kill switch caller. Pages under `src/app` reach it through that module and never import `src/lib/supabase/secret.ts` directly, which is what the existing lint rule enforces.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:82\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Production and development schemas are the same schema.** Both come from `supabase/migrations/`. A change applied to one project by hand is drift, and the workflow is the only sanctioned path.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:83\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Every new table is granted explicitly.** Neither project exposes new tables to the Data API automatically, so a table is reachable only by a role named in a `grant`, and the role granted has to match the client that reads it. This is a build step on every table from now on, never a default to lean on. Getting it wrong produces a permission denial rather than an empty result, which is the failure shape this project wants, but only if someone recognises it as one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:84\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No secret is ever committed.** `.gitignore` already excludes every `.env*` except the template; `.env.example` stays the complete record of what has to be set.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"mention\":\"per spec 0001\"},\"phrase\":\"per spec 0001\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 7\",\"mention\":\"binding rule 7's fifth condition\"},\"phrase\":\"this guarantee and binding rule 7's fifth condition both fail together\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 1\",\"mention\":\"binding rule 1\"},\"phrase\":\"That is exactly the caller binding rule 1 already names.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:80\"},\"phrase\":\"invariant 3 defines a failed read as \\\"switched on\\\"\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"AC-8's visible failure rendering exactly as designed\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 10\",\"mention\":\"Task 10\"},\"phrase\":\"Task 10 writes the grant\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 11\",\"mention\":\"task 11\"},\"phrase\":\"task 11 proves the read by hand before anything trusts it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 3\",\"mention\":\"task 3\"},\"phrase\":\"so task 3's fallback is not exercised\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:80\"},\"phrase\":\"invariant 3 defines a refused read as switched on\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:83\"},\"phrase\":\"Invariant 6 is therefore load bearing rather than cautious\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 4\",\"mention\":\"feature 4\"},\"phrase\":\"feature 4 inherits it as a real build step on every table\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:78\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 4\",\"mention\":\"Feature 4\"},\"phrase\":\"Feature 4 owns the real schema and must carry this rule in its own spec, not inherit it by memory.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 10\",\"mention\":\"task 10\"},\"phrase\":\"task 10's statement order and task 10's grant are two independent corrections rather than one\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:38\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 7\",\"mention\":\"feature 7\"},\"phrase\":\"production has no sign in path at all until feature 7\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:41\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 5\",\"mention\":\"task 5\"},\"phrase\":\"build task 5 proves it by hand\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:41\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 6\",\"mention\":\"task 6\"},\"phrase\":\"before task 6 puts it in CI\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:44\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 6\",\"mention\":\"Binding rule 6\"},\"phrase\":\"Binding rule 6 forbids route handlers under `src/app/api/` from touching user data\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:46\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"break AC-1, AC-3 and the uptime monitor in one move\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:46\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"break AC-1, AC-3 and the uptime monitor in one move\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:49\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 7\",\"mention\":\"Feature 7\"},\"phrase\":\"Feature 7 deletes the whole feature folder.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:50\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 7\",\"mention\":\"binding rule 7\"},\"phrase\":\"This closes the environment half of binding rule 7 that spec 0001 assigned to this feature.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:52\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"mention\":\"spec 0007\"},\"phrase\":\"**Amended 2026-08-30 by spec 0007**\",\"date\":\"2026-08-30\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:52\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"AC-13 gives the variable exactly one remaining job\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:58\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"it would leave AC-13 passing on paper while nothing reported\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:66\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"label\":\"task 1\",\"mention\":\"task 1\"},\"phrase\":\"Confirm the region on each before skipping task 1.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:69\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:70\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:71\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:72\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:73\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:74\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:75\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:76\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:76\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:77\"},\"phrase\":\"**UNRUNNABLE SINCE 2026-08-30**\",\"date\":\"2026-08-30\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:77\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"mention\":\"Spec 0007\"},\"phrase\":\"Spec 0007 deleted the Server Action this scenario posts to\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:81\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"label\":\"binding rule 1\",\"mention\":\"binding rule 1's named kill switch caller\"},\"phrase\":\"it is the module that holds binding rule 1's named kill switch caller\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Vercel functions run in `iad1`.",
+        "rejected_spans": [
+          "to sit beside both databases."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Node 24, matching `.nvmrc` and `engines`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The runtime stays Node, never Edge, per spec 0001.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The development project holds synthetic data only.",
+        "rejected_spans": [
+          "That is not a promise to keep in mind: it holds because previews are the only deployed surface reading it and previews require a Vercel login, so nobody but the author can enter anything into it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "If preview protection is ever turned off, this guarantee and binding rule 7's fifth condition both fail together.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "This section was written before any of it existed. It now records real values. Every line below was confirmed by the engineer on 2026-08-21, in the dashboards or in a browser.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A provenance note about how the following table was confirmed; it states no requirement, outcome, build step or test of its own.",
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing in the build environment can read Vercel or Supabase state directly.",
+        "rejected_spans": [
+          "so these rest on that check and not on a tool's reading."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The one value this section left unconfirmed, the framework prefixed system variable names, was settled during the build on 2026-08-21 against Vercel's own framework environment variables reference.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "All three (`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`) exist for the Next.js framework preset, are populated by the same \"enable access to system environment variables\" setting, and are documented as available at both build time and runtime.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No explicit per environment fallback variable is needed, so task 3's fallback is not exercised.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The two URL values carry no protocol scheme.",
+        "rejected_spans": [
+          "which is why the origin resolver adds one."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One new table, plus one existing table gaining a fixture path.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`public.app_settings`, the single row that holds the global kill switch.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Row level security enabled and forced, with **zero policies**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A table with row level security on and no policy denies every action to every role that respects policies.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No `grant` to `anon` and none to `authenticated`.",
+        "rejected_spans": [
+          "Two independent gates, matching the pattern already used by `scaffold_check`."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**One explicit `grant select` to `service_role`**, the role the secret key authenticates as.",
+        "rejected_spans": [
+          "This is a correction to the original wording of \"no grants\","
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`BYPASSRLS` bypasses policies but not table privileges. Those are two separate checks in Postgres, and only the first is bypassed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "With the Data API set not to expose new tables, a newly created table starts with no privileges for any Data API role, so without this grant the one intended reader is refused at the privilege check before row level security is ever consulted.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The only reader is a client built with the secret key, which carries `BYPASSRLS`.",
+        "rejected_spans": [
+          "That is exactly the caller binding rule 1 already names."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "a refused read is a failure, and invariant 3 defines a failed read as \"switched on\". A missing grant would therefore not look like a missing grant. It would look like a kill switch stuck permanently on, in a deployed application, with AC-8's visible failure rendering exactly as designed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Task 10 writes the grant and task 11 proves the read by hand before anything trusts it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A forward pointer to build steps outside this section, recording sequencing only, not a requirement, outcome, build step or test itself.",
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Whether Supabase's setting withholds privileges from `service_role` as well as from `anon` and `authenticated` was not confirmable from inside this repository, and the evidence available leaned the other way: the installed `supabase` skill describes the setting as affecting `anon` and `authenticated` only.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The grant was written anyway.",
+        "rejected_spans": [
+          "on the grounds that it costs one line, grants nothing the design did not already intend, and is expensive to diagnose when absent."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Confirmed on 2026-08-22, and the grant was necessary.** `has_table_privilege('service_role', 'public.scaffold_check', 'select')` returns **false** on the hosted development project, and false locally.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`scaffold_check` is granted to `authenticated` only, so it is the table that isolates the question, and the answer is that the setting withholds privileges from `service_role` too.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The skill's description is wrong, or at least incomplete, for a project configured this way.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Without this grant the kill switch read would have been refused in production, and invariant 3 defines a refused read as switched on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The switch would have sat permanently engaged with the visible failure rendering exactly as designed, which is the failure this section was written to prevent and which the available documentation would have talked you out of preventing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Invariant 6 is therefore load bearing rather than cautious, and feature 4 inherits it as a real build step on every table.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**table privileges** decide whether a role may touch the table at all, and are what the Data API setting governs. **Row level security**, including `force row level security` applying to the table owner, decides which rows are visible once the table is reachable. Postgres checks privileges first.",
+        "rejected_spans": [
+          "Two separate mechanisms are in play here and they are easy to run together, so to be explicit:"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Fixing one never resolves the other, which is why task 10's statement order and task 10's grant are two independent corrections rather than one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`public.scaffold_check` is unchanged. Its rows carry a foreign key to `auth.users`.",
+        "rejected_spans": [
+          "which is why the fixture reaches hosted projects the way described below rather than through a migration."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "a `scaffold_check` row cannot exist without an owning user, and creating fake users in production through a migration would be a worse outcome than the problem it solves.",
+        "rejected_spans": [
+          "This amends the interview answer, and the reason is a constraint the question missed:"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Schema** reaches every project through migrations, always.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The `app_settings` row** is inserted by its own migration, so it exists in every project including production. It has no foreign key and nothing fake about it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The `scaffold_check` fixture and its two seeded users** stay in `supabase/seed.sql`, made idempotent, and the migration workflow applies that file to the **development project only**, never production.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Production carries no fake users and no scaffold row.",
+        "rejected_spans": [
+          "which is correct: production has no sign in path at all until feature 7, so the thread is proved on a preview against the development project."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The seed is applied with `psql \"$SUPABASE_DB_URL_DEV\" -f supabase/seed.sql`, a direct connection using a stored connection string.",
+        "rejected_spans": [
+          "because `supabase db push` does not run seed files."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`supabase db reset --linked` would run it but wipes the database first, which is not acceptable against a shared project even a development one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:41",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Whether that insert is actually permitted on a hosted project is unconfirmed, which is why build task 5 proves it by hand before task 6 puts it in CI.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:42",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither can quietly stand in for the other. A canonical link that points at a preview is wrong; a redirect that points at production from a preview is broken.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:43",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new HTTP endpoint.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:44",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Binding rule 6 forbids route handlers under `src/app/api/` from touching user data, and nothing here needs one: the uptime monitor watches the public marketing page.",
+        "rejected_spans": [
+          "which is a truer signal than a route that only reports on itself."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:45",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Preview deployments**: Vercel Authentication, standard protection. Only the account owner reaches them. Production stays public, and that is a checked fact rather than an assumption: standard protection leaves the generated production URL reachable with no Vercel session, confirmed in a private window on 2026-08-21.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:46",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Raising protection to cover all deployments would take production private and break AC-1, AC-3 and the uptime monitor in one move.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:47",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`app_settings`**: unreadable and unwritable by any user token. Readable by the secret key client, which is constructible in exactly one file. Writable in practice only through the Supabase dashboard or a direct database connection, which is the point: flipping the switch requires access to the deployment, not a privilege inside the product.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:48",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`scaffold_check`**: unchanged, one row per user under an ownership policy, `anon` deliberately ungranted so a request without a session gets a hard denial rather than an empty result.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:49",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Dev password sign in**: enabled by an explicit variable that defaults to false, set only on the Vercel Preview environment and locally. Production never carries it. Feature 7 deletes the whole feature folder.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:50",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Supabase MCP**: scoped with `project_ref` to the development project, `read_only=true`, per call confirmation on, no other MCP server connected alongside it, and the production ref configured nowhere.",
+        "rejected_spans": [
+          "This closes the environment half of binding rule 7 that spec 0001 assigned to this feature."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:51",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Personal data**: none in the development project by construction.",
+        "rejected_spans": [
+          "since previews are the only surface that reads it and they require a Vercel login."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:52",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`DEV_SESSION_ENABLED` guards the test layer's secret key client in `test/helpers/admin.ts`. Defaults to false. Nothing deployed reads it now, and CI sets it on the test jobs itself.",
+        "rejected_spans": [
+          "it used to enable the development password sign in, which feature 7 deletes, and it used to be set on Preview.",
+          "so a value set where nothing reads it would be its own small untruth"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:53",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`DEV_SESSION_ENABLED` (server, boolean from string, default `false`)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:54",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`NEXT_PUBLIC_SITE_URL` (client, URL, required)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:55",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` (client, number between 0 and 1, default `1`)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:56",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` (client, all optional, absent when running locally)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:57",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN` stop being plainly optional. They become **conditionally required**: optional when `NEXT_PUBLIC_VERCEL_ENV` is absent (local work, and a fresh clone before anyone has a Sentry project), required when it is present.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:58",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Without this, a deployed build with no DSN succeeds and ships with error reporting silently off, which is the failure shape the whole error model exists to prevent, and it would leave AC-13 passing on paper while nothing reported.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:59",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SUPABASE_ACCESS_TOKEN`: a personal access token for the Supabase CLI",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:60",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SUPABASE_PROJECT_ID_DEV`, `SUPABASE_PROJECT_ID_PROD`: the two project refs",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:61",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SUPABASE_DB_PASSWORD_DEV`, `SUPABASE_DB_PASSWORD_PROD`: the two database passwords, used by `supabase db push`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:62",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SUPABASE_DB_URL_DEV`: the development project's connection string, used only by the seed step",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:63",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Prerequisites before coding begins**, each producing values the build then needs. **All four are satisfied as of 2026-08-21**.",
+        "rejected_spans": [
+          "and the values they produced are in the table under What is actually provisioned. They are kept here rather than deleted, because a later reader needs to know what this feature depended on and did not create."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:64",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A Vercel account (confirmed to exist). **Satisfied**: project `jobhunt`, region `iad1`, preview protection on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:65",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two Supabase projects in `us-east-1`, development and production. Each yields a project URL, a publishable key, a secret key, a project ref, a database password and a connection string. **Satisfied**, both created, both with the Data API set not to expose new tables automatically.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:66",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Confirm the region on each before skipping task 1.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A stage line that only reports a check to perform before relying on prior work; it delivers nothing itself, so it is not a BuildStep.",
+        "label": null
+      },
+      {
+        "id": "derived:67",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A Sentry account with an organisation and a project. Yields `SENTRY_ORG`, `SENTRY_PROJECT`, the DSN, and an auth token for source map upload. Nothing in this feature creates these, and four required variables come from them. **Satisfied**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:68",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A free uptime monitoring account. **Satisfied**, UptimeRobot, with a monitor already pointed at the production origin.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:69",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a merge to `main` deploys and the production URL serves the marketing page, verifies **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:70",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: on a preview URL, signing in as `dev-one` shows dev one's row, and signing in as `dev-two` shows a different row, verifies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:71",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: with `app_settings` unreachable, the deployed page renders a visible failure and the app treats the switch as on, verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:72",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: flip the flag in the dashboard, reload the deployed page, and the displayed value changes with no deploy, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:73",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a migration written to fail is pushed, and the workflow fails visibly rather than reporting success, verifies **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:74",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: a query with a signed in user's token against `app_settings` returns a permission denial, not an empty result, verifies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:75",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: an anonymous request to a preview URL is stopped by Vercel Authentication, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:76",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "a POST to the sign in action on production is refused because `DEV_SESSION_ENABLED` is absent, verifies **AC-10**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:77",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**UNRUNNABLE SINCE 2026-08-30**, and see AC-10 above. Spec 0007 deleted the Server Action this scenario posts to, so there is nothing left to refuse. Struck rather than rewritten because the property it tested, that no environment can accept a password, stopped being a guard and became structural: the code path does not exist. Spec 0007's own `verify.md` greps for its absence instead.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A status note explaining why a test scenario became unrunnable; it is not itself a test scenario, requirement, build step or outcome.",
+        "label": null
+      },
+      {
+        "id": "derived:78",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Destructive migrations are asymmetric.** A migration may add in the same commit as the code that uses it. A migration may drop only after a previous deploy has already stopped reading the thing being dropped. Never add and drop in one commit. Feature 4 owns the real schema and must carry this rule in its own spec, not inherit it by memory.",
+        "rejected_spans": [
+          "Vercel and GitHub Actions build the same commit in parallel, so an additive migration arriving late causes a brief visible error that self heals, while a drop arriving early breaks running code with nothing to catch it."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:79",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`SKIP_ENV_VALIDATION` is never set on a deployed build.** It exists for the CI job that holds no secrets, and nowhere else.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:80",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The kill switch fails closed.** Anything other than a successful read of `false` means gated calls stop.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:81",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Only `src/lib/kill-switch.ts` reads `app_settings`,** and it is the module that holds binding rule 1's named kill switch caller. Pages under `src/app` reach it through that module and never import `src/lib/supabase/secret.ts` directly, which is what the existing lint rule enforces.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:82",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Production and development schemas are the same schema.** Both come from `supabase/migrations/`. A change applied to one project by hand is drift, and the workflow is the only sanctioned path.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:83",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Every new table is granted explicitly.** Neither project exposes new tables to the Data API automatically, so a table is reachable only by a role named in a `grant`, and the role granted has to match the client that reads it. This is a build step on every table from now on, never a default to lean on. Getting it wrong produces a permission denial rather than an empty result, which is the failure shape this project wants, but only if someone recognises it as one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:84",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No secret is ever committed.** `.gitignore` already excludes every `.env*` except the template; `.env.example` stays the complete record of what has to be set.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "per spec 0001"
+        },
+        "phrase": "per spec 0001",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 7",
+          "mention": "binding rule 7's fifth condition"
+        },
+        "phrase": "this guarantee and binding rule 7's fifth condition both fail together",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 1",
+          "mention": "binding rule 1"
+        },
+        "phrase": "That is exactly the caller binding rule 1 already names.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:80"
+        },
+        "phrase": "invariant 3 defines a failed read as \"switched on\"",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "AC-8's visible failure rendering exactly as designed",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 10",
+          "mention": "Task 10"
+        },
+        "phrase": "Task 10 writes the grant",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 11",
+          "mention": "task 11"
+        },
+        "phrase": "task 11 proves the read by hand before anything trusts it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 3",
+          "mention": "task 3"
+        },
+        "phrase": "so task 3's fallback is not exercised",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:80"
+        },
+        "phrase": "invariant 3 defines a refused read as switched on",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:83"
+        },
+        "phrase": "Invariant 6 is therefore load bearing rather than cautious",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 4",
+          "id": null,
+          "label": null,
+          "mention": "feature 4"
+        },
+        "phrase": "feature 4 inherits it as a real build step on every table",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:78"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 4",
+          "id": null,
+          "label": null,
+          "mention": "Feature 4"
+        },
+        "phrase": "Feature 4 owns the real schema and must carry this rule in its own spec, not inherit it by memory.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:32"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 10",
+          "mention": "task 10"
+        },
+        "phrase": "task 10's statement order and task 10's grant are two independent corrections rather than one",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:38"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 7",
+          "id": null,
+          "label": null,
+          "mention": "feature 7"
+        },
+        "phrase": "production has no sign in path at all until feature 7",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:41"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 5",
+          "mention": "task 5"
+        },
+        "phrase": "build task 5 proves it by hand",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:41"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 6",
+          "mention": "task 6"
+        },
+        "phrase": "before task 6 puts it in CI",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:44"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 6",
+          "mention": "Binding rule 6"
+        },
+        "phrase": "Binding rule 6 forbids route handlers under `src/app/api/` from touching user data",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:46"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "break AC-1, AC-3 and the uptime monitor in one move",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:46"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "break AC-1, AC-3 and the uptime monitor in one move",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:49"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 7",
+          "id": null,
+          "label": null,
+          "mention": "Feature 7"
+        },
+        "phrase": "Feature 7 deletes the whole feature folder.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:50"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 7",
+          "mention": "binding rule 7"
+        },
+        "phrase": "This closes the environment half of binding rule 7 that spec 0001 assigned to this feature.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:52"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": null,
+          "mention": "spec 0007"
+        },
+        "phrase": "**Amended 2026-08-30 by spec 0007**",
+        "date": "2026-08-30",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:52"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "AC-13 gives the variable exactly one remaining job",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:58"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "it would leave AC-13 passing on paper while nothing reported",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:66"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "task 1",
+          "mention": "task 1"
+        },
+        "phrase": "Confirm the region on each before skipping task 1.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:69"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:70"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:71"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:72"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:73"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:74"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:75"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:76"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:76"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:77"
+        },
+        "phrase": "**UNRUNNABLE SINCE 2026-08-30**",
+        "date": "2026-08-30",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:77"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0007"
+        },
+        "phrase": "Spec 0007 deleted the Server Action this scenario posts to",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:81"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 1",
+          "mention": "binding rule 1's named kill switch caller"
+        },
+        "phrase": "it is the module that holds binding rule 1's named kill switch caller",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

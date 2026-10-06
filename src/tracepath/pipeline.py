@@ -6,14 +6,16 @@ reach the graph.
 """
 
 import logging
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import anthropic
 from neo4j import Driver
 
-from tracepath.artifacts import RunArtifact, build_artifact, review_entry
+from tracepath.artifacts import RunArtifact, build_artifact, review_entry, run_path
 from tracepath.config import AnthropicSettings
 from tracepath.extract.client import (
     MAX_TOKENS,
@@ -42,6 +44,7 @@ from tracepath.extract.schema import (
     EntityType,
     ExtractedRelationship,
     LocalEndpoint,
+    RelationshipType,
     normalize_label,
 )
 from tracepath.extract.units import Unit
@@ -54,10 +57,12 @@ from tracepath.graph.load import (
     write_unresolved,
 )
 from tracepath.graph.model import Provenance, entity_row, link_row, record_row, unresolved_row
+from tracepath.graph.schema import clear, create_constraints
 from tracepath.resolve.endpoints import (
     LabelIndex,
     LinkContext,
     Resolution,
+    ResolvedLink,
     build_label_index,
     resolve_endpoints,
 )
@@ -351,8 +356,9 @@ def unit_provenance(result: UnitResult, accepted_by: str) -> Provenance:
 
     Raises:
         ProvenanceMismatch: the unit has no settled run, or its settled runs name more
-            than one model or prompt version. Runs compared across a prompt change say
-            nothing about stability, so stamping the unit with either would be a guess.
+            than one model, prompt version or corpus commit. Runs compared across a
+            prompt change say nothing about stability, so stamping the unit with either
+            would be a guess.
     """
     settled = sorted((a for a in result.artifacts if a.output is not None), key=lambda a: a.run)
     where = f"{result.unit.record_id} {result.unit.section}"
@@ -360,14 +366,57 @@ def unit_provenance(result: UnitResult, accepted_by: str) -> Provenance:
         raise ProvenanceMismatch(f"{where}: no settled run to read provenance from")
     models = sorted({a.model for a in settled})
     versions = sorted({a.prompt_version for a in settled})
+    commits = sorted({a.commit for a in settled})
     if len(models) > 1 or len(versions) > 1:
         raise ProvenanceMismatch(f"{where}: runs mix models {models} or prompt versions {versions}")
+    if len(commits) > 1:
+        raise ProvenanceMismatch(f"{where}: runs mix corpus commits {commits}")
     first = settled[0]
     return Provenance(
         model=first.model,
         prompt_version=first.prompt_version,
         extracted_at=first.extracted_at,
         accepted_by=accepted_by,
+        commit=first.commit,
+    )
+
+
+def link_provenances(
+    results: Sequence[UnitResult], provenances: Sequence[Provenance]
+) -> dict[tuple[str, str], Provenance]:
+    """Each unit's provenance keyed by `(file, section)`, the place a link was written.
+
+    A resolved link carries its `file` and `section` and nothing else about its unit,
+    so that pair is the key (spec 0004, Value sourcing). Two units of one file can share
+    a section name (spec 0007 has two `Build plan` units); when they also share a
+    provenance the key is still exact, and when they do not, either stamp would be a
+    guess.
+
+    Raises:
+        ProvenanceMismatch: two units with the same `(file, section)` differ in
+            provenance.
+    """
+    by_place: dict[tuple[str, str], Provenance] = {}
+    for result, provenance in zip(results, provenances, strict=True):
+        place = (result.unit.path, result.unit.section)
+        held = by_place.setdefault(place, provenance)
+        stamp = (provenance.model, provenance.prompt_version, provenance.commit)
+        if (held.model, held.prompt_version, held.commit) != stamp:
+            raise ProvenanceMismatch(
+                f"{place[0]} {place[1]}: two units share this section and differ in "
+                "provenance, so a link written there cannot be stamped"
+            )
+    return by_place
+
+
+def collapsed_links(links: Sequence[ResolvedLink]) -> int:
+    """How many resolved links collapse into a relationship another link already makes.
+
+    The write is a `MERGE` on type and both endpoints, so two same type links between
+    one pair become one relationship (spec 0004 AC-16, AC-51).
+    """
+    return len(links) - len(
+        {(link.type, link.source.canonical_id, link.target.canonical_id) for link in links}
     )
 
 
@@ -379,17 +428,39 @@ def load(
     resolution: Resolution,
     commit: str,
     accepted_by: str,
+    *,
+    clear_first: bool = False,
 ) -> dict[str, int]:
     """Write records, entities, unresolved nodes and links, asserting every write.
 
-    Each entity carries its own unit's provenance (`unit_provenance()`). Every unit's
-    provenance is settled before the first write, so a unit that cannot be stamped
-    stops the load before anything reaches the graph.
+    Each entity and each link carries its own unit's provenance (`unit_provenance()`).
+    Every row, provenance included, is settled before the first write, so a unit or a
+    link that cannot be stamped stops the load before anything reaches the graph.
+    `clear_first` empties the graph and creates the constraints only after that, so a
+    refused load leaves the previous graph standing (spec 0004 AC-15).
 
     Raises:
-        ProvenanceMismatch: a unit's runs disagree on model or prompt version.
+        ProvenanceMismatch: a unit's runs disagree on model, prompt version or commit,
+            or a link was written in a section no loaded unit holds.
     """
     provenances = [unit_provenance(result, accepted_by) for result in results]
+    by_place = link_provenances(results, provenances)
+    link_rows: dict[RelationshipType, list[dict[str, Any]]] = {}
+    for link_type, links in by_link_type(resolution.links).items():
+        rows: list[dict[str, Any]] = []
+        for link in links:
+            provenance = by_place.get((link.file, link.section))
+            if provenance is None:
+                raise ProvenanceMismatch(
+                    f"a {link.type} link was written in {link.file} {link.section}, "
+                    "which no loaded unit holds, so it has no provenance to carry"
+                )
+            rows.append(link_row(link, provenance))
+        link_rows[link_type] = rows
+
+    if clear_first:
+        clear(driver, database)
+        create_constraints(driver, database)
 
     written: dict[str, int] = {}
     written["records"] = write_records(driver, database, [record_row(r) for r in records])
@@ -407,12 +478,55 @@ def load(
         driver, database, [unresolved_row(node) for node in resolution.unresolved]
     )
     written["part_of"] = write_part_of(driver, database, part_of)
-    written["links"] = write_links(
-        driver,
-        database,
-        {
-            link_type: [link_row(link) for link in links]
-            for link_type, links in by_link_type(resolution.links).items()
-        },
-    )
+    written["links"] = write_links(driver, database, dict(link_rows))
     return written
+
+
+def graph_build(
+    results: Sequence[UnitResult],
+    corpus: CorpusResolution,
+    provenances: Sequence[Provenance],
+    corpus_commit: str,
+    review_log_entries: int,
+) -> dict[str, Any]:
+    """The build manifest `load` writes to `artifacts/graph-build.json` (spec 0004 AC-17).
+
+    It holds no timestamp, so two loads over unchanged artifacts write the same bytes
+    (AC-18). A unit's accepted links are the ones the load writes from its section; its
+    held links are the ones routing held inside it plus the ones `resolve_accepted()`
+    held for an endpoint in another unit, so the two together account for every link
+    its first run produced.
+    """
+    units: list[dict[str, Any]] = []
+    for result, provenance in zip(results, provenances, strict=True):
+        place = (result.unit.path, result.unit.section)
+        # A link's signature is (type, source, target); a held entity's is a pair, and
+        # one with no located line has no id either, so the id alone cannot tell them apart.
+        held_inside = sum(1 for item in result.routed.review if len(item.signature) == 3)
+        held_across = sum(
+            1
+            for link in corpus.held
+            if (link.record, link.section) == (result.unit.record_id, result.unit.section)
+        )
+        units.append(
+            {
+                "record": result.unit.record_id,
+                "section": result.unit.section,
+                "section_slug": result.section_slug,
+                "run_files": [run_path(Path(), a).as_posix() for a in result.artifacts],
+                "model": provenance.model,
+                "prompt_version": provenance.prompt_version,
+                "accepted_entities": len(result.routed.accepted_entities),
+                "accepted_links": sum(
+                    1 for link in corpus.resolution.links if (link.file, link.section) == place
+                ),
+                "held_links": held_inside + held_across,
+            }
+        )
+    versions = Counter(provenance.prompt_version for provenance in provenances)
+    return {
+        "corpus_commit": corpus_commit,
+        "units": units,
+        "prompt_versions": dict(sorted(versions.items())),
+        "review_log_entries": review_log_entries,
+    }

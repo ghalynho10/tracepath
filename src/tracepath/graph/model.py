@@ -16,12 +16,16 @@ from tracepath.resolve.endpoints import ResolvedLink, UnresolvedNode
 
 @dataclass(frozen=True)
 class Provenance:
-    """Where an accepted item came from, carried onto every entity."""
+    """Where an accepted item came from, carried onto every entity and every link.
+
+    `commit` is the corpus commit the unit's own runs pinned, read off its artifacts.
+    """
 
     model: str
     prompt_version: str
     extracted_at: str
     accepted_by: str
+    commit: str
 
 
 def _without_nulls(row: dict[str, Any]) -> dict[str, Any]:
@@ -47,7 +51,13 @@ def record_row(record: Record) -> dict[str, Any]:
 def entity_row(
     entity: IdentifiedEntity, unit: Unit, commit: str, provenance: Provenance
 ) -> dict[str, Any]:
-    """One `:Entity` node's properties, citation and provenance included."""
+    """One `:Entity` node's properties, citation and provenance included.
+
+    `line` stays relative to its section (spec 0002 AC-4). `file_line` is the same line
+    counted from the top of the source file, the one a reader opens the file at
+    (spec 0004 AC-50), and is absent when `line` is.
+    """
+    line = entity.location.line if entity.location else None
     return _without_nulls(
         {
             "canonical_id": entity.canonical_id,
@@ -64,7 +74,8 @@ def entity_row(
             ),
             "file": unit.path,
             "section": unit.section,
-            "line": entity.location.line if entity.location else None,
+            "line": line,
+            "file_line": unit.start_line + line - 1 if line is not None else None,
             "commit": commit,
             "model": provenance.model,
             "prompt_version": provenance.prompt_version,
@@ -90,8 +101,13 @@ def unresolved_row(node: UnresolvedNode) -> dict[str, Any]:
     )
 
 
-def link_row(link: ResolvedLink) -> dict[str, Any]:
-    """One relationship's endpoints and its own properties."""
+def link_row(link: ResolvedLink, provenance: Provenance) -> dict[str, Any]:
+    """One relationship's endpoints and its own properties, provenance included.
+
+    `provenance` is the unit the link was written in, so a chain step can say which
+    prompt made it (spec 0004 AC-16). Records and `PART_OF` links are code's, not the
+    model's, and never pass through here.
+    """
     return {
         "from_id": link.source.canonical_id,
         "to_id": link.target.canonical_id,
@@ -103,6 +119,9 @@ def link_row(link: ResolvedLink) -> dict[str, Any]:
                 "file": link.file,
                 "section": link.section,
                 "line": link.line,
+                "prompt_version": provenance.prompt_version,
+                "model": provenance.model,
+                "commit": provenance.commit,
             }
         ),
     }

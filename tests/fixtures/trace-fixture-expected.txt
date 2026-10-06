@@ -1,0 +1,52 @@
+Chain from 9001/AC-1: 8 steps, at most 3 hops, typed links both ways, PART_OF not followed.
+
+hop 0  9001/AC-1  AcceptanceCriterion  struck: true
+       "The start criterion holds."
+       specs/9001-fixture-walk/index.md · Requirements · file line 12 · commit f1x7ure · prompt 0003.1
+
+hop 1  9002  Record
+       link  9001/AC-1 -[AMENDED_BY]-> 9002 (outgoing from 9001/AC-1)
+             specs/9001-fixture-walk/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "Fixture neighbour"
+       specs/9002-fixture-neighbour/index.md · commit f1x7ure · code, no model
+       stopped: whole document, not expanded
+
+hop 1  9001#build-plan:1  BuildStep  struck: false
+       link  9001#build-plan:1 -[SATISFIES]-> 9001/AC-1 (incoming to 9001/AC-1)
+             specs/9001-fixture-walk/index.md · Build plan · line 59 · commit f1x7ure · prompt 0003.1 · "satisfies AC-1"
+       "Build the start criterion."
+       specs/9001-fixture-walk/index.md · Build plan · file line 60 · commit f1x7ure · prompt 0003.1
+
+hop 1  9001/AC-2  AcceptanceCriterion  struck: false
+       link  9001/AC-1 -[SUPERSEDED_BY]-> 9001/AC-2 (outgoing from 9001/AC-1)
+             specs/9001-fixture-walk/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "The replacement criterion holds."
+       specs/9001-fixture-walk/index.md · Requirements · file line 13 · commit f1x7ure · prompt 0003.1
+
+hop 1  unresolved:9001:feature-99  Unresolved
+       link  9001/AC-1 -[UNCLASSIFIED]-> unresolved:9001:feature-99 (outgoing from 9001/AC-1)
+             specs/9001-fixture-walk/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1 · "as feature 99 describes"
+       mention "feature 99"
+       specs/9001-fixture-walk/index.md · Requirements · line 10 · no commit, no model
+       stopped: unresolved, not expanded
+
+hop 1  9001#feature-design:1  TestScenario  struck: false
+       link  9001#feature-design:1 -[UNCLASSIFIED]-> 9001/AC-1 (incoming to 9001/AC-1)
+             specs/9001-fixture-walk/index.md · Feature design · line 32 · commit f1x7ure · prompt 0003.0 · "see AC-1"
+       "a request to the old path is refused, verifies AC-1"
+       specs/9001-fixture-walk/index.md · Feature design · file line 40 · commit f1x7ure · prompt 0003.0
+
+hop 2  9001/AC-3  AcceptanceCriterion  struck: false
+       link  9001/AC-2 -[BLOCKED_BY]-> 9001/AC-3 (outgoing from 9001/AC-2)
+             specs/9001-fixture-walk/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion two hops out."
+       specs/9001-fixture-walk/index.md · Requirements · file line 14 · commit f1x7ure · prompt 0003.1
+
+hop 3  9001/AC-4  AcceptanceCriterion  struck: false
+       link  9001/AC-3 -[BLOCKED_BY]-> 9001/AC-4 (outgoing from 9001/AC-3)
+             specs/9001-fixture-walk/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion at the depth limit."
+       specs/9001-fixture-walk/index.md · Requirements · file line 15 · commit f1x7ure · prompt 0003.1
+       stopped: depth limit, 1 typed link not followed
+
+Prompt versions: model made steps do not share one prompt version (0003.0: 2, 0003.1: 11).
