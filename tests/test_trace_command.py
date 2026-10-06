@@ -73,3 +73,12 @@ def test_trace_when_neo4j_is_down_says_how_to_start_it() -> None:
     assert result.exit_code == 1
     assert "docker compose up -d" in flat(result.stderr)
     assert "Traceback" not in result.output
+
+
+def test_ac_44_trace_with_no_neo4j_password_exits_1_naming_it() -> None:
+    """covers: AC-44 (the `SettingsInvalid` case in `trace`)."""
+    result = runner.invoke(app, ["trace", START], env={"NEO4J_PASSWORD": ""})
+
+    assert result.exit_code == 1
+    assert "NEO4J_PASSWORD" in flat(result.stderr)
+    assert "Traceback" not in result.output

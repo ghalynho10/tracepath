@@ -70,6 +70,57 @@ def test_the_walk_follows_links_in_both_directions() -> None:
     assert steps["9001#build-plan:1"].via.source == "9001#build-plan:1"
 
 
+#: Spec 0002's seven typed relationship types, as the graph names them. Written out
+#: here rather than read from the schema, so the walk is held to the spec's list.
+TYPED = (
+    "SUPERSEDED_BY",
+    "CORRECTED_BY",
+    "AMENDED_BY",
+    "BLOCKED_BY",
+    "VERIFIES",
+    "SATISFIES",
+    "UNCLASSIFIED",
+)
+
+
+def two_entities_joined_by(link_type: str) -> GraphSlice:
+    """`9100/AC-1 -link_type-> 9100/AC-2`, and nothing else."""
+    return GraphSlice(
+        nodes=(
+            Node(canonical_id="9100/AC-1", kind=NodeKind.ENTITY),
+            Node(canonical_id="9100/AC-2", kind=NodeKind.ENTITY),
+        ),
+        links=(Link(type=link_type, source="9100/AC-1", target="9100/AC-2"),),
+    )
+
+
+@pytest.mark.parametrize("link_type", TYPED)
+def test_ac_21_each_typed_link_is_followed_outgoing(link_type: str) -> None:
+    """covers: AC-21 (every one of the seven types, from its source)."""
+    steps = walk(two_entities_joined_by(link_type), "9100/AC-1").steps
+
+    assert [(s.node.canonical_id, s.direction) for s in steps[1:]] == [
+        ("9100/AC-2", Direction.OUTGOING)
+    ]
+
+
+@pytest.mark.parametrize("link_type", TYPED)
+def test_ac_21_each_typed_link_is_followed_incoming(link_type: str) -> None:
+    """covers: AC-21 (every one of the seven types, from its target)."""
+    steps = walk(two_entities_joined_by(link_type), "9100/AC-2").steps
+
+    assert [(s.node.canonical_id, s.direction) for s in steps[1:]] == [
+        ("9100/AC-1", Direction.INCOMING)
+    ]
+
+
+def test_ac_21_a_type_outside_the_seven_is_not_followed() -> None:
+    """covers: AC-21 (`SPECIFIED_BY` is left out of the walk)."""
+    steps = walk(two_entities_joined_by("SPECIFIED_BY"), "9100/AC-1").steps
+
+    assert [s.node.canonical_id for s in steps] == ["9100/AC-1"]
+
+
 def test_a_scenario_that_verifies_the_start_is_reached_from_it() -> None:
     only_verifies = graph_slice(
         fixture_slice().nodes,

@@ -85,7 +85,7 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
   - [x] The report step, the only reader of `eval/` (AC-34 to AC-41, AC-52)
   - [x] Gate, then the paid run on question 3's four sections and the recorded result in `experiments/0009-first-traced-chain/` (AC-41 to AC-47, AC-53, AC-54). The engineer approves the measured estimate and a ceiling first; `src/` is committed before the first run artifact
 - [ ] Verify it: `/check verify first traced chain`
-- [ ] Test it: `/test first traced chain`
+- [x] Test it: `/test first traced chain`
 
 ### 14. Held item view · needs a decision · from experiment 0009
 A load mode that also writes held items, each marked held with its reasons, so a chain can show a step the review queue holds instead of stopping before it starts. Held items stay out of every default output, and only an explicit flag brings them in. This is a view, not a routing policy: feature 11 still sets the real policy.

@@ -21,6 +21,8 @@ from tracepath.extract.schema import RelationshipType
 from tracepath.graph import connect
 from tracepath.graph.load import write_links, write_records
 from tracepath.graph.schema import clear, constraint_names, create_constraints
+from tracepath.pipeline import resolve_accepted
+from tracepath.rebuild import committed_units, records_for_units
 
 pytestmark = pytest.mark.integration
 
@@ -272,3 +274,73 @@ def test_load_over_runs_that_mix_prompt_versions_refuses_before_touching_the_gra
     assert "Traceback" not in stderr + stdout
     kept, _, _ = driver.execute_query("MATCH (n:Stray) RETURN count(n) AS n", database_=database)
     assert kept[0]["n"] == 1, "the refused load left the previous graph standing"
+
+
+def test_ac_44_load_with_no_neo4j_password_exits_1_naming_it(tmp_path: Path) -> None:
+    """covers: AC-44 (the `SettingsInvalid` case in `load`)."""
+    root = root_with(tmp_path, "0014/requirements")
+
+    code, stdout, stderr = run_load(root, env={"NEO4J_PASSWORD": ""})
+
+    assert code == 1
+    assert "NEO4J_PASSWORD" in flat(stderr)
+    assert "Traceback" not in stderr + stdout
+
+
+# AC-15: every committed unit is loaded, read off the whole corpus.
+
+
+def fully_extracted_units(root: Path) -> list[str]:
+    """Every unit directory holding three settled runs, found by walking the files."""
+    return sorted(
+        d.relative_to(root / RUNS_DIR).as_posix()
+        for d in (root / RUNS_DIR).glob("*/*")
+        if all((d / f"run-{n}.json").exists() for n in (1, 2, 3))
+    )
+
+
+def test_ac_15_load_counts_every_fully_extracted_unit_on_disk(corpus_root: Path) -> None:
+    """covers: AC-15 (every committed unit is loaded, none skipped)."""
+    expected = len(fully_extracted_units(corpus_root))
+
+    code, stdout, stderr = run_load(corpus_root)
+
+    assert code == 0, stderr
+    assert f"Loaded {expected} units:" in flat(stdout)
+
+
+def test_ac_15_every_units_accepted_entities_are_in_the_graph(
+    corpus_root: Path, whole_corpus: Driver, neo4j_settings: Neo4jSettings
+) -> None:
+    """covers: AC-15 (each unit's entities are written, unit by unit)."""
+    manifest = json.loads((corpus_root / GRAPH_BUILD).read_text())
+    expected = {(u["record"], u["section"]): u["accepted_entities"] for u in manifest["units"]}
+    found, _, _ = whole_corpus.execute_query(
+        "MATCH (e:Entity) "
+        "RETURN split(split(e.canonical_id, '/')[0], '#')[0] AS record, e.section AS section, "
+        "count(e) AS n",
+        database_=neo4j_settings.database,
+    )
+    in_graph = {(row["record"], row["section"]): row["n"] for row in found}
+
+    assert {k: v for k, v in expected.items() if v} == in_graph
+
+
+# AC-51: the load prints how many resolved links collapsed into one relationship.
+
+
+def test_ac_51_load_prints_how_many_links_collapsed(tmp_path: Path) -> None:
+    """covers: AC-51. Feature 9's row writes several links between the same pairs."""
+    root = root_with(tmp_path, "feature-9/9-profile-entry-done")
+    results = committed_units(root, SNAPSHOT)
+    links = resolve_accepted(
+        results, records_for_units(results, SNAPSHOT, "2e40bcf")
+    ).resolution.links
+    triples = {(k.type, k.source.canonical_id, k.target.canonical_id) for k in links}
+    collapsed = len(links) - len(triples)
+
+    code, stdout, stderr = run_load(root)
+
+    assert code == 0, stderr
+    assert collapsed > 0, "the unit chosen must hold a collapse for this to prove anything"
+    assert f"({collapsed} collapsed into an existing relationship)" in flat(stdout)

@@ -551,6 +551,165 @@ def test_a_stop_partway_prints_the_summary_and_exits_1(
     assert "Traceback" not in stdout + stderr
 
 
+def by_hand(*sections: str) -> tuple[float, float]:
+    """Central and wider USD for units that each count `COUNTED`, written out from the
+    spec's Value sourcing: the first call writes the 57,494 token prefix, every later
+    call reads it; central is 3 calls at the section's measured output, wider is 6 at
+    39,234."""
+    uncached = COUNTED - 57_494
+    measured = {"Requirements": 27_384, "Feature design": 26_721}
+
+    def calls(n: int, output: int, first: bool) -> float:
+        cache = 57_494 * 4.0 if first else 57_494 * 0.2
+        return (n * (uncached * 2.0 + output * 10.0) + cache + (n - 1) * 57_494 * 0.2) / 1e6
+
+    central = sum(calls(3, measured[s], i == 0) for i, s in enumerate(sections))
+    wider = sum(calls(6, 39_234, i == 0) for i, _ in enumerate(sections))
+    return central, wider
+
+
+def test_ac_6b_the_dry_run_prints_a_counted_line_for_every_requested_unit(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-6b (per unit, the counted input and the cached prefix)."""
+    _, stdout, _ = invoke(tmp_path, *QUESTION_3, "--ceiling", "20", "--dry-run")
+
+    out = flat(stdout)
+    for address in QUESTION_3:
+        assert f"{address}: {COUNTED:,} input tokens counted, 57,494 cached prefix" in out
+
+
+def test_ac_6c_the_dry_run_states_the_standard_rates_it_assumed(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-6c and AC-49 (standard interactive rates, not Batch)."""
+    _, stdout, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--dry-run")
+
+    assert (
+        "Rates assumed, standard interactive pricing, not Batch: input $2.00, output $10.00, "
+        "1 hour cache write $4.00, cache read $0.20, per million tokens."
+    ) in flat(stdout)
+
+
+def test_ac_6c_the_dry_run_prints_the_central_total_for_question_3(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-6c (the central USD figure, 12 calls)."""
+    central, _ = by_hand("Requirements", "Feature design", "Requirements", "Feature design")
+
+    _, stdout, _ = invoke(tmp_path, *QUESTION_3, "--ceiling", "20", "--dry-run")
+
+    assert f"Central total: 12 calls, ${central:.4f}." in flat(stdout)
+
+
+def test_ac_6c_the_dry_run_prints_the_wider_total_for_question_3(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-6c (the wider USD figure, 24 calls)."""
+    _, wider = by_hand("Requirements", "Feature design", "Requirements", "Feature design")
+
+    _, stdout, _ = invoke(tmp_path, *QUESTION_3, "--ceiling", "20", "--dry-run")
+
+    assert f"Wider total: 24 calls, ${wider:.4f}" in flat(stdout)
+
+
+def test_ac_6c_every_wider_line_names_the_heaviest_measured_output_and_its_source(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-6c (the wider figure's output assumption and its named source)."""
+    _, stdout, _ = invoke(tmp_path, *QUESTION_3, "--ceiling", "20", "--dry-run")
+
+    wider_lines = [line for line in stdout.splitlines() if line.strip().startswith("wider:")]
+    assert len(wider_lines) == len(QUESTION_3)
+    assert all(
+        "39,234 output per call, the heaviest measured call (experiment 0005" in line
+        for line in wider_lines
+    )
+
+
+def ceiling_reached_after_two_calls(fake_api: SimpleNamespace) -> float:
+    """A ceiling the wider estimate fits under, which a heavy second call uses up."""
+    heavy = Attempt(**{**settled().__dict__, "output_tokens": 200_000})
+    fake_api.script = Script([first_call(), heavy, settled()])
+    _, wider = by_hand("Requirements")
+    return wider + 0.01
+
+
+def test_ac_9_a_ceiling_stop_partway_is_said_plainly_through_the_command(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-9 (the stop wording names the unit, run and attempt it stopped before)."""
+    ceiling = ceiling_reached_after_two_calls(fake_api)
+
+    _, _, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", f"{ceiling:.4f}")
+
+    assert "stopping here before 0002:Requirements run 3 attempt 1: ceiling" in flat(stderr)
+
+
+def test_ac_9_a_ceiling_stop_partway_exits_1(tmp_path: Path, fake_api: SimpleNamespace) -> None:
+    """covers: AC-9 (exit 1)."""
+    ceiling = ceiling_reached_after_two_calls(fake_api)
+
+    code, _, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", f"{ceiling:.4f}")
+
+    assert code == 1
+    assert len(fake_api.script.calls) == 2
+
+
+def test_ac_5_a_retry_collision_stops_the_command_with_exit_1(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-5 (exit 1, before the retry is paid for)."""
+    taken = tmp_path / RUNS_DIR / "0002" / "requirements" / "failed-run-1-attempt-2.json"
+    taken.parent.mkdir(parents=True)
+    taken.write_text("{}")
+    fake_api.script = Script([failed(1), settled()])
+
+    code, _, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", "20")
+
+    assert code == 1
+    assert len(fake_api.script.calls) == 1
+
+
+def test_ac_13_both_attempts_of_a_run_that_failed_after_its_retry_are_recorded(
+    tmp_path: Path,
+) -> None:
+    """covers: AC-13 (the failed unit is recorded as it stands)."""
+    script = Script([first_call(), failed(1), failed(2), settled()])
+
+    run(tmp_path, script, "0002:Requirements", "0007:Requirements")
+
+    names = sorted(p.name for p in (tmp_path / RUNS_DIR / "0002" / "requirements").iterdir())
+    assert names == ["failed-run-2-attempt-1.json", "failed-run-2-attempt-2.json", "run-1.json"]
+
+
+def test_ac_44_a_unit_failing_after_its_retry_exits_1_with_no_traceback(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-44 (the `UnitFailed` case, AC-13's stop through the command)."""
+    fake_api.script = Script([first_call(), failed(1), failed(2)])
+
+    code, stdout, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", "20")
+
+    assert code == 1
+    assert "failed after its retry" in flat(stderr)
+    assert "Traceback" not in stdout + stderr
+
+
+def test_ac_44_extract_with_no_api_key_exits_1_naming_it_before_any_call(
+    tmp_path: Path, fake_api: SimpleNamespace, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-44 (the `SettingsInvalid` case in `extract`)."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+
+    code, stdout, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", "20")
+
+    assert code == 1
+    assert "ANTHROPIC_API_KEY" in stderr
+    assert fake_api.built == 0
+    assert "Traceback" not in stdout + stderr
+
+
 # AC-48: a unit cut short is never resumed; running it again stops at the preflight.
 
 

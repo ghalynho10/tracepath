@@ -8,6 +8,7 @@ hand, so each test controls exactly what was visited.
 """
 
 import dataclasses
+import json
 from pathlib import Path
 from typing import Any
 
@@ -142,6 +143,46 @@ def test_question_3_of_the_eval_set_starts_at_0002_ac_10_with_five_items() -> No
     }
 
 
+def test_ac_34_a_letter_suffixed_criterion_keeps_its_letter_in_the_start() -> None:
+    """covers: AC-34 (`AC-\\d+[a-z]?`)."""
+    question = one_question(trace_entry("spec 0004 AC-6a", SPEC_0012, 20))
+
+    assert question.start == "0004/AC-6a"
+
+
+def test_ac_34_a_record_string_not_starting_with_spec_is_refused() -> None:
+    """covers: AC-34 (the regex is anchored at the start, so nothing is guessed)."""
+    with pytest.raises(EvalEntryUnusable, match="question 1"):
+        one_question(trace_entry("see spec 0002 AC-10", SPEC_0012, 31))
+
+
+# AC-1: question 3 is a superseded criterion, and its chain touches no worked example.
+
+EXAMPLES = ROOT / "examples"
+
+
+def test_ac_1_question_3_has_the_superseded_criterion_shape() -> None:
+    """covers: AC-1 (shape `superseded_criterion`)."""
+    entries = json.loads((ROOT / EVAL_FILE).read_text())["entries"]
+
+    assert entries[2]["shape"] == "superseded_criterion"
+
+
+@pytest.mark.parametrize("record", ["0002", "0007"])
+def test_ac_1_no_worked_example_is_drawn_from_a_record_on_question_3s_chain(
+    record: str,
+) -> None:
+    """covers: AC-1 (no file under `examples/` is drawn from spec 0002 or spec 0007)."""
+    drawn = [
+        path.name
+        for path in sorted(EXAMPLES.glob("*.md"))
+        if f"\nRecord: {record}\n" in path.read_text()
+    ]
+
+    assert sorted(EXAMPLES.glob("*.md")), "the examples directory holds the worked examples"
+    assert drawn == []
+
+
 # AC-35: every trace and also entry is an item; a token belongs to its own line only.
 
 
@@ -178,7 +219,70 @@ def test_an_entity_at_the_same_line_of_another_file_does_not_reach_the_item(
     assert not reached
 
 
+def test_ac_37_every_expected_item_gets_one_reached_or_not_reached_line(
+    evidence: Any, split: Any
+) -> None:
+    """covers: AC-37."""
+    results, corpus = evidence
+    question = one_question(
+        trace_entry("spec 0012 AC-7", SPEC_0012, 26),
+        trace_entry("spec 0012 AC-3", SPEC_0012, 22),
+    )
+    chain = chain_of(entity_step("0012/AC-7", SPEC_0012, 26))
+
+    lines = report_lines(score(question, chain, results, corpus, FULL, split))
+
+    item_lines = [line for line in lines if line.startswith(("  reached ", "  not reached "))]
+    assert item_lines == [
+        f"  reached      spec 0012 AC-7 · {SPEC_0012}:26 · hop 0 · 0012/AC-7",
+        f"  not reached  spec 0012 AC-3 · {SPEC_0012}:22 · held_for_review",
+    ]
+
+
 # AC-38: one reason, by fixed priority.
+
+
+def test_ac_38_section_not_extracted_comes_before_held_for_review(
+    evidence: Any, split: Any
+) -> None:
+    """covers: AC-38 (priority 1 over 2). `0012/AC-3` alone gives `held_for_review`."""
+    question = one_question(trace_entry("spec 0012 AC-3", SPEC_0012, 22))
+    two_runs = {**FULL, ("0012", "requirements"): 2}
+
+    assert scored(question, None, evidence, split, two_runs) == [
+        (False, Reason.SECTION_NOT_EXTRACTED)
+    ]
+
+
+def test_ac_38_held_for_review_comes_before_unresolved_endpoint(evidence: Any, split: Any) -> None:
+    """covers: AC-38 (priority 2 over 3)."""
+    question = one_question(trace_entry("spec 0012 AC-3", SPEC_0012, 22))
+    gap = Node(
+        canonical_id="unresolved:0013:spec-0012-ac-3",
+        kind=NodeKind.UNRESOLVED,
+        record="0012",
+        mention="spec 0012 AC-3",
+    )
+    chain = chain_of(entity_step("0013/AC-1", SPEC_0013, 20), other_step(gap))
+
+    assert scored(question, chain, evidence, split) == [(False, Reason.HELD_FOR_REVIEW)]
+
+
+def test_ac_38_unresolved_endpoint_comes_before_record_not_expanded(
+    evidence: Any, split: Any
+) -> None:
+    """covers: AC-38 (priority 3 over 4)."""
+    question = one_question(trace_entry("spec 0012 AC-1", SPEC_0012, 20))
+    gap = Node(
+        canonical_id="unresolved:0013:spec-0012-ac-1",
+        kind=NodeKind.UNRESOLVED,
+        record="0012",
+        mention="spec 0012 AC-1",
+    )
+    record = Node(canonical_id="0012", kind=NodeKind.RECORD)
+    chain = chain_of(entity_step("0013/AC-1", SPEC_0013, 20), other_step(record), other_step(gap))
+
+    assert scored(question, chain, evidence, split) == [(False, Reason.UNRESOLVED_ENDPOINT)]
 
 
 def test_an_item_in_a_section_never_extracted_is_section_not_extracted(
@@ -358,6 +462,28 @@ def test_links_outside_the_expected_sections_touching_their_records_are_listed(
         "Accepted links written outside the expected sections that touch 0012: 3."
         in report_lines(report)
     )
+
+
+def test_ac_40_a_derived_id_touches_the_record_before_its_hash(split: Any) -> None:
+    """covers: AC-40 (an endpoint id is read up to its first `#`)."""
+    links = (link("0013/AC-1", "0012#build-plan:9", Target.ENTITY, "Feature design"),)
+    corpus = CorpusResolution(resolution=Resolution(links=links, unresolved=()), held=())
+    question = one_question(trace_entry("spec 0012 AC-1", SPEC_0012, 20))
+
+    report = score(question, None, (), corpus, FULL, split)
+
+    assert [k.target for k in report.outside_links] == ["0012#build-plan:9"]
+
+
+def test_ac_40_each_counted_link_is_listed_in_the_printed_report(split: Any) -> None:
+    """covers: AC-40 (the links are listed, not only counted)."""
+    links = (link("0013/AC-1", "0012/AC-1", Target.ENTITY, "Feature design"),)
+    corpus = CorpusResolution(resolution=Resolution(links=links, unresolved=()), held=())
+    question = one_question(trace_entry("spec 0012 AC-1", SPEC_0012, 20))
+
+    lines = report_lines(score(question, None, (), corpus, FULL, split))
+
+    assert f"  0013/AC-1 -[verifies]-> 0012/AC-1 · {SPEC_0013} · Feature design" in lines
 
 
 # AC-41: the line on reaching an item in another record.
