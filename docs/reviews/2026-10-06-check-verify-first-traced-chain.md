@@ -2,7 +2,7 @@
 
 **Run by**: `/check verify`, Claude Opus 5.5, on branch `feat/first-traced-chain` at `6464aa7`
 **Spec**: [0004](../specs/0004-first-traced-chain/index.md), checked against its [verify.md](../specs/0004-first-traced-chain/verify.md)
-**Verdict**: **fail**. AC-41 fails, as [experiment 0009](../../experiments/0009-first-traced-chain/README.md) recorded. It was reported as it stands, not rerun, and nothing was changed to make it pass. Of the other 63 criteria, 55 are verified live and 8 are tested only. The gaps are listed below.
+**Verdict**: **fail**. AC-41 fails, as [experiment 0009](../../experiments/0009-first-traced-chain/README.md) recorded. It was reported as it stands, not rerun, and nothing was changed to make it pass. AC-17b also fails, on its held link counts (corrected 2026-10-06 after the [code review](2026-10-06-feat-first-traced-chain.md)). Of the other 62 criteria, 54 are verified live and 8 are tested only. The gaps are listed below.
 
 This is a runtime check, not a code review. Statuses:
 
@@ -138,7 +138,7 @@ Each entry is a command that was run and an excerpt of its output. The full outp
 | AC-15 | verified live | E2, E3. The clear is shown by E20, where a load of 0 units emptied the graph |
 | AC-16 | tested only | Live: every typed link carries provenance matching its unit (E3, E4), and repeated triples collapse into one relationship carrying the last write (E5). Not live: links from different units collapsing, because all 14 collapses in the data are within one unit (E5). Tested in `tests/test_load_provenance.py` |
 | AC-17a | verified live | E4 |
-| AC-17b | verified live | E4 |
+| AC-17b | **fails (held link counts)** | Corrected after the code review's major ([2026-10-06-feat-first-traced-chain.md](2026-10-06-feat-first-traced-chain.md), `src/tracepath/pipeline.py:503`). E4 showed that every unit carries the three counts and that the accepted counts add up, but it never checked the held link values. `held_links` also counts held entities that have no id, so 8 of 18 units are overstated: `0002 Feature design` shows 69 where its held links are 36 inside the unit plus those held across units |
 | AC-17c | verified live | E4, E2 |
 | AC-18 | verified live | E2 |
 | AC-19 | verified live | E2 |
@@ -182,8 +182,9 @@ Each entry is a command that was run and an excerpt of its output. The full outp
 ## Gaps (why the verdict is not "pass")
 
 1. **AC-41 failed**, as recorded in experiment 0009. Feature 5 stays in progress.
-2. **Tested only**: AC-5, AC-9, AC-13, AC-16, AC-21, AC-35, AC-38, AC-44, each for the reason given in its row.
-3. **Fault (b) did not cut partway through the output.** The proxy's rule was to cut after 5 text deltas, or at `message_delta`, whichever came first. `0010 Context` produced only 3 text deltas, so the cut landed after the whole output and before `message_delta`. The failed artifact's `raw_response` holds the complete `{"entities":[],"relationships":[]}`. The code path is the same one a cut in the middle takes (a snapshot exists, `stop_reason` is null, output is null), but a cut in the middle of the text was not observed. Closing this needs a rerun with the cut at the first text delta, on a section that writes more than a few tokens.
+2. **AC-17b fails**: the manifest's `held_links` counts held entities as held links (the code review's major). This check first marked it verified live, because E4 checked that the counts were present but not their values.
+3. **Tested only**: AC-5, AC-9, AC-13, AC-16, AC-21, AC-35, AC-38, AC-44, each for the reason given in its row.
+4. **Fault (b) did not cut partway through the output.** The proxy's rule was to cut after 5 text deltas, or at `message_delta`, whichever came first. `0010 Context` produced only 3 text deltas, so the cut landed after the whole output and before `message_delta`. The failed artifact's `raw_response` holds the complete `{"entities":[],"relationships":[]}`. The code path is the same one a cut in the middle takes (a snapshot exists, `stop_reason` is null, output is null), but a cut in the middle of the text was not observed. Closing this needs a rerun with the cut at the first text delta, on a section that writes more than a few tokens.
 
 ## Findings (recorded, not fixed)
 
