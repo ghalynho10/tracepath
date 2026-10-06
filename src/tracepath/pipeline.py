@@ -500,7 +500,9 @@ def graph_build(
     units: list[dict[str, Any]] = []
     for result, provenance in zip(results, provenances, strict=True):
         place = (result.unit.path, result.unit.section)
-        held_inside = sum(1 for item in result.routed.review if item.canonical_id is None)
+        # A link's signature is (type, source, target); a held entity's is a pair, and
+        # one with no located line has no id either, so the id alone cannot tell them apart.
+        held_inside = sum(1 for item in result.routed.review if len(item.signature) == 3)
         held_across = sum(
             1
             for link in corpus.held

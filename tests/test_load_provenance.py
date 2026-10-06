@@ -203,20 +203,67 @@ def test_the_manifest_lists_each_units_run_files_model_and_prompt_version(tmp_pa
     assert {u["model"] for u in units} == {"claude-sonnet-5"}
 
 
-def test_the_manifest_counts_accepted_entities_and_accepted_and_held_links(
-    tmp_path: Path,
-) -> None:
-    root = two_unit_root(tmp_path, "0014/requirements")
-    results = committed_units(root, SNAPSHOT)
+@pytest.fixture(scope="module")
+def whole_corpus() -> tuple[tuple[UnitResult, ...], CorpusResolution, list[dict[str, object]]]:
+    """Every committed unit, rebuilt with no API call, and the manifest built over them."""
+    results = committed_units(ROOT, SNAPSHOT)
     corpus = resolve_accepted(results, records_for_units(results, SNAPSHOT, COMMIT))
+    units = cast("list[dict[str, object]]", manifest_for(ROOT)["units"])
+    return results, corpus, units
 
-    manifest = manifest_for(root)
 
-    unit = cast("list[dict[str, object]]", manifest["units"])[0]
-    held = sum(1 for item in results[0].routed.review if item.canonical_id is None)
-    assert unit["accepted_entities"] == len(results[0].routed.accepted_entities)
-    assert unit["accepted_links"] == len(corpus.resolution.links)
-    assert unit["held_links"] == held + len(corpus.held)
+def counted(units: list[dict[str, object]], key: str) -> dict[tuple[object, object], object]:
+    return {(u["record"], u["section"]): u[key] for u in units}
+
+
+def test_ac_17b_every_units_held_links_count_links_only(
+    whole_corpus: tuple[tuple[UnitResult, ...], CorpusResolution, list[dict[str, object]]],
+) -> None:
+    """covers: AC-17b (held link count, every committed unit).
+
+    A held link is a review item with a relationship signature (type, source, target),
+    plus a link held across units for an endpoint in another unit. A held entity with
+    no id is not a link, however it was routed.
+    """
+    results, corpus, units = whole_corpus
+    expected = {
+        (r.unit.record_id, r.unit.section): sum(
+            1 for item in r.routed.review if len(item.signature) == 3
+        )
+        + sum(1 for h in corpus.held if (h.record, h.section) == (r.unit.record_id, r.unit.section))
+        for r in results
+    }
+
+    assert counted(units, "held_links") == expected
+
+
+def test_ac_17b_every_units_accepted_entity_count(
+    whole_corpus: tuple[tuple[UnitResult, ...], CorpusResolution, list[dict[str, object]]],
+) -> None:
+    """covers: AC-17b (accepted entity count, every committed unit)."""
+    results, _, units = whole_corpus
+    expected = {
+        (r.unit.record_id, r.unit.section): len(r.routed.accepted_entities) for r in results
+    }
+
+    assert counted(units, "accepted_entities") == expected
+
+
+def test_ac_17b_every_units_accepted_link_count(
+    whole_corpus: tuple[tuple[UnitResult, ...], CorpusResolution, list[dict[str, object]]],
+) -> None:
+    """covers: AC-17b (accepted link count: the links the load writes from its section)."""
+    results, corpus, units = whole_corpus
+    expected = {
+        (r.unit.record_id, r.unit.section): sum(
+            1
+            for k in corpus.resolution.links
+            if (k.file, k.section) == (r.unit.path, r.unit.section)
+        )
+        for r in results
+    }
+
+    assert counted(units, "accepted_links") == expected
 
 
 def test_the_manifest_lists_prompt_versions_and_the_review_log_count(tmp_path: Path) -> None:
