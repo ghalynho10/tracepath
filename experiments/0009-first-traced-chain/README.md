@@ -163,10 +163,8 @@ use was free token counting only (the dry runs), which does not appear on the Us
 The Cost page did not yet show the day's USD figure when read; at the rates in
 `src/tracepath/extract/cost.py` these tokens price at $3.7143.
 
-One difference in timing, stated as found: the engineer read both usage bars as falling
-between 21:00 and 22:00 UTC, while the artifacts were written from 21:39:44 to 22:24:11
-UTC, so part of the run ran in the 22:00 hour. The token totals match exactly whatever
-the bars' labels mean, so this does not change the reconciliation.
+The Console shows two hourly bars, for the 21:00 and 22:00 UTC hours, matching artifacts
+written from 21:39:44 to 22:24:11 UTC, all inside the one day.
 
 ## Findings on the spec's own figures
 
