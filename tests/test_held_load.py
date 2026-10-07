@@ -30,13 +30,19 @@ from tracepath.graph.load import LINK_TYPES
 from tracepath.graph.schema import clear
 from tracepath.pipeline import HeldViewIncomplete, build_held_view, resolve_accepted
 from tracepath.rebuild import committed_units, records_for_units
-from tracepath.report import HELD_LABEL, HELD_MEANING
+from tracepath.report import EVAL_FILE, HELD_LABEL, HELD_MEANING
 
 pytestmark = pytest.mark.integration
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
 TYPED = sorted(LINK_TYPES.values())
+
+#: The real eval question 3 under the held view, the second result's exact command.
+QUESTION_3 = ("trace", "--eval", "3", "--with-held", "--eval-file", str(ROOT / EVAL_FILE))
+
+#: What that command printed when experiment 0010 recorded the second result.
+RECORDED = ROOT / "experiments" / "0010-held-item-view" / "data" / "trace-1.txt"
 
 runner = CliRunner()
 
@@ -148,6 +154,8 @@ class Loads:
     held_graph_trace: tuple[int, str, str]
     held_graph_eval: tuple[int, str, str]
     held_eval: tuple[tuple[int, str, str], tuple[int, str, str]]
+    question_3: tuple[tuple[int, str, str], tuple[int, str, str]]
+    missing_start: tuple[int, str, str]
 
 
 @pytest.fixture(scope="module")
@@ -176,13 +184,20 @@ def loads(
             trace(root, "--eval", "1", "--with-held"),
             trace(root, "--eval", "1", "--with-held"),
         )
+        # Question 3's result is recorded (experiment 0010), so running it is no longer
+        # a held out run; every other real question stays untouched here.
+        question_3 = (
+            invoke(*QUESTION_3, "--root", str(root), "--snapshot", str(SNAPSHOT)),
+            invoke(*QUESTION_3, "--root", str(root), "--snapshot", str(SNAPSHOT)),
+        )
+        missing_start = trace(root, "9999/AC-1", "--with-held")
 
         code, _, stderr = load(root, "--with-held")
         assert code == 0, stderr
         second = (root / GRAPH_BUILD).read_bytes()
         yield Loads(
             root, default, held, second, default_trace, default_eval, refused,
-            held_graph_trace, held_graph_eval, held_eval,
+            held_graph_trace, held_graph_eval, held_eval, question_3, missing_start,
         )  # fmt: skip
         clear(driver, database)
 
@@ -382,6 +397,37 @@ def test_trace_eval_with_held_twice_prints_identical_labelled_output(loads: Load
     assert first == second
     assert first[0] == 0, first[2]
     assert HELD_LABEL in first[1].splitlines()
+
+
+# AC-27: question 3 under the held view, the second result itself.
+
+
+def test_ac_27_trace_eval_3_with_held_twice_prints_identical_output(loads: Loads) -> None:
+    """covers: spec 0005 AC-27."""
+    first, second = loads.question_3
+
+    assert first[0] == 0, first[2]
+    assert first == second
+
+
+def test_ac_27_question_3_still_prints_the_result_experiment_0010_recorded(loads: Loads) -> None:
+    """covers: spec 0005 AC-27 (the recorded second result does not drift)."""
+    code, stdout, stderr = loads.question_3[0]
+
+    assert (code, stderr) == (0, "")
+    assert stdout == RECORDED.read_text()
+
+
+# A start the held graph does not hold.
+
+
+def test_trace_with_held_from_a_start_not_in_the_graph_exits_1_naming_it(loads: Loads) -> None:
+    code, stdout, stderr = loads.missing_start
+
+    assert code == 1
+    assert "9999/AC-1 is not in the graph" in flat(stderr)
+    assert stdout == ""
+    assert "Traceback" not in stderr
 
 
 # AC-19b: a held view that cannot be accounted for stops the load before any write.

@@ -9,6 +9,8 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from tests import held_fixture as fx
 from tests import trace_fixture
 from tracepath.traverse.graph_slice import (
@@ -99,6 +101,30 @@ def test_a_held_unresolved_node_reads_back_held_with_no_reasons() -> None:
 
     assert node.held is True
     assert node.held_reasons == ()
+
+
+@pytest.mark.parametrize("stored", [False, "true", 1, None, [True]])
+def test_only_a_stored_true_reads_as_held(stored: object) -> None:
+    """`held` is stored as `true` or not at all (spec 0002 AC-11f); anything else is not held."""
+    row = {**fx.ENTITIES[0], "held": stored, "held_reasons": ["runs_disagree"]}
+
+    assert node_from_properties(["Entity"], row).held is False
+
+
+@pytest.mark.parametrize("stored", ["runs_disagree", None, 3, {"runs_disagree": 1}])
+def test_held_reasons_that_are_not_a_list_read_as_none(stored: object) -> None:
+    row = {**fx.ENTITIES[1], "held_reasons": stored}
+
+    assert node_from_properties(["Entity"], row).held_reasons == ()
+
+
+def test_a_non_text_reason_inside_the_list_is_left_out() -> None:
+    row = {**fx.ENTITIES[1], "held_reasons": ["runs_disagree", 7, "known_trap_flag"]}
+
+    assert node_from_properties(["Entity"], row).held_reasons == (
+        "runs_disagree",
+        "known_trap_flag",
+    )
 
 
 # AC-2: the default slice drops every held item.
