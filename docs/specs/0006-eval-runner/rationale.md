@@ -124,7 +124,7 @@ Question 5's tie break by lowest canonical id copies spec 0004's own habit (AC-2
 
 The sidecar keeps the rules general while still naming the few facts that belong to one question. The held out design follows the scope row's constraints exactly, and each of its three guards (a scratch directory, a record level exclusion, a release flag) removes one way the questions could stop being a check: seeing the artifacts, drawing on extracted text, running early.
 
-No prediction is locked for questions 1, 2, 4 and 5. Spec 0004 and 0005 locked one for question 3 because they were testing a mechanism on a question chosen for it. The runner is measuring, so the first results are findings. The Follow-up in index.md keeps the option open before the paid step.
+Predictions for questions 1, 2, 4 and 5 were locked before the paid step, in `experiments/0011-eval-runner/predictions.md` (commits `a8da2bc` and `9c53144`). This section first said none would be, and the engineer chose to lock them. Each result is scored against its prediction (AC-33b).
 
 ## Extraction estimate (measured 2026-10-07, free endpoint only)
 

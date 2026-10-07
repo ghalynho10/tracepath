@@ -80,8 +80,8 @@ This spec adds one command, `tracepath eval`, that runs every question of an eva
 - **AC-31**: Before any paid call, `extract --dry-run` is run over the eight units in Feature design, and the engineer gives a go and a ceiling after reading its measured figures and the output assumption with its source.
 - **AC-32**: From this spec's commit to the commit holding the eight units' run files, nothing under `examples/` or `src/tracepath/extract/` changes.
 - **AC-33**: The result record (`experiments/0011-eval-runner/README.md`) lists, for each of the five questions, its result, its evidence level and the reason for each item not reached.
-- **AC-33b**: The result record states that no prediction was locked for questions 1, 2, 4 and 5, so their results are findings and not scored predictions.
-- **AC-33c**: The result record names the spec commit, the code commit, the extraction commit and the result commit, in that order.
+- **AC-33b**: The result record cites commit `a8da2bc`, which locked the predictions for questions 1, 2, 4 and 5 in `experiments/0011-eval-runner/predictions.md`, and commit `9c53144`, which relocked question 5's prediction to one count, both before the first extraction commit `282b9a4`, and scores each of those four results against its prediction.
+- **AC-33c**: The result record names the spec commit, the code commit, the extraction commits (the range `282b9a4` to `8fd0436`, eight commits, one per unit) and the result commit, in that order.
 - **AC-34**: From the code commit to the result commit, nothing under `src/` changes. A defect found afterwards is a separate commit, and its rescoring on the same artifacts is a second, labelled result, as spec 0004 AC-47 and AC-53 set.
 
 ## Decision
@@ -158,7 +158,7 @@ Reasoning, the options, the extraction estimate and the evidence: see [rationale
 | start | id for a first entry that is not in AC form | the entity node at that entry's file and line, from the graph as read (AC-12) |
 | start | id for a question with no `trace` list | the first `checked[].where` of the form `docs/specs/NNNN-<slug>/index.md line N (AC-X)`: `NNNN` from the path, `AC-X` from the parentheses (AC-14) |
 | absence items | the file and line of each item that must not be reached | `eval/runner.json`, `absence` |
-| the start marker | which item is the start | the expected items whose file and line equal the first item's (AC-10b) |
+| the start marker | which item is the start | the expected items whose file and line equal the resolved start node's file and `file_line` (AC-10b); when the start is not in the graph there is no resolved node, so none is left out and `M` includes the start item |
 | `K of M` | reached and total, besides the start | the findings, less the start's items |
 | result | `PASS`, `FAIL`, `INCONCLUSIVE` | the findings only, by AC-6 to AC-6c and AC-17 to AC-17c |
 | evidence line | level and reason | `eval/runner.json`; "not assessed" when absent |
@@ -277,7 +277,7 @@ Tracer Bullet: the thinnest real thread first (the runner over a fixture, then o
 
 - [ ] **`/scope`**: feature 13's row should say that no worked example or prompt change may draw on a section cited by `eval/held-out.json` (this spec's AC-25 guards the examples), and that feature 13 re-checks `eval/runner.json`'s flags when it edits `examples/` (AC-20). This spec does not edit another feature's row.
 - [ ] **`/scope`**: features 13 and 11 each name `--release-held-out` as the step that runs the held out questions once both have committed, and the extraction of their sections as the one paid step, with a measured estimate and a go.
-- [ ] **Predictions for questions 1, 2, 4 and 5**: if the engineer wants one locked before the extraction, it is written into this spec before step 8, from the text and not from any run.
+- [x] **Predictions for questions 1, 2, 4 and 5**: locked before the extraction, in `experiments/0011-eval-runner/predictions.md` (commits `a8da2bc` and `9c53144`). The text is not copied here.
 - [ ] **Feature 7 and feature 8**: question 5's result is evidence for alias resolution ("feature 21") and for `SPECIFIED_BY` and feature `PART_OF` links. Neither is built here.
 - [ ] **Duplicate section names**: spec 0004's follow up stays open (`unit_for()` and the two `Build plan` units of spec 0007). None of the eight units is affected.
 - [ ] **`verify.md`** owes steps for every AC, added by `/develop` with the build.
