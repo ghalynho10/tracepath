@@ -7,7 +7,7 @@ reach the graph.
 
 import logging
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -488,8 +488,12 @@ def graph_build(
     provenances: Sequence[Provenance],
     corpus_commit: str,
     review_log_entries: int,
+    passes: Mapping[tuple[str, str], tuple[str, ...]],
 ) -> dict[str, Any]:
     """The build manifest `load` writes to `artifacts/graph-build.json` (spec 0004 AC-17).
+
+    `passes` holds each unit's distinct `extracted_at` values, keyed by `(record,
+    section_slug)`, read from all its artifacts (AC-65); more than one marks a resume.
 
     It holds no timestamp, so two loads over unchanged artifacts write the same bytes
     (AC-18). A unit's accepted links are the ones the load writes from its section; its
@@ -521,6 +525,7 @@ def graph_build(
                     1 for link in corpus.resolution.links if (link.file, link.section) == place
                 ),
                 "held_links": held_inside + held_across,
+                "extracted_at": list(passes.get((result.unit.record_id, result.section_slug), ())),
             }
         )
     versions = Counter(provenance.prompt_version for provenance in provenances)

@@ -1,6 +1,7 @@
 """The `tracepath` terminal command."""
 
 import logging
+import math
 from pathlib import Path
 from typing import Annotated, NoReturn
 
@@ -32,9 +33,16 @@ from tracepath.extract.cost import (
 )
 from tracepath.extract.examples import ExampleError
 from tracepath.extract.metered import (
+    Plan,
+    ResumeRefused,
+    RunPlan,
     calls_through,
     count_input,
-    preflight,
+    first_collision,
+    fresh_runs,
+    provenance_mismatch,
+    resume_preflight,
+    resume_runs,
     run_metered,
     summary_lines,
 )
@@ -57,6 +65,7 @@ from tracepath.rebuild import (
     partial_units,
     records_for_units,
     settled_run_counts,
+    unit_passes,
 )
 from tracepath.report import (
     EVAL_FILE,
@@ -182,7 +191,9 @@ def load_graph(
         records = records_for_units(results, corpus_snapshot, commit)
         corpus = resolve_accepted(results, records)
         provenances = [unit_provenance(result, ACCEPTED_BY) for result in results]
-        manifest = graph_build(results, corpus, provenances, commit, review_log_entries(base))
+        manifest = graph_build(
+            results, corpus, provenances, commit, review_log_entries(base), unit_passes(base)
+        )
         with connect(settings) as driver:
             written = load(
                 driver,
@@ -305,6 +316,9 @@ def extract(
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Count and price only: no extraction call is made."
     ),
+    resume: bool = typer.Option(
+        False, "--resume", help="Complete units whose one pass was cut short, owed runs only."
+    ),
     root: str = typer.Option(".", "--root", help="The repository root to write artifacts under."),
     snapshot: str = typer.Option(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
@@ -313,48 +327,104 @@ def extract(
 ) -> None:
     """Extract units with the model, three runs each, every attempt written as it settles.
 
-    Spends API credit unless `--dry-run`. Prints a measured estimate first and refuses
-    to start when its wider total is above `--ceiling`; stops before any call that one
-    more failure could carry past it.
+    Spends API credit unless `--dry-run`. Prints a measured estimate first, refuses to
+    start when the ceiling cannot cover one call's bound, and stops before any call
+    that its bound could carry past the ceiling. `--resume` completes units cut short.
     """
     if ceiling is None:
         _fail("--ceiling USD is required: the most this command may spend.")
+    if not (math.isfinite(ceiling) and ceiling > 0):
+        _fail(f"--ceiling USD must be a finite number above 0, not {ceiling}.")
     base = Path(root)
     corpus_snapshot = base / snapshot
+    # The order spec 0004 sets: the prompt (AC-3), the units, the counts, the
+    # collision or resume checks, the ceiling against the bound (AC-8), then calls.
     try:
+        system_prompt()
         targets = resolve_addresses(corpus_snapshot, units)
         calibration = resolve_address(corpus_snapshot, CALIBRATION_ADDRESS)
-        system_prompt()
         settings = load_anthropic_settings()
-        preflight(base, targets, settings.runs_per_unit)
-    except (UnitAddressError, ExampleError, SettingsInvalid, ArtifactCollisionError) as exc:
+    except (UnitAddressError, ExampleError, SettingsInvalid) as exc:
         _fail(str(exc))
 
     client = build_client(settings)
     try:
         check_calibration(count_input(client, settings, calibration.unit))
-        counts = [
-            UnitCount(t.address, t.unit.section, count_input(client, settings, t.unit))
-            for t in targets
-        ]
-        priced = estimate(counts, settings.runs_per_unit)
+        counted = {t.address: count_input(client, settings, t.unit) for t in targets}
     except EstimateUnavailable as exc:
         _fail(str(exc))
     except anthropic.APIError as exc:
         _fail(f"the token count endpoint failed, so nothing is priced ({exc})")
+
+    runs: dict[str, tuple[RunPlan, ...]] = {}
+    collisions: list[tuple[str, Path]] = []
+    if resume:
+        refused: list[str] = []
+        for target in targets:
+            try:
+                runs[target.address] = resume_runs(base, target, settings.runs_per_unit)
+            except ResumeRefused as exc:
+                refused.append(str(exc))
+        if refused:
+            _fail("--resume refuses, before any call: " + "; ".join(refused))
+        mismatched = [
+            found
+            for target in targets
+            if (found := provenance_mismatch(base, target, settings, commit)) is not None
+        ]
+        if mismatched:
+            _fail("--resume refuses, before any call: " + "; ".join(mismatched))
+    else:
+        for target in targets:
+            runs[target.address] = fresh_runs(settings.runs_per_unit)
+            path = first_collision(base, target, settings.runs_per_unit)
+            if path is not None:
+                collisions.append((target.address, path))
+        if collisions and not dry_run:
+            _fail(f"an artifact already exists at {collisions[0][1]}")
+
+    try:
+        priced = estimate(
+            [
+                UnitCount(t.address, t.unit.section, counted[t.address], len(runs[t.address]))
+                for t in targets
+            ]
+        )
+    except EstimateUnavailable as exc:
+        _fail(str(exc))
+    plans = [
+        Plan(target=t, runs=runs[t.address], bound=unit.bound_usd)
+        for t, unit in zip(targets, priced.units, strict=True)
+    ]
     for line in estimate_lines(priced, ceiling):
         _say(line)
+    if resume:
+        for plan in plans:
+            owed = ", ".join(f"run {r.run} from attempt {r.first_attempt}" for r in plan.runs)
+            _say(f"  {plan.target.address} resume: {owed}.")
     if dry_run:
+        for address, path in collisions:
+            _say(f"{address}: a real run would refuse it at the collision check ({path} exists).")
+        if ceiling < priced.largest_bound_usd:
+            _say(
+                f"The ceiling ${ceiling:.2f} is below the largest per call bound "
+                f"${priced.largest_bound_usd:.4f}, so a real run would refuse to start."
+            )
         _say("Dry run: no extraction call made.")
         return
-    if priced.wider_usd > ceiling:
+    if ceiling < priced.largest_bound_usd:
         _fail(
-            f"the wider estimate ${priced.wider_usd:.4f} is above the ceiling ${ceiling:.2f}, "
-            "so no call is made."
+            f"the ceiling ${ceiling:.2f} is below the largest per call bound "
+            f"${priced.largest_bound_usd:.4f}, so no call is made."
         )
+    if resume:
+        try:
+            resume_preflight(base, plans)
+        except ArtifactCollisionError as exc:
+            _fail(str(exc))
 
     outcome = run_metered(
-        targets,
+        plans,
         calls_through(client, settings),
         settings,
         base,

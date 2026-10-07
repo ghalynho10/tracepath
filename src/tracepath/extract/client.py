@@ -14,6 +14,7 @@ import logging
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import Literal, cast
 
 import anthropic
@@ -261,6 +262,21 @@ def system_prompt() -> str:
 CACHE_TTL: Literal["5m", "1h"] = "1h"
 
 
+class FailureKind(StrEnum):
+    """How a failed attempt ended (spec 0004 AC-67).
+
+    Only a model failure counts toward a run's single retry (AC-68). A transport
+    failure says nothing about the model, so it leaves the run owed.
+    """
+
+    #: The response never completed: an HTTP error status, or a stream that ended
+    #: before `message_stop` (a dropped connection or an error event mid stream).
+    TRANSPORT = "transport"
+    #: A complete response that is malformed, fails validation, or stopped at
+    #: `max_tokens`.
+    MODEL = "model"
+
+
 @dataclass(frozen=True)
 class Attempt:
     """One call to the model: what it cost, and what it produced.
@@ -293,6 +309,7 @@ class Attempt:
     cache_read_input_tokens: int = 0
     raw_response: str | None = None
     stop_reason: str | None = None
+    failure_kind: FailureKind | None = None
 
 
 class ExtractionFailed(Exception):
@@ -364,8 +381,13 @@ class UnitRuns:
 
 
 def build_client(settings: AnthropicSettings) -> anthropic.Anthropic:
-    """Open an Anthropic client from validated settings."""
-    return anthropic.Anthropic(api_key=settings.api_key)
+    """Open an Anthropic client from validated settings.
+
+    The SDK's own automatic retries are off (spec 0004 AC-70): it would otherwise send
+    a failed request again up to twice, silently, so one attempt could be more than one
+    billed request and break the per call bound. The run policy's own retry covers it.
+    """
+    return anthropic.Anthropic(api_key=settings.api_key, max_retries=0)
 
 
 def system_blocks() -> list[TextBlockParam]:
@@ -400,6 +422,7 @@ def _attempt_from_usage(
     error: str | None = None,
     raw_response: str | None = None,
     stop_reason: str | None = None,
+    failure_kind: FailureKind | None = None,
 ) -> Attempt:
     """One attempt, with every part of the usage the API reported for it."""
     run_id = uuid.uuid4().hex
@@ -413,6 +436,7 @@ def _attempt_from_usage(
             error=error,
             raw_response=raw_response,
             stop_reason=stop_reason,
+            failure_kind=failure_kind,
         )
     return Attempt(
         number=number,
@@ -425,6 +449,7 @@ def _attempt_from_usage(
         cache_read_input_tokens=usage.cache_read_input_tokens or 0,
         raw_response=raw_response,
         stop_reason=stop_reason,
+        failure_kind=failure_kind,
     )
 
 
@@ -443,6 +468,7 @@ def _dropped_attempt(number: int, message: str, snapshot: Message | None) -> Att
             output_tokens=None,
             run_id=uuid.uuid4().hex,
             error=message,
+            failure_kind=FailureKind.TRANSPORT,
         )
     usage = snapshot.usage
     return Attempt(
@@ -455,6 +481,7 @@ def _dropped_attempt(number: int, message: str, snapshot: Message | None) -> Att
         cache_read_input_tokens=usage.cache_read_input_tokens or 0,
         raw_response=_raw_text(snapshot.content),
         stop_reason=snapshot.stop_reason,
+        failure_kind=FailureKind.TRANSPORT,
     )
 
 
@@ -536,6 +563,7 @@ def extract_once(
                     output_tokens=0,
                     run_id=uuid.uuid4().hex,
                     error=message,
+                    failure_kind=FailureKind.TRANSPORT,
                 ),
             ),
         ) from exc
@@ -556,6 +584,7 @@ def extract_once(
                     error=message,
                     raw_response=_raw_text(response.content),
                     stop_reason=response.stop_reason,
+                    failure_kind=FailureKind.MODEL,
                 ),
             ),
         ) from exc
@@ -574,6 +603,7 @@ def extract_once(
                     error=message,
                     raw_response=_raw_text(response.content),
                     stop_reason=response.stop_reason,
+                    failure_kind=FailureKind.MODEL,
                 ),
             ),
         )

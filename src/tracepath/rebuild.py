@@ -75,6 +75,20 @@ def _settled_by_unit(root: Path) -> dict[tuple[str, str], list[RunArtifact]]:
     return by_unit
 
 
+def unit_passes(root: Path) -> dict[tuple[str, str], tuple[str, ...]]:
+    """Each unit's distinct `extracted_at` values, sorted, keyed by `(record, section_slug)`.
+
+    Read from every artifact the unit holds, failed attempts included, since one command
+    stamps one `extracted_at` on all it writes: a unit resumed after an earlier pass
+    left only failed files still shows two values (spec 0004 AC-65, AC-66).
+    """
+    found: dict[tuple[str, str], set[str]] = {}
+    for path in sorted((root / RUNS_DIR).glob("*/*/*.json")):
+        artifact = read_run(path)
+        found.setdefault((artifact.record, artifact.section_slug), set()).add(artifact.extracted_at)
+    return {key: tuple(sorted(values)) for key, values in found.items()}
+
+
 def settled_run_counts(root: Path) -> dict[tuple[str, str], int]:
     """How many settled runs each unit holds, keyed by `(record, section_slug)`."""
     return {key: len(artifacts) for key, artifacts in _settled_by_unit(root).items()}
@@ -83,8 +97,9 @@ def settled_run_counts(root: Path) -> dict[tuple[str, str], int]:
 def partial_units(root: Path) -> tuple[PartialUnit, ...]:
     """Every unit an interrupted or failed extraction left short of its runs.
 
-    Such a unit is never resumed (spec 0004 AC-48), so it is not extracted: it stays
-    out of the graph and the report names it `section_not_extracted`.
+    Until `extract --resume` completes it (spec 0004 AC-56), such a unit is not
+    extracted: it stays out of the graph and the report names it
+    `section_not_extracted` (AC-48b).
     """
     return tuple(
         PartialUnit(
