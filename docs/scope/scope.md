@@ -28,7 +28,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | planned |
-| 14 | Held item view | Slice 1, before Slice 2 | planned |
+| 14 | Held item view | Slice 1, before Slice 2 | in-progress |
 
 ## Foundations
 
@@ -93,7 +93,7 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
 - [ ] Verify it: `/check verify first traced chain`
 - [x] Test it: `/test first traced chain`
 
-### 14. Held item view · needs a decision · from experiment 0009
+### 14. Held item view · from experiment 0009
 A load mode that also writes held items, each marked held with its reasons, so a chain can show a step the review queue holds instead of stopping before it starts. Held items stay out of every default output, and only an explicit flag brings them in. This is a view, not a routing policy: feature 11 still sets the real policy.
 **Done when:** with the flag, a rerun of `trace --eval 3` gives a second, labelled result for question 3, scored against a prediction locked before the rerun; and without the flag, load, walk and report output never contains a held item.
 **Conditions, set by the engineer 2026-10-06:**
@@ -103,8 +103,15 @@ A load mode that also writes held items, each marked held with its reasons, so a
 4. A held step is always printed as held and never counts as reached or as a pass. "Reached only through held items" means an expected item whose path, or the item itself, includes at least one held node or link, and it is scored as its own outcome.
 5. Experiment 0009 stays the first result; the rerun is a second, labelled result.
 
-The design, and the spec 0002 AC-11 amendment it needs (routing keeps held items out of the graph today), go to `/architect`. The held items are already in the committed run files, so the rerun should need no extraction call.
-- [ ] Design it (spec): `/architect held item view`
+spec [0005](../specs/0005-held-item-view/index.md) · amends spec [0002](../specs/0002-data-model/index.md) AC-11(f) · code in `src/tracepath/pipeline.py`, `src/tracepath/traverse/`, `src/tracepath/graph/`, `src/tracepath/report.py`
+- [x] Design it (spec): `/architect held item view` · the prediction for question 3 is locked in the spec, before any code
+- [ ] Build it: `/develop held item view`
+  - [ ] The marker and the filter, then the printed `HELD:` marker, on a hand built fixture (AC-2, AC-3, AC-7 to AC-11)
+  - [ ] The held view over the committed artifacts, then the write and the two command options, tested against Neo4j (AC-1, AC-5, AC-6, AC-17 to AC-26b)
+  - [ ] The report: two walks, `held only`, the label lines (AC-4, AC-12 to AC-16)
+  - [ ] The rerun, no API call: `load --with-held`, `trace --eval 3 --with-held`, the record in `experiments/0010-held-item-view/` naming design, code and result commits (AC-25, AC-27, AC-29)
+- [ ] Verify it: `/check verify held item view`
+- [ ] Test it: `/test held item view`
 
 ## Slice 2: Eval runner
 
