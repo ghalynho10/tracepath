@@ -110,7 +110,7 @@ spec [0005](../specs/0005-held-item-view/index.md) · amends spec [0002](../spec
   - [x] The held view over the committed artifacts, then the write and the two command options, tested against Neo4j (AC-1, AC-5, AC-6, AC-17 to AC-26b)
   - [x] The report: two walks, `held only`, the label lines (AC-4, AC-12 to AC-16)
   - [x] The rerun, no API call: `load --with-held`, `trace --eval 3 --with-held`, the record in `experiments/0010-held-item-view/` naming design, code and result commits (AC-25, AC-27, AC-29)
-- [ ] Verify it: `/check verify held item view`
+- [x] Verify it: `/check verify held item view`
 - [ ] Test it: `/test held item view`
 
 ## Slice 2: Eval runner
