@@ -10,7 +10,6 @@ so leaving them off is both what the spec asked for and the only thing that work
 """
 
 import functools
-import logging
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -33,8 +32,6 @@ from tracepath.config import AnthropicSettings
 from tracepath.extract.examples import EXAMPLES_DIR, few_shot_block, read_examples
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit
-
-log = logging.getLogger(__name__)
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
@@ -640,38 +637,31 @@ def extract_unit(client: anthropic.Anthropic, settings: AnthropicSettings, unit:
     )
 
 
+class RetryPathRetired(Exception):
+    """The old retry path is closed: it retried any failure with no per call ceiling.
+
+    Derives from `Exception` only, never from `ExtractionFailed` or `UnitFailed`, so
+    `run_unit()` and the experiment scripts' own `except` clauses pass it through
+    instead of swallowing it (spec 0004 AC-71c).
+    """
+
+
 def run_with_retry(
     client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit, run: int
 ) -> RunOutcome:
-    """Make one run, retrying once on a failed or malformed call (spec 0001's policy).
+    """Refuse: extraction now runs only through `tracepath extract` (spec 0004 AC-71).
 
-    Every attempt is kept, the failed ones included, so each can be written as its own
-    artifact and the cost of a retry never disappears into the call that replaced it.
+    This path retried any failure once and held no per call ceiling, so it could spend
+    outside the guards `run_metered()` keeps. `run_unit()`, `extract_unit()` and
+    `extract_units()` reach the API only through here, so they refuse too.
 
     Raises:
-        ExtractionFailed: the run failed again after its retry. The exception carries
-            every attempt, so the caller can still write their artifacts.
+        RetryPathRetired: always, before any call.
     """
-    last: Exception | None = None
-    attempts: list[Attempt] = []
-    for number in range(1, RETRIES + 2):
-        try:
-            attempts.append(extract_once(client, settings, unit, number))
-            return RunOutcome(attempts=tuple(attempts))
-        except ExtractionFailed as exc:
-            last = exc
-            attempts.extend(exc.attempts)
-            log.debug(
-                "run %s of %s %s failed on attempt %s",
-                run + 1,
-                unit.record_id,
-                unit.section,
-                number,
-                exc_info=exc,
-            )
-    raise ExtractionFailed(
-        f"{unit.record_id} {unit.section}: run {run + 1} failed after its retry ({last})",
-        tuple(attempts),
+    raise RetryPathRetired(
+        f"{unit.record_id} {unit.section}: the old retry path is closed, it has no per call "
+        "ceiling. Extract with `tracepath extract`, which runs every call through "
+        "`run_metered()`."
     )
 
 

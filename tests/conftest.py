@@ -11,6 +11,25 @@ from tracepath.graph import GraphUnavailable, connect
 # Nothing listens on port 1, so connecting there fails for real, with no mock.
 UNREACHABLE_URI = "bolt://localhost:1"
 
+#: The key and API address every test runs with (spec 0004 AC-74). Nothing listens on
+#: port 1, so a test that forgot to point at the fake API fails instead of spending.
+FAKE_API_KEY = "sk-ant-test"
+UNREACHABLE_API = "http://localhost:1"
+
+
+@pytest.fixture(autouse=True)
+def no_real_anthropic_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every test runs with a fake key and an unreachable API (spec 0004 AC-74).
+
+    The developer's `.env` holds a real key and `config.py` loads `.env` on every
+    settings read. `load_dotenv()` never replaces a variable already set, so setting
+    these first means the real key cannot load in a test, while `.env` still supplies
+    the Neo4j settings the integration tests need. A test that uses the fake API sets
+    its own base URL.
+    """
+    monkeypatch.setenv("ANTHROPIC_API_KEY", FAKE_API_KEY)
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", UNREACHABLE_API)
+
 
 @pytest.fixture(scope="session")
 def neo4j_settings() -> Neo4jSettings:

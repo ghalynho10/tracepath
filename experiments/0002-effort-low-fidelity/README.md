@@ -135,3 +135,5 @@ failure mode and on feature 8's scope row.
   `artifacts/runs/0012/consequences/`.
 - Script: [calibrate_effort.py](calibrate_effort.py), this experiment's own copy, which
   persists spans. Experiment 0001's copy is left as it ran, without that call.
+
+**Fenced, 2026-10-06.** `calibrate_effort.py` reaches the API through `run_with_retry()`, which now refuses before any call (spec 0004 AC-71), so this script can no longer spend. A new run goes through `tracepath extract`. This record is unchanged otherwise.
