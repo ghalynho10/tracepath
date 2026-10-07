@@ -28,7 +28,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | planned |
-| 14 | Held item view | Slice 1, before Slice 2 | in-progress |
+| 14 | Held item view | Slice 1, before Slice 2 | done |
 
 ## Foundations
 
@@ -93,7 +93,7 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
 - [ ] Verify it: `/check verify first traced chain`
 - [x] Test it: `/test first traced chain`
 
-### 14. Held item view · from experiment 0009
+### 14. Held item view · done · from experiment 0009
 A load mode that also writes held items, each marked held with its reasons, so a chain can show a step the review queue holds instead of stopping before it starts. Held items stay out of every default output, and only an explicit flag brings them in. This is a view, not a routing policy: feature 11 still sets the real policy.
 **Done when:** with the flag, a rerun of `trace --eval 3` gives a second, labelled result for question 3, scored against a prediction locked before the rerun; and without the flag, load, walk and report output never contains a held item.
 **Conditions, set by the engineer 2026-10-06:**
