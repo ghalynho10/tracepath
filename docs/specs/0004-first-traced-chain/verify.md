@@ -121,3 +121,47 @@ _Where each criterion is tested, and one step per row of the spec's Value sourci
 - AC-48: a unit with fewer than three settled runs is not loaded at all, so its items stay `section_not_extracted`. `load` names it ("Not loaded: ..."), and routing would otherwise fail on a single run.
 - AC-7: `--ceiling` is required for `--dry-run` too, read literally ("exits 1 ... before any call").
 - AC-17b: a unit's accepted links are the links the load writes from its section; its held links are those routing held inside it plus those held for another unit's entity.
+
+## Verify: the 2026-10-06 amendment · updated 2026-10-06 (/develop)
+
+_Steps derived from the amended acceptance criteria and the new Value sourcing rows. None needs a paid call: the fake local API and fault proxy in `tests/fake_api.py` stand in for Anthropic, as `/check verify` did on 2026-10-06 with a real proxy. A scratch `--root` keeps every run file out of `artifacts/`. `/check verify` runs these; `/test` locks the durable ones (most are already in `tests/test_extract_guards.py`)._
+
+### Commands
+
+- [ ] `uv run tracepath extract 0010:Context --ceiling nan` (then `inf`, `0`, `-1`) → exit 1 naming `--ceiling`, no request reaches the API → AC-7b
+- [ ] `extract --dry-run 0002:Requirements --ceiling 1` from the repository root → the estimate prints and it exits 0, though `0002 Requirements` is extracted → AC-6d
+- [ ] The same dry run with `0010:Context` added → only `0002:Requirements` is named as a unit a real run would refuse → AC-6e
+- [ ] `extract --dry-run 0010:Context --ceiling 0.5 --root <scratch>` → the line "a real run would refuse to start", exit 0 → AC-8c
+- [ ] `extract 0010:Context --ceiling 0.5 --root <scratch>` against the fake API → exit 1, "below the largest per call bound", no messages call → AC-8
+- [ ] Two units whose counts differ, with a ceiling between their bounds → refused before any call, though the first unit's bound fits → AC-8, the "bound AC-8 checks" row
+- [ ] `extract 0010:Context --ceiling 3 --root <scratch>` against the fake API → the line "may stop partway at the ceiling", and the run starts → AC-8b
+- [ ] The dry run for `0010:Context` prints "per call bound: $0.8701", and `0007:Feature design` prints $0.8907 → AC-55, the per call bound row
+- [ ] The dry run's wider line says "every call writing the cache", and for `0010:Context` the wider total is 6 × $0.6224 = $3.7347 → the cache write row
+- [ ] `extract 0010:Context --ceiling 1 --root <scratch>` against the fake API → one call, then "stopping here before 0010:Context run 2 attempt 1: ceiling", exit 1 → AC-9
+- [ ] With the proxy dropping messages call 1 before any event → the failed attempt is counted at $0.8701, not its null usage → AC-10a
+- [ ] The same run → the retry writes the cache and reads 0, and the command does not stop: four calls, three settled, exit 0 → AC-11 (finding 1)
+- [ ] The proxy failing messages calls 1 and 2 (a drop and a 529) → "run 1 is not settled after 2 attempts … The run is owed", exit 1, two requests only → AC-68, AC-69
+- [ ] A scripted run with two schema failures on run 1 → "failed after its retry (2 model failures)", exit 1 → AC-13
+- [ ] Each fault (dropped before usage, cut after the output, a 529) → the failed artifact's `failure_kind` is `transport`; a schema failure and a `max_tokens` stop give `model` → AC-67, AC-67b, the `failure_kind` row
+- [ ] `read_run()` on the four committed failed attempts with no `failure_kind` → each reads `model`, and no other failed file in `artifacts/` lacks the field → AC-67b
+- [ ] With the proxy answering 529 once → the proxy sees exactly one request per written attempt → AC-70
+- [ ] Any run's summary → two totals, the guard's and the recorded usage's → AC-14b, the summary row
+- [ ] Plain `extract 0010:Context` again on a unit cut short → stops at the collision check → AC-48
+- [ ] `load` over a root holding a unit cut short → "Not loaded … settled runs of 3", and `trace --eval` with a synthetic item there names `section_not_extracted` → AC-48b
+- [ ] After the two transport failures above, `extract 0010:Context --resume --ceiling 3` → run 1 resumes at attempt 3 and runs 2 and 3 run → AC-56, AC-57, the resume plan row
+- [ ] `--resume` on a unit with `run-1.json` beside failed files, and a run with two model failures → no attempt for either; the second is refused as blocked → AC-58, AC-59
+- [ ] `--resume` on a unit holding `failed-run-2-attempt-2.json` and no attempt 1 → exit 1 naming the file → AC-58b
+- [ ] `--resume` over two fully extracted units → exit 1 before any call, naming both → AC-59
+- [ ] `--resume` on a unit with no artifact → exit 1, "a plain `extract` starts it" → AC-60
+- [ ] `--resume` on a unit whose settled run is at prompt `0003.0` → exit 1 before any call, naming the difference → AC-60b
+- [ ] A resume plan whose next attempt is already written → the preflight stops it; a taken attempt partway through → stopped before that attempt → AC-61, AC-61b
+- [ ] A resume with a ceiling one bound above its first call → stops before the second owed run → AC-62
+- [ ] `--dry-run --resume` on a unit with run 1 settled → "Central total: 2 calls", "Wider total: 4 calls", and the plan line "run 2 from attempt 1, run 3 from attempt 1" → AC-63, AC-64, the resume call counts row
+- [ ] `--dry-run --resume` on a unit with no artifact → exit 1 → AC-64b
+- [ ] After a resume, `load` → the unit's manifest entry lists two `extracted_at` values, failed files included, and a second `load` is byte identical → AC-65, the `extracted_at` rows
+- [ ] The check order: a run with a collision makes only the free count calls before it refuses → the check order row
+
+### Acceptance criteria coverage (the amendment)
+
+- AC-6d, AC-6e, AC-7b, AC-8, AC-8b, AC-8c, AC-9, AC-10a, AC-11, AC-13, AC-14b, AC-48, AC-48b, AC-55 to AC-58b, AC-59 to AC-61b, AC-62 to AC-64b, AC-65, AC-67 to AC-70: covered by the steps above.
+- AC-66 binds the next result record, so it is checked when one is written, not here.
