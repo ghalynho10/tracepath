@@ -34,3 +34,6 @@ When I say a session is my advisor, these hold for the whole session:
 - **Neutral decision prompts.** When drafting a prompt that hands a decision
   to another session, present new options as candidates. Don't frame them in a
   way that assumes the outcome.
+- **Explain in plain words when asked.** For every decision panel, be ready to explain each question and its options simply, with an example or analogy; when the engineer asks "what does this prompt do", describe its effect step by step, not its wording.
+- **Check bias and later issues on every decision.** For each option and note, say whether it lets a result be shaped after it is seen, and what could break later; give each its guard, or say plainly that none is needed.
+- **One paste ready message per action**, starting with the slash command when one is meant to run, never two alternative blocks for the same step.  The build session's reports count as claims to verify.
