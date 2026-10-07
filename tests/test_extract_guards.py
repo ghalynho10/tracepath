@@ -814,3 +814,74 @@ def test_a_failed_attempt_payload_writes_its_kind_as_a_string() -> None:
     )
 
     assert artifact_payload(artifact)["failure_kind"] == "model"
+
+
+# Claims the first pass left untested (`/test`, 2026-10-07).
+
+
+def test_ac_60b_the_command_refuses_a_resume_at_another_prompt_before_any_call(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-60b (through the command: exit 1, no extraction call)."""
+    [target] = targets("0002:Requirements")
+    path = write(tmp_path, target.unit, target.section_slug, 1, 1, settled())
+    payload = json.loads(path.read_text())
+    payload["model"] = "claude-older-model"
+    path.write_text(json.dumps(payload))
+
+    code, _, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--resume")
+
+    assert code == 1
+    assert "model claude-older-model (now claude-sonnet-5)" in flat(stderr)
+    assert fake_api.script.calls == []
+
+
+def test_ac_59_the_command_names_a_blocked_unit_as_blocked(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-59 ("which it is": blocked, not owing nothing)."""
+    [target] = targets("0002:Requirements")
+    write(tmp_path, target.unit, target.section_slug, 1, 1, failed(1, kind=MODEL))
+    write(tmp_path, target.unit, target.section_slug, 1, 2, failed(2, kind=MODEL))
+
+    code, _, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--resume")
+
+    assert code == 1
+    assert "0002:Requirements is blocked: run 1 holds 2 model failures" in flat(stderr)
+
+
+def test_ac_64_a_dry_resume_prints_each_units_counted_input(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-64 (with the AC-6b counts)."""
+    [target] = targets("0002:Requirements")
+    write(tmp_path, target.unit, target.section_slug, 1, 1, settled())
+
+    _, stdout, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--dry-run", "--resume")
+
+    assert f"0002:Requirements: {COUNTED:,} input tokens counted, 57,494 cached prefix" in flat(
+        stdout
+    )
+
+
+def test_ac_64_a_dry_resume_prints_the_may_stop_partway_warning(
+    tmp_path: Path, fake_api: SimpleNamespace
+) -> None:
+    """covers: AC-64 (with the AC-8b warning, the wider total above a $1 ceiling)."""
+    [target] = targets("0002:Requirements")
+    write(tmp_path, target.unit, target.section_slug, 1, 1, settled())
+
+    _, stdout, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", "1", "--dry-run", "--resume")
+
+    assert "may stop partway at the ceiling" in flat(stdout)
+
+
+def test_ac_56_a_resume_makes_at_most_two_attempts_per_owed_run(unit_dir: Any) -> None:
+    """covers: AC-56 (the AC-69 limit holds on a resume: attempts 3 and 4, then a stop)."""
+    root, target = unit_dir
+    script = Script([dropped(3), dropped(4), settled()])
+
+    outcome = run(root, script, [Plan(target, (RunPlan(2, 3, 0),), BOUND)])
+
+    assert script.calls == [("0002:Requirements", 3), ("0002:Requirements", 4)]
+    assert outcome.stop is not None and "The run is owed" in outcome.stop

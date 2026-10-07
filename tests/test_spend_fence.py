@@ -129,3 +129,15 @@ def test_ac_74c_a_dotenv_holding_another_key_cannot_replace_the_fake_one(
     monkeypatch.setattr(config, "load_dotenv", lambda *a, **k: dotenv.load_dotenv(env))
 
     assert load_anthropic_settings().api_key == FAKE_API_KEY
+
+
+def test_ac_74_dotenv_still_supplies_the_neo4j_settings_under_the_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-74 (`load_dotenv()` keeps working, so integration tests reach Neo4j)."""
+    env = tmp_path / ".env"
+    env.write_text("NEO4J_PASSWORD=from-the-dotenv-file\n")
+    monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
+    monkeypatch.setattr(config, "load_dotenv", lambda *a, **k: dotenv.load_dotenv(env))
+
+    assert config.load_neo4j_settings().password == "from-the-dotenv-file"
