@@ -1,0 +1,51 @@
+Chain from 9003/AC-1: 8 steps, at most 3 hops, typed links both ways, PART_OF not followed.
+
+hop 0  9003/AC-1  AcceptanceCriterion  struck: false
+       "The start criterion holds."
+       specs/9003-fixture-held/index.md · Requirements · file line 12 · commit f1x7ure · prompt 0003.1
+
+hop 1  9003/AC-4  AcceptanceCriterion  struck: false
+       link  9003/AC-1 -[AMENDED_BY]-> 9003/AC-4 (outgoing from 9003/AC-1)  HELD: known_trap_flag
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion reached only by a held link."
+       specs/9003-fixture-held/index.md · Requirements · file line 15 · commit f1x7ure · prompt 0003.1
+
+hop 1  9003/AC-5  AcceptanceCriterion  struck: false
+       link  9003/AC-1 -[BLOCKED_BY]-> 9003/AC-5 (outgoing from 9003/AC-1)
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion reached clean."
+       specs/9003-fixture-held/index.md · Requirements · file line 16 · commit f1x7ure · prompt 0003.1
+
+hop 1  9003/AC-6  AcceptanceCriterion  struck: false
+       link  9003/AC-1 -[CORRECTED_BY]-> 9003/AC-6 (outgoing from 9003/AC-1)  HELD: runs_disagree
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion with a held shortcut."
+       specs/9003-fixture-held/index.md · Requirements · file line 17 · commit f1x7ure · prompt 0003.1
+
+hop 1  9003/AC-2  AcceptanceCriterion  struck: false  HELD: runs_disagree, known_trap_flag
+       link  9003/AC-1 -[SUPERSEDED_BY]-> 9003/AC-2 (outgoing from 9003/AC-1)  HELD: endpoint_not_accepted:9003/AC-2
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion review holds back."
+       specs/9003-fixture-held/index.md · Requirements · file line 13 · commit f1x7ure · prompt 0003.1
+
+hop 2  9004/AC-1  AcceptanceCriterion  struck: false
+       link  9004/AC-1 -[VERIFIES]-> 9003/AC-4 (incoming to 9003/AC-4)
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A neighbour criterion."
+       specs/9004-fixture-held-neighbour/index.md · Requirements · file line 12 · commit f1x7ure · prompt 0003.1
+
+hop 2  9003/AC-3  AcceptanceCriterion  struck: false
+       link  9003/AC-2 -[BLOCKED_BY]-> 9003/AC-3 (outgoing from 9003/AC-2)  HELD: runs_disagree
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       "A criterion behind a held one."
+       specs/9003-fixture-held/index.md · Requirements · file line 14 · commit f1x7ure · prompt 0003.1
+
+hop 2  unresolved:9003:feature-77  Unresolved  HELD: reached only by held links
+       link  9003/AC-2 -[UNCLASSIFIED]-> unresolved:9003:feature-77 (outgoing from 9003/AC-2)  HELD: runs_disagree
+             specs/9003-fixture-held/index.md · Requirements · line 10 · commit f1x7ure · prompt 0003.1
+       mention "feature 77"
+       specs/9003-fixture-held/index.md · Requirements · line 10 · no commit, no model
+       stopped: unresolved, not expanded
+
+Held: 2 steps, 5 links
+Prompt versions: all 14 model made steps share prompt 0003.1.

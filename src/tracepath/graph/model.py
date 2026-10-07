@@ -85,6 +85,23 @@ def entity_row(
     )
 
 
+def held_entity_row(
+    entity: IdentifiedEntity,
+    unit: Unit,
+    commit: str,
+    provenance: Provenance,
+    reasons: tuple[str, ...],
+) -> dict[str, Any]:
+    """A held entity's properties: `entity_row()` without `accepted_by`, marked held.
+
+    No one accepted it, so it carries no `accepted_by` (spec 0005 AC-18). `held` is
+    `true` and `held_reasons` lists why, each reason as `name` or `name:detail`.
+    """
+    row = entity_row(entity, unit, commit, provenance)
+    del row["accepted_by"]
+    return {**row, "held": True, "held_reasons": list(reasons)}
+
+
 def unresolved_row(node: UnresolvedNode) -> dict[str, Any]:
     """One `:Unresolved` node's properties."""
     return _without_nulls(
@@ -124,4 +141,20 @@ def link_row(link: ResolvedLink, provenance: Provenance) -> dict[str, Any]:
                 "commit": provenance.commit,
             }
         ),
+    }
+
+
+def held_unresolved_row(node: UnresolvedNode) -> dict[str, Any]:
+    """An `:Unresolved` node only held links reach: `held`, and no reasons of its own."""
+    return {**unresolved_row(node), "held": True}
+
+
+def held_link_row(
+    link: ResolvedLink, provenance: Provenance, reasons: tuple[str, ...]
+) -> dict[str, Any]:
+    """A held relationship: `link_row()` with `held` and `held_reasons` among its properties."""
+    row = link_row(link, provenance)
+    return {
+        **row,
+        "properties": {**row["properties"], "held": True, "held_reasons": list(reasons)},
     }
