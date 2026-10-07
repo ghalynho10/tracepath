@@ -194,7 +194,11 @@ def test_ac_3_the_default_chain_over_a_graph_with_held_items_is_byte_identical()
 
 def test_ac_7_walk_py_is_byte_for_byte_the_file_spec_0005_found() -> None:
     """covers: spec 0005 AC-7."""
-    assert hashlib.sha256(WALK.read_bytes()).hexdigest() == WALK_SHA256
+    assert hashlib.sha256(WALK.read_bytes()).hexdigest() == WALK_SHA256, (
+        "walk.py changed. Spec 0005 AC-7 required the walk unchanged for feature 14's "
+        "build only. A later spec that changes the walk rules updates WALK_SHA256 in "
+        "tests/test_held_walk.py in the same commit as the walk change."
+    )
 
 
 def test_ac_7b_spec_0004_fixture_still_prints_its_hand_written_expectation() -> None:
