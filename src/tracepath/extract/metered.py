@@ -34,6 +34,7 @@ from tracepath.artifacts import (
     build_artifact,
     ensure_attempt_unwritten,
     read_run,
+    run_path,
     write_run,
 )
 from tracepath.config import AnthropicSettings
@@ -119,6 +120,10 @@ class Plan:
     bound: float
 
 
+class CountUnreadable(Exception):
+    """The token count endpoint answered with a body that could not be read."""
+
+
 class ResumeRefused(Exception):
     """A unit `--resume` cannot plan or must not touch (AC-58b, AC-59, AC-60)."""
 
@@ -159,13 +164,23 @@ def count_input(client: anthropic.Anthropic, settings: AnthropicSettings, unit: 
 
     The same system blocks, message and output schema `extract_once()` sends, so the
     count matches what a call would bill as input, cached and uncached together.
+
+    Raises:
+        CountUnreadable: the endpoint answered with a body the SDK could not parse,
+            which it raises as a `ValueError` (a decode or validation error), not as an
+            `anthropic.APIError`.
     """
-    return client.messages.count_tokens(
-        model=settings.model,
-        system=system_blocks(),
-        messages=[{"role": "user", "content": user_prompt(unit)}],
-        output_config={"format": output_format()},
-    ).input_tokens
+    try:
+        return client.messages.count_tokens(
+            model=settings.model,
+            system=system_blocks(),
+            messages=[{"role": "user", "content": user_prompt(unit)}],
+            output_config={"format": output_format()},
+        ).input_tokens
+    except ValueError as exc:
+        raise CountUnreadable(
+            f"its answer for {unit.record_id} {unit.section} could not be read ({exc!r})"
+        ) from exc
 
 
 def first_collision(root: Path, target: Target, runs: int) -> Path | None:
@@ -378,7 +393,13 @@ def run_metered(
                     cache_read_input_tokens=attempt.cache_read_input_tokens,
                     failure_kind=attempt.failure_kind,
                 )
-                path = write_run(root, artifact)
+                path = run_path(root, artifact)
+                try:
+                    write_run(root, artifact)
+                except (OSError, ArtifactCollisionError) as exc:
+                    lost: Exception | None = exc
+                else:
+                    lost = None
                 cost = attempt_cost(attempt, plan.bound)
                 total += cost
                 calls += 1
@@ -398,6 +419,15 @@ def run_metered(
                     )
                 )
                 say(_attempt_line(where, attempt, cost, total, path, root))
+                if lost is not None:
+                    # Paid for, so counted above; its record exists only in this message.
+                    return outcome(
+                        f"stopping: {where} was paid for, but its artifact could not be "
+                        f"written to {path} ({lost}). Its usage: "
+                        f"{attempt.input_tokens} in, {attempt.output_tokens} out, cache write "
+                        f"{attempt.cache_creation_input_tokens}, read "
+                        f"{attempt.cache_read_input_tokens}"
+                    )
                 reported = _reported_usage(attempt)
                 # AC-11: a call reading no cache is a fault only once an earlier call of
                 # this command could have written it.

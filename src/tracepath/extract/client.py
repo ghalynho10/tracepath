@@ -427,10 +427,11 @@ def _attempt_from_usage(
     """One attempt, with every part of the usage the API reported for it."""
     run_id = uuid.uuid4().hex
     if usage is None:
+        # Unmeasured, so null rather than zero (spec 0001's storage row).
         return Attempt(
             number=number,
-            input_tokens=0,
-            output_tokens=0,
+            input_tokens=None,
+            output_tokens=None,
             run_id=run_id,
             output=output,
             error=error,
@@ -536,31 +537,37 @@ def extract_once(
         ) as stream:
             try:
                 response = stream.get_final_message()
-            except httpx2.TransportError as exc:
-                # The SDK wraps a transport error as `APIConnectionError` only while it
-                # sends the request; one that breaks the response body arrives raw.
-                # Recorded as a failed attempt, so the run's one retry covers it.
+            except (httpx2.TransportError, anthropic.APIError) as exc:
+                # Once the stream is open, a failure keeps whatever usage had arrived. A
+                # transport error that breaks the body arrives raw (the SDK wraps one as
+                # `APIConnectionError` only while it sends the request), and an error
+                # event mid stream arrives as `APIStatusError`, after `message_start`
+                # may already have reported the input and cache counts.
                 try:
                     snapshot: Message | None = stream.current_message_snapshot
                 except AssertionError:  # the SDK holds none before `message_start`
                     snapshot = None
-                message = (
-                    f"{unit.record_id} {unit.section}: the connection dropped mid stream ({exc})"
+                what = (
+                    "the connection dropped mid stream"
+                    if isinstance(exc, httpx2.TransportError)
+                    else "the call failed mid stream"
                 )
+                message = f"{unit.record_id} {unit.section}: {what} ({exc})"
                 raise ExtractionFailed(
                     message, (_dropped_attempt(number, message, snapshot),)
                 ) from exc
     except anthropic.APIError as exc:
-        # Nothing came back, so the API reported no usage to record. Zero here means
-        # "nothing was billed that we were told about", and the error says why.
+        # Refused before any response: the API reported no usage, so both counts are
+        # null, meaning unmeasured. A zero would assert a measurement never made (spec
+        # 0001's storage row), and would hide the attempt from the null usage summary.
         message = f"{unit.record_id} {unit.section}: the call failed ({exc})"
         raise ExtractionFailed(
             message,
             (
                 Attempt(
                     number=number,
-                    input_tokens=0,
-                    output_tokens=0,
+                    input_tokens=None,
+                    output_tokens=None,
                     run_id=uuid.uuid4().hex,
                     error=message,
                     failure_kind=FailureKind.TRANSPORT,

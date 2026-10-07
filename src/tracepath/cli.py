@@ -33,6 +33,7 @@ from tracepath.extract.cost import (
 )
 from tracepath.extract.examples import ExampleError
 from tracepath.extract.metered import (
+    CountUnreadable,
     Plan,
     ResumeRefused,
     RunPlan,
@@ -353,7 +354,7 @@ def extract(
         counted = {t.address: count_input(client, settings, t.unit) for t in targets}
     except EstimateUnavailable as exc:
         _fail(str(exc))
-    except anthropic.APIError as exc:
+    except (anthropic.APIError, CountUnreadable) as exc:
         _fail(f"the token count endpoint failed, so nothing is priced ({exc})")
 
     runs: dict[str, tuple[RunPlan, ...]] = {}
