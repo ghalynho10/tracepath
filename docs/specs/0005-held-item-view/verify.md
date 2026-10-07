@@ -9,7 +9,7 @@ Run from the repository root with Neo4j up (`docker compose up -d`). The steps t
 - [x] `uv run tracepath load` → summary line, no held line; `artifacts/graph-build.json` has no `held_view` key → AC-5
 - [x] In Neo4j Browser after that load: `MATCH (n) WHERE n.held IS NOT NULL RETURN count(n)` and `MATCH ()-[r]->() WHERE r.held IS NOT NULL RETURN count(r)` → both 0 → AC-1
 - [x] Save `uv run tracepath trace 0012/AC-7` output; run `uv run tracepath load --with-held`; run `uv run tracepath trace 0012/AC-7` again → byte identical to the saved output, no `HELD:` → AC-3
-- [x] On the graph from `load --with-held`, `uv run tracepath trace --eval 1` → no `Held item view` line, no `held only` line, no `through held items` line, no `HELD:` → AC-4
+- [x] Write a synthetic eval file to a scratch path (not an eval question: feature 6 holds the others out), `{"entries":[{"question":"Synthetic, not an eval question","trace":[{"record":"spec 0012 AC-7","file":"docs/specs/0012-model-client-router/index.md","line":26},{"record":"spec 0012 AC-3","file":"docs/specs/0012-model-client-router/index.md","line":22}]}]}`. Run `uv run tracepath trace --eval 1 --eval-file <that path>` after `load`, then again after `load --with-held` → byte identical, no `Held item view` line, no `held only` line, no `through held items` line, no `HELD:` → AC-4
 - [x] Compare the accepted graph after `load` and after `load --with-held`: `MATCH (e:Entity) WHERE e.held IS NULL RETURN e.canonical_id, properties(e) ORDER BY e.canonical_id` and `MATCH (a)-[r]->(b) WHERE type(r) <> 'PART_OF' AND type(r) <> 'SPECIFIED_BY' AND r.held IS NULL RETURN type(r), a.canonical_id, b.canonical_id, properties(r) ORDER BY 1, 2, 3` → identical rows → AC-6
 
 ### The walk
@@ -44,14 +44,14 @@ Run from the repository root with Neo4j up (`docker compose up -d`). The steps t
 ## Value sourcing
 
 - [x] A held entity's text, type, flags and ids: `MATCH (e:Entity {canonical_id: '0002#requirements:6'}) RETURN e.text, e.type, e.flags` → the run 1 entity of `0002 ## Requirements` in its committed run file
-- [x] A held link's provenance: a held link's `prompt_version`, `model`, `commit`, `file`, `section`, `line` → the same values an accepted link written in that unit's section carries
+- [x] A held link's provenance, in a section holding both kinds of link: after `load --with-held`, `MATCH ()-[r]->() WHERE type(r) <> 'PART_OF' AND type(r) <> 'SPECIFIED_BY' AND r.file = 'specs/0002-deployment-and-environments/index.md' AND r.section = 'Feature design' RETURN coalesce(r.held, false) AS held, collect(DISTINCT [r.prompt_version, r.model, r.commit, r.line]) AS provenance, count(r) ORDER BY held` → two rows, accepted and held, with the same provenance (`0003.1`, `claude-sonnet-5`, `2e40bcf`, line 53)
 - [x] Whether the graph was loaded with held items: `trace --with-held` succeeds after `load --with-held` and refuses after `load` (the read slice holds a held `:Entity` or `:Unresolved`, or not)
 - [x] The clean chain under `--eval --with-held`: an item reached only through a held link never prints `reached`, so the clean chain is `drop_held()` over the same read
 - [x] The held parts on a `held only` line: they follow `parent` back to the start in the printed chain; check one by reading the chain above the report
 
 ## Acceptance-criteria coverage
 
-- AC-1: default load, Neo4j counts · AC-2: `test_held_walk.py` (`ac_2`) · AC-3: trace before and after `load --with-held` · AC-4: `trace --eval 1` on a held graph · AC-5: default load manifest and output · AC-6: accepted graph compared
+- AC-1: default load, Neo4j counts · AC-2: `test_held_walk.py` (`ac_2`) · AC-3: trace before and after `load --with-held` · AC-4: a synthetic question traced on a default and a held graph · AC-5: default load manifest and output · AC-6: accepted graph compared
 - AC-7: `git diff` of `walk.py` · AC-7b: spec 0004 walk tests unchanged · AC-8: held fixture walk
 - AC-9, AC-9b, AC-10, AC-11: held fixture print, real `trace 0002/AC-10 --with-held`
 - AC-12, AC-12b, AC-13, AC-14, AC-14b, AC-15, AC-16: `test_held_report.py`
