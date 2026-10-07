@@ -165,3 +165,17 @@ _Steps derived from the amended acceptance criteria and the new Value sourcing r
 
 - AC-6d, AC-6e, AC-7b, AC-8, AC-8b, AC-8c, AC-9, AC-10a, AC-11, AC-13, AC-14b, AC-48, AC-48b, AC-55 to AC-58b, AC-59 to AC-61b, AC-62 to AC-64b, AC-65, AC-67 to AC-70: covered by the steps above.
 - AC-66 binds the next result record, so it is checked when one is written, not here.
+
+## Verify: the second 2026-10-06 amendment · updated 2026-10-06 (/develop)
+
+_No paid call. Locked by `tests/test_run_unit_usage.py` and `tests/test_spend_fence.py`._
+
+- [ ] `run_with_retry()`, `run_unit()`, `extract_unit()` and `extract_units()` each raise `RetryPathRetired` with no model call made → AC-71
+- [ ] The refusal's message names `tracepath extract` → AC-71b
+- [ ] `RetryPathRetired` is neither an `ExtractionFailed` nor a `UnitFailed`, and passes through `run_unit()` unchanged → AC-71c
+- [ ] Add a scratch `.py` file outside `tests/` that contains `import anthropic` (or `build_client`, or `extract_once`), `git add` it, run `uv run pytest tests/test_spend_fence.py` → AC-72's test fails naming the file; remove it and the test passes → AC-72
+- [ ] `committed_units()` over the repository returns `0021 ## Requirements` with three settled runs → AC-73
+- [ ] Its `run-2.json` records `attempt: 3` → AC-73c
+- [ ] `resume_runs()` on `0021:Requirements` refuses it as owing nothing, not as blocked → AC-73b
+- [ ] Inside any test, `ANTHROPIC_API_KEY` is `sk-ant-test` and `ANTHROPIC_BASE_URL` is `http://localhost:1` → AC-74, AC-74b
+- [ ] With a `.env` holding another key, `load_anthropic_settings()` in a test still returns `sk-ant-test`, and the Neo4j integration tests still read their password from `.env` → AC-74, AC-74c

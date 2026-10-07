@@ -89,6 +89,7 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
   - [x] The run policy by failure kind, the SDK's retries off, and the no cache stop's exception (AC-11, AC-13, AC-67, AC-67b, AC-68 to AC-70)
   - [x] The dry run names collisions without stopping (AC-6d, AC-6e)
   - [x] `extract --resume` and the manifest's `extracted_at` list (AC-48, AC-56 to AC-65)
+- [x] Build the second 2026-10-06 amendment on `fix/extract-guards`: the old retry path fenced, the allowlist test, the test fixture away from the real API, and the `0021` pins (spec 0004's Build plan step 17, AC-71 to AC-74c)
 - [ ] Verify it: `/check verify first traced chain`
 - [x] Test it: `/test first traced chain`
 

@@ -385,7 +385,7 @@ Ordered for the Tracer Bullet approach: the thinnest real thread first (graph in
 - [ ] The `/debug` items routed with this amendment (`docs/session-notes.md`) that the amendment does not cover: a garbled `count_tokens` response gives a raw traceback, a call the API refuses records zero usage instead of null, and a write error after a paid call gives a traceback and no summary.
 
 - [ ] `/sync`: add to `AGENTS.md` that any new paid call goes through `tracepath extract` or `run_metered()`, never `extract_once()` or a client of its own, pointing at AC-72's test.
-- [ ] `verify.md` owes steps for AC-71 to AC-74c, added by `/develop` with step 17.
+- [x] `verify.md` owes steps for AC-71 to AC-74c, added by `/develop` with step 17.
 
 **Amendments made with this spec, 2026-10-05** (owed wording, no code):
 - Spec 0001's artifact storage row, amendment (c): a dropped call writes a null usage too, so an errored batch result is no longer "the only case". See that row.
