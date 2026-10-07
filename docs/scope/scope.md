@@ -105,11 +105,11 @@ A load mode that also writes held items, each marked held with its reasons, so a
 
 spec [0005](../specs/0005-held-item-view/index.md) · amends spec [0002](../specs/0002-data-model/index.md) AC-11(f) · code in `src/tracepath/pipeline.py`, `src/tracepath/traverse/`, `src/tracepath/graph/`, `src/tracepath/report.py`
 - [x] Design it (spec): `/architect held item view` · the prediction for question 3 is locked in the spec, before any code
-- [ ] Build it: `/develop held item view`
-  - [ ] The marker and the filter, then the printed `HELD:` marker, on a hand built fixture (AC-2, AC-3, AC-7 to AC-11)
-  - [ ] The held view over the committed artifacts, then the write and the two command options, tested against Neo4j (AC-1, AC-5, AC-6, AC-17 to AC-26b)
-  - [ ] The report: two walks, `held only`, the label lines (AC-4, AC-12 to AC-16)
-  - [ ] The rerun, no API call: `load --with-held`, `trace --eval 3 --with-held`, the record in `experiments/0010-held-item-view/` naming design, code and result commits (AC-25, AC-27, AC-29)
+- [x] Build it: `/develop held item view`
+  - [x] The marker and the filter, then the printed `HELD:` marker, on a hand built fixture (AC-2, AC-3, AC-7 to AC-11)
+  - [x] The held view over the committed artifacts, then the write and the two command options, tested against Neo4j (AC-1, AC-5, AC-6, AC-17 to AC-26b)
+  - [x] The report: two walks, `held only`, the label lines (AC-4, AC-12 to AC-16)
+  - [x] The rerun, no API call: `load --with-held`, `trace --eval 3 --with-held`, the record in `experiments/0010-held-item-view/` naming design, code and result commits (AC-25, AC-27, AC-29)
 - [ ] Verify it: `/check verify held item view`
 - [ ] Test it: `/test held item view`
 
