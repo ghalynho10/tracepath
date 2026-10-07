@@ -5,7 +5,7 @@
 
 ## Summary
 
-This spec builds the walking skeleton: three new terminal commands that take four sections of JobHunt's specs from text to a printed chain, with every step real. `extract` runs the model on the sections the chain needs, `load` rebuilds the graph from the saved run files, and `trace` walks from one item along whatever links exist and prints each step with its source and the prompt version that produced it. The test is eval question 3 ("Why is password sign in impossible on production?"), chosen because no worked example in the prompt touches it. The rules for the walk, the start item, the pass rule and the predicted result are written down and locked here, before any paid call, so a pass means the mechanism works and not that the test was fitted to one question.
+This spec builds the walking skeleton: three new terminal commands that take four sections of JobHunt's specs from text to a printed chain, with every step real. `extract` runs the model on the sections the chain needs, `load` rebuilds the graph from the saved run files, and `trace` walks from one item along whatever links exist and prints each step with its source and the prompt version that produced it. The test is eval question 3 ("Why is password sign in impossible on production?"), chosen because no worked example in the prompt touches it. The rules for the walk, the start item, the pass rule and the predicted result are written down and locked here, before any paid call, so a pass means the mechanism works and not that the test was fitted to one question. An amendment on 2026-10-06, after the first result, makes the spending ceiling a hard guarantee per call, lets a dry run price units already extracted, and lets `extract --resume` complete a unit whose one pass was cut short. It revises the locked AC-48, and the Held out discipline section says why.
 
 ## Requirements
 
@@ -31,17 +31,43 @@ This spec builds the walking skeleton: three new terminal commands that take fou
 - **AC-6a**: `extract --dry-run` makes no extraction call (only the free token count endpoint).
 - **AC-6b**: `extract --dry-run` prints, per unit, the input tokens counted by the token count endpoint and the cached prefix.
 - **AC-6c**: `extract --dry-run` prints the output assumption with its named source, the rates it assumed (stated as standard interactive pricing, not Batch), the central USD figure (3 runs per unit, 12 calls for question 3) and the wider USD figure (the heaviest measured output on every call, with a retry on every run, 24 calls for question 3), then the totals.
+- **AC-6d** (added 2026-10-06): `extract --dry-run` does not stop at AC-4's collision check: it prints the estimate and exits 0 even when a requested unit already has an artifact.
+- **AC-6e** (added 2026-10-06): `extract --dry-run` names every requested unit that a real run would refuse at AC-4's collision check.
 - **AC-7**: `extract` without `--ceiling USD` exits 1 and names the flag, before any call.
-- **AC-8**: `extract` exits 1 before any paid call when the wider total estimate (AC-6c) is above `--ceiling`.
-- **AC-9**: Before every call, if the running total plus one flat failure figure ($0.4144, the worst a single call can add) would pass the ceiling, the command does not make the call. It stops there by structure, says plainly "stopping here before RECORD:SECTION run N attempt M: ceiling", and exits 1.
-- **AC-10a**: A failed or dropped attempt counts in the running total at one flat figure (the heaviest measured call, $0.4144), never at its recorded tokens.
+- **AC-7b** (added 2026-10-06): a `--ceiling` that is not a finite number above 0 (including `nan`, `inf` and `0`) makes `extract` exit 1, naming the flag, before any call.
+- **AC-8** (amended 2026-10-06): `extract` exits 1 before any paid call when `--ceiling` is below the largest per call bound (AC-55) among the requested units.
+- **AC-8c** (added 2026-10-06): with `--dry-run`, a ceiling below that bound does not refuse: the dry run prints the bound and a warning, and exits 0.
+- **AC-8b** (added 2026-10-06): when the wider total (AC-6c) is above `--ceiling`, `extract` does not refuse. It prints that the run may stop partway at the ceiling (AC-9).
+- **AC-9** (amended 2026-10-06): Before every call, if the running total plus the per call bound (AC-55) of that call's unit would pass the ceiling, the command does not make the call. It stops there by structure, says plainly "stopping here before RECORD:SECTION run N attempt M: ceiling", and exits 1.
+- **AC-10a** (amended 2026-10-06): A failed or dropped attempt counts in the running total at its unit's per call bound (AC-55), never at its recorded tokens.
 - **AC-10b**: A settled attempt counts in the running total at its own recorded usage priced at the stated rates, cache write and cache read included.
-- **AC-11**: After any call that is not the run's first, the command stops with a plain message ("stopping: call N read no cache") and exit 1 when that call read no cache. Calls on units 2 to 4 are held to the same rule, since they should read the prefix the first call wrote.
+- **AC-55** (added 2026-10-06): A unit's per call bound is 64,000 output tokens (`MAX_TOKENS`) at the output rate, plus the unit's uncached input (its counted input less the 57,494 token cached prefix) at the input rate, plus one write of the cached prefix at the cache write rate. At today's figures it is $0.8701 for `0010 Context` and $0.8907 for `0007 ## Feature design`.
+- **AC-11** (amended 2026-10-06): After any call that is not the command's first call, the command stops with a plain message ("stopping: call N read no cache") and exit 1 when that call read no cache, unless no earlier call of the command reported usage (then nothing in this command could have written the cache yet, and the call that writes it is not a fault). Calls on units 2 to 4 are held to the same rule, since they should read the prefix the first call wrote.
 - **AC-12a**: Each attempt's artifact is written as the attempt settles, before the next call starts.
 - **AC-12b**: A failed or dropped attempt is written under its own `failed-run-N-attempt-M.json` name, null usage included.
-- **AC-13**: A unit that fails after spec 0001's single retry is recorded and not run again. The command stops before the next call and names the failed unit.
+- **AC-13** (amended 2026-10-06): A run with two model failures (AC-67) is blocked. The command stops before the next call and names the unit, and no later command, resume included, makes another attempt for that run.
+- **AC-67** (added 2026-10-06): Every failed attempt is one of two kinds. A transport failure is an attempt whose response never completed: an HTTP error status, or a stream that ended before `message_stop` (a dropped connection or an error event mid stream). A model failure is a complete response that is malformed, fails validation, or stopped at `max_tokens`.
+- **AC-67b** (added 2026-10-06): Every failed attempt records its kind as `failure_kind` in its artifact. An artifact written before 2026-10-06 has no such field and is read by the rule in the Value sourcing table: `model` when its `stop_reason` is set, `transport` when it is null.
+- **AC-68** (added 2026-10-06): Only model failures count toward spec 0001's single retry and toward blocking a run. A run whose failures are all transport failures stays owed.
+- **AC-69** (added 2026-10-06): One command makes at most two attempts per run, of any kind. A run still not settled after two attempts in one command, and not blocked, stops the command before the next call, naming the unit as owed and resumable with `--resume`.
+- **AC-70** (added 2026-10-06): The client is built with the SDK's automatic retries off (`max_retries=0`), so each attempt is exactly one request.
 - **AC-14**: The command's final summary names every attempt with null usage.
-- **AC-48**: A unit with fewer than three settled runs (an interrupted or failed unit) is never resumed by the command: running it again stops at AC-4's collision check, and the unit stays `section_not_extracted` in the report. This is intended, because a resume is a second paid pass.
+- **AC-14b** (added 2026-10-06): The final summary prints two totals: the running total by the guard's rule (failed attempts at their bound), and the cost of the usage the artifacts recorded.
+- **AC-48** (amended 2026-10-06, see Held out discipline): Without `--resume`, running `extract` again on a unit with fewer than three settled runs stops at AC-4's collision check.
+- **AC-48b** (split out of AC-48 2026-10-06, unchanged): A unit with fewer than three settled runs stays `section_not_extracted` in the report, and is not loaded, until it has three.
+- **AC-56** (added 2026-10-06): A run is owed when it has no settled attempt and fewer than two model failures. `extract --resume` makes attempts only for owed runs, numbered on from the run's highest attempt number, at most two per run in one command (AC-69).
+- **AC-57** (added 2026-10-06): A run with no artifact at all, in a unit that has artifacts, is owed and gets its first attempt from a resume.
+- **AC-58** (added 2026-10-06): `extract --resume` makes no attempt for a run that is settled (it has `run-N.json`, whatever failed files sit beside it) or blocked (AC-13).
+- **AC-58b** (added 2026-10-06): A unit whose artifacts break the naming pattern (a failed attempt number missing below a higher one, or `run-N.json` for a run beyond the policy's three) is unplannable. `extract --resume` exits 1 naming the file, before any call.
+- **AC-59** (added 2026-10-06): If any listed unit has no owed run (all settled, or a run blocked), `extract --resume` exits 1 before any call, naming every such unit and which it is.
+- **AC-60** (added 2026-10-06): If any listed unit has no artifact at all, `extract --resume` exits 1 before any call, naming every such unit and saying a plain `extract` starts it.
+- **AC-60b** (added 2026-10-06): `extract --resume` exits 1 before any call when a unit's settled artifacts name a `prompt_version`, `model`, `commit` or `effort` other than the current ones, naming the unit and the difference.
+- **AC-61** (added 2026-10-06): Before its first call, a resume checks that the next attempt's paths are unwritten for every owed run of every listed unit, and stops on one collision with exit 1, as AC-4 does.
+- **AC-61b** (added 2026-10-06): A resume never replaces or deletes an artifact: before each attempt it runs AC-5's collision check on that attempt's paths.
+- **AC-62** (added 2026-10-06): A resume checks the ceiling before each attempt with the per call bound, as AC-9 does.
+- **AC-63** (added 2026-10-06): A resume's estimate prices only the attempts it plans: each owed run counts 1 call central and 2 wider, the most one command can make for it (AC-69).
+- **AC-64** (added 2026-10-06): `extract --dry-run --resume` prints, per unit, the attempts the resume would make, with the AC-6b counts, the AC-63 totals and the AC-8b warning, and makes no extraction call.
+- **AC-64b** (added 2026-10-06): `extract --dry-run --resume` exits 1 for a unit AC-58b, AC-59, AC-60 or AC-60b would refuse, as a real resume does.
 - **AC-49**: `extract` calls the interactive streaming API, not the Batch API that spec 0001's storage row assigns to corpus extraction, because no batch path is built, and the estimate uses standard (not Batch) rates.
 
 **Load command and the build record**
@@ -53,6 +79,7 @@ This spec builds the walking skeleton: three new terminal commands that take fou
 - **AC-17c**: `graph-build.json` lists the prompt versions in use and the number of entries in `artifacts/review-log.json`.
 - **AC-18**: Two `load` runs over unchanged artifacts write byte identical `graph-build.json` files (the file holds no timestamp).
 - **AC-19**: `load` prints how many units sit at each prompt version, plainly, and does not refuse a mix.
+- **AC-65** (added 2026-10-06): `graph-build.json` lists for every loaded unit the sorted, distinct `extracted_at` values of all its artifacts, failed attempts included, so a resumed unit shows more than one.
 - **AC-50**: Every entity the load writes carries `file_line`, the line in the source file, equal to `unit.start_line + line - 1` (absent when `line` is null). The stored `line` stays relative to its section, as spec 0002 AC-4 defines it.
 - **AC-51**: `load` prints how many resolved links collapsed into an existing relationship (AC-16).
 
@@ -98,6 +125,7 @@ This spec builds the walking skeleton: three new terminal commands that take fou
 - **AC-47**: From the `src/` commit to the result record, nothing under `src/`, `examples/` or the prompt text changes (no change to a prompt rule, a worked example, the schema, or an entity or relationship type), and the four units' run files never change.
 - **AC-53**: The scored result uses the `src/` commit of AC-46b. If a real defect in the walk or report code shows up afterwards, the frozen result is recorded first, as it came. A fix is a separate commit, and its rescoring on the same unchanged run files is reported as a second, labelled result, never in place of the first.
 - **AC-54**: The result record compares the summed artifact usage (failed attempts included) with the Console's usage for the day of the run, with no other tracepath API use that day, and states any gap without explaining it away.
+- **AC-66** (added 2026-10-06): A result record names every resumed unit (a unit whose artifacts, failed attempts included, carry more than one `extracted_at`) with those values.
 
 ## Decision
 
@@ -139,6 +167,8 @@ This section exists so a pass means the mechanism works, not that the test was f
 
 **One extraction pass per section.** Each of the four sections gets three runs plus spec 0001's single retry, recorded as the attempts come back (AC-12a, AC-13). There are no paid reruns to get a better result (AC-48). If a section fails, the finding is that it failed.
 
+**Amendment of 2026-10-06, a revision of a locked rule.** AC-48 sits inside the pass rule above (AC-42 to AC-54), so changing it after experiment 0009 revises a locked rule, and this note says so. What changed: a unit cut short may now be completed with `extract --resume` (AC-56 to AC-64, AC-66), where before it could never be. Why: two confirmed ways can each burn a unit permanently. A first call that drops before any usage arrives on a cold cache stops the command after its retry (finding 1 of `docs/reviews/2026-10-06-check-verify-first-traced-chain.md`), and a ceiling stop between calls (AC-9) can leave any unit short of three runs. Under the old AC-48, a unit an eval question needs could then never be extracted. A resume completes the one pass that was cut short, under the run policy as amended the same day: only a model failure uses up a run's single retry (AC-67, AC-68), so a run cut short by transport failures is attempted again, and a run that settled or has two model failures never is. A resume never replaces or discards an attempt and never runs a settled run again, so it cannot buy a better result. Experiment 0009 had no partial unit, so AC-48 played no part in its scored result, which stands as recorded. The amendment applies only to runs after 2026-10-06. The same day's changes to AC-6d, AC-6e, AC-7b, AC-8, AC-8b, AC-8c, AC-9, AC-10a, AC-11, AC-13, AC-14b, AC-55, AC-67, AC-67b and AC-68 to AC-70 touch the extract command's cost controls and run policy, which sit outside the pass rule.
+
 **No manual review decisions** on the chain's items before the run is recorded (AC-45). An item held for review is reported as held (AC-38).
 
 **No tuning to this question** (AC-47): no prompt, rule, example, schema or type change for question 3, and no change to `src/` after the frozen commit. The vocabulary revisit already done (the `0006` ruling in `docs/session-notes.md`) is the only one owed.
@@ -164,7 +194,8 @@ No new node kind and no new entity type. Four additions to what already exists.
     {"record": "0002", "section": "Requirements", "section_slug": "requirements",
      "run_files": ["artifacts/runs/0002/requirements/run-1.json", "..."],
      "model": "claude-sonnet-5", "prompt_version": "0003.1",
-     "accepted_entities": 0, "accepted_links": 0, "held_links": 0}
+     "accepted_entities": 0, "accepted_links": 0, "held_links": 0,
+     "extracted_at": ["2026-10-05T21:39:44+00:00"]}
   ],
   "prompt_versions": {"0003.1": 15, "0003.0": 2, "0002.3": 1},
   "review_log_entries": 0
@@ -179,7 +210,7 @@ No new node kind and no new entity type. Four additions to what already exists.
 
 | Command | Key inputs | Key outputs | Auth | Key errors |
 |---|---|---|---|---|
-| `tracepath extract RECORD:SECTION ... --ceiling USD [--dry-run] [--root] [--snapshot]` | one or more unit addresses; the ceiling | run artifacts under `artifacts/runs/`; the estimate and the running total on stdout. Interactive streaming API, not Batch (AC-49) | `ANTHROPIC_API_KEY` | `ExampleError`, `ArtifactCollisionError`, `UnitFailed`, ceiling, unit not found or ambiguous, all exit 1 |
+| `tracepath extract RECORD:SECTION ... --ceiling USD [--dry-run] [--resume] [--root] [--snapshot]` | one or more unit addresses; the ceiling, a finite number above 0 (AC-7b); `--resume` completes units cut short (AC-56 to AC-64) | run artifacts under `artifacts/runs/`; the estimate and the running total on stdout. Interactive streaming API, not Batch (AC-49) | `ANTHROPIC_API_KEY` | `ExampleError`, `ArtifactCollisionError`, `UnitFailed`, ceiling, unit not found or ambiguous, a unit a resume cannot plan or must refuse, an owed or blocked run, all exit 1 |
 | `tracepath load [--root] [--snapshot] [--commit]` | the committed run artifacts | the graph, `artifacts/graph-build.json`, a count per prompt version | Neo4j settings | `GraphUnavailable`, `RebuildFailed`, `GraphWriteFailed`, `ProvenanceMismatch`, all exit 1 |
 | `tracepath trace START` or `trace --eval N [--eval-file]` | a canonical id, or an eval question number | the chain on stdout | Neo4j settings | missing start, unusable eval entry, `GraphUnavailable`, all exit 1 |
 
@@ -195,7 +226,18 @@ A unit address is `RECORD:SECTION`, for example `0002:Requirements` or `"0007:Fe
 | `extract --dry-run` | output tokens per call, wider | 39,234, the heaviest measured call (experiment 0005, `0021` run 2) |
 | `extract --dry-run` | rates | 2.00 / 10.00 / 4.00 / 0.20 USD per million (input, output, 1 hour cache write, cache read): standard interactive pricing, not Batch. The rates experiment 0005 reproduced against experiment 0004's bill |
 | `extract --dry-run` | central and wider call counts | central: 3 runs times the units (12 for question 3). Wider: the same with a retry on every run (24), each priced at the heaviest output. The retry is per run (`run_with_retry`), not per unit |
-| `extract` | flat failure cost | $0.4144, one heaviest call (experiment 0008's script) |
+| `extract` | flat failure cost | $0.4144, one heaviest call (experiment 0008's script). Replaced 2026-10-06 by the per call bound below, in AC-9 and AC-10a; kept here as the original record |
+| `extract` | per call bound (AC-55) | `MAX_TOKENS` (64,000, `src/tracepath/extract/client.py`) at the output rate, plus the unit's counted input (the count endpoint, as AC-6b) less `CACHED_PREFIX_TOKENS` at the input rate, plus `CACHED_PREFIX_TOKENS` at the cache write rate. It holds because `max_tokens` caps a call's billed output, thinking included: the repo records a call that spent its whole 16,000 budget thinking and stopped at `max_tokens` (`client.py`, the `MAX_TOKENS` comment). Confirmed in Anthropic's docs on 2026-10-06: "`max_tokens` remains the hard ceiling on total output" and "thinking tokens count toward the `max_tokens` limit" (extended thinking page); a 1 hour cache write is "2 times the base input tokens price" (prompt caching page) |
+| `extract` | the bound AC-8 checks | the largest per call bound among the requested units |
+| `extract --dry-run` | units a real run would refuse (AC-6e) | `preflight()`'s collision check, run without stopping, one name per unit it would refuse |
+| `extract --resume` | the planned attempts per unit (AC-56 to AC-58b, AC-64) | the unit's existing artifacts, per run: `run-N.json` means settled; otherwise the failed attempts' `failure_kind`, where two model failures means blocked and anything less means owed, with the next attempt numbered one above the highest; no file means owed from attempt 1 |
+| `extract` | an attempt's `failure_kind` (AC-67, AC-67b) | set by `extract_once()` from how the attempt ended: `transport` for an `anthropic.APIStatusError`, an `APIConnectionError`, a transport error mid stream or an error event mid stream; `model` for a schema failure, no parsed output, or `stop_reason` `max_tokens`. An artifact written before 2026-10-06 has no field: read it as `model` when its `stop_reason` is set and as `transport` when it is null (the four committed failed attempts are all schema failures with a recorded raw response) |
+| `extract` | check order before the first call | `--ceiling` (AC-7, AC-7b), the prompt build (AC-3), unit resolution in the order given (a unit named twice refused, as today), the token counts, the collision check (AC-4, or AC-61 with `--resume`), the provenance check (AC-60b, resume only), the ceiling against the bound (AC-8), then the first call |
+| `extract --resume` | central and wider call counts (AC-63) | 1 central and 2 wider per owed run |
+| `extract` | which estimated calls write the cache (amended 2026-10-06) | central: the command's first call writes, every later call reads. Wider: every call writes, as the per call bound assumes, since a cache can expire between passes. Experiment 0009's recorded wider figure ($10.1903) used the earlier rule, first call only |
+| `extract` | the summary's two totals (AC-14b) | the running total (AC-9, AC-10a), and the recorded usage of every attempt at the stated rates, null counted as 0 |
+| `extract` | `extracted_at` of a pass | `now_utc()` once per command, as today, so every artifact of one pass carries the same value and a resume carries a new one |
+| `load` | each unit's `extracted_at` list (AC-65) | the distinct `extracted_at` values of all the unit's artifacts, failed attempts included, sorted. Read from the files, so two loads still write the same bytes (AC-18) |
 | `extract` | a settled attempt's cost in the running total | that attempt's recorded `input_tokens`, `output_tokens`, cache write and cache read, at the rates above |
 | `extract` | the stop message and exit code | AC-9 and AC-11 name the wording; both exit 1 |
 | `extract` | the ceiling | the `--ceiling` flag, set from the figure the engineer approved |
@@ -221,9 +263,10 @@ A unit address is `RECORD:SECTION`, for example `0002:Requirements` or `"0007:Fe
 1. The walk and its Cypher read never reference `eval/`. Only the report step does (AC-31).
 2. The walk follows only what the graph holds, never a path hard coded for a question (AC-21 to AC-26).
 3. A held entity is absent from the graph and reported as held, never drawn as a gap (spec 0002 key invariant 8).
-4. Run artifacts are never replaced. A collision stops the command before spend (AC-4, AC-5).
+4. Run artifacts are never replaced. A collision stops the command before spend (AC-4, AC-5), and a resume checks every attempt it makes the same way (AC-61).
 5. The locked rules and `src/` are not edited between the frozen `src/` commit and the result record (AC-46b, AC-47, AC-53).
 6. Output carries no timestamp or other value that changes between identical runs (AC-42).
+7. Spend never passes the ceiling: every call is checked against the running total plus a bound that one call cannot exceed (AC-9, AC-55), resume included (AC-62).
 
 **Security model**: single user, local tool. Secrets stay in `.env` (`ANTHROPIC_API_KEY`, the Neo4j settings), never written to artifacts or the manifest. Cypher uses parameters only. No compliance scope.
 
@@ -245,6 +288,22 @@ A unit address is `RECORD:SECTION`, for example `0002:Requirements` or `"0007:Fe
 - Edge: a cycle in the fixture ends the walk and visits each node once, verifies **AC-25**.
 - Edge: an expected item whose section has two settled runs is reported `section_not_extracted`, verifies **AC-38**.
 - Edge: a `load` over two units at different prompt versions prints the count per version and does not refuse, verifies **AC-19**.
+- Amendment of 2026-10-06, all with a fake client and no paid call:
+  - Failure case: a ceiling of $0.50 on one unit exits 1 before any call, because one call's bound is above it, verifies **AC-8**.
+  - Happy path: a ceiling of $1.30 on `0010 Context` (wider $2.6423) starts, prints that it may stop partway, and stops before the first call whose bound would pass $1.30, verifies **AC-8b**, **AC-9**.
+  - Failure case: `--ceiling nan`, `inf`, `0` and `-1` each exit 1 naming the flag, verifies **AC-7b**.
+  - Edge: a dropped first attempt counts at the unit's bound, not $0.4144, verifies **AC-10a**, **AC-55**.
+  - Edge: a first call dropped before usage, then a retry that writes the cache and reads none, does not stop the command, verifies **AC-11**.
+  - Edge: `--dry-run` over an already extracted unit prints the estimate, names the unit, and exits 0, verifies **AC-6d**, **AC-6e**.
+  - Happy path: a unit with `run-1.json` only is resumed with runs 2 and 3; one with `run-1.json` and a model failure in `failed-run-2-attempt-1.json` gets run 2's attempt 2 and run 3's attempt 1, verifies **AC-56**, **AC-57**.
+  - Edge: a run with `run-2.json` beside failed files, and a run with two model failures, get no new attempt, verifies **AC-58**.
+  - Failure case: `--resume` on a unit with three settled runs, and on a unit with no artifact, each exits 1 before any call, verifies **AC-59**, **AC-60**.
+  - Edge: a resumed unit's manifest entry lists two `extracted_at` values, verifies **AC-65**.
+  - Edge: a run whose two attempts both end in transport failures stops the command as owed, and a later `--resume` attempts it again as attempt 3, verifies **AC-68**, **AC-69**, **AC-56**.
+  - Edge: a run with two model failures stops the command as blocked, and `--resume` refuses the unit, verifies **AC-13**, **AC-59**.
+  - Edge: a `failed-run-2-attempt-2.json` with no attempt 1 makes `--resume` exit 1 naming the file, verifies **AC-58b**.
+  - Failure case: a unit whose settled runs are at prompt `0003.0` makes `--resume` exit 1 before any call, verifies **AC-60b**.
+  - Edge: the built client's `max_retries` is 0, verifies **AC-70**.
 
 ## Build plan
 
@@ -261,6 +320,14 @@ Ordered for the Tracer Bullet approach: the thinnest real thread first (graph in
 9. Gate, no code: commit and push all of `src/` (the `src/` commit of AC-46b) after this spec's commit. The engineer reviews the `--dry-run` output (measured, not the indicative figure in rationale.md) and gives a ceiling. Nothing paid runs before this, and `src/` does not change after it.
 10. The paid run: `extract` on the four units of question 3, one pass, recorded as it comes back and committed, satisfies **AC-1**, **AC-46b**, **AC-47**.
 11. `load`, `trace --eval 3`, again, then `load` and `trace --eval 3` once more. Record the result in `experiments/0009-first-traced-chain/README.md` with the scored prediction, the AC-40 statement, the cost against the estimate, the Console reconciliation and the review log count, satisfies **AC-2a**, **AC-41** to **AC-43**, **AC-45**, **AC-46a**, **AC-53**, **AC-54**.
+
+**Amendment of 2026-10-06** (branch `fix/extract-guards`, no paid call). The cost guard first, because the resume relies on it:
+
+12. The per call bound and the ceiling rules: compute the bound from each unit's count, use it in the check before every call and for a failed attempt's cost, refuse a ceiling below the largest bound (warn in a dry run), print the may stop partway line, validate `--ceiling`, print both totals in the summary, satisfies **AC-7b**, **AC-8**, **AC-8b**, **AC-8c**, **AC-9**, **AC-10a**, **AC-14b**, **AC-55**.
+13. The run policy: record each failed attempt's `failure_kind`, count only model failures toward the retry and toward blocking, cap one command at two attempts per run, stop on an owed run, turn the SDK's retries off, and add the no cache stop's exception (finding 1's `/debug` fix), satisfies **AC-11**, **AC-13**, **AC-67**, **AC-67b**, **AC-68** to **AC-70**.
+14. The dry run runs the collision check without stopping and names the units a real run would refuse, satisfies **AC-6d**, **AC-6e**.
+15. `--resume`: plan the owed attempts from the unit's artifacts, refuse unplannable, finished, blocked, empty or mismatched units before any call, check every planned attempt for a collision up front and again before it, check each against the ceiling, price only the plan, and print the plan in a dry run, satisfies **AC-48**, **AC-56** to **AC-64b**.
+16. The manifest's `extracted_at` list per unit, satisfies **AC-65**. **AC-48b** and **AC-66** need no code: the first is today's behaviour, and the second binds the next result record.
 
 ## Consequences
 
@@ -279,6 +346,12 @@ Ordered for the Tracer Bullet approach: the thinnest real thread first (graph in
 - The frozen `src/` commit means a defect found after the run cannot be fixed in place: the first result stands, and a fix is rescored as a second, labelled result.
 - Spec 0002's relationships table changes (three link properties), a graph schema change with no migration, since the graph is rebuilt from artifacts.
 
+- Amendment of 2026-10-06: the per call bound ($0.87 to $0.89) is about twice the flat $0.4144, so a run stops about $0.89 short of its ceiling. To finish a run, the ceiling must cover the expected spend plus one bound of headroom.
+- Amendment of 2026-10-06: a resumed unit's three runs can come from passes hours or days apart. The prompt version and model must still match, and `unit_provenance()` refuses a mix (`ProvenanceMismatch`), but nothing pins the model's behaviour behind one model id between passes. The manifest's `extracted_at` list (AC-65) and the result record (AC-66) make every such unit visible, so its agreement can be read with that in mind.
+- Amendment of 2026-10-06: with the SDK's retries off (AC-70), a brief outage reaches the pipeline directly. A transport failure no longer uses up a run's retry, but one command stops after two attempts on a run (AC-69), so an outage ends a command early and the engineer resumes it, rather than the SDK riding it out silently.
+- Amendment of 2026-10-06: the line between kinds is drawn by how the response ended, not by why. A server fault that still returns a complete but malformed response counts as a model failure and can block a run.
+- Amendment of 2026-10-06: revising AC-48 after experiment 0009 weakens the claim that every rule here was fixed before results were seen. The Held out discipline note states what changed, why, and that the scored result is unaffected.
+
 **Neutral**:
 - `trace --eval` is the seed of feature 6's runner. Feature 6 builds on `report.py` and applies the locked rules unchanged to all five questions.
 - The 14 units already extracted stay at their mixed prompt versions (one at `0002.3`, two at `0003.0`, eleven at `0003.1`). The four new units are at `0003.1`. Question 3's chain touches none of the older ones, which the result confirms from AC-30.
@@ -294,6 +367,10 @@ Ordered for the Tracer Bullet approach: the thinnest real thread first (graph in
 - [ ] **`SPECIFIED_BY` and feature `PART_OF` are never written**: `pipeline.load()` does not call `write_specified_by()` or `write_feature_part_of()` (only tests do). Question 5's chain passes through a feature row, so feature 6 needs them, and AC-21 leaves `SPECIFIED_BY` out until then.
 - [ ] The `HeldLink` docstring says "the review step releases it", but no review step exists yet (`src/tracepath/pipeline.py:72`). Small, left for a fix branch.
 - [ ] After the paid run, `/sync` reconciles the scope row, `AGENTS.md` commands (`extract`, `load`, `trace`) and the layout note for `artifacts/graph-build.json`.
+
+- [ ] Not confirmed by Anthropic's docs (checked 2026-10-06, the errors page is silent on it): whether a request that returns an error status, or a stream cut by an error event, is billed. The per call bound covers either case, so the guard holds, but the summary's recorded total (AC-14b) can undercount a billed error, and AC-54's Console comparison is where such a gap would show. Confirmed the same day and no longer open: `max_tokens` caps total output with thinking included, and the 1 hour cache write rate is twice the base input rate.
+- [ ] `verify.md` owes steps for the 2026-10-06 amendment (AC-6d, AC-6e, AC-7b, AC-8, AC-8b, AC-8c, AC-9, AC-10a, AC-11, AC-13, AC-14b, AC-48, AC-48b, AC-55 to AC-70, AC-67b), added by `/develop` with the build.
+- [ ] The `/debug` items routed with this amendment (`docs/session-notes.md`) that the amendment does not cover: a garbled `count_tokens` response gives a raw traceback, a call the API refuses records zero usage instead of null, and a write error after a paid call gives a traceback and no summary.
 
 **Amendments made with this spec, 2026-10-05** (owed wording, no code):
 - Spec 0001's artifact storage row, amendment (c): a dropped call writes a null usage too, so an errored batch result is no longer "the only case". See that row.
