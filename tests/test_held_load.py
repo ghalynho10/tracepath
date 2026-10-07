@@ -411,11 +411,17 @@ def test_ac_27_trace_eval_3_with_held_twice_prints_identical_output(loads: Loads
 
 
 def test_ac_27_question_3_still_prints_the_result_experiment_0010_recorded(loads: Loads) -> None:
-    """covers: spec 0005 AC-27 (the recorded second result does not drift)."""
+    """covers: spec 0005 AC-27 (the recorded second result does not drift).
+
+    The record is frozen, so the one wording change made since, spec 0006 AC-10's start
+    marker on an item line at hop 0, is applied to it here rather than written into it.
+    """
     code, stdout, stderr = loads.question_3[0]
+    recorded = RECORDED.read_text().replace(" · hop 0 · ", " · hop 0 · the start · ")
 
     assert (code, stderr) == (0, "")
-    assert stdout == RECORDED.read_text()
+    assert recorded != RECORDED.read_text(), "the record holds a hop 0 item line"
+    assert stdout == recorded
 
 
 # A start the held graph does not hold.

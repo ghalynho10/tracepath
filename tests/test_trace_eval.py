@@ -48,8 +48,12 @@ QUESTIONS = {
             ],
         },
         {
-            "question": "A first entry with no start",
+            "question": "A first entry with no entity on its line",
             "trace": [{"record": "spec 0012 Consequences", "file": SPEC_0012, "line": 95}],
+        },
+        {
+            "question": "A first entry with two entities on its line",
+            "trace": [{"record": "spec 0012 Consequences", "file": SPEC_0012, "line": 99}],
         },
     ]
 }
@@ -119,7 +123,7 @@ def test_trace_eval_prints_the_chain_then_the_scored_items(loaded: Path) -> None
     assert 'Start item: 0012/AC-7, from the first trace entry "spec 0012 AC-7".' in lines
     assert (
         "  reached      spec 0012 AC-7 · specs/0012-model-client-router/index.md:26 · hop 0 · "
-        "0012/AC-7"
+        "the start · 0012/AC-7"
     ) in lines
     assert (
         "  reached      spec 0012 build step registering the span · "
@@ -160,13 +164,35 @@ def test_a_start_not_in_the_graph_still_prints_every_item_then_exits_1(loaded: P
     assert "Traceback" not in stdout + stderr
 
 
-def test_a_first_entry_with_no_start_exits_1_naming_the_question(loaded: Path) -> None:
+def test_a_first_entry_with_no_entity_on_its_line_prints_every_item_then_exits_1(
+    loaded: Path,
+) -> None:
+    """Spec 0006 AC-12c: no entity on the line means no start, as spec 0004 AC-52 has it."""
     code, stdout, stderr = trace_eval(loaded, 3)
 
     assert code == 1
-    assert "question 3" in flat(stderr)
-    assert "no start item is guessed" in flat(stderr)
-    assert stdout == ""
+    assert "no entity at specs/0012-model-client-router/index.md:95" in flat(stderr)
+    assert "Chain from" not in stdout
+    assert (
+        "Start item: none, no entity at specs/0012-model-client-router/index.md:95."
+    ) in stdout.splitlines()
+    assert "Traceback" not in stdout + stderr
+
+
+def test_ac_4_a_first_entry_not_in_ac_form_now_starts_at_the_lowest_id_on_its_line(
+    loaded: Path,
+) -> None:
+    """Spec 0006 AC-4 and AC-12b: no exit 1 any more, and the start is named."""
+    code, stdout, stderr = trace_eval(loaded, 4)
+
+    assert code == 0, stderr
+    lines = stdout.splitlines()
+    assert lines[0].startswith("Chain from 0012#consequences:3:")
+    assert (
+        'Start item: 0012#consequences:3, from the first trace entry "spec 0012 Consequences", '
+        "the entity at specs/0012-model-client-router/index.md:99, the lowest id of the 2 "
+        "entities on that line."
+    ) in lines
 
 
 def test_a_start_and_eval_together_are_refused() -> None:

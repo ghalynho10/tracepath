@@ -152,7 +152,9 @@ def test_ac_12_an_item_the_clean_walk_reaches_prints_reached(evidence: Any, spli
     """covers: spec 0005 AC-12 (reached by the clean walk)."""
     lines = expected_lines(held_report(evidence, split))
 
-    assert lines[0] == (f"  reached      spec 0012 AC-7 · {SPEC_0012}:26 · hop 0 · 0012/AC-7")
+    assert lines[0] == (
+        f"  reached      spec 0012 AC-7 · {SPEC_0012}:26 · hop 0 · the start · 0012/AC-7"
+    )
 
 
 def test_ac_12_a_held_shortcut_does_not_relabel_an_item_the_clean_walk_reaches(
