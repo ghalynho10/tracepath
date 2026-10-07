@@ -25,6 +25,8 @@ uv run tracepath status          # run the CLI, from the repo root (see below)
 uv run tracepath extract RECORD:SECTION ... --ceiling USD   # paid model calls; --dry-run only counts (free), --resume completes a unit cut short
 uv run tracepath load            # rebuild the graph from artifacts/runs/, no API call
 uv run tracepath trace START     # walk a chain; trace --eval N scores eval question N
+uv run tracepath load --with-held # also write held items, marked held (spec 0005); rewrites graph-build.json with held_view, so a plain load after restores the default
+uv run tracepath trace START --with-held   # walk through held items, each printed HELD:; refuses a graph not loaded --with-held
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
