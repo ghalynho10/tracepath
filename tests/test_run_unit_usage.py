@@ -1,32 +1,36 @@
-"""`run_unit()` writes one artifact per attempt, so no call's cost goes unrecorded.
+"""The old retry path refuses before any call (spec 0004 AC-71 to AC-71c).
 
-The pieces are covered in `test_artifacts.py`; this covers the wiring between them,
-which is where the original defect lived. Nothing here touches the network: the model
-call itself is replaced, so what is exercised is the retry and recording path.
+These tests once covered how `run_unit()` recorded every attempt. Since the second
+amendment of 2026-10-06 that path is closed: `run_with_retry()` retried any failure
+with no per call ceiling, and `run_unit()`, `extract_unit()` and `extract_units()`
+reach the API only through it. Extraction runs through `tracepath extract` now, whose
+recording is covered in `test_extract_command.py` and `test_extract_guards.py`.
 """
 
-import json
 from pathlib import Path
 from typing import cast
 
 import anthropic
 import pytest
 
-from tracepath.artifacts import write_run
 from tracepath.config import AnthropicSettings
 from tracepath.extract import client as client_module
-from tracepath.extract.client import Attempt, ExtractionFailed
-from tracepath.extract.schema import ExtractionOutput
+from tracepath.extract.client import (
+    ExtractionFailed,
+    RetryPathRetired,
+    extract_unit,
+    extract_units,
+    run_with_retry,
+)
 from tracepath.extract.units import Unit, split_units
 from tracepath.pipeline import UnitFailed, run_unit
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
-FIXTURES = Path(__file__).parent / "fixtures" / "runs"
 
-#: The model call is replaced in every test here, so the client is never used.
+#: Never used: the refusal comes before any call.
 NO_CLIENT = cast(anthropic.Anthropic, object())
-RUN_ARGS = ("requirements", "2e40bcf", "2026-09-23T00:00:00+00:00")
+RUN_ARGS = ("requirements", "2e40bcf", "2026-10-06T00:00:00+00:00")
 
 
 @pytest.fixture
@@ -46,213 +50,78 @@ def settings() -> AnthropicSettings:
     )
 
 
-def an_output() -> ExtractionOutput:
-    return ExtractionOutput.model_validate(json.loads((FIXTURES / "run1.json").read_text()))
+@pytest.fixture
+def calls(monkeypatch: pytest.MonkeyPatch) -> list[int]:
+    """Every model call that would have been made; none should be."""
+    made: list[int] = []
+
+    def counted(*args: object, **kwargs: object) -> object:
+        made.append(1)
+        raise AssertionError("a model call was made")
+
+    monkeypatch.setattr(client_module, "extract_once", counted)
+    return made
 
 
-def scripted(
-    monkeypatch: pytest.MonkeyPatch, outcomes: list[Attempt | ExtractionFailed]
-) -> list[int]:
-    """Replace the model call with a fixed script, and count the calls made."""
-    calls: list[int] = []
-
-    def fake(client: object, settings: object, unit: object, number: int = 1) -> Attempt:
-        calls.append(number)
-        result = outcomes[len(calls) - 1]
-        if isinstance(result, ExtractionFailed):
-            raise result
-        return result
-
-    monkeypatch.setattr(client_module, "extract_once", fake)
-    return calls
-
-
-def failure(number: int, used_in: int, used_out: int) -> ExtractionFailed:
-    message = f"attempt {number} did not satisfy the schema"
-    return ExtractionFailed(
-        message,
-        (
-            Attempt(
-                number=number,
-                run_id="test-run",
-                input_tokens=used_in,
-                output_tokens=used_out,
-                error=message,
-            ),
-        ),
-    )
-
-
-def test_a_retried_run_writes_both_attempts_with_their_own_numbers(
-    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
+def test_ac_71_run_with_retry_refuses_before_any_call(
+    unit: Unit, settings: AnthropicSettings, calls: list[int]
 ) -> None:
-    """The failed attempt's cost sits beside the retry's, never added into it."""
-    scripted(
-        monkeypatch,
-        [
-            failure(1, 500, 64000),
-            Attempt(
-                number=2,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9000,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9100,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9200,
-                output=an_output(),
-            ),
-        ],
-    )
+    """covers: AC-71."""
+    with pytest.raises(RetryPathRetired):
+        run_with_retry(NO_CLIENT, settings, unit, 0)
 
-    result = run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
-
-    # Four calls, four artifacts: three settled runs plus the one that failed.
-    assert len(result.artifacts) == 4
-    names = sorted(write_run(tmp_path, a).name for a in result.artifacts)
-    assert names == ["failed-run-1-attempt-1.json", "run-1.json", "run-2.json", "run-3.json"]
-
-    failed = next(a for a in result.artifacts if a.output is None)
-    retry = next(a for a in result.artifacts if a.run == 1 and a.output is not None)
-    assert failed.output_tokens == 64000
-    assert retry.output_tokens == 9000
-    assert retry.attempt == 2
+    assert calls == []
 
 
-def test_the_unit_total_counts_the_failed_attempt_too(
-    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings
+def test_ac_71_run_unit_refuses_before_any_call(
+    unit: Unit, settings: AnthropicSettings, calls: list[int]
 ) -> None:
-    """A retry that is left out of the total is a cost the run silently did not report."""
-    scripted(
-        monkeypatch,
-        [
-            failure(1, 500, 64000),
-            Attempt(
-                number=2,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9000,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9000,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=500,
-                output_tokens=9000,
-                output=an_output(),
-            ),
-        ],
-    )
-
-    result = run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
-
-    assert result.output_tokens == 64000 + 9000 * 3
-    assert result.input_tokens == 500 * 4
-
-
-def test_a_unit_that_fails_after_its_retry_still_hands_back_its_artifacts(
-    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
-) -> None:
-    """This is the case that made the first 21 call run's cost unrecoverable."""
-    scripted(monkeypatch, [failure(1, 500, 64000), failure(2, 500, 63000)])
-
-    with pytest.raises(UnitFailed) as caught:
+    """covers: AC-71 (`run_unit()` reaches the API only through `run_with_retry()`)."""
+    with pytest.raises(RetryPathRetired):
         run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
 
-    artifacts = caught.value.artifacts
-    assert len(artifacts) == 2
-    assert all(a.output is None for a in artifacts)
-    assert sum(a.output_tokens or 0 for a in artifacts) == 127000
-    written = [write_run(tmp_path, a) for a in artifacts]
-    assert [p.name for p in written] == [
-        "failed-run-1-attempt-1.json",
-        "failed-run-1-attempt-2.json",
-    ]
-    assert all(json.loads(p.read_text())["output"] is None for p in written)
+    assert calls == []
 
 
-def test_every_artifact_a_successful_run_writes_carries_integer_token_counts(
-    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
+def test_ac_71_extract_unit_refuses_before_any_call(
+    unit: Unit, settings: AnthropicSettings, calls: list[int]
 ) -> None:
-    """Null means unmeasured, and the pipeline never writes one.
+    """covers: AC-71 (`extract_unit()`)."""
+    with pytest.raises(RetryPathRetired):
+        extract_unit(NO_CLIENT, settings, unit)
 
-    The 24 committed artifacts read back as null because they predate the field, which
-    spec 0001 states outright. That is a fact about files written before the field
-    existed, not a licence for the writer. The tests above pin particular numbers on
-    particular attempts; this pins the invariant underneath them, so a future path that
-    forgets to carry usage fails here rather than going unnoticed until a run's cost is
-    needed and gone.
-    """
-    scripted(
-        monkeypatch,
-        [
-            failure(1, 500, 64000),
-            Attempt(
-                number=2,
-                run_id="test-run",
-                input_tokens=511,
-                output_tokens=9000,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=522,
-                output_tokens=9100,
-                output=an_output(),
-            ),
-            Attempt(
-                number=1,
-                run_id="test-run",
-                input_tokens=533,
-                output_tokens=9200,
-                output=an_output(),
-            ),
-        ],
-    )
-
-    result = run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
-    written = [json.loads(write_run(tmp_path, a).read_text()) for a in result.artifacts]
-
-    assert len(written) == 4, "three settled runs and the attempt that failed"
-    assert all(isinstance(p["input_tokens"], int) for p in written)
-    assert all(isinstance(p["output_tokens"], int) for p in written)
+    assert calls == []
 
 
-def test_a_unit_that_fails_outright_still_measures_every_attempt(
-    monkeypatch: pytest.MonkeyPatch, unit: Unit, settings: AnthropicSettings, tmp_path: Path
+def test_ac_71_extract_units_refuses_before_any_call(
+    unit: Unit, settings: AnthropicSettings, calls: list[int]
 ) -> None:
-    """The failure path is the one that lost the first 21 call run's cost.
+    """covers: AC-71 (`extract_units()`)."""
+    with pytest.raises(RetryPathRetired):
+        extract_units(NO_CLIENT, settings, [unit])
 
-    The test above it sums the two attempts, which a null would slip through as a zero.
-    This asserts the field itself, because "the run failed" and "the run cost nothing"
-    are different claims and only one of them is true.
-    """
-    scripted(monkeypatch, [failure(1, 500, 64000), failure(2, 500, 63000)])
+    assert calls == []
 
-    with pytest.raises(UnitFailed) as caught:
+
+def test_ac_71b_the_refusal_names_tracepath_extract(
+    unit: Unit, settings: AnthropicSettings
+) -> None:
+    """covers: AC-71b."""
+    with pytest.raises(RetryPathRetired, match="`tracepath extract`"):
+        run_with_retry(NO_CLIENT, settings, unit, 0)
+
+
+@pytest.mark.parametrize("caught", [ExtractionFailed, UnitFailed])
+def test_ac_71c_the_refusal_is_not_a_failure_any_caller_catches(caught: type) -> None:
+    """covers: AC-71c (derives from `Exception` only)."""
+    assert not issubclass(RetryPathRetired, caught)
+
+
+def test_ac_71c_the_refusal_passes_through_run_unit_unchanged(
+    unit: Unit, settings: AnthropicSettings
+) -> None:
+    """covers: AC-71c (`run_unit()` catches `ExtractionFailed`; this is not one)."""
+    with pytest.raises(RetryPathRetired) as caught:
         run_unit(NO_CLIENT, settings, unit, *RUN_ARGS)
 
-    written = [json.loads(write_run(tmp_path, a).read_text()) for a in caught.value.artifacts]
-
-    assert [p["output"] for p in written] == [None, None], "neither attempt produced output"
-    assert all(isinstance(p["input_tokens"], int) for p in written)
-    assert all(isinstance(p["output_tokens"], int) for p in written)
-    assert all(p["error"] for p in written), "a failed artifact says why, or it is a blank"
+    assert type(caught.value) is RetryPathRetired

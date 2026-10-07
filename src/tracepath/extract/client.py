@@ -10,10 +10,10 @@ so leaving them off is both what the spec asked for and the only thing that work
 """
 
 import functools
-import logging
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import Literal, cast
 
 import anthropic
@@ -32,8 +32,6 @@ from tracepath.config import AnthropicSettings
 from tracepath.extract.examples import EXAMPLES_DIR, few_shot_block, read_examples
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit
-
-log = logging.getLogger(__name__)
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
@@ -261,6 +259,21 @@ def system_prompt() -> str:
 CACHE_TTL: Literal["5m", "1h"] = "1h"
 
 
+class FailureKind(StrEnum):
+    """How a failed attempt ended (spec 0004 AC-67).
+
+    Only a model failure counts toward a run's single retry (AC-68). A transport
+    failure says nothing about the model, so it leaves the run owed.
+    """
+
+    #: The response never completed: an HTTP error status, or a stream that ended
+    #: before `message_stop` (a dropped connection or an error event mid stream).
+    TRANSPORT = "transport"
+    #: A complete response that is malformed, fails validation, or stopped at
+    #: `max_tokens`.
+    MODEL = "model"
+
+
 @dataclass(frozen=True)
 class Attempt:
     """One call to the model: what it cost, and what it produced.
@@ -293,6 +306,7 @@ class Attempt:
     cache_read_input_tokens: int = 0
     raw_response: str | None = None
     stop_reason: str | None = None
+    failure_kind: FailureKind | None = None
 
 
 class ExtractionFailed(Exception):
@@ -364,8 +378,13 @@ class UnitRuns:
 
 
 def build_client(settings: AnthropicSettings) -> anthropic.Anthropic:
-    """Open an Anthropic client from validated settings."""
-    return anthropic.Anthropic(api_key=settings.api_key)
+    """Open an Anthropic client from validated settings.
+
+    The SDK's own automatic retries are off (spec 0004 AC-70): it would otherwise send
+    a failed request again up to twice, silently, so one attempt could be more than one
+    billed request and break the per call bound. The run policy's own retry covers it.
+    """
+    return anthropic.Anthropic(api_key=settings.api_key, max_retries=0)
 
 
 def system_blocks() -> list[TextBlockParam]:
@@ -400,19 +419,22 @@ def _attempt_from_usage(
     error: str | None = None,
     raw_response: str | None = None,
     stop_reason: str | None = None,
+    failure_kind: FailureKind | None = None,
 ) -> Attempt:
     """One attempt, with every part of the usage the API reported for it."""
     run_id = uuid.uuid4().hex
     if usage is None:
+        # Unmeasured, so null rather than zero (spec 0001's storage row).
         return Attempt(
             number=number,
-            input_tokens=0,
-            output_tokens=0,
+            input_tokens=None,
+            output_tokens=None,
             run_id=run_id,
             output=output,
             error=error,
             raw_response=raw_response,
             stop_reason=stop_reason,
+            failure_kind=failure_kind,
         )
     return Attempt(
         number=number,
@@ -425,6 +447,7 @@ def _attempt_from_usage(
         cache_read_input_tokens=usage.cache_read_input_tokens or 0,
         raw_response=raw_response,
         stop_reason=stop_reason,
+        failure_kind=failure_kind,
     )
 
 
@@ -443,6 +466,7 @@ def _dropped_attempt(number: int, message: str, snapshot: Message | None) -> Att
             output_tokens=None,
             run_id=uuid.uuid4().hex,
             error=message,
+            failure_kind=FailureKind.TRANSPORT,
         )
     usage = snapshot.usage
     return Attempt(
@@ -455,6 +479,7 @@ def _dropped_attempt(number: int, message: str, snapshot: Message | None) -> Att
         cache_read_input_tokens=usage.cache_read_input_tokens or 0,
         raw_response=_raw_text(snapshot.content),
         stop_reason=snapshot.stop_reason,
+        failure_kind=FailureKind.TRANSPORT,
     )
 
 
@@ -509,33 +534,40 @@ def extract_once(
         ) as stream:
             try:
                 response = stream.get_final_message()
-            except httpx2.TransportError as exc:
-                # The SDK wraps a transport error as `APIConnectionError` only while it
-                # sends the request; one that breaks the response body arrives raw.
-                # Recorded as a failed attempt, so the run's one retry covers it.
+            except (httpx2.TransportError, anthropic.APIError) as exc:
+                # Once the stream is open, a failure keeps whatever usage had arrived. A
+                # transport error that breaks the body arrives raw (the SDK wraps one as
+                # `APIConnectionError` only while it sends the request), and an error
+                # event mid stream arrives as `APIStatusError`, after `message_start`
+                # may already have reported the input and cache counts.
                 try:
                     snapshot: Message | None = stream.current_message_snapshot
                 except AssertionError:  # the SDK holds none before `message_start`
                     snapshot = None
-                message = (
-                    f"{unit.record_id} {unit.section}: the connection dropped mid stream ({exc})"
+                what = (
+                    "the connection dropped mid stream"
+                    if isinstance(exc, httpx2.TransportError)
+                    else "the call failed mid stream"
                 )
+                message = f"{unit.record_id} {unit.section}: {what} ({exc})"
                 raise ExtractionFailed(
                     message, (_dropped_attempt(number, message, snapshot),)
                 ) from exc
     except anthropic.APIError as exc:
-        # Nothing came back, so the API reported no usage to record. Zero here means
-        # "nothing was billed that we were told about", and the error says why.
+        # Refused before any response: the API reported no usage, so both counts are
+        # null, meaning unmeasured. A zero would assert a measurement never made (spec
+        # 0001's storage row), and would hide the attempt from the null usage summary.
         message = f"{unit.record_id} {unit.section}: the call failed ({exc})"
         raise ExtractionFailed(
             message,
             (
                 Attempt(
                     number=number,
-                    input_tokens=0,
-                    output_tokens=0,
+                    input_tokens=None,
+                    output_tokens=None,
                     run_id=uuid.uuid4().hex,
                     error=message,
+                    failure_kind=FailureKind.TRANSPORT,
                 ),
             ),
         ) from exc
@@ -556,6 +588,7 @@ def extract_once(
                     error=message,
                     raw_response=_raw_text(response.content),
                     stop_reason=response.stop_reason,
+                    failure_kind=FailureKind.MODEL,
                 ),
             ),
         ) from exc
@@ -574,6 +607,7 @@ def extract_once(
                     error=message,
                     raw_response=_raw_text(response.content),
                     stop_reason=response.stop_reason,
+                    failure_kind=FailureKind.MODEL,
                 ),
             ),
         )
@@ -603,38 +637,31 @@ def extract_unit(client: anthropic.Anthropic, settings: AnthropicSettings, unit:
     )
 
 
+class RetryPathRetired(Exception):
+    """The old retry path is closed: it retried any failure with no per call ceiling.
+
+    Derives from `Exception` only, never from `ExtractionFailed` or `UnitFailed`, so
+    `run_unit()` and the experiment scripts' own `except` clauses pass it through
+    instead of swallowing it (spec 0004 AC-71c).
+    """
+
+
 def run_with_retry(
     client: anthropic.Anthropic, settings: AnthropicSettings, unit: Unit, run: int
 ) -> RunOutcome:
-    """Make one run, retrying once on a failed or malformed call (spec 0001's policy).
+    """Refuse: extraction now runs only through `tracepath extract` (spec 0004 AC-71).
 
-    Every attempt is kept, the failed ones included, so each can be written as its own
-    artifact and the cost of a retry never disappears into the call that replaced it.
+    This path retried any failure once and held no per call ceiling, so it could spend
+    outside the guards `run_metered()` keeps. `run_unit()`, `extract_unit()` and
+    `extract_units()` reach the API only through here, so they refuse too.
 
     Raises:
-        ExtractionFailed: the run failed again after its retry. The exception carries
-            every attempt, so the caller can still write their artifacts.
+        RetryPathRetired: always, before any call.
     """
-    last: Exception | None = None
-    attempts: list[Attempt] = []
-    for number in range(1, RETRIES + 2):
-        try:
-            attempts.append(extract_once(client, settings, unit, number))
-            return RunOutcome(attempts=tuple(attempts))
-        except ExtractionFailed as exc:
-            last = exc
-            attempts.extend(exc.attempts)
-            log.debug(
-                "run %s of %s %s failed on attempt %s",
-                run + 1,
-                unit.record_id,
-                unit.section,
-                number,
-                exc_info=exc,
-            )
-    raise ExtractionFailed(
-        f"{unit.record_id} {unit.section}: run {run + 1} failed after its retry ({last})",
-        tuple(attempts),
+    raise RetryPathRetired(
+        f"{unit.record_id} {unit.section}: the old retry path is closed, it has no per call "
+        "ceiling. Extract with `tracepath extract`, which runs every call through "
+        "`run_metered()`."
     )
 
 

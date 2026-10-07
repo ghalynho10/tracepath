@@ -22,6 +22,9 @@ uv sync                          # install
 uv run pre-commit install        # once per clone: enables the commit hook
 docker compose up -d             # start Neo4j (Browser: http://localhost:7474)
 uv run tracepath status          # run the CLI, from the repo root (see below)
+uv run tracepath extract RECORD:SECTION ... --ceiling USD   # paid model calls; --dry-run only counts (free), --resume completes a unit cut short
+uv run tracepath load            # rebuild the graph from artifacts/runs/, no API call
+uv run tracepath trace START     # walk a chain; trace --eval N scores eval question N
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
@@ -37,7 +40,7 @@ tracepath runs from this repository with `uv run`, not as an installed tool: the
 - `eval/`: the eval set, tracked in git.
 - `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
 - `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `system_prompt()` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`. Only the `text` fence under `## Input` and the `json` fence under `## Output` reach the model, read in filename order by `src/tracepath/extract/examples.py`; a file missing either fence fails the prompt build.
-- `artifacts/`: the JSON run artifacts and review queue, tracked in git, the source of truth the graph is rebuilt from. Append only: `write_run()` raises `ArtifactCollisionError` rather than replace an existing file. Runs replaced by a newer prompt move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted (`experiments/README.md`).
+- `artifacts/`: the JSON run artifacts and review queue, tracked in git, the source of truth the graph is rebuilt from. Append only: `write_run()` raises `ArtifactCollisionError` rather than replace an existing file. Runs replaced by a newer prompt move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted (`experiments/README.md`). `artifacts/graph-build.json` is derived, not a run artifact: every `load` rewrites it (spec 0004 AC-17).
 
 ## Specs
 
@@ -60,6 +63,7 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 - **Docstrings** on every public module and function; one short line is enough.
 - **Conventional commits**: `feat(extract): ...`, `fix(graph): ...`, `test(cli): ...`.
 - **Standing rules from the scope**: no verification layer (the visible chain is the check). The eval stays small, a handful of questions and one script, never a harness or dashboard.
+- **Paid calls only through the guards.** Any new paid model call goes through `tracepath extract` or `run_metered()` (`src/tracepath/extract/metered.py`), never `extract_once()` or a client of its own. `tests/test_spend_fence.py` (spec 0004 AC-72) fails on a file outside its allowlist that imports `anthropic` or names `build_client` or `extract_once`, and every test runs with a fake key and an unreachable API (AC-74).
 
 ## Tooling
 

@@ -122,3 +122,5 @@ the one the amendment hoped for. Two things worth carrying forward:
 2. `## Feature design` is the largest unit kind in the corpus and this one is not even
    the largest instance (14,311 characters against a maximum of 38,663). A whole corpus
    run will spend more here than on any other section kind.
+
+**Fenced, 2026-10-06.** `run.py` reaches the API through `run_unit()` and `run_with_retry()`, which now refuses before any call (spec 0004 AC-71), so this script can no longer spend. A new run goes through `tracepath extract`. This record is unchanged otherwise.

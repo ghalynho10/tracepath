@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from tracepath.extract.client import FailureKind
 from tracepath.extract.compare import ReviewItem
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit
@@ -34,7 +35,9 @@ GRAPH_BUILD = ARTIFACTS_DIR / "graph-build.json"
 #: `2` is the first version to carry `run_id`, `artifact_format_version` itself, a
 #: `unit_sha256`, and `raw_response`/`stop_reason`; every artifact written before this
 #: amendment reads back as version `None`, meaning unversioned, not version `1`.
-ARTIFACT_FORMAT_VERSION = 2
+#: `3` adds `failure_kind` (spec 0004 AC-67b, spec 0001's storage row amended
+#: 2026-10-06).
+ARTIFACT_FORMAT_VERSION = 3
 
 
 class ArtifactCollisionError(Exception):
@@ -79,6 +82,10 @@ class RunArtifact:
     already parsed `output`. All four are null on an artifact written before this
     amendment, the same "null means unrecorded, not zero" reading `input_tokens`
     already carries; the pipeline itself never writes one null.
+
+    `failure_kind` says how a failed attempt ended, `transport` or `model` (spec 0004
+    AC-67, AC-67b); it is null on a settled run. An artifact written before the field
+    existed is read by `read_run()`'s rule, so every failed attempt carries a kind.
     """
 
     record: str
@@ -105,6 +112,7 @@ class RunArtifact:
     error: str | None = None
     cache_creation_input_tokens: int = 0
     cache_read_input_tokens: int = 0
+    failure_kind: FailureKind | None = None
 
 
 def now_utc() -> str:
@@ -132,6 +140,7 @@ def build_artifact(
     error: str | None = None,
     cache_creation_input_tokens: int = 0,
     cache_read_input_tokens: int = 0,
+    failure_kind: FailureKind | None = None,
 ) -> RunArtifact:
     """Assemble one run artifact. Pure: every value is given, none is looked up.
 
@@ -165,6 +174,7 @@ def build_artifact(
         error=error,
         cache_creation_input_tokens=cache_creation_input_tokens,
         cache_read_input_tokens=cache_read_input_tokens,
+        failure_kind=failure_kind if output is None else None,
     )
 
 
@@ -194,6 +204,7 @@ def artifact_payload(artifact: RunArtifact) -> dict[str, Any]:
         "raw_response": artifact.raw_response,
         "stop_reason": artifact.stop_reason,
         "error": artifact.error,
+        "failure_kind": None if artifact.failure_kind is None else str(artifact.failure_kind),
         "output": None if artifact.output is None else artifact.output.model_dump(mode="json"),
     }
 
@@ -267,9 +278,20 @@ def read_run(path: Path) -> RunArtifact:
     2026-09-23, and the 24 artifacts written before it cannot recover the numbers
     without re-calling the model. Absent therefore reads as null, meaning unmeasured,
     which is the honest value. The pipeline itself never writes one.
+
+    A failed attempt written before `failure_kind` existed is read as `model` (spec
+    0004 AC-67b). The set is closed and holds four schema failures, and `model` blocks
+    rather than resumes, so this reading can never cause a paid call.
     """
     payload = json.loads(path.read_text())
     output = payload.get("output")
+    kind = payload.get("failure_kind")
+    if output is not None:
+        failure_kind = None
+    elif kind is not None:
+        failure_kind = FailureKind(kind)
+    else:
+        failure_kind = FailureKind.MODEL
     return RunArtifact(
         record=payload["record"],
         section=payload["section"],
@@ -295,6 +317,7 @@ def read_run(path: Path) -> RunArtifact:
         error=payload.get("error"),
         cache_creation_input_tokens=payload.get("cache_creation_input_tokens", 0),
         cache_read_input_tokens=payload.get("cache_read_input_tokens", 0),
+        failure_kind=failure_kind,
     )
 
 

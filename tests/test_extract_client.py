@@ -9,7 +9,7 @@ import httpx2
 import pytest
 from pydantic import ValidationError
 
-from tracepath.artifacts import now_utc, write_run
+from tracepath.artifacts import now_utc
 from tracepath.config import (
     DEFAULT_MODEL,
     RUNS_PER_UNIT,
@@ -17,19 +17,20 @@ from tracepath.config import (
     SettingsInvalid,
     load_anthropic_settings,
 )
+from tracepath.extract.address import resolve_address
 from tracepath.extract.client import (
     MAX_TOKENS,
     PROMPT_VERSION,
     ExtractionFailed,
     extract_once,
-    run_with_retry,
     system_blocks,
     system_prompt,
     user_prompt,
 )
+from tracepath.extract.cost import per_call_bound
+from tracepath.extract.metered import Plan, RunOutcome, calls_through, fresh_runs, run_metered
 from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit, split_units
-from tracepath.pipeline import run_unit
 
 SNAPSHOT = Path(__file__).resolve().parents[1] / "corpus" / "jobhunt" / "docs"
 
@@ -393,20 +394,32 @@ def test_a_drop_mid_response_records_no_output_count() -> None:
     assert attempt.output_tokens is None
 
 
-def test_a_dropped_call_counts_as_an_attempt_for_the_one_retry() -> None:
+def metered_0021(client: anthropic.Anthropic, root: Path, runs: int) -> RunOutcome:
+    """`0021 ## Requirements` through the metered path, as `tracepath extract` runs it."""
+    target = resolve_address(SNAPSHOT, "0021:Requirements")
+    settings = settings_for(runs=runs)
+    plans = [Plan(target, fresh_runs(runs), per_call_bound(70_000))]
+    return run_metered(
+        plans, calls_through(client, settings), settings, root, "2e40bcf", now_utc(), 100.0, print
+    )
+
+
+def test_a_dropped_call_counts_as_an_attempt_for_the_one_retry(tmp_path: Path) -> None:
+    """Moved onto the metered path when `run_with_retry()` was fenced (spec 0004 AC-71)."""
     text = json.loads(SETTLED_RUN.read_text())["raw_response"]
     client = answering(lambda: dropping(b""), lambda: settled(recorded_stream(text, 9000)))
 
-    outcome = run_with_retry(client, settings_for(), requirements_0021(), run=0)
+    outcome = metered_0021(client, tmp_path, runs=1)
 
-    first, second = outcome.attempts
-    assert (first.number, first.output, first.error is not None) == (1, None, True)
-    assert (second.number, second.output is not None) == (2, True)
+    first, second = outcome.written
+    assert (first.attempt, first.settled, first.error is not None) == (1, False, True)
+    assert (second.attempt, second.settled) == (2, True)
 
 
 def test_a_dropped_call_writes_a_failed_attempt_artifact_with_null_usage(
     tmp_path: Path,
 ) -> None:
+    """Moved onto the metered path when `run_with_retry()` was fenced (spec 0004 AC-71)."""
     text = json.loads(SETTLED_RUN.read_text())["raw_response"]
     client = answering(
         lambda: dropping(b""),
@@ -414,13 +427,13 @@ def test_a_dropped_call_writes_a_failed_attempt_artifact_with_null_usage(
         lambda: settled(recorded_stream(text, 9000)),
     )
 
-    # Two runs, the fewest the run comparison accepts; the first drops once.
-    result = run_unit(
-        client, settings_for(runs=2), requirements_0021(), "requirements", "2e40bcf", now_utc()
-    )
-    paths = [write_run(tmp_path, artifact) for artifact in result.artifacts]
+    outcome = metered_0021(client, tmp_path, runs=2)
 
-    assert [p.name for p in paths] == ["failed-run-1-attempt-1.json", "run-1.json", "run-2.json"]
-    failed = json.loads(paths[0].read_text())
+    assert [w.path.name for w in outcome.written] == [
+        "failed-run-1-attempt-1.json",
+        "run-1.json",
+        "run-2.json",
+    ]
+    failed = json.loads(outcome.written[0].path.read_text())
     assert (failed["input_tokens"], failed["output_tokens"], failed["output"]) == (None, None, None)
     assert DROP in failed["error"]

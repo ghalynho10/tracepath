@@ -84,6 +84,12 @@ spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath
   - [x] `extract` with its error handling, collision preflight, estimate, ceiling and per attempt writes, tested with a fake client (AC-3 to AC-14, AC-48, AC-49)
   - [x] The report step, the only reader of `eval/` (AC-34 to AC-41, AC-52)
   - [x] Gate, then the paid run on question 3's four sections and the recorded result in `experiments/0009-first-traced-chain/` (AC-41 to AC-47, AC-53, AC-54). The engineer approves the measured estimate and a ceiling first; `src/` is committed before the first run artifact
+- [x] Build the 2026-10-06 amendment on `fix/extract-guards`, before any further paid extraction: `/develop first traced chain` (spec 0004's Build plan steps 12 to 16)
+  - [x] The ceiling as a true per call bound, with `--ceiling` validated and both totals in the summary (AC-7b, AC-8, AC-8b, AC-8c, AC-9, AC-10a, AC-14b, AC-55)
+  - [x] The run policy by failure kind, the SDK's retries off, and the no cache stop's exception (AC-11, AC-13, AC-67, AC-67b, AC-68 to AC-70)
+  - [x] The dry run names collisions without stopping (AC-6d, AC-6e)
+  - [x] `extract --resume` and the manifest's `extracted_at` list (AC-48, AC-56 to AC-65)
+- [x] Build the second 2026-10-06 amendment on `fix/extract-guards`: the old retry path fenced, the allowlist test, the test fixture away from the real API, and the `0021` pins (spec 0004's Build plan step 17, AC-71 to AC-74c)
 - [ ] Verify it: `/check verify first traced chain`
 - [x] Test it: `/test first traced chain`
 

@@ -18,6 +18,11 @@ and `0003-feature-design-testscenario/run.py`. Experiment 0001 is frozen, so its
 its README records the defect and points at the fix. It is still imported, because
 0002's script takes `find()` from it, but nothing in this file runs it.
 
+Since 2026-10-06 neither script can spend: both reach the API only through
+`run_with_retry()`, which now refuses before any call (spec 0004 AC-71). These tests
+replace that function and `run_unit()` on the script modules, so they still drive the
+shells' own handling; "live" here means not frozen, not able to make a paid call.
+
 Nothing here reaches the network: the model call is replaced in every test. Each one
 patches the script's own output directory, because these scripts write real artifacts
 and a test must never touch the committed evidence under `experiments/*/data/` or

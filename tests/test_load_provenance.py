@@ -14,7 +14,7 @@ from typing import cast
 import pytest
 from neo4j import Driver
 
-from tracepath.artifacts import RUNS_DIR, write_graph_build
+from tracepath.artifacts import RUNS_DIR, read_run, write_graph_build
 from tracepath.extract.schema import RelationshipType
 from tracepath.graph.model import Provenance, entity_row, link_row
 from tracepath.pipeline import (
@@ -28,7 +28,7 @@ from tracepath.pipeline import (
     resolve_accepted,
     unit_provenance,
 )
-from tracepath.rebuild import committed_units, partial_units, records_for_units
+from tracepath.rebuild import committed_units, partial_units, records_for_units, unit_passes
 from tracepath.resolve.endpoints import (
     Resolution,
     ResolvedEndpoint,
@@ -184,7 +184,9 @@ def manifest_for(root: Path) -> dict[str, object]:
     records = records_for_units(results, SNAPSHOT, COMMIT)
     corpus: CorpusResolution = resolve_accepted(results, records)
     provenances = [unit_provenance(r, "auto") for r in results]
-    return graph_build(results, corpus, provenances, COMMIT, review_log_entries=0)
+    return graph_build(
+        results, corpus, provenances, COMMIT, review_log_entries=0, passes=unit_passes(root)
+    )
 
 
 def test_the_manifest_lists_each_units_run_files_model_and_prompt_version(tmp_path: Path) -> None:
@@ -283,7 +285,9 @@ def test_two_manifests_over_unchanged_artifacts_are_byte_identical(tmp_path: Pat
     second = write_graph_build(root, manifest_for(root)).read_bytes()
 
     assert first == second
-    assert "extracted_at" not in json.loads(first)["units"][0]
+    # No value from the load's own clock: the only times are the artifacts' own (AC-65).
+    recorded = sorted({read_run(p).extracted_at for p in (root / RUNS_DIR).rglob("*.json")})
+    assert json.loads(first)["units"][0]["extracted_at"] == recorded
 
 
 # AC-48: a unit cut short is never loaded and is named instead.

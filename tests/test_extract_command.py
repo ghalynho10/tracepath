@@ -22,18 +22,20 @@ from tracepath.artifacts import RUNS_DIR, read_run
 from tracepath.config import AnthropicSettings
 from tracepath.extract import client as client_module
 from tracepath.extract.address import Target, UnitAddressError, resolve_address, resolve_addresses
-from tracepath.extract.client import Attempt
+from tracepath.extract.client import Attempt, FailureKind
 from tracepath.extract.cost import (
     CACHED_PREFIX_TOKENS,
-    FLAT_FAILURE_USD,
     UnitCount,
     attempt_cost,
     estimate,
+    per_call_bound,
 )
 from tracepath.extract.metered import (
+    Plan,
     RunOutcome,
     calls_through,
     count_input,
+    fresh_runs,
     preflight,
     run_metered,
     summary_lines,
@@ -54,6 +56,8 @@ SETTINGS = AnthropicSettings(
     api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
 )
 COUNTED = 62_000
+#: The per call bound of a unit counting `COUNTED` (AC-55).
+BOUND = per_call_bound(COUNTED)
 
 runner = CliRunner()
 
@@ -86,14 +90,16 @@ def failed(
     input_tokens: int | None = None,
     output_tokens: int | None = None,
     cache_read: int = 0,
+    kind: FailureKind = FailureKind.MODEL,
 ) -> Attempt:
     return Attempt(
         number=number,
         input_tokens=input_tokens,
         output_tokens=output_tokens,
         run_id="r",
-        error="the connection dropped mid stream",
+        error="the output did not satisfy the schema",
         cache_read_input_tokens=cache_read,
+        failure_kind=kind,
     )
 
 
@@ -126,7 +132,7 @@ def run(
 ) -> tuple[RunOutcome, list[str]]:
     said: list[str] = []
     outcome = run_metered(
-        targets(*addresses),
+        [Plan(target=t, runs=fresh_runs(3), bound=BOUND) for t in targets(*addresses)],
         script,
         SETTINGS,
         tmp_path,
@@ -222,10 +228,11 @@ def test_a_dropped_attempt_is_written_as_a_failed_run_with_null_usage(tmp_path: 
 # AC-10a, AC-10b: what the running total counts.
 
 
-def test_a_failed_attempt_counts_at_the_flat_figure_whatever_it_recorded() -> None:
-    assert attempt_cost(failed(input_tokens=90_000, output_tokens=60_000)) == FLAT_FAILURE_USD
-    assert attempt_cost(failed(input_tokens=10, output_tokens=2)) == FLAT_FAILURE_USD
-    assert attempt_cost(failed()) == FLAT_FAILURE_USD == 0.4144
+def test_a_failed_attempt_counts_at_its_bound_whatever_it_recorded() -> None:
+    """covers: AC-10a (amended 2026-10-06)."""
+    assert attempt_cost(failed(input_tokens=90_000, output_tokens=60_000), BOUND) == BOUND
+    assert attempt_cost(failed(input_tokens=10, output_tokens=2), BOUND) == BOUND
+    assert attempt_cost(failed(), BOUND) == BOUND
 
 
 def test_a_settled_attempt_counts_at_its_recorded_usage_cache_included() -> None:
@@ -233,7 +240,7 @@ def test_a_settled_attempt_counts_at_its_recorded_usage_cache_included() -> None
 
     expected = (4_000 * 2.0 + 27_000 * 10.0 + 1_000 * 4.0 + 57_494 * 0.2) / 1e6
 
-    assert attempt_cost(attempt) == pytest.approx(expected)
+    assert attempt_cost(attempt, BOUND) == pytest.approx(expected)
 
 
 def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> None:
@@ -241,7 +248,7 @@ def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> 
 
     outcome, _ = run(tmp_path, script, "0002:Requirements")
 
-    expected = attempt_cost(first_call()) + FLAT_FAILURE_USD + 2 * attempt_cost(settled())
+    expected = attempt_cost(first_call(), BOUND) + BOUND + 2 * attempt_cost(settled(), BOUND)
     assert outcome.total_usd == pytest.approx(expected)
 
 
@@ -250,7 +257,7 @@ def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> 
 
 def test_a_call_one_more_failure_could_carry_past_the_ceiling_is_not_made(tmp_path: Path) -> None:
     script = Script([first_call(), settled(), settled()])
-    ceiling = attempt_cost(first_call()) + FLAT_FAILURE_USD - 0.0001
+    ceiling = attempt_cost(first_call(), BOUND) + BOUND - 0.0001
 
     outcome, _ = run(tmp_path, script, "0002:Requirements", ceiling=ceiling)
 
@@ -260,7 +267,7 @@ def test_a_call_one_more_failure_could_carry_past_the_ceiling_is_not_made(tmp_pa
 
 def test_a_call_exactly_at_the_ceiling_is_made(tmp_path: Path) -> None:
     script = Script([first_call(), settled(), settled()])
-    ceiling = attempt_cost(first_call()) + FLAT_FAILURE_USD
+    ceiling = attempt_cost(first_call(), BOUND) + BOUND
 
     _, _ = run(tmp_path, script, "0002:Requirements", ceiling=ceiling)
 
@@ -364,9 +371,9 @@ def test_the_summary_says_none_when_every_attempt_reported_usage(tmp_path: Path)
 
 
 def test_the_central_and_wider_figures_for_question_3s_four_units() -> None:
-    counts = [UnitCount(a, a.split(":")[1], COUNTED) for a in QUESTION_3]
+    counts = [UnitCount(a, a.split(":")[1], COUNTED, 3) for a in QUESTION_3]
 
-    result = estimate(counts, runs=3)
+    result = estimate(counts)
 
     uncached = COUNTED - 57_494
     write, read = 57_494 * 4.0, 57_494 * 0.2
@@ -378,14 +385,15 @@ def test_the_central_and_wider_figures_for_question_3s_four_units() -> None:
     central = (calls(3, 27_384, True) + calls(3, 26_721, False) + calls(3, 27_384, False)) + calls(
         3, 26_721, False
     )
-    wider = calls(6, 39_234, True) + 3 * calls(6, 39_234, False)
+    # Wider, amended 2026-10-06: every call writes the cache.
+    wider = 4 * 6 * (uncached * 2.0 + 39_234 * 10.0 + write) / 1e6
     assert (result.central_calls, result.wider_calls) == (12, 24)
     assert result.central_usd == pytest.approx(central)
     assert result.wider_usd == pytest.approx(wider)
 
 
 def test_a_section_with_no_measured_output_is_not_priced_centrally() -> None:
-    result = estimate([UnitCount("0002:Consequences", "Consequences", COUNTED)], runs=3)
+    result = estimate([UnitCount("0002:Consequences", "Consequences", COUNTED, 3)])
 
     assert result.central_usd is None
     assert result.wider_usd > 0
@@ -479,8 +487,7 @@ def test_a_collision_in_run_2_of_the_second_unit_stops_before_the_first_call(
 
     assert code == 1
     assert "already exists" in flat(stderr)
-    assert fake_api.script.calls == []
-    assert fake_api.messages.counted == [], "nothing is counted or paid after a collision"
+    assert fake_api.script.calls == [], "no extraction call after a collision"
 
 
 def test_a_dry_run_counts_and_prices_but_makes_no_extraction_call(
@@ -513,14 +520,14 @@ def test_a_calibration_count_that_moved_refuses_to_price(
     assert "Central total" not in stdout
 
 
-def test_a_wider_estimate_above_the_ceiling_stops_before_any_paid_call(
+def test_ac_8b_a_wider_estimate_above_the_ceiling_does_not_refuse_the_run(
     tmp_path: Path, fake_api: SimpleNamespace
 ) -> None:
-    code, _, stderr = invoke(tmp_path, *QUESTION_3, "--ceiling", "5")
+    """covers: AC-8b (amended 2026-10-06: the wider total warns, it does not refuse)."""
+    _, stdout, _ = invoke(tmp_path, *QUESTION_3, "--ceiling", "5")
 
-    assert code == 1
-    assert "above the ceiling $5.00" in flat(stderr)
-    assert fake_api.script.calls == []
+    assert "may stop partway at the ceiling" in flat(stdout)
+    assert fake_api.script.calls != []
 
 
 def test_extract_runs_every_unit_three_times_and_writes_every_artifact(
@@ -554,8 +561,8 @@ def test_a_stop_partway_prints_the_summary_and_exits_1(
 def by_hand(*sections: str) -> tuple[float, float]:
     """Central and wider USD for units that each count `COUNTED`, written out from the
     spec's Value sourcing: the first call writes the 57,494 token prefix, every later
-    call reads it; central is 3 calls at the section's measured output, wider is 6 at
-    39,234."""
+    call reads it; central is 3 calls at the section's measured output; wider is 6 at
+    39,234, every one writing the cache."""
     uncached = COUNTED - 57_494
     measured = {"Requirements": 27_384, "Feature design": 26_721}
 
@@ -564,7 +571,8 @@ def by_hand(*sections: str) -> tuple[float, float]:
         return (n * (uncached * 2.0 + output * 10.0) + cache + (n - 1) * 57_494 * 0.2) / 1e6
 
     central = sum(calls(3, measured[s], i == 0) for i, s in enumerate(sections))
-    wider = sum(calls(6, 39_234, i == 0) for i, _ in enumerate(sections))
+    # Amended 2026-10-06: every wider call writes the cache.
+    wider = len(sections) * 6 * (uncached * 2.0 + 39_234 * 10.0 + 57_494 * 4.0) / 1e6
     return central, wider
 
 
@@ -628,11 +636,10 @@ def test_ac_6c_every_wider_line_names_the_heaviest_measured_output_and_its_sourc
 
 
 def ceiling_reached_after_two_calls(fake_api: SimpleNamespace) -> float:
-    """A ceiling the wider estimate fits under, which a heavy second call uses up."""
+    """A ceiling above one call's bound, which a heavy second call uses up."""
     heavy = Attempt(**{**settled().__dict__, "output_tokens": 200_000})
     fake_api.script = Script([first_call(), heavy, settled()])
-    _, wider = by_hand("Requirements")
-    return wider + 0.01
+    return 3.0
 
 
 def test_ac_9_a_ceiling_stop_partway_is_said_plainly_through_the_command(

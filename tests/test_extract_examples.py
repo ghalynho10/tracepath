@@ -223,10 +223,12 @@ def test_an_attempt_keeps_the_cache_counts_the_api_reported() -> None:
     assert (attempt.number, attempt.input_tokens, attempt.output_tokens) == (2, 8000, 15000)
 
 
-def test_an_attempt_with_no_usage_reports_zero_rather_than_failing() -> None:
+def test_an_attempt_with_no_usage_reports_null_rather_than_failing() -> None:
+    """Unmeasured is null, not zero (spec 0001's storage row; changed in `37b4a17`)."""
     attempt = _attempt_from_usage(1, None, error="the call failed")
 
-    assert (attempt.input_tokens, attempt.cache_read_input_tokens) == (0, 0)
+    assert (attempt.input_tokens, attempt.output_tokens) == (None, None)
+    assert attempt.cache_read_input_tokens == 0
     assert attempt.error == "the call failed"
 
 

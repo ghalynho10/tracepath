@@ -8,7 +8,7 @@ that turned out 10 to 15 times low.
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from tracepath.extract.client import Attempt
+from tracepath.extract.client import MAX_TOKENS, Attempt
 
 #: USD per million tokens: standard interactive pricing, not Batch. The rates
 #: experiment 0005 reproduced exactly against experiment 0004's bill.
@@ -41,12 +41,6 @@ CENTRAL_OUTPUT: dict[str, tuple[int, str]] = {
 HEAVIEST_OUTPUT = 39_234
 HEAVIEST_SOURCE = "the heaviest measured call (experiment 0005, `0021` run 2)"
 
-#: What a failed or dropped attempt adds to the running total, whatever it recorded:
-#: one heaviest call reading the cache, 39,234 output, 5,276 uncached input and one
-#: 57,494 token cache read (experiment 0008's script). A failed attempt's recorded
-#: usage can undercount badly, so it is never used.
-FLAT_FAILURE_USD = 0.4144
-
 
 class EstimateUnavailable(Exception):
     """The measured figures cannot be trusted for this prompt, so nothing is priced."""
@@ -62,20 +56,41 @@ def tokens_cost(input_tokens: int, output_tokens: int, cache_write: int, cache_r
     ) / 1e6
 
 
-def attempt_cost(attempt: Attempt) -> float:
-    """One attempt's figure in the running total (spec 0004 AC-10a, AC-10b).
+def per_call_bound(counted: int) -> float:
+    """The most one call of a unit can cost (spec 0004 AC-55).
 
-    A settled attempt counts at its own recorded usage, cache write and read included.
-    A failed or dropped one counts at `FLAT_FAILURE_USD`, never at its recorded tokens.
+    `max_tokens` is the hard ceiling on a call's output, thinking included (Anthropic's
+    extended thinking docs, checked 2026-10-06), so a call can add no more than that
+    output, the unit's uncached input, and one write of the cached prefix. Every call is
+    priced as writing the cache, because a cache can expire between calls.
     """
-    if attempt.output is None:
-        return FLAT_FAILURE_USD
+    return tokens_cost(max(counted - CACHED_PREFIX_TOKENS, 0), MAX_TOKENS, CACHED_PREFIX_TOKENS, 0)
+
+
+def recorded_cost(attempt: Attempt) -> float:
+    """What an attempt's recorded usage costs at the stated rates, null read as 0.
+
+    For the summary's second total (AC-14b): what the artifacts say was spent, beside
+    the guard's own figure. A failed attempt's record can undercount what was billed.
+    """
     return tokens_cost(
         attempt.input_tokens or 0,
         attempt.output_tokens or 0,
         attempt.cache_creation_input_tokens,
         attempt.cache_read_input_tokens,
     )
+
+
+def attempt_cost(attempt: Attempt, bound: float) -> float:
+    """One attempt's figure in the running total (spec 0004 AC-10a, AC-10b).
+
+    A settled attempt counts at its own recorded usage, cache write and read included.
+    A failed or dropped one counts at its unit's per call `bound`, never at its
+    recorded tokens, which can undercount badly.
+    """
+    if attempt.output is None:
+        return bound
+    return recorded_cost(attempt)
 
 
 def check_calibration(counted: int) -> None:
@@ -94,11 +109,16 @@ def check_calibration(counted: int) -> None:
 
 @dataclass(frozen=True)
 class UnitCount:
-    """One unit's input, as the token count endpoint counted it."""
+    """One unit's input, as the token count endpoint counted it.
+
+    `planned_runs` is how many runs this command will make for the unit: the run
+    policy's count for a fresh unit, or the owed runs of a resume (AC-63).
+    """
 
     address: str
     section: str
     counted: int
+    planned_runs: int
 
 
 @dataclass(frozen=True)
@@ -114,6 +134,7 @@ class UnitEstimate:
     central_usd: float | None
     wider_calls: int
     wider_usd: float
+    bound_usd: float
 
 
 @dataclass(frozen=True)
@@ -125,6 +146,11 @@ class Estimate:
     central_usd: float | None
     wider_calls: int
     wider_usd: float
+
+    @property
+    def largest_bound_usd(self) -> float:
+        """The largest per call bound among the units, the one AC-8 checks."""
+        return max((unit.bound_usd for unit in self.units), default=0.0)
 
 
 def _calls_cost(calls: int, uncached: int, output: int, writes_cache: bool) -> float:
@@ -141,12 +167,13 @@ def _calls_cost(calls: int, uncached: int, output: int, writes_cache: bool) -> f
     return first + (calls - 1) * rest
 
 
-def estimate(counts: Sequence[UnitCount], runs: int) -> Estimate:
+def estimate(counts: Sequence[UnitCount]) -> Estimate:
     """The central and wider cost of extracting every unit, in the order given.
 
-    Central: `runs` calls per unit, each at its section's measured output. Wider: a
-    retry on every run, so twice the calls, each at the heaviest measured output. In
-    both, the command's first call writes the cache and every later call reads it.
+    Central: each planned run once, at its section's measured output; the command's
+    first call writes the cache and every later call reads it. Wider: every planned run
+    twice (a call and a retry), each at the heaviest measured output, and every call
+    writing the cache, as the per call bound assumes (amended 2026-10-06).
 
     Raises:
         EstimateUnavailable: a unit counts fewer tokens than the cached prefix alone.
@@ -159,7 +186,7 @@ def estimate(counts: Sequence[UnitCount], runs: int) -> Estimate:
                 f"{count.address} counts {count.counted:,} tokens, fewer than the cached "
                 f"prefix of {CACHED_PREFIX_TOKENS:,} alone"
             )
-        first = position == 0
+        runs = count.planned_runs
         central = CENTRAL_OUTPUT.get(count.section)
         units.append(
             UnitEstimate(
@@ -169,9 +196,14 @@ def estimate(counts: Sequence[UnitCount], runs: int) -> Estimate:
                 central_output=central[0] if central else None,
                 central_source=central[1] if central else None,
                 central_calls=runs,
-                central_usd=_calls_cost(runs, uncached, central[0], first) if central else None,
+                central_usd=_calls_cost(runs, uncached, central[0], position == 0)
+                if central
+                else None,
                 wider_calls=2 * runs,
-                wider_usd=_calls_cost(2 * runs, uncached, HEAVIEST_OUTPUT, first),
+                wider_usd=2
+                * runs
+                * tokens_cost(uncached, HEAVIEST_OUTPUT, CACHED_PREFIX_TOKENS, 0),
+                bound_usd=per_call_bound(count.counted),
             )
         )
     centrals = [unit.central_usd for unit in units]
@@ -207,7 +239,12 @@ def estimate_lines(result: Estimate, ceiling: float) -> tuple[str, ...]:
             )
         lines.append(
             f"    wider: {HEAVIEST_OUTPUT:,} output per call, {HEAVIEST_SOURCE}, a retry on "
-            f"every run; {unit.wider_calls} calls, ${unit.wider_usd:.4f}"
+            f"every run, every call writing the cache; {unit.wider_calls} calls, "
+            f"${unit.wider_usd:.4f}"
+        )
+        lines.append(
+            f"    per call bound: ${unit.bound_usd:.4f} ({MAX_TOKENS:,} output, the "
+            "uncached input, one cache write)"
         )
     central = "not priced" if result.central_usd is None else f"${result.central_usd:.4f}"
     within = "within" if result.wider_usd <= ceiling else "above"
@@ -215,6 +252,11 @@ def estimate_lines(result: Estimate, ceiling: float) -> tuple[str, ...]:
         f"Central total: {result.central_calls} calls, {central}.",
         f"Wider total: {result.wider_calls} calls, ${result.wider_usd:.4f}, {within} the "
         f"ceiling of ${ceiling:.2f}.",
-        f"A failed or dropped attempt counts ${FLAT_FAILURE_USD:.4f} in the running total.",
     ]
+    if result.wider_usd > ceiling:
+        lines.append(
+            "The wider total is above the ceiling, so the run may stop partway at the "
+            "ceiling: no call is made that its per call bound could carry past it."
+        )
+    lines.append("A failed or dropped attempt counts at its unit's per call bound.")
     return tuple(lines)
