@@ -2,7 +2,7 @@
 
 Pure: the same chain always renders the same lines, with no timestamp or other value
 that changes between runs (key invariant 6). The struck flag is printed as stored, with
-no current or history label.
+no current or history label. A held step or link always prints `HELD:` (spec 0005).
 """
 
 from collections import Counter
@@ -18,6 +18,15 @@ TEXT_LIMIT = 200
 NO_VERSION = "none recorded"
 
 INDENT = "       "
+
+#: What a held `:Unresolved` step reads as. It has no reasons of its own: it is held
+#: because every link that reaches it is (spec 0005 AC-9b).
+HELD_UNRESOLVED = "reached only by held links"
+
+
+def _held(reasons: tuple[str, ...]) -> str:
+    """The marker a held step heading or link line ends with (spec 0005 AC-9, AC-10)."""
+    return f"  HELD: {', '.join(reasons)}"
 
 
 def _shown(text: str | None) -> str:
@@ -45,8 +54,10 @@ def _link_lines(step: Step, via: Link) -> list[str]:
     )
     if via.phrase:
         citation += f' · "{" ".join(via.phrase.split())}"'
+    marker = _held(via.held_reasons) if via.held else ""
     return [
-        f"{INDENT}link  {via.source} -[{via.type}]-> {via.target} ({seen_from} {step.parent})",
+        f"{INDENT}link  {via.source} -[{via.type}]-> {via.target} ({seen_from} {step.parent})"
+        + marker,
         f"{INDENT}      {citation}",
     ]
 
@@ -78,7 +89,12 @@ def _heading(step: Step) -> str:
         kind = f"{node.type or 'Entity'}  struck: {_struck(node)}"
     else:
         kind = str(node.kind)
-    return f"hop {step.hop}  {node.canonical_id}  {kind}"
+    heading = f"hop {step.hop}  {node.canonical_id}  {kind}"
+    if not node.held:
+        return heading
+    if node.kind is NodeKind.UNRESOLVED:
+        return heading + _held((HELD_UNRESOLVED,))
+    return heading + _held(node.held_reasons)
 
 
 def _stop_line(step: Step) -> list[str]:
@@ -116,6 +132,15 @@ def _versions_line(chain: Chain) -> str:
     return f"Prompt versions: model made steps do not share one prompt version ({counts})."
 
 
+def _held_line(chain: Chain) -> list[str]:
+    """How many steps and links are held, or nothing when none is (spec 0005 AC-11)."""
+    steps = sum(1 for step in chain.steps if step.node.held)
+    links = sum(1 for step in chain.steps if step.via is not None and step.via.held)
+    if not steps and not links:
+        return []
+    return [f"Held: {steps} steps, {links} links"]
+
+
 def render_chain(chain: Chain) -> tuple[str, ...]:
     """Every line `trace` prints for one chain, in order."""
     count = len(chain.steps)
@@ -131,5 +156,6 @@ def render_chain(chain: Chain) -> tuple[str, ...]:
         lines.extend(_node_lines(step.node))
         lines.extend(_stop_line(step))
     lines.append("")
+    lines.extend(_held_line(chain))
     lines.append(_versions_line(chain))
     return tuple(lines)

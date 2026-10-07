@@ -52,7 +52,10 @@ from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
 from tracepath.graph.read import read_graph
 from tracepath.pipeline import (
+    HeldView,
+    HeldViewIncomplete,
     ProvenanceMismatch,
+    build_held_view,
     collapsed_links,
     graph_build,
     load,
@@ -76,7 +79,7 @@ from tracepath.report import (
     report_lines,
     score,
 )
-from tracepath.traverse.graph_slice import SliceError
+from tracepath.traverse.graph_slice import GraphSlice, NodeKind, SliceError, drop_held
 from tracepath.traverse.render import render_chain
 from tracepath.traverse.walk import Chain, StartNotInGraph, walk
 
@@ -87,6 +90,12 @@ err_console = Console(stderr=True)
 #: Who accepted what a load writes. Nothing is reviewed by hand yet (spec 0002), so
 #: every accepted item was accepted by the three run agreement rule.
 ACCEPTED_BY = "auto"
+
+#: Why `trace --with-held` refuses a graph a default load wrote (spec 0005 AC-26b).
+NO_HELD_ITEMS = (
+    "--with-held: the graph holds no held item, so there is nothing held to show. "
+    "Run `tracepath load --with-held` first, then trace again."
+)
 
 
 def _say(text: str) -> None:
@@ -178,22 +187,37 @@ def load_graph(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+    with_held: bool = typer.Option(
+        False,
+        "--with-held",
+        help="Also write the items review holds back, each marked held (spec 0005).",
+    ),
 ) -> None:
     """Rebuild the graph from the committed run artifacts. No API call.
 
     Clears the graph, creates the constraints and loads every fully extracted unit,
     every write asserting its own row count, then writes `artifacts/graph-build.json`.
+    With `--with-held`, held items are written too, marked held; nothing is accepted.
     """
     base = Path(root)
     corpus_snapshot = base / snapshot
+    held: HeldView | None = None
     try:
         settings = load_neo4j_settings()
         results = committed_units(base, corpus_snapshot)
         records = records_for_units(results, corpus_snapshot, commit)
         corpus = resolve_accepted(results, records)
+        if with_held:
+            held = build_held_view(results, corpus, records)
         provenances = [unit_provenance(result, ACCEPTED_BY) for result in results]
         manifest = graph_build(
-            results, corpus, provenances, commit, review_log_entries(base), unit_passes(base)
+            results,
+            corpus,
+            provenances,
+            commit,
+            review_log_entries(base),
+            unit_passes(base),
+            held,
         )
         with connect(settings) as driver:
             written = load(
@@ -205,12 +229,14 @@ def load_graph(
                 commit,
                 ACCEPTED_BY,
                 clear_first=True,
+                held=held,
             )
     except (
         SettingsInvalid,
         RebuildFailed,
         RecordError,
         ProvenanceMismatch,
+        HeldViewIncomplete,
         GraphUnavailable,
         GraphWriteFailed,
     ) as exc:
@@ -224,6 +250,15 @@ def load_graph(
         "collapsed into an existing relationship), "
         f"{len(corpus.held)} links held across units."
     )
+    if held is not None:
+        _say(
+            f"Held item view (spec 0005), nothing accepted: {written['held_entities']} held "
+            f"entities, {written['held_links']} held links and {written['held_unresolved']} "
+            "held unresolved written, each marked held. Skipped as already written: "
+            f"{held.skipped_entities} held entities, {held.skipped_links} held links. "
+            f"Not written, no first run item behind them: "
+            f"{held.not_written_entities + held.not_written_links} queue rows."
+        )
     versions = ", ".join(f"{v}: {n}" for v, n in manifest["prompt_versions"].items())
     _say(f"Units per prompt version: {versions}.")
     for partial in partial_units(base):
@@ -232,6 +267,13 @@ def load_graph(
             "settled runs of 3, so it is not extracted."
         )
     _say(f"Build manifest: {path.relative_to(base).as_posix()}")
+
+
+def _holds_held(graph: GraphSlice) -> bool:
+    """Whether a load wrote held items: any held entity or `:Unresolved` node (AC-26)."""
+    return any(
+        node.held and node.kind in (NodeKind.ENTITY, NodeKind.UNRESOLVED) for node in graph.nodes
+    )
 
 
 @app.command()
@@ -252,13 +294,21 @@ def trace(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+    with_held: bool = typer.Option(
+        False,
+        "--with-held",
+        help="Walk through held items too, each printed as held (spec 0005). "
+        "Needs a graph from `load --with-held`.",
+    ),
 ) -> None:
     """Walk the chain from one item and print every step, each citing its record.
 
     Breadth first along the seven typed links, both ways, at most three hops. A Record
     or Unresolved node is printed and not expanded. With `--eval N`, the start is
     question N's first trace entry, and the chain is then scored against its expected
-    items. The walk never reads the eval set; only the scoring after it does.
+    items. The walk never reads the eval set; only the scoring after it does. With
+    `--with-held`, the chain runs through held items, each marked held, and the
+    scoring walks twice: without held items and with them.
     """
     if (start is None) == (eval_question is None):
         _fail("give one START id or --eval N, not both and not neither.")
@@ -269,9 +319,11 @@ def trace(
         )
         settings = load_neo4j_settings()
         with connect(settings) as driver:
-            graph = read_graph(driver, settings.database)
+            graph = read_graph(driver, settings.database, with_held=with_held)
     except (EvalEntryUnusable, SettingsInvalid, GraphUnavailable, SliceError) as exc:
         _fail(str(exc))
+    if with_held and not _holds_held(graph):
+        _fail(NO_HELD_ITEMS)
 
     begin = question.start if question is not None else str(start)
     chain: Chain | None
@@ -287,6 +339,15 @@ def trace(
     if question is None:
         return
 
+    # Under the held view the printed chain is the held walk; the clean walk, over the
+    # same read with held items dropped, is the one that decides `reached` (AC-12).
+    clean: Chain | None = chain
+    if with_held:
+        try:
+            clean = walk(drop_held(graph), begin)
+        except StartNotInGraph:
+            clean = None
+
     corpus_snapshot = base / snapshot
     try:
         results = committed_units(base, corpus_snapshot)
@@ -294,7 +355,16 @@ def trace(
         split = holding_units(corpus_snapshot, (item.file for item in question.items))
     except (RebuildFailed, RecordError, OSError) as exc:
         _fail(str(exc))
-    report = score(question, chain, results, corpus, settled_run_counts(base), split)
+    report = score(
+        question,
+        clean,
+        results,
+        corpus,
+        settled_run_counts(base),
+        split,
+        with_held=with_held,
+        held=chain if with_held else None,
+    )
     if chain is not None:
         _say("")
     for line in report_lines(report):

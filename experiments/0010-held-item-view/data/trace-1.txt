@@ -1,0 +1,64 @@
+Chain from 0002/AC-10: 7 steps, at most 3 hops, typed links both ways, PART_OF not followed.
+
+hop 0  0002/AC-10  AcceptanceCriterion  struck: false  HELD: known_trap_flag
+       "**AC-10**: Password sign in is impossible on production, in both places it is guarded: the sign in page does not render and the Server Action refuses to run. The enabling variable is absent there, bo…"
+       specs/0002-deployment-and-environments/index.md · Requirements · file line 31 · commit 2e40bcf · prompt 0003.1
+
+hop 1  0002#requirements:6  Consequence  struck: false  HELD: runs_disagree, known_trap_flag
+       link  0002/AC-10 -[SUPERSEDED_BY]-> 0002#requirements:6 (outgoing from 0002/AC-10)  HELD: runs_disagree, known_trap_flag, endpoint_not_accepted:0002/AC-10, endpoint_not_accepted:0002#requirements:6
+             specs/0002-deployment-and-environments/index.md · Requirements · line 11 · commit 2e40bcf · prompt 0003.1 · "**SUPERSEDED 2026-08-30 by spec 0007.**"
+       "Feature 7 deleted the password path outright, page and action alike, so password sign in is now impossible in EVERY environment rather than blocked in one, and there are no two guards left to fail cl…"
+       specs/0002-deployment-and-environments/index.md · Requirements · file line 31 · commit 2e40bcf · prompt 0003.1
+
+hop 1  0002#feature-design:71  TestScenario  struck: false
+       link  0002#feature-design:71 -[VERIFIES]-> 0002/AC-10 (incoming to 0002/AC-10)  HELD: endpoint_not_accepted:0002/AC-10
+             specs/0002-deployment-and-environments/index.md · Feature design · line 53 · commit 2e40bcf · prompt 0003.1 · "verifies **AC-10**"
+       "Auth/permission: a POST to the sign in action on production is refused because `DEV_SESSION_ENABLED` is absent, verifies **AC-10**."
+       specs/0002-deployment-and-environments/index.md · Feature design · file line 232 · commit 2e40bcf · prompt 0003.1
+
+hop 2  0007/AC-13  AcceptanceCriterion  struck: false  HELD: known_trap_flag
+       link  0002#requirements:6 -[UNCLASSIFIED]-> 0007/AC-13 (outgoing from 0002#requirements:6)  HELD: runs_disagree, endpoint_not_accepted:0002#requirements:6
+             specs/0002-deployment-and-environments/index.md · Requirements · line 11 · commit 2e40bcf · prompt 0003.1 · "which is now the session mint's guarantee (spec 0007 **AC-13**)"
+       "**AC-13**: `DEV_SESSION_ENABLED` survives with exactly one remaining job, guarding the test mint in `test/helpers/admin.ts`. It is no longer set on Vercel Preview, `src/env.ts`'s comment about it say…"
+       specs/0007-auth-and-per-user-isolation/index.md · Requirements · file line 36 · commit 2e40bcf · prompt 0003.1
+
+hop 2  0002#feature-design:72  unclassified  struck: false  HELD: runs_disagree, known_trap_flag, unclassified_type
+       link  0002#feature-design:71 -[SUPERSEDED_BY]-> 0002#feature-design:72 (outgoing from 0002#feature-design:71)  HELD: runs_disagree, endpoint_not_accepted:0002#feature-design:72
+             specs/0002-deployment-and-environments/index.md · Feature design · line 53 · commit 2e40bcf · prompt 0003.1 · "**UNRUNNABLE SINCE 2026-08-30**"
+       "**UNRUNNABLE SINCE 2026-08-30**, and see AC-10 above. Spec 0007 deleted the Server Action this scenario posts to, so there is nothing left to refuse."
+       specs/0002-deployment-and-environments/index.md · Feature design · file line 232 · commit 2e40bcf · prompt 0003.1
+
+hop 3  0002  Record
+       link  0007/AC-13 -[UNCLASSIFIED]-> 0002 (outgoing from 0007/AC-13)  HELD: endpoint_not_accepted:0007/AC-13
+             specs/0007-auth-and-per-user-isolation/index.md · Requirements · line 10 · commit 2e40bcf · prompt 0003.1 · "spec 0002's configuration table matches"
+       "Deployment and environments"
+       specs/0002-deployment-and-environments/index.md · commit 2e40bcf · code, no model
+       stopped: whole document, not expanded
+
+hop 3  0007  Record
+       link  0002#feature-design:72 -[UNCLASSIFIED]-> 0007 (outgoing from 0002#feature-design:72)  HELD: runs_disagree, endpoint_not_accepted:0002#feature-design:72
+             specs/0002-deployment-and-environments/index.md · Feature design · line 53 · commit 2e40bcf · prompt 0003.1 · "Spec 0007 deleted the Server Action this scenario posts to"
+       "Auth and per user isolation"
+       specs/0007-auth-and-per-user-isolation/index.md · commit 2e40bcf · code, no model
+       stopped: whole document, not expanded
+
+Held: 4 steps, 6 links
+Prompt versions: all 11 model made steps share prompt 0003.1.
+
+Held item view (spec 0005): a second result. Experiment 0009 stays the first.
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 3: Why is password sign in impossible on production?
+Start item: 0002/AC-10, from the first trace entry "spec 0002 AC-10 (struck)".
+
+Expected items:
+  held only    spec 0002 AC-10 (struck) · specs/0002-deployment-and-environments/index.md:31 · hop 0 · 0002/AC-10 · via 0002/AC-10
+  not reached  spec 0007 AC-12 and key invariant 1 · specs/0007-auth-and-per-user-isolation/index.md:35 · held_for_review
+  not reached  spec 0007 AC-12 and key invariant 1 (also) · specs/0007-auth-and-per-user-isolation/index.md:142 · held_for_review
+  held only    spec 0007 AC-13 · specs/0007-auth-and-per-user-isolation/index.md:36 · hop 2 · 0007/AC-13 · via 0002/AC-10, 0002/AC-10 -[SUPERSEDED_BY]-> 0002#requirements:6, 0002#requirements:6, 0002#requirements:6 -[UNCLASSIFIED]-> 0007/AC-13, 0007/AC-13
+  held only    spec 0002 test scenario (struck) · specs/0002-deployment-and-environments/index.md:232 · hop 1 · 0002#feature-design:71 · via 0002/AC-10, 0002#feature-design:71 -[VERIFIES]-> 0002/AC-10
+
+Visited steps matching no expected item: 2 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0002 or 0007: 0.
+Across records: no. No expected item outside 0002 was reached from the start.
+Across records through held items: yes (0007/AC-13, hop 2)

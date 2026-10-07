@@ -32,8 +32,11 @@ READ_SLICE = (
 )
 
 
-def read_graph(driver: Driver, database: str) -> GraphSlice:
+def read_graph(driver: Driver, database: str, *, with_held: bool = False) -> GraphSlice:
     """Every node and typed link the graph holds, as an immutable slice.
+
+    Held items are dropped unless `with_held` is set; the Cypher read is the same
+    either way, and `graph_slice()` decides (spec 0005).
 
     Raises:
         SliceError: a node read back has no canonical id or no known label.
@@ -45,11 +48,11 @@ def read_graph(driver: Driver, database: str) -> GraphSlice:
         routing_=RoutingControl.READ,
     )
     if not records:
-        return graph_slice((), ())
+        return graph_slice((), (), with_held=with_held)
     row: dict[str, Any] = records[0].data()
     nodes = (node_from_properties(n["labels"], n["properties"]) for n in row["nodes"])
     links = (
         link_from_properties(k["type"], k["source"], k["target"], k["properties"])
         for k in row["links"]
     )
-    return graph_slice(nodes, links)
+    return graph_slice(nodes, links, with_held=with_held)

@@ -34,6 +34,7 @@ from tracepath.extract.compare import (
     route_runs,
 )
 from tracepath.extract.ids import (
+    IdentifiedEntity,
     IdentifiedOutput,
     assign_ids,
     label_binding_rules,
@@ -56,13 +57,23 @@ from tracepath.graph.load import (
     write_records,
     write_unresolved,
 )
-from tracepath.graph.model import Provenance, entity_row, link_row, record_row, unresolved_row
+from tracepath.graph.model import (
+    Provenance,
+    entity_row,
+    held_entity_row,
+    held_link_row,
+    held_unresolved_row,
+    link_row,
+    record_row,
+    unresolved_row,
+)
 from tracepath.graph.schema import clear, create_constraints
 from tracepath.resolve.endpoints import (
     LabelIndex,
     LinkContext,
     Resolution,
     ResolvedLink,
+    UnresolvedNode,
     build_label_index,
     resolve_endpoints,
 )
@@ -75,12 +86,14 @@ class HeldLink:
     """One relationship held because an endpoint entity was not accepted (AC-11c).
 
     It is not dropped: it goes to the review queue beside the entity it waits on, and
-    the review step releases it when that entity is accepted.
+    the review step releases it when that entity is accepted. `relationship` is the
+    relationship it holds, so the held item view can resolve it (spec 0005).
     """
 
     record: str
     section: str
     item: ReviewItem
+    relationship: ExtractedRelationship | None = None
 
 
 @dataclass(frozen=True)
@@ -293,6 +306,7 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
                                 ),
                             ),
                         ),
+                        relationship=relationship,
                     )
                 )
                 continue
@@ -302,6 +316,240 @@ def resolve_accepted(results: Sequence[UnitResult], records: Sequence[Record]) -
         resolution=resolve_endpoints(pairs, accepted_ids, known_records, known_label_index),
         held=tuple(held),
     )
+
+
+class HeldViewIncomplete(Exception):
+    """A held item cannot be accounted for, so the held item view would be a guess."""
+
+
+@dataclass(frozen=True)
+class HeldEntity:
+    """One first run entity routing held, with the unit it came from and why it was held."""
+
+    entity: IdentifiedEntity
+    unit: Unit
+    reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class HeldResolvedLink:
+    """One held link with both endpoints resolved, and why it was held."""
+
+    link: ResolvedLink
+    reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class HeldView:
+    """Everything `load --with-held` writes beside the accepted graph (spec 0005).
+
+    The `not_written_*` figures count queue rows no first run entity or relationship
+    stands behind: a later run alone produced them, so there is nothing to write.
+    """
+
+    entities: tuple[HeldEntity, ...]
+    links: tuple[HeldResolvedLink, ...]
+    unresolved: tuple[UnresolvedNode, ...]
+    skipped_entities: int
+    skipped_links: int
+    not_written_entities: int
+    not_written_links: int
+
+    def counts(self) -> dict[str, int]:
+        """The six counts `graph-build.json` carries under `held_view` (AC-24)."""
+        return {
+            "entities": len(self.entities),
+            "links": len(self.links),
+            "unresolved": len(self.unresolved),
+            "skipped_entities": self.skipped_entities,
+            "skipped_links": self.skipped_links,
+            "not_written": self.not_written_entities + self.not_written_links,
+        }
+
+
+def held_reason(reason: ReviewReason) -> str:
+    """One reason as stored: its name, or `name:detail` when it has detail."""
+    return str(reason.name) if reason.detail is None else f"{reason.name}:{reason.detail}"
+
+
+def _reasons_of(items: Sequence[ReviewItem]) -> tuple[str, ...]:
+    """Every reason of every item, in queue order, each once."""
+    return tuple(dict.fromkeys(held_reason(r) for item in items for r in item.reasons))
+
+
+def _take[T](pool: list[T], value: T) -> bool:
+    """Remove one item equal to `value` from `pool`, and say whether there was one."""
+    if value in pool:
+        pool.remove(value)
+        return True
+    return False
+
+
+def build_held_view(
+    results: Sequence[UnitResult], corpus: CorpusResolution, records: Sequence[Record]
+) -> HeldView:
+    """The held entities and held links of every unit's first run, resolved (spec 0005).
+
+    Pure, and repeatable: units sorted by record and section slug, items in first run
+    order. Held links are resolved in their own call, over every first run entity id,
+    so a held entity can never move where an accepted link lands. A held item whose
+    id, or whose type and endpoints, the graph already holds is skipped, never merged.
+
+    Raises:
+        HeldViewIncomplete: a held in unit link has no review item behind it, a held
+            entity has none either, a cross unit held link carries no relationship or
+            matches no unit, or written plus skipped plus not written does not equal
+            the held rows routing produced.
+    """
+    ordered = sorted(
+        (result for result in results if result.identified),
+        key=lambda r: (r.unit.record_id, r.section_slug),
+    )
+    accepted_ids = frozenset(
+        e.canonical_id for result in results for e in result.routed.accepted_entities
+    )
+    known_entities = tuple(e for result in ordered for e in result.identified[0].entities)
+    known_records = frozenset(record.canonical_id for record in records)
+    label_index = build_label_index(known_entities)
+
+    for waiting in corpus.held:
+        if waiting.relationship is None:
+            raise HeldViewIncomplete(
+                f"a link held across units in {waiting.record} {waiting.section} carries no "
+                "relationship, so the held view cannot resolve it"
+            )
+    across: list[HeldLink] = list(corpus.held)
+
+    entities: list[HeldEntity] = []
+    written_ids: set[str] = set(accepted_ids)
+    skipped_entities = 0
+    not_written_entities = 0
+    entity_rows = 0
+    pairs: list[tuple[ExtractedRelationship, LinkContext]] = []
+    pair_reasons: list[tuple[str, ...]] = []
+    not_written_links = 0
+    link_rows = len(corpus.held)
+
+    for result in ordered:
+        first = result.identified[0]
+        unit = result.unit
+        held_entity_items = [i for i in result.routed.review if len(i.signature) == 2]
+        held_link_items = [i for i in result.routed.review if len(i.signature) == 3]
+        entity_rows += len(held_entity_items)
+        link_rows += len(held_link_items)
+
+        unclaimed_entities = list(held_entity_items)
+        accepted = list(result.routed.accepted_entities)
+        for entity in first.entities:
+            if _take(accepted, entity):
+                continue
+            behind = [i for i in held_entity_items if i.canonical_id == entity.canonical_id]
+            claimed = next(
+                (i for i in unclaimed_entities if i.canonical_id == entity.canonical_id), None
+            )
+            if not behind or claimed is None:
+                raise HeldViewIncomplete(
+                    f"{entity.canonical_id} in {unit.record_id} {unit.section} was not "
+                    "accepted and no review item stands behind it"
+                )
+            unclaimed_entities.remove(claimed)
+            if entity.canonical_id in written_ids:
+                skipped_entities += 1
+                continue
+            written_ids.add(entity.canonical_id)
+            entities.append(HeldEntity(entity, unit, _reasons_of(behind)))
+        not_written_entities += len(unclaimed_entities)
+
+        identities = identities_of(first)
+        context = LinkContext(
+            source_record=unit.record_id,
+            file=unit.path,
+            section=unit.section,
+            line=unit.start_line,
+        )
+        unclaimed_links = list(held_link_items)
+        accepted_links = list(result.routed.accepted_relationships)
+        for relationship in first.relationships:
+            if _take(accepted_links, relationship):
+                cross = next(
+                    (
+                        h
+                        for h in across
+                        if (h.record, h.section) == (unit.record_id, unit.section)
+                        and h.relationship == relationship
+                    ),
+                    None,
+                )
+                if cross is not None:
+                    across.remove(cross)
+                    pairs.append((relationship, context))
+                    pair_reasons.append(_reasons_of((cross.item,)))
+                continue
+            signature = relationship_signature(relationship, identities)
+            behind_links = [i for i in held_link_items if i.signature == signature]
+            if not behind_links:
+                raise HeldViewIncomplete(
+                    f"a {relationship.type} link in {unit.record_id} {unit.section} was not "
+                    f"accepted and no review item stands behind it ({signature})"
+                )
+            claimed_link = next((i for i in unclaimed_links if i.signature == signature), None)
+            if claimed_link is not None:
+                unclaimed_links.remove(claimed_link)
+            pairs.append((relationship, context))
+            pair_reasons.append(_reasons_of(behind_links))
+        not_written_links += len(unclaimed_links)
+
+    if across:
+        raise HeldViewIncomplete(
+            f"{len(across)} links held across units match no first run relationship, "
+            f"the first in {across[0].record} {across[0].section}"
+        )
+
+    resolved = resolve_endpoints(
+        pairs, frozenset(e.canonical_id for e in known_entities), known_records, label_index
+    )
+    accepted_keys = {
+        (k.type, k.source.canonical_id, k.target.canonical_id) for k in corpus.resolution.links
+    }
+    accepted_unresolved = {node.canonical_id for node in corpus.resolution.unresolved}
+    links: list[HeldResolvedLink] = []
+    skipped_links = 0
+    for candidate, reasons in zip(resolved.links, pair_reasons, strict=True):
+        key = (candidate.type, candidate.source.canonical_id, candidate.target.canonical_id)
+        if key in accepted_keys:
+            skipped_links += 1
+            continue
+        accepted_keys.add(key)
+        links.append(HeldResolvedLink(candidate, reasons))
+    reached = {end.canonical_id for held in links for end in (held.link.source, held.link.target)}
+    unresolved = tuple(
+        node
+        for node in resolved.unresolved
+        if node.canonical_id not in accepted_unresolved and node.canonical_id in reached
+    )
+
+    view = HeldView(
+        entities=tuple(entities),
+        links=tuple(links),
+        unresolved=unresolved,
+        skipped_entities=skipped_entities,
+        skipped_links=skipped_links,
+        not_written_entities=not_written_entities,
+        not_written_links=not_written_links,
+    )
+    if len(entities) + skipped_entities + not_written_entities != entity_rows:
+        raise HeldViewIncomplete(
+            f"held entities: {len(entities)} written, {skipped_entities} skipped and "
+            f"{not_written_entities} not written do not add up to the {entity_rows} rows "
+            "routing held"
+        )
+    if len(links) + skipped_links + not_written_links != link_rows:
+        raise HeldViewIncomplete(
+            f"held links: {len(links)} written, {skipped_links} skipped and "
+            f"{not_written_links} not written do not add up to the {link_rows} rows "
+            "routing and resolution held"
+        )
+    return view
 
 
 def review_rows(
@@ -430,6 +678,7 @@ def load(
     accepted_by: str,
     *,
     clear_first: bool = False,
+    held: HeldView | None = None,
 ) -> dict[str, int]:
     """Write records, entities, unresolved nodes and links, asserting every write.
 
@@ -439,24 +688,44 @@ def load(
     `clear_first` empties the graph and creates the constraints only after that, so a
     refused load leaves the previous graph standing (spec 0004 AC-15).
 
+    With a `held` view, its items are written after the accepted ones have all
+    finished, through the same asserted writes, each marked held (spec 0005). The
+    accepted rows are built exactly as without it.
+
     Raises:
         ProvenanceMismatch: a unit's runs disagree on model, prompt version or commit,
             or a link was written in a section no loaded unit holds.
     """
     provenances = [unit_provenance(result, accepted_by) for result in results]
     by_place = link_provenances(results, provenances)
+
+    def place_of(link: ResolvedLink) -> Provenance:
+        provenance = by_place.get((link.file, link.section))
+        if provenance is None:
+            raise ProvenanceMismatch(
+                f"a {link.type} link was written in {link.file} {link.section}, "
+                "which no loaded unit holds, so it has no provenance to carry"
+            )
+        return provenance
+
     link_rows: dict[RelationshipType, list[dict[str, Any]]] = {}
     for link_type, links in by_link_type(resolution.links).items():
-        rows: list[dict[str, Any]] = []
-        for link in links:
-            provenance = by_place.get((link.file, link.section))
-            if provenance is None:
-                raise ProvenanceMismatch(
-                    f"a {link.type} link was written in {link.file} {link.section}, "
-                    "which no loaded unit holds, so it has no provenance to carry"
-                )
-            rows.append(link_row(link, provenance))
-        link_rows[link_type] = rows
+        link_rows[link_type] = [link_row(link, place_of(link)) for link in links]
+
+    held_entities: dict[EntityType, list[dict[str, object]]] = {}
+    held_part_of: list[dict[str, str]] = []
+    held_links: dict[RelationshipType, list[dict[str, Any]]] = {}
+    if held is not None:
+        by_unit = dict(zip((r.unit for r in results), provenances, strict=True))
+        for one in held.entities:
+            held_entities.setdefault(one.entity.entity.type, []).append(
+                held_entity_row(one.entity, one.unit, commit, by_unit[one.unit], one.reasons)
+            )
+            held_part_of.append({"from_id": one.entity.canonical_id, "to_id": one.unit.record_id})
+        for held_link in held.links:
+            held_links.setdefault(held_link.link.type, []).append(
+                held_link_row(held_link.link, place_of(held_link.link), held_link.reasons)
+            )
 
     if clear_first:
         clear(driver, database)
@@ -479,6 +748,16 @@ def load(
     )
     written["part_of"] = write_part_of(driver, database, part_of)
     written["links"] = write_links(driver, database, dict(link_rows))
+    if held is None:
+        return written
+
+    # Only once every accepted write has finished: a held item never lands first.
+    written["held_entities"] = write_entities(driver, database, dict(held_entities))
+    written["held_unresolved"] = write_unresolved(
+        driver, database, [held_unresolved_row(node) for node in held.unresolved]
+    )
+    written["held_part_of"] = write_part_of(driver, database, held_part_of)
+    written["held_links"] = write_links(driver, database, dict(held_links))
     return written
 
 
@@ -489,6 +768,7 @@ def graph_build(
     corpus_commit: str,
     review_log_entries: int,
     passes: Mapping[tuple[str, str], tuple[str, ...]],
+    held: HeldView | None = None,
 ) -> dict[str, Any]:
     """The build manifest `load` writes to `artifacts/graph-build.json` (spec 0004 AC-17).
 
@@ -499,7 +779,8 @@ def graph_build(
     (AC-18). A unit's accepted links are the ones the load writes from its section; its
     held links are the ones routing held inside it plus the ones `resolve_accepted()`
     held for an endpoint in another unit, so the two together account for every link
-    its first run produced.
+    its first run produced. A `held_view` key, the view's six counts, is there only
+    when the load wrote a held view (spec 0005 AC-24); a default load has none.
     """
     units: list[dict[str, Any]] = []
     for result, provenance in zip(results, provenances, strict=True):
@@ -529,9 +810,12 @@ def graph_build(
             }
         )
     versions = Counter(provenance.prompt_version for provenance in provenances)
-    return {
+    manifest: dict[str, Any] = {
         "corpus_commit": corpus_commit,
         "units": units,
         "prompt_versions": dict(sorted(versions.items())),
         "review_log_entries": review_log_entries,
     }
+    if held is not None:
+        manifest["held_view"] = held.counts()
+    return manifest

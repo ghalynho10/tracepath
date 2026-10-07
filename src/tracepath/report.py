@@ -4,6 +4,9 @@ This is the only code that reads `eval/` (key invariant 1). It runs after the wa
 finished and changes nothing the walk did. Its rules are the locked ones of spec 0004's
 held out discipline: one start rule, one matching rule, one fixed order of reasons for
 an item not reached. None of them names a question.
+
+Under the held item view (spec 0005) it scores two walks: an item the clean walk
+reaches is `reached`, and one only the held walk reaches is `held only`, never reached.
 """
 
 import json
@@ -36,6 +39,15 @@ FULL_RUNS = 3
 #: The eval file cites the corpus from JobHunt's repository root; the snapshot holds
 #: its `docs/` directory, so entities cite the same files without this prefix.
 DOCS_PREFIX = "docs/"
+
+#: The line a report made with `--with-held` opens with (spec 0005 AC-15).
+HELD_LABEL = "Held item view (spec 0005): a second result. Experiment 0009 stays the first."
+
+#: What `held_for_review` means under the held item view (spec 0005 AC-16).
+HELD_MEANING = (
+    "held_for_review keeps spec 0004's meaning: the item is held, whether or not this view "
+    "wrote it."
+)
 
 
 class EvalEntryUnusable(Exception):
@@ -76,12 +88,19 @@ class Question:
 
 @dataclass(frozen=True)
 class Finding:
-    """One expected item, reached or not, and the one reason when not."""
+    """One expected item, reached or not, and the one reason when not.
+
+    `reached_by` is the clean walk's step. `held_by` is the held walk's step for an item
+    only the held walk reached (spec 0005 AC-12b), with `held_parts` the held nodes and
+    links on its path from the start; such an item has no reason and is not reached.
+    """
 
     item: ExpectedItem
     record: str
     reached_by: Step | None
     reason: Reason | None
+    held_by: Step | None = None
+    held_parts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -104,6 +123,7 @@ class Report:
     unmatched_steps: int
     outside_links: tuple[OutsideLink, ...]
     item_records: tuple[str, ...]
+    with_held: bool = False
 
 
 def _strip_docs(file: str) -> str:
@@ -331,6 +351,27 @@ def _touches(link: ResolvedLink, records: frozenset[str], unresolved: Mapping[st
     return False
 
 
+def held_parts(chain: Chain, step: Step) -> tuple[str, ...]:
+    """The held nodes and links on the walk's path to `step`, from the start (AC-13).
+
+    The path is the one the walk took, followed by `parent` back to the start. A node
+    is named by its id, a link as `SOURCE -[TYPE]-> TARGET`, the link before the node
+    it led to.
+    """
+    by_id = {s.node.canonical_id: s for s in chain.steps}
+    path: list[Step] = [step]
+    while path[-1].parent is not None:
+        path.append(by_id[path[-1].parent])
+    parts: list[str] = []
+    for on_path in reversed(path):
+        via = on_path.via
+        if via is not None and via.held:
+            parts.append(f"{via.source} -[{via.type}]-> {via.target}")
+        if on_path.node.held:
+            parts.append(on_path.node.canonical_id)
+    return tuple(parts)
+
+
 def score(
     question: Question,
     chain: Chain | None,
@@ -338,6 +379,9 @@ def score(
     corpus: CorpusResolution,
     settled_runs: Mapping[tuple[str, str], int],
     split: Mapping[str, tuple[Holding, ...]],
+    *,
+    with_held: bool = False,
+    held: Chain | None = None,
 ) -> Report:
     """Score one walked chain against one question.
 
@@ -345,32 +389,44 @@ def score(
     not reached, each with its reason (AC-52). Pure: every input is given.
     `settled_runs` is keyed by `(record, section_slug)`; `split` holds every unit of
     each cited file (`holding_units()`).
+
+    With `with_held`, `chain` is the clean walk and `held` the held walk over the same
+    graph (spec 0005 AC-12). Only the clean walk can reach an item; one only the held
+    walk reaches is `held only`. Reasons for an item neither reaches keep spec 0004's
+    meaning, so they are read off the clean walk. Visited steps are counted over the
+    held walk, the chain `trace` prints.
     """
     steps = chain.steps if chain is not None else ()
+    held_steps = held.steps if held is not None else ()
     by_unit = {(r.unit.record_id, r.section_slug): r for r in results}
-    held = held_relationships(results, corpus)
+    held_links = held_relationships(results, corpus)
 
     findings: list[Finding] = []
     for item in question.items:
         holding = _holding(split, item)
         key = (holding.unit.record_id, holding.section_slug)
         step = _reached(steps, item)
+        held_step = _reached(held_steps, item) if step is None and with_held else None
+        reason = (
+            _reason(item, holding, steps, by_unit.get(key), settled_runs.get(key, 0), held_links)
+            if step is None and held_step is None
+            else None
+        )
         findings.append(
             Finding(
                 item=item,
                 record=holding.unit.record_id,
                 reached_by=step,
-                reason=None
-                if step is not None
-                else _reason(
-                    item, holding, steps, by_unit.get(key), settled_runs.get(key, 0), held
-                ),
+                reason=reason,
+                held_by=held_step,
+                held_parts=(held_parts(held, held_step) if held is not None and held_step else ()),
             )
         )
 
+    visited = held_steps if with_held else steps
     unmatched = sum(
         1
-        for s in steps
+        for s in visited
         if not any(
             s.node.kind is NodeKind.ENTITY and s.node.file == i.file and s.node.file_line == i.line
             for i in question.items
@@ -398,14 +454,20 @@ def score(
         unmatched_steps=unmatched,
         outside_links=outside,
         item_records=item_records,
+        with_held=with_held,
     )
 
 
 def report_lines(report: Report) -> tuple[str, ...]:
-    """The report as `trace --eval` prints it, after the chain (AC-37 to AC-41)."""
+    """The report as `trace --eval` prints it, after the chain (AC-37 to AC-41).
+
+    Under the held item view it opens with its label and the meaning line, prints
+    `held only` items, and adds the across records line for them (spec 0005).
+    """
     question = report.question
     start_record = _record_of(question.start)
-    lines = [
+    lines = [HELD_LABEL, HELD_MEANING, ""] if report.with_held else []
+    lines += [
         f"Question {question.number}: {question.text}",
         f'Start item: {question.start}, from the first trace entry "{question.start_label}".',
         "",
@@ -418,6 +480,12 @@ def report_lines(report: Report) -> tuple[str, ...]:
             step = finding.reached_by
             lines.append(
                 f"  reached      {item.label} · {where} · hop {step.hop} · {step.node.canonical_id}"
+            )
+        elif finding.held_by is not None:
+            step = finding.held_by
+            lines.append(
+                f"  held only    {item.label} · {where} · hop {step.hop} · "
+                f"{step.node.canonical_id} · via {', '.join(finding.held_parts)}"
             )
         else:
             lines.append(f"  not reached  {item.label} · {where} · {finding.reason}")
@@ -447,5 +515,16 @@ def report_lines(report: Report) -> tuple[str, ...]:
         lines.append(
             f"Across records: no. No expected item outside {start_record} was reached from "
             "the start."
+        )
+    if report.with_held:
+        through = [
+            f"{f.held_by.node.canonical_id}, hop {f.held_by.hop}"
+            for f in report.findings
+            if f.held_by is not None and f.record != start_record
+        ]
+        lines.append(
+            f"Across records through held items: yes ({', '.join(through)})"
+            if through
+            else "Across records through held items: no."
         )
     return tuple(lines)
