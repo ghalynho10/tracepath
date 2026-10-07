@@ -1,6 +1,6 @@
 # Scope: tracepath
 
-A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
+A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. Today an item id goes in and the cited chain comes out; typing the question in plain English is feature 15, and prose answers stay deferred. The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
 
 **Build approach:** Tracer Bullet (one thin, fully real thread through extract, resolve, store, and traverse; each later slice thickens one strand of that same thread).
 **Workflow:** Beta (`/check verify`, then `/test`; `/test` may record a typecheck gate instead of a runner, on purpose). The project's default rigor tier; a feature's own tier tag (e.g. `· GA`) overrides it.
@@ -29,6 +29,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | planned |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
+| 15 | Question to start item | step 1 after Slice 2, step 2 after Slice 5 | planned |
 
 ## Foundations
 
@@ -132,6 +133,14 @@ spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report
   - [ ] The two held out questions, written in a fresh session and committed before feature 13 starts (AC-22, AC-23, AC-30)
 - [ ] Verify it: `/check verify eval runner`
 - [ ] Test it: `/test eval runner`
+
+### 15. Question to start item · needs a decision
+Let a person type a plain English question and get a start item for the walk, instead of typing an item id. Two steps, so the thin version ships before the whole corpus exists. Prose answers stay deferred, deliberately. Feature 6 and its spec 0006 are unchanged: the eval runner keeps the start each question gives, and the slices measured before feature 9 keep their given start.
+**Step 1, right after feature 6.** The user types a question, the tool shows its top 3 candidate start items from the current graph with their text, and the user picks one (or it takes the first) before the walk runs. Simple matching, not tuned on any eval question.
+**Done when (step 1):** typing a plain English question shows the top 3 candidate start items from the current graph with their text, the user picks one or takes the first, and the walk then prints the cited chain; when no candidate matches, the output says so plainly and offers no start; the command works without the eval set; the matching is simple, was not tuned on any eval question, and the same question gives the same candidates.
+**Step 2, after feature 9.** Revisit the matching against the whole corpus, then score it on the eval questions and the sealed held out questions.
+**Done when (step 2):** before revisiting the matching, a written success bar is committed (for example, the right start is in the top 3); the matching is then revisited against the whole corpus and scored on the five eval questions and, once features 13 and 11 have committed their choices, on the sealed held out questions released with `--release-held-out`; every matching change is committed before the held out run; each result is reported one by one, as a check, never a rate.
+- [ ] Design it (spec): `/architect question to start item` · step 1 now, step 2 after feature 9
 
 ## Slice 3: Name resolution
 
