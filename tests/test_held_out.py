@@ -177,8 +177,8 @@ GOOD = held_out_file([cite(SPEC_0004, 19), cite(SPEC_0010, 27)], [cite(SPEC_0010
 
 
 def real_held_out() -> dict[str, Any]:
-    if not HELD_OUT.is_file():
-        pytest.skip("eval/held-out.json is written at spec 0006 build step 10")
+    """The committed sealed file's parsed payload; a missing file fails the test."""
+    assert HELD_OUT.is_file(), "eval/held-out.json is committed (spec 0006 build step 10)"
     payload: dict[str, Any] = json.loads(HELD_OUT.read_text())
     return payload
 
