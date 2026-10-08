@@ -264,6 +264,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
 - **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
+- **Cross model extraction experiment**: can another model (candidates named by the engineer: Luna 6 or 6.1, GLM 5.3 Flash) do the same extraction cheaper, at the accuracy feature 13 sets? Run zero shot with the same prompt and schema, scored against the engineer's rulings and the eval, never against Claude's output, and never trained on Claude's extractions (Commercial Terms D.4, see `docs/session-notes.md`). Measured as cost per accurate unit, not per token. Needs: every paid call goes through the same ceiling and per call bound as `tracepath extract`, and the vendor's own docs are checked for price, structured output support, and terms. After feature 13 · needs a decision
 
 ## Legend
 
