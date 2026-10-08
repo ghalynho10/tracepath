@@ -224,7 +224,9 @@ def test_ac_24_a_citation_of_an_excluded_record_is_caught() -> None:
 
 def test_ac_24_the_held_out_file_cites_no_excluded_record() -> None:
     """covers: AC-24."""
-    assert excluded_citations(real_held_out()) == []
+    records = sorted({record_of(c[0]) for c in excluded_citations(real_held_out())})
+
+    assert records == []
 
 
 # AC-25: no record a worked example draws from.
@@ -253,7 +255,9 @@ def test_ac_25_a_citation_of_a_record_an_example_draws_from_is_caught() -> None:
 
 def test_ac_25_the_held_out_file_cites_no_record_an_example_draws_from() -> None:
     """covers: AC-25."""
-    assert example_citations(real_held_out()) == []
+    records = sorted({record_of(c[0]) for c in example_citations(real_held_out())})
+
+    assert records == []
 
 
 # AC-26: every quote at exactly its cited line, in an index.md or scope.md.
@@ -280,7 +284,9 @@ def test_ac_26_a_quote_in_a_file_other_than_index_or_scope_is_caught() -> None:
 
 def test_ac_26_every_quote_of_the_held_out_file_is_at_its_exact_line() -> None:
     """covers: AC-26."""
-    assert misplaced_quotes(real_held_out()) == []
+    records = sorted({record_of(c[0]) for c in misplaced_quotes(real_held_out())})
+
+    assert records == []
 
 
 # AC-30: no run artifact for a unit holding a cited line. Messages carry
