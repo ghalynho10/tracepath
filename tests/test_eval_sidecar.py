@@ -200,6 +200,25 @@ def test_ac_8c_eval_with_an_unreadable_eval_file_exits_1_before_any_question(
     assert result.stdout == ""
 
 
+@pytest.mark.parametrize(
+    "payload", [[], {}, {"entries": {}}], ids=["a list", "no entries", "entries not a list"]
+)
+def test_ac_8c_eval_with_an_eval_file_holding_no_entries_list_exits_1_before_any_question(
+    tmp_path: Path, payload: object
+) -> None:
+    """covers: AC-8c (an eval file that is JSON but not in the eval file's shape)."""
+    (tmp_path / "eval").mkdir()
+    (tmp_path / EVAL_FILE).write_text(json.dumps(payload))
+
+    result = runner.invoke(
+        app, ["eval", "--root", str(tmp_path)], env={"NEO4J_URI": UNREACHABLE_URI}
+    )
+
+    assert result.exit_code == 1
+    assert "holds no `entries` list" in flat(result.stderr)
+    assert result.stdout == ""
+
+
 def test_ac_8c_eval_with_an_unreachable_graph_exits_1_before_any_question(tmp_path: Path) -> None:
     """covers: AC-8c (`GraphUnavailable`)."""
     (tmp_path / "eval").mkdir()

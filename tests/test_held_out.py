@@ -381,6 +381,16 @@ def test_ac_28_the_flag_on_a_file_that_is_not_held_out_is_refused(
     assert stdout == ""
 
 
+def test_ac_28_the_flag_on_trace_without_an_eval_question_is_refused(root: Path) -> None:
+    """covers: AC-28 (`--release-held-out` names an eval file, so `trace START` refuses it)."""
+    code, stdout, stderr = invoke(root, "trace", "0012/AC-7", "--release-held-out")
+
+    assert code == 1
+    assert "--release-held-out reads an eval file, so it needs --eval N." in flat(stderr)
+    assert "Neo4j" not in stderr
+    assert stdout == ""
+
+
 def test_ac_28_the_flag_lets_the_held_out_file_through_to_the_graph(root: Path) -> None:
     """covers: AC-28 (released, the run goes on, here to the unreachable graph)."""
     code, _, stderr = invoke(

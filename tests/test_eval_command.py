@@ -299,6 +299,92 @@ def test_ac_8d_an_unreadable_file_and_a_line_before_the_first_unit_are_unusable(
     assert "Question 3: PASS" in stdout
 
 
+@pytest.fixture
+def undecodable(default_graph: Path, tmp_path: Path) -> Path:
+    """A snapshot copy holding one cited file that is not UTF-8, and a question citing it."""
+    snapshot = tmp_path / "docs"
+    shutil.copytree(SNAPSHOT, snapshot)
+    (snapshot / "specs" / "9998-undecodable").mkdir()
+    (snapshot / "specs" / "9998-undecodable" / "index.md").write_bytes(b"# 9998. \xff\xfe\n")
+    question = {
+        "question": "A question citing a file that is not UTF-8",
+        "trace": [step("spec 9998 a paragraph", 1, "docs/specs/9998-undecodable/index.md")],
+    }
+    (default_graph / "eval" / "undecodable.json").write_text(
+        json.dumps({"entries": [question, PASSING]})
+    )
+    return snapshot
+
+
+def run_undecodable(root: Path, snapshot: Path, *args: str) -> tuple[int, str, str]:
+    result = runner.invoke(
+        app,
+        [
+            *args,
+            *("--eval-file", "eval/undecodable.json"),
+            *("--root", str(root), "--snapshot", str(snapshot)),
+        ],
+    )
+    return result.exit_code, result.stdout, result.stderr
+
+
+def test_ac_8d_a_cited_file_that_is_not_utf_8_makes_only_its_question_unusable(
+    default_graph: Path, undecodable: Path
+) -> None:
+    """covers: AC-8d (a file that cannot be decoded cannot be read either)."""
+    code, stdout, stderr = run_undecodable(default_graph, undecodable, "eval")
+
+    assert code == 1
+    assert "Question 1: UNUSABLE, a cited file cannot be read" in stdout
+    assert "Question 2: PASS" in stdout
+    assert "Traceback" not in stdout + stderr
+
+
+def test_trace_eval_on_a_cited_file_that_is_not_utf_8_exits_1_with_no_traceback(
+    default_graph: Path, undecodable: Path
+) -> None:
+    """covers: AC-8c (`trace --eval` turns the same failure into a message)."""
+    code, stdout, stderr = run_undecodable(default_graph, undecodable, "trace", "--eval", "1")
+
+    assert code == 1
+    assert stderr.strip()
+    assert stdout == ""
+    assert "Traceback" not in stdout + stderr
+
+
+@pytest.mark.parametrize(
+    "command", [["eval"], ["trace", "--eval", "1"]], ids=["eval", "trace --eval"]
+)
+def test_ac_8c_a_root_with_no_run_files_exits_1_before_any_question(
+    default_graph: Path, tmp_path: Path, command: list[str]
+) -> None:
+    """covers: AC-8c (`RebuildFailed`, raised after the graph is read)."""
+    (tmp_path / "eval").mkdir()
+    (tmp_path / "eval" / "questions.json").write_text(json.dumps(SCORABLE))
+
+    code, stdout, stderr = run(tmp_path, *command)
+
+    assert code == 1
+    assert "no run artifacts found" in " ".join(stderr.split())
+    assert stdout == ""
+    assert "Traceback" not in stdout + stderr
+
+
+# AC-4, AC-14, AC-16: `trace --eval` takes the same start rules and absence items.
+
+
+def test_ac_4_trace_eval_scores_an_absence_question_from_the_sidecar(default_graph: Path) -> None:
+    """covers: AC-4, AC-14, AC-16 (the sidecar's absence items reach `trace --eval` too)."""
+    code, stdout, stderr = run(default_graph, "trace", "--eval", "5")
+    lines = stdout.splitlines()
+
+    assert code == 0, stderr
+    where = f"{SPEC_0012} line 26 (AC-7)"
+    assert f'Start item: 0012/AC-7, from the first checked entry "{where}".' in lines
+    assert "Items that should not be reached:" in lines
+    assert f"  reached      spec 0012 AC-1 · {FILE_0012}:20 · hop 2 · 0012/AC-1" in lines
+
+
 # AC-9 to AC-9c: the held item view.
 
 
@@ -353,6 +439,25 @@ def test_ac_29_a_released_held_out_file_opens_with_its_label(default_graph: Path
     assert code == 0, stderr
     assert stdout.splitlines()[:2] == [HELD_OUT_LABEL, ""]
     assert "Question 1: PASS" in stdout and "Question 2: FAIL" in stdout
+
+
+def test_ac_29_trace_eval_on_a_released_held_out_file_opens_with_its_label(
+    default_graph: Path,
+) -> None:
+    """covers: AC-29 (`trace --eval` prints the label above its chain)."""
+    code, stdout, stderr = run(
+        default_graph,
+        "trace",
+        "--eval",
+        "1",
+        "--release-held-out",
+        eval_file="eval/synthetic-held-out.json",
+    )
+    lines = stdout.splitlines()
+
+    assert code == 0, stderr
+    assert lines[0] == HELD_OUT_LABEL
+    assert lines[1].startswith("Chain from 0012/AC-7:")
 
 
 @pytest.fixture(scope="module")

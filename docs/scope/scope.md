@@ -125,7 +125,7 @@ One small script that runs the five eval questions and compares each returned ch
 **Carried from spec [0004](../specs/0004-first-traced-chain/index.md) (2026-10-05):** apply its locked rules unchanged to all five questions (start rule, matching rule, reason codes). Question 4 has no `trace` list and question 5's first entry is not a `spec NNNN AC-N` item, so decide how those two start. Question 5 passes through a feature row, and `pipeline.load()` writes no `SPECIFIED_BY` or feature `PART_OF` links yet. Spec 0007's two `Build plan` units share a section name, which `unit_for()` cannot tell apart.
 spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report.py`, `src/tracepath/cli.py`, `eval/runner.json`
 - [x] Design it (spec): `/architect eval runner` · how questions 4 and 5 start, and the held out questions
-- [ ] Build it: `/develop eval runner`
+- [x] Build it: `/develop eval runner`
   - [x] The `eval` command, the hop 0 start marker, pass and fail per question, and question 3 reproduced from the artifacts at `36a6bc5` (AC-1 to AC-10c, AC-3)
   - [x] The new start rules and absence questions (question 4 and question 5) (AC-11 to AC-17e)
   - [x] The sidecar `eval/runner.json`, the evidence flags and the examples digest test (AC-18 to AC-21)
@@ -133,7 +133,7 @@ spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report
   - [x] Gate: `extract --dry-run` over the eight units, then the engineer's go and ceiling, the paid step, and the first full run recorded in `experiments/0011-eval-runner/` (AC-31 to AC-34)
   - [x] The two held out questions, written in a fresh session and committed before feature 13 starts (AC-22, AC-23, AC-30)
 - [x] Verify it: `/check verify eval runner`
-- [ ] Test it: `/test eval runner`
+- [x] Test it: `/test eval runner`
 
 ### 15. Question to start item · needs a decision
 Let a person type a plain English question and get a start item for the walk, instead of typing an item id. Two steps, so the thin version ships before the whole corpus exists. Prose answers stay deferred, deliberately. Feature 6 and its spec 0006 are unchanged: the eval runner keeps the start each question gives, and the slices measured before feature 9 keep their given start.
