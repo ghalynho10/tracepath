@@ -70,7 +70,7 @@ This spec adds one command, `tracepath eval`, that runs every question of an eva
 - **AC-24**: A test fails when an entry of `eval/held-out.json` cites a line in a record on the brief's exclusion list.
 - **AC-25**: A test fails when an entry cites a record that a file in `examples/` draws from, read from that file's first heading by `^# Worked example: (?:`?(feature-\d+|\d{4}))`, where `feature-N` stands for the scope document. A heading that does not match fails the test.
 - **AC-26**: A test fails when a quoted passage of `eval/held-out.json` is not at its cited file and line in the snapshot, at exactly that line, not within one line of it as `tests/test_corpus.py` allows for the eval file. Citations point at `index.md` files and `scope.md` only.
-- **AC-27**: No file under `src/` names `held-out`, so no command reads the file unless it is pointed at it.
+- **AC-27**: No file under `src/` names `held-out.json`, so no command reads the file unless it is pointed at it.
 - **AC-28**: `eval --eval-file F` and `trace --eval N --eval-file F`, where `F` has `"held_out": true`, and no `--release-held-out`, exit 1 naming that flag, read no graph, and print no question. The check sits in the shared eval file reader. `--release-held-out` on a file that is not held out exits 1.
 - **AC-28b**: `eval/held-out.json` carries `"held_out": true` (a test).
 - **AC-29**: With `--release-held-out`, the output opens with `Held out check (spec 0006): a check of the choices features 13 and 11 made, not a measurement.` and reports each question on its own, under AC-7.
