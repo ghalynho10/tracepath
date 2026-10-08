@@ -1,6 +1,6 @@
 # Scope: tracepath
 
-A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
+A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. Today an item id goes in and the cited chain comes out; typing the question in plain English is feature 15, and prose answers stay deferred. The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
 
 **Build approach:** Tracer Bullet (one thin, fully real thread through extract, resolve, store, and traverse; each later slice thickens one strand of that same thread).
 **Workflow:** Beta (`/check verify`, then `/test`; `/test` may record a typecheck gate instead of a runner, on purpose). The project's default rigor tier; a feature's own tier tag (e.g. `· GA`) overrides it.
@@ -20,7 +20,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 3 | Corpus snapshot & eval set | Foundation | done |
 | 4 | Data model | Foundation | done |
 | 5 | First traced chain | Slice 1 | in-progress |
-| 6 | Eval runner | Slice 2 | planned |
+| 6 | Eval runner | Slice 2 | in-progress |
 | 7 | Name resolution | Slice 3 | planned |
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
@@ -29,6 +29,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | planned |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
+| 15 | Question to start item | step 1 after Slice 2, step 2 after Slice 5 | planned |
 
 ## Foundations
 
@@ -76,6 +77,7 @@ The walking skeleton. Take a few hand picked records, match them by explicit ide
 **Done when:** one eval question whose answer spans two or more Records returns that chain in the terminal, each link cites its source record, and running it again gives the same chain. _Reworded 2026-10-05 from "three records": "record" means a Record node (spec 0002), and question 3, the one chosen for held out reasons, spans two, spec 0002 and spec 0007. See spec [0004](../specs/0004-first-traced-chain/index.md) AC-2a and AC-2b._
 **Before it** (spec 0002's vocabulary revisit Follow up, `8bcd9df`, decided 2026-10-04): the only revisit owed before this feature is ruling the type of experiment 0008's one `0006 ## Feature design` sentence (typed `Consequence` in run 1 only; `0006` is on no eval chain), with the ruling added to feature 13's evidence. The types on the chosen question's chain are not checked beforehand, and no prompt, rule or type change is made for any eval question. This feature reports what it finds as it runs.
 **Replanned 2026-10-06, after [experiment 0009](../../experiments/0009-first-traced-chain/README.md).** AC-41 failed: `trace --eval 3` printed no chain, because the start item `0002/AC-10` was held for review on a `multi_condition_split` flag, and `0007/AC-12`, `0007/AC-13` and the line 142 invariant were held the same way, each found by all three runs. The four new sections hold 258 review queue rows against 54 accepted entities. Across all 18 units, 176 of 674 queue rows (159 entities, 17 links; 53 from the four new sections) are held only for a `known_trap_flag`, the three runs agreeing (`artifacts/review-queue.json` at `36a6bc5`). **Why the order changed:** the result exposed a cycle. This feature cannot pass while its chain's items stay held, and either a routing policy change (feature 11) or a review of held items would release them; feature 11 waits on features 6 and 13; and feature 6's Done when required this question to pass. The engineer chose a status view of held items (feature 14) to break it, over a reorder alone, a hand review of the 258 rows, or a provisional rule accepting flagged items the runs agree on. Feature 6's Done when no longer depends on this question (see feature 6). Experiment 0009 stays the first result, and spec 0004's locked rules and scored prediction are unchanged. A rerun through feature 14 is a second, labelled result; whether any later result can close this feature is a separate `/architect` decision, recorded with its reason.
+**Expected to close, noted 2026-10-07:** only after feature 11's routing policy is decided and question 3 is rerun under it. Feature 14's held view cannot pass this feature, because a held step never counts as reached or as a pass (spec [0005](../specs/0005-held-item-view/index.md), condition 4).
 spec [0004](../specs/0004-first-traced-chain/index.md) · code in `src/tracepath/` (`traverse/`, `graph/read.py`, `report.py`, `cli.py`)
 - [x] Design it (spec): `/architect first traced chain`
 - [x] Build it: `/develop first traced chain`
@@ -115,14 +117,31 @@ spec [0005](../specs/0005-held-item-view/index.md) · amends spec [0002](../spec
 
 ## Slice 2: Eval runner
 
-### 6. Eval runner · needs a decision
+### 6. Eval runner · in-progress
 One small script that runs the five eval questions and compares each returned chain to its expected chain. From here on, every later slice is measured by it.
 **Done when:** one command prints pass or fail per question with the difference shown, and the runner reproduces experiment 0009's question 3 output from the run files as committed at `36a6bc5`.
 **Changed 2026-10-06** (see feature 5): the Done when used to end "and the slice 1 question passes". That question failed on routing, not on the walk or the runner, so a finish line waiting on it would tie this feature to feature 11's policy and close the cycle again. The runner reuses feature 14's view for all five questions.
 **Held out questions, a decision for `/architect` under this feature (set 2026-10-06):** one or two new held out questions, written by the method the original five used (a real "why" question whose answer spans records, with its expected chain read from the corpus at the pinned commit), committed before feature 13 starts. They are added alongside the five, which stay unchanged, since the eval set is brought in as is and never regenerated. They are not run, and their results are not looked at, by this feature, the held view (feature 14) or anyone, until features 13 and 11 have both locked their choices; they then check those choices. They are written by a fresh session that sees only the corpus at the pinned commit and this method, never `artifacts/`, `experiments/` or the review queue. They draw only on sections not yet extracted and not used by any worked example in `examples/`. They are committed in a separate file (for example `eval/held-out.json`) that no command reads unless explicitly pointed at it. Their sections are extracted once, with the prompt feature 13 settled on, only at that point, after a measured cost estimate and approval. Their results are reported one by one, never as a rate, and described as a check, not a measurement.
 **Carried from spec [0004](../specs/0004-first-traced-chain/index.md) (2026-10-05):** apply its locked rules unchanged to all five questions (start rule, matching rule, reason codes). Question 4 has no `trace` list and question 5's first entry is not a `spec NNNN AC-N` item, so decide how those two start. Question 5 passes through a feature row, and `pipeline.load()` writes no `SPECIFIED_BY` or feature `PART_OF` links yet. Spec 0007's two `Build plan` units share a section name, which `unit_for()` cannot tell apart.
-- [ ] Design it (spec): `/architect eval runner` · how questions 4 and 5 start, and the held out questions
-- [ ] Build it: `/develop eval runner`
+spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report.py`, `src/tracepath/cli.py`, `eval/runner.json`
+- [x] Design it (spec): `/architect eval runner` · how questions 4 and 5 start, and the held out questions
+- [x] Build it: `/develop eval runner`
+  - [x] The `eval` command, the hop 0 start marker, pass and fail per question, and question 3 reproduced from the artifacts at `36a6bc5` (AC-1 to AC-10c, AC-3)
+  - [x] The new start rules and absence questions (question 4 and question 5) (AC-11 to AC-17e)
+  - [x] The sidecar `eval/runner.json`, the evidence flags and the examples digest test (AC-18 to AC-21)
+  - [x] The held out guard: refusal without `--release-held-out`, and its file tests (AC-24 to AC-28b)
+  - [x] Gate: `extract --dry-run` over the eight units, then the engineer's go and ceiling, the paid step, and the first full run recorded in `experiments/0011-eval-runner/` (AC-31 to AC-34)
+  - [x] The two held out questions, written in a fresh session and committed before feature 13 starts (AC-22, AC-23, AC-30)
+- [x] Verify it: `/check verify eval runner`
+- [x] Test it: `/test eval runner`
+
+### 15. Question to start item · needs a decision
+Let a person type a plain English question and get a start item for the walk, instead of typing an item id. Two steps, so the thin version ships before the whole corpus exists. Prose answers stay deferred, deliberately. Feature 6 and its spec 0006 are unchanged: the eval runner keeps the start each question gives, and the slices measured before feature 9 keep their given start.
+**Step 1, right after feature 6.** The user types a question, the tool shows its top 3 candidate start items from the current graph with their text, and the user picks one (or it takes the first) before the walk runs. Simple matching, not tuned on any eval question.
+**Done when (step 1):** typing a plain English question shows the top 3 candidate start items from the current graph with their text, the user picks one or takes the first, and the walk then prints the cited chain; when no candidate matches, the output says so plainly and offers no start; the command works without the eval set; the matching is simple, was not tuned on any eval question, and the same question gives the same candidates.
+**Step 2, after feature 9.** Revisit the matching against the whole corpus, then score it on the eval questions and the sealed held out questions.
+**Done when (step 2):** before revisiting the matching, a written success bar is committed (for example, the right start is in the top 3); the matching is then revisited against the whole corpus and scored on the five eval questions and, once features 13 and 11 have committed their choices, on the sealed held out questions released with `--release-held-out`; every matching change is committed before the held out run; each result is reported one by one, as a check, never a rate.
+- [ ] Design it (spec): `/architect question to start item` · step 1 now, step 2 after feature 9
 
 ## Slice 3: Name resolution
 
@@ -151,6 +170,8 @@ Extend extraction from the hand picked records to every record in the snapshot, 
 Whether extracted items are right, not only repeatable. Prompt `0003.1` failed the accuracy bar (experiment 0005's `data/method-notes.md`: at least two thirds of entity marks and of relationship marks per unit agree) on 3 of 6 results in [experiment 0006](../../experiments/0006-accuracy-bar-recheck/README.md) (`0015` entities 2/10, `feature-33` entities 5/10 and relationships 3/5), after 5 of 6 in experiment 0005; the bar's dropped link clause is unmeasured. Spec 0003 closed feature 12 without fixing this (AC-32 to AC-35) and lists the candidate causes in its Follow up: no written definitions for the eight entity types, splitting and label refinements, checkable facts left in rejected text, the workflow stage question, and the deliberate decision link. Its fix ladder: rules the model was never given, then prompt or example quality, then vocabulary gaps.
 **Ordering:** after feature 6, so fixes are chosen by which gaps actually break eval chains. Before feature 11, because accuracy fixes change the prompt and so the review volume, and setting the routing policy first risks tuning thresholds around a defect, the same reason feature 11 waits on feature 12. Its order against features 7 (name resolution) and 8 (history aware traversal) is decided by feature 6's results: fix first whichever of unresolved names, history, or extraction accuracy breaks the most eval questions. Feature 5 is not blocked by it, and feature 10 (Slice 6) is unaffected. Spec 0002's vocabulary revisit Follow up (`8bcd9df`) is split (decided 2026-10-04): only the ruling of experiment 0008's one `0006 ## Feature design` sentence happens before feature 5, and it joins this feature's evidence; the full written definitions for the eight types stay here, after feature 6, chosen on evidence across all five eval questions.
 **Guard, set 2026-10-06** (see feature 5): this feature may still choose which causes to fix from feature 6's results, but it commits a written, numeric criterion for when a fix succeeds before trying any fix; git order proves it came first. The held out questions (feature 6) are committed before it starts and stay unrun and unread until this feature and feature 11 have both locked their choices.
+
+**Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** no worked example and no prompt change may draw on a section cited by `eval/held-out.json` (spec 0006 AC-25 tests the examples). This feature re checks the evidence flags in `eval/runner.json` whenever it edits `examples/`, because spec 0006 AC-20's digest test fails until they are re checked. Running the held out questions is `tracepath eval --eval-file eval/held-out.json --release-held-out`, and only once this feature and feature 11 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 **Done when:** each cause in spec 0003's Follow up is fixed, ruled out, or carried as a recorded decision; any prompt change is re checked on fresh held out units against the same bar, with the dropped link clause measured this time; and either the bar passes, or the remaining gap is measured on the eval questions and accepted in a spec.
 - [ ] Design it (spec): `/architect extraction accuracy` · after feature 6 ships, since the eval runner produces the evidence the fixes are chosen on
 
@@ -166,6 +187,8 @@ How much the routing rules should hold back, decided on logged evidence rather t
 **Decided on eval evidence, not on argument.** Both framings are arguable from first principles and neither wins that way, so the tie breaker is what the eval actually returns. This needs feature 6 first: once the eval runner exists, run the five eval questions under **both** policies, review gated and write everything with its status recorded, and record which chains break under each and how. A chain that is right under one and wrong or absent under the other is the evidence; a chain that is identical under both says the queue is not what decides that answer. Run it before writing the spec, not after, so the spec records a measurement rather than a preference.
 
 **Guard, set 2026-10-06** (see feature 5): the order stays feature 6, then 13, then this one, and this feature still sets the real policy. It commits its decision rule before running either policy; git order proves it came first. A status view of held items (feature 14) now exists while framing 1 has no build, so the committed rule must weigh both framings on equal terms, not favour the one already built. The held out questions (feature 6) check the chosen policy only after this feature and feature 13 have both locked their choices.
+
+**Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** the held out questions are run with `tracepath eval --eval-file eval/held-out.json --release-held-out`, only once this feature and feature 13 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
 - [ ] Design it (spec): `/architect review volume and routing policy` · blocked until feature 6 ships, because the eval runner is what produces the evidence this decision rests on
@@ -241,6 +264,7 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
 - **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
+- **Cross model extraction experiment**: can another model (candidates named by the engineer: Luna 6 or 6.1, GLM 5.3 Flash) do the same extraction cheaper, at the accuracy feature 13 sets? Run zero shot with the same prompt and schema, scored against the engineer's rulings and the eval, never against Claude's output, and never trained on Claude's extractions (Commercial Terms D.4, see `docs/session-notes.md`). Measured as cost per accurate unit, not per token. Needs: every paid call goes through the same ceiling and per call bound as `tracepath extract`, and the vendor's own docs are checked for price, structured output support, and terms. After feature 13 · needs a decision
 
 ## Legend
 

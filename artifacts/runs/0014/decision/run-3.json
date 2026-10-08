@@ -1,0 +1,283 @@
+{
+  "record": "0014",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1434,
+  "output_tokens": 8111,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "17aee39cdf984bf4950e106d55a482fe",
+  "artifact_format_version": 3,
+  "unit_sha256": "e4b863ad466a8e00feb9ab3079b557c53dd8cf2587405f69f098a43e84c40cc3",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Two Server Actions writing `application` rows, reached from a small Client Component inside an otherwise server rendered card, where the apply action is prevented from re-rendering the page it was invoked from by three separate measures rather than one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A thin inline `'use server'` closure is defined **inside the Server Component that renders the card**, capturing that card's parsed `Listing`, and it delegates to the shared `recordApplication` in `src/features/applications/actions.ts`.\",\"rejected_spans\":[\"The inline shape is not a style preference: closure encryption applies to variables captured by an action defined inline in a component (basis: the installed Next.js 16.3.1 docs, `data-security.md` lines 505 to 526, the `publishVersion` example). A module level `'use server'` export has nothing to close over, and `.bind()` is documented separately (`forms.md` lines 74 to 88) with no encryption claim attached to it at all. Building it the module level way would quietly leave this spec's integrity claim unsupported.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The action parses the value again with `listingSnapshotSchema` on arrival regardless, per `AGENTS.md`'s \\\"Parse at every boundary\\\" rule.\",\"rejected_spans\":[\"(basis: the same docs at `data-security.md` line 528, where the page that documents the encryption advises against relying on it alone).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"That rule is a project convention in `AGENTS.md`, not one of spec 0001's eight numbered binding rules; binding rule 8 is about deferred tooling choices and has nothing to do with parsing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A re-render re-runs `searchListings()` and spends one of 25 weekly gated calls, so each is a real cost rather than a slow page.\",\"rejected_spans\":[\"(basis: the installed docs, `server-actions.md` lines 44 to 48 and 74; and spec 0011's `job_search` cap).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The action calling `revalidatePath`, `updateTag`, `refresh` or `redirect`. Prevented by calling none of them and returning an `ActionState` instead.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A cookie mutated during the action's request. This is the one nobody writes on purpose, and revision 3 found only half of it. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A future session tidying the action toward the house pattern every profile action follows. Prevented only by this spec and a comment at the call site, which is why both say so in terms.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**What the client control does.** The applications feature carries its own `ActionState` with `status: \\\"idle\\\" | \\\"failed\\\" | \\\"applied\\\"`, deliberately not reusing the profile one, whose comment records that it has no success variant precisely because every profile action redirects. The control flips to applied on `\\\"applied\\\"`, so the visible state follows a confirmed write rather than an optimistic guess.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Removal** is confirmed through a URL that mutates nothing, and it uses the ordinary `revalidatePath` pattern.\",\"rejected_spans\":[\"(basis: spec 0010 AC-8, the shape already shipped on `/profile`; and WCAG 2.2 criterion 3.3.4, Error Prevention for data changes, which this project's stated AA bar makes binding)\",\"because `/applications` makes no outbound call\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The table** gains one nullable column paired to the salary by a check constraint.\",\"rejected_spans\":[\"(basis: spec 0013 AC-7, the rule that a predicted figure is never shown indistinguishably from a stated one; and spec 0003's own currency pairing check, the pattern this one copies).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Implementation skills**: `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`), read before the migration \u00b7 `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `vitest` (`antfu/skills`, `.agents/skills/vitest/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A list of tooling skills to consult during implementation; it states no requirement, outcome, build step or test itself, so none of the named types fits.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20\",\"mention\":\"AC-20's read only adapter\"},\"phrase\":\"prevented by AC-20's read only adapter\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"AC-20a\"},\"phrase\":\"Prevented by AC-20a.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"mention\":\"spec 0011's `job_search` cap\"},\"phrase\":\"spec 0011's `job_search` cap\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-8\",\"mention\":\"spec 0010 AC-8\"},\"phrase\":\"basis: spec 0010 AC-8, the shape already shipped on `/profile`\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-7\",\"mention\":\"spec 0013 AC-7\"},\"phrase\":\"basis: spec 0013 AC-7, the rule that a predicted figure is never shown indistinguishably from a stated one\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":null,\"mention\":\"spec 0003's own currency pairing check\"},\"phrase\":\"spec 0003's own currency pairing check, the pattern this one copies\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Two Server Actions writing `application` rows, reached from a small Client Component inside an otherwise server rendered card, where the apply action is prevented from re-rendering the page it was invoked from by three separate measures rather than one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A thin inline `'use server'` closure is defined **inside the Server Component that renders the card**, capturing that card's parsed `Listing`, and it delegates to the shared `recordApplication` in `src/features/applications/actions.ts`.",
+        "rejected_spans": [
+          "The inline shape is not a style preference: closure encryption applies to variables captured by an action defined inline in a component (basis: the installed Next.js 16.3.1 docs, `data-security.md` lines 505 to 526, the `publishVersion` example). A module level `'use server'` export has nothing to close over, and `.bind()` is documented separately (`forms.md` lines 74 to 88) with no encryption claim attached to it at all. Building it the module level way would quietly leave this spec's integrity claim unsupported."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The action parses the value again with `listingSnapshotSchema` on arrival regardless, per `AGENTS.md`'s \"Parse at every boundary\" rule.",
+        "rejected_spans": [
+          "(basis: the same docs at `data-security.md` line 528, where the page that documents the encryption advises against relying on it alone)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "That rule is a project convention in `AGENTS.md`, not one of spec 0001's eight numbered binding rules; binding rule 8 is about deferred tooling choices and has nothing to do with parsing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A re-render re-runs `searchListings()` and spends one of 25 weekly gated calls, so each is a real cost rather than a slow page.",
+        "rejected_spans": [
+          "(basis: the installed docs, `server-actions.md` lines 44 to 48 and 74; and spec 0011's `job_search` cap)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The action calling `revalidatePath`, `updateTag`, `refresh` or `redirect`. Prevented by calling none of them and returning an `ActionState` instead.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A cookie mutated during the action's request. This is the one nobody writes on purpose, and revision 3 found only half of it. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A future session tidying the action toward the house pattern every profile action follows. Prevented only by this spec and a comment at the call site, which is why both say so in terms.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**What the client control does.** The applications feature carries its own `ActionState` with `status: \"idle\" | \"failed\" | \"applied\"`, deliberately not reusing the profile one, whose comment records that it has no success variant precisely because every profile action redirects. The control flips to applied on `\"applied\"`, so the visible state follows a confirmed write rather than an optimistic guess.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Removal** is confirmed through a URL that mutates nothing, and it uses the ordinary `revalidatePath` pattern.",
+        "rejected_spans": [
+          "(basis: spec 0010 AC-8, the shape already shipped on `/profile`; and WCAG 2.2 criterion 3.3.4, Error Prevention for data changes, which this project's stated AA bar makes binding)",
+          "because `/applications` makes no outbound call"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The table** gains one nullable column paired to the salary by a check constraint.",
+        "rejected_spans": [
+          "(basis: spec 0013 AC-7, the rule that a predicted figure is never shown indistinguishably from a stated one; and spec 0003's own currency pairing check, the pattern this one copies)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**Implementation skills**: `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`), read before the migration \u00b7 `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `vitest` (`antfu/skills`, `.agents/skills/vitest/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A list of tooling skills to consult during implementation; it states no requirement, outcome, build step or test itself, so none of the named types fits.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20's read only adapter"
+        },
+        "phrase": "prevented by AC-20's read only adapter",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "AC-20a"
+        },
+        "phrase": "Prevented by AC-20a.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011's `job_search` cap"
+        },
+        "phrase": "spec 0011's `job_search` cap",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0010 AC-8"
+        },
+        "phrase": "basis: spec 0010 AC-8, the shape already shipped on `/profile`",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-7",
+          "label": null,
+          "mention": "spec 0013 AC-7"
+        },
+        "phrase": "basis: spec 0013 AC-7, the rule that a predicted figure is never shown indistinguishably from a stated one",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": null,
+          "label": null,
+          "mention": "spec 0003's own currency pairing check"
+        },
+        "phrase": "spec 0003's own currency pairing check, the pattern this one copies",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

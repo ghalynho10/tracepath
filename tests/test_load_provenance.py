@@ -49,7 +49,11 @@ NO_DRIVER = cast("Driver", object())
 def unit_0014() -> UnitResult:
     """`0014 ## Requirements`, which starts at file line 19 (spec 0004 AC-50)."""
     root = Path(__file__).resolve().parents[1]
-    return next(r for r in committed_units(root, SNAPSHOT) if r.unit.record_id == "0014")
+    return next(
+        r
+        for r in committed_units(root, SNAPSHOT)
+        if (r.unit.record_id, r.unit.section) == ("0014", "Requirements")
+    )
 
 
 def two_unit_root(tmp_path: Path, *units: str) -> Path:

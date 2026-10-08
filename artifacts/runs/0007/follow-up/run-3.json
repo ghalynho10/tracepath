@@ -1,0 +1,603 @@
+{
+  "record": "0007",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1605,
+  "output_tokens": 20316,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "9892240b24fa40c684c60df1187c8e6b",
+  "artifact_format_version": 3,
+  "unit_sha256": "93011833e7f0b11483a18986e3f4091749323ae5d47e54e3f90bd352368a6c66",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Carry the deep link return path into the app shell feature, with the constraint settled here: reject anything that is not a single leading slash path.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The app shell feature owns the signed in header\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"the signed in variant of `/`\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"the real post sign in destination from `docs/archive/app-shell-direction.md` section 2, which this feature unblocks\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Feature 21's privacy notice must describe what arrives from the provider into `auth.users`: email address, display name, avatar URL.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 27 (auth remainder) owns account settings, and with them any forced logout, session timebox, or provider unlinking.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**For feature 27, not this one.** `supabase/auth#2472` is open and unanswered by maintainers: adding email and password to an existing OAuth account does not update `raw_app_meta_data` and does not create the `auth.identities` row, while the reverse direction works. Reported against the Kotlin and Swift libraries rather than `supabase-js`, so whether it reproduces here is unknown. It matters only if feature 27 adds a password path to an account that already exists, which is what that feature contemplates.\",\"rejected_spans\":[\"Recorded here rather than on feature 27's scope row, because `/architect` may not edit another feature's row.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If P6 comes back unavailable and the callback fallback is used, AC-9 and AC-10 change shape enough to be worth a short `/architect` update rather than a build time improvisation.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`docs/observability/spans.md` will hold three unalerted auth spans.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Decide at feature 10, which brings the first alert rule, whether `auth.callback`'s failure rate deserves one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"An `src/features/auth/AGENTS.md` is likely warranted once this lands, holding the provider and callback conventions\",\"rejected_spans\":[\"so root `AGENTS.md` does not carry them on every task.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The custom domain is no longer a deferred cost decision.**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"moved to `https://usejobhunt.dev`, recorded under the scope's `## Resolved`. It fixed the serving origin and gave AC-4 its production mitigation, and it did **not** fix the consent screen, which still reads the Supabase host. What remains is route B below.\",\"rejected_spans\":[\"because that is the OAuth redirect host\",\"Original reasoning kept: It is the only fix for the consent screen naming a Supabase host instead of JobHunt (see Consequences).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both remedies need a domain this project owns: a Supabase custom domain, which is a paid add on, so the host itself reads as the product; or publishing and verifying the Google app, which needs feature 21's privacy policy and terms served from an authorized domain, and **Google will not accept a `vercel.app` address**. The scope's deferred entry is rewritten on those terms.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Deciding it before milestone 1 registers callback URLs is still the cheap moment\",\"rejected_spans\":[\"because moving later means redoing three redirect lists plus a Vercel setting\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The Supabase custom domain add on was rejected on cost\",\"rejected_spans\":[\"since this route reaches the same place for the price of the domain alone\"],\"known_trap_flags\":[\"granularity_boundary_call\",\"rationale_boundary_call\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 21 and feature 7 depend on each other and neither scope row says so.** Feature 21 unblocks Google's Publish app, which lifts the lifetime 100 user cap; feature 7 is what makes those notices load bearing rather than paperwork.\",\"rejected_spans\":[\"Recording it on feature 21's row is a `/scope` edit, since `/architect` may not edit another feature's contents.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 21's row now carries the dependency in both directions, including the domain constraint (Google will not accept a `vercel.app` address, so the pages must be served from `usejobhunt.dev`) and what feature 7 puts into `auth.users` that the notice must describe. It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32, because the cap is counted over the app's whole lifetime and every sign in before those pages exist spends a slot permanently.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**P8's residual risk closes at build time, not before.** Whether GoTrue prefers `/user/emails` over `/user`'s email field is still inferred.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Proving AC-8 with private email left **on** is what settles it, and a failure there will look like a broken hook rather than a scope problem, so read P8's row before debugging the hook.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":null,\"mention\":\"the app shell feature\"},\"phrase\":\"into the app shell feature\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"Feature 21's privacy notice\"},\"phrase\":\"Feature 21's privacy notice\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 27\",\"mention\":\"Feature 27 (auth remainder)\"},\"phrase\":\"Feature 27 (auth remainder) owns\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 27\",\"mention\":\"feature 27\"},\"phrase\":\"**For feature 27, not this one.**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"label\":\"P6\",\"mention\":\"P6\"},\"phrase\":\"If P6 comes back unavailable\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"AC-9 and AC-10\"},\"phrase\":\"AC-9 and AC-10 change shape enough to be worth a short `/architect` update\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-10\",\"mention\":\"AC-9 and AC-10\"},\"phrase\":\"AC-9 and AC-10 change shape enough to be worth a short `/architect` update\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"mention\":\"feature 10\"},\"phrase\":\"Decide at feature 10, which brings the first alert rule\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"phrase\":\"Done 2026-08-30\",\"date\":\"2026-08-30\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"gave AC-4 its production mitigation\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"feature 21's privacy policy and terms\"},\"phrase\":\"publishing and verifying the Google app, which needs feature 21's privacy policy and terms served from an authorized domain\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"feature 21\"},\"phrase\":\"it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"phrase\":\"Done 2026-08-31\",\"date\":\"2026-08-31\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"Feature 21 and feature 7 depend on each other\"},\"phrase\":\"Feature 21 and feature 7 depend on each other and neither scope row says so\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 32\",\"mention\":\"feature 32\"},\"phrase\":\"to be built after feature 32\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"label\":\"P8\",\"mention\":\"P8\"},\"phrase\":\"**P8's residual risk closes at build time, not before.**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"Proving AC-8 with private email left **on** is what settles it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"label\":\"P8\",\"mention\":\"P8's row\"},\"phrase\":\"read P8's row before debugging the hook\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Carry the deep link return path into the app shell feature, with the constraint settled here: reject anything that is not a single leading slash path.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The app shell feature owns the signed in header",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "the signed in variant of `/`",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "the real post sign in destination from `docs/archive/app-shell-direction.md` section 2, which this feature unblocks",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Feature 21's privacy notice must describe what arrives from the provider into `auth.users`: email address, display name, avatar URL.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 27 (auth remainder) owns account settings, and with them any forced logout, session timebox, or provider unlinking.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**For feature 27, not this one.** `supabase/auth#2472` is open and unanswered by maintainers: adding email and password to an existing OAuth account does not update `raw_app_meta_data` and does not create the `auth.identities` row, while the reverse direction works. Reported against the Kotlin and Swift libraries rather than `supabase-js`, so whether it reproduces here is unknown. It matters only if feature 27 adds a password path to an account that already exists, which is what that feature contemplates.",
+        "rejected_spans": [
+          "Recorded here rather than on feature 27's scope row, because `/architect` may not edit another feature's row."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If P6 comes back unavailable and the callback fallback is used, AC-9 and AC-10 change shape enough to be worth a short `/architect` update rather than a build time improvisation.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`docs/observability/spans.md` will hold three unalerted auth spans.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Decide at feature 10, which brings the first alert rule, whether `auth.callback`'s failure rate deserves one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "An `src/features/auth/AGENTS.md` is likely warranted once this lands, holding the provider and callback conventions",
+        "rejected_spans": [
+          "so root `AGENTS.md` does not carry them on every task."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The custom domain is no longer a deferred cost decision.**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "moved to `https://usejobhunt.dev`, recorded under the scope's `## Resolved`. It fixed the serving origin and gave AC-4 its production mitigation, and it did **not** fix the consent screen, which still reads the Supabase host. What remains is route B below.",
+        "rejected_spans": [
+          "because that is the OAuth redirect host",
+          "Original reasoning kept: It is the only fix for the consent screen naming a Supabase host instead of JobHunt (see Consequences)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both remedies need a domain this project owns: a Supabase custom domain, which is a paid add on, so the host itself reads as the product; or publishing and verifying the Google app, which needs feature 21's privacy policy and terms served from an authorized domain, and **Google will not accept a `vercel.app` address**. The scope's deferred entry is rewritten on those terms.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Deciding it before milestone 1 registers callback URLs is still the cheap moment",
+        "rejected_spans": [
+          "because moving later means redoing three redirect lists plus a Vercel setting"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The Supabase custom domain add on was rejected on cost",
+        "rejected_spans": [
+          "since this route reaches the same place for the price of the domain alone"
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 21 and feature 7 depend on each other and neither scope row says so.** Feature 21 unblocks Google's Publish app, which lifts the lifetime 100 user cap; feature 7 is what makes those notices load bearing rather than paperwork.",
+        "rejected_spans": [
+          "Recording it on feature 21's row is a `/scope` edit, since `/architect` may not edit another feature's contents."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 21's row now carries the dependency in both directions, including the domain constraint (Google will not accept a `vercel.app` address, so the pages must be served from `usejobhunt.dev`) and what feature 7 puts into `auth.users` that the notice must describe. It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32, because the cap is counted over the app's whole lifetime and every sign in before those pages exist spends a slot permanently.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**P8's residual risk closes at build time, not before.** Whether GoTrue prefers `/user/emails` over `/user`'s email field is still inferred.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Proving AC-8 with private email left **on** is what settles it, and a failure there will look like a broken hook rather than a scope problem, so read P8's row before debugging the hook.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": null,
+          "mention": "the app shell feature"
+        },
+        "phrase": "into the app shell feature",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "Feature 21's privacy notice"
+        },
+        "phrase": "Feature 21's privacy notice",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 27",
+          "id": null,
+          "label": null,
+          "mention": "Feature 27 (auth remainder)"
+        },
+        "phrase": "Feature 27 (auth remainder) owns",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 27",
+          "id": null,
+          "label": null,
+          "mention": "feature 27"
+        },
+        "phrase": "**For feature 27, not this one.**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": "P6",
+          "mention": "P6"
+        },
+        "phrase": "If P6 comes back unavailable",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9 and AC-10"
+        },
+        "phrase": "AC-9 and AC-10 change shape enough to be worth a short `/architect` update",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-9 and AC-10"
+        },
+        "phrase": "AC-9 and AC-10 change shape enough to be worth a short `/architect` update",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10"
+        },
+        "phrase": "Decide at feature 10, which brings the first alert rule",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "phrase": "Done 2026-08-30",
+        "date": "2026-08-30",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "gave AC-4 its production mitigation",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21's privacy policy and terms"
+        },
+        "phrase": "publishing and verifying the Google app, which needs feature 21's privacy policy and terms served from an authorized domain",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21"
+        },
+        "phrase": "it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "phrase": "Done 2026-08-31",
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "Feature 21 and feature 7 depend on each other"
+        },
+        "phrase": "Feature 21 and feature 7 depend on each other and neither scope row says so",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 32",
+          "id": null,
+          "label": null,
+          "mention": "feature 32"
+        },
+        "phrase": "to be built after feature 32",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": "P8",
+          "mention": "P8"
+        },
+        "phrase": "**P8's residual risk closes at build time, not before.**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "Proving AC-8 with private email left **on** is what settles it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": "P8",
+          "mention": "P8's row"
+        },
+        "phrase": "read P8's row before debugging the hook",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

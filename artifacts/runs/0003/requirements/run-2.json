@@ -1,0 +1,332 @@
+{
+  "record": "0003",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0003-data-model/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1567,
+  "output_tokens": 8241,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "f04bf569392c49958df2f677f8fdcdd6",
+  "artifact_format_version": 3,
+  "unit_sha256": "4acab096e3618634212d11a647c6208b17518966b7528bfa38b50b33eacb0e3e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want my profile, skills, work history and preferences stored\",\"rejected_spans\":[\"so that scoring has something real to read and my data survives a reload.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want a record of the jobs I applied to, holding enough of the listing that the record still means something after the posting is taken down.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want to be certain no other user can read or change any of my rows, enforced by the database and not by a check somebody could forget to write.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want a user's data to be genuinely removable\",\"rejected_spans\":[\"so that the privacy notice in feature 21 can describe deletion truthfully.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: The six tables (`profile`, `profile_skill`, `work_experience`, `job_preference`, `application`, `application_answer`) exist in the `public` schema with the fields, types and nullability in `## Feature design`, applied to local, development and production through the migration workflow and never by hand.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: Every one of the six has row level security enabled and forced, and carries an explicit `grant` to `authenticated` and to no other role. `anon` and `service_role` hold nothing, so a request carrying no session is refused at the privilege check with a hard permission denial, not an empty result set that reads like success.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: A signed in user reading any of the six sees only rows in their own profile chain. Proved with the two seeded development users, each seeing only their own rows, on a real deployed preview.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: A signed in user can insert, update and delete their own rows on five of the six tables, and insert and delete on `profile_skill`, which has no update path by design. An insert or update that would place a row under another user's profile is refused by the policy's `with check`, not merely hidden from reads.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Deleting a row from `auth.users` removes that user's profile, skills, work history, preferences, applications and answers, leaving no row behind in any of the six.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: A user deleting their own `profile` row removes the same subtree while their auth account remains, so data removal is reachable from inside the product before feature 27 builds account settings.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: A second `application` row with the same profile, `source` and `source_job_id` is refused by the database with a unique violation. The refusal comes from the constraint, so it holds even for a caller that forgot to check first.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: An `application` insert naming a profile that does not exist is refused by the foreign key. Feature 12 turns that refusal into a visible expected failure, and this spec records that obligation rather than leaving it to be discovered at build time.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: Pay is stored raw and never as a rendered string, in both tables that hold it. On `application`, a single stated figure is one value with the other absent, and a `salary_max` below its `salary_min` is refused. On `job_preference` and on `application` alike, an amount present without its currency is refused. Nothing formats pay at write time.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: A skill name is unique per profile ignoring case, so the same profile cannot hold both `React` and `react`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: Work history dates are stored with the day set to 1 and are refused otherwise, an absent end date means the role is current, and an end date before its start is refused.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `updated_at` is maintained by a database trigger on every table that has one, so it is correct even when a row is changed by hand in the Supabase dashboard with no application involved.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: `scaffold_check` no longer exists in any of the three databases, no code references it, its seed rows are gone and its span is removed from the span registry.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: The health page reads the caller's own `profile` through the real server client under a real policy. Each of the two seeded development users with a profile sees only their own row, and a third seeded user, deliberately given no profile row, sees a visible expected failure naming the missing profile rather than an empty page.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: `src/lib/supabase/database.types.ts` is regenerated from the applied schema, and the profile read parses its row with Zod at the boundary, reporting a row that does not match as a visible `response_malformed` failure.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: Spec 0002's invariant 1 is honoured on **production**, not merely on a preview: the drop of `scaffold_check` is written only after the create migration has merged to `main`, its production migration run has succeeded, and the production URL is confirmed serving the new read. Vercel and GitHub Actions build the same commit in parallel, so a drop arriving before the deploy that stopped reading the table breaks running code with nothing to catch it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"id\":null,\"mention\":\"feature 21\"},\"phrase\":\"so that the privacy notice in feature 21 can describe deletion truthfully.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-6\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 27\",\"id\":null,\"mention\":\"feature 27\"},\"phrase\":\"before feature 27 builds account settings\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-8\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 12\",\"id\":null,\"mention\":\"Feature 12\"},\"phrase\":\"Feature 12 turns that refusal into a visible expected failure\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"label\":\"invariant 1\",\"mention\":\"Spec 0002's invariant 1\"},\"phrase\":\"Spec 0002's invariant 1 is honoured on **production**, not merely on a preview\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want my profile, skills, work history and preferences stored",
+        "rejected_spans": [
+          "so that scoring has something real to read and my data survives a reload."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want a record of the jobs I applied to, holding enough of the listing that the record still means something after the posting is taken down.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want to be certain no other user can read or change any of my rows, enforced by the database and not by a check somebody could forget to write.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want a user's data to be genuinely removable",
+        "rejected_spans": [
+          "so that the privacy notice in feature 21 can describe deletion truthfully."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: The six tables (`profile`, `profile_skill`, `work_experience`, `job_preference`, `application`, `application_answer`) exist in the `public` schema with the fields, types and nullability in `## Feature design`, applied to local, development and production through the migration workflow and never by hand.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: Every one of the six has row level security enabled and forced, and carries an explicit `grant` to `authenticated` and to no other role. `anon` and `service_role` hold nothing, so a request carrying no session is refused at the privilege check with a hard permission denial, not an empty result set that reads like success.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: A signed in user reading any of the six sees only rows in their own profile chain. Proved with the two seeded development users, each seeing only their own rows, on a real deployed preview.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: A signed in user can insert, update and delete their own rows on five of the six tables, and insert and delete on `profile_skill`, which has no update path by design. An insert or update that would place a row under another user's profile is refused by the policy's `with check`, not merely hidden from reads.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Deleting a row from `auth.users` removes that user's profile, skills, work history, preferences, applications and answers, leaving no row behind in any of the six.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: A user deleting their own `profile` row removes the same subtree while their auth account remains, so data removal is reachable from inside the product before feature 27 builds account settings.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: A second `application` row with the same profile, `source` and `source_job_id` is refused by the database with a unique violation. The refusal comes from the constraint, so it holds even for a caller that forgot to check first.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: An `application` insert naming a profile that does not exist is refused by the foreign key. Feature 12 turns that refusal into a visible expected failure, and this spec records that obligation rather than leaving it to be discovered at build time.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: Pay is stored raw and never as a rendered string, in both tables that hold it. On `application`, a single stated figure is one value with the other absent, and a `salary_max` below its `salary_min` is refused. On `job_preference` and on `application` alike, an amount present without its currency is refused. Nothing formats pay at write time.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: A skill name is unique per profile ignoring case, so the same profile cannot hold both `React` and `react`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: Work history dates are stored with the day set to 1 and are refused otherwise, an absent end date means the role is current, and an end date before its start is refused.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `updated_at` is maintained by a database trigger on every table that has one, so it is correct even when a row is changed by hand in the Supabase dashboard with no application involved.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: `scaffold_check` no longer exists in any of the three databases, no code references it, its seed rows are gone and its span is removed from the span registry.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: The health page reads the caller's own `profile` through the real server client under a real policy. Each of the two seeded development users with a profile sees only their own row, and a third seeded user, deliberately given no profile row, sees a visible expected failure naming the missing profile rather than an empty page.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: `src/lib/supabase/database.types.ts` is regenerated from the applied schema, and the profile read parses its row with Zod at the boundary, reporting a row that does not match as a visible `response_malformed` failure.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: Spec 0002's invariant 1 is honoured on **production**, not merely on a preview: the drop of `scaffold_check` is written only after the create migration has merged to `main`, its production migration run has succeeded, and the production URL is confirmed serving the new read. Vercel and GitHub Actions build the same commit in parallel, so a drop arriving before the deploy that stopped reading the table breaks running code with nothing to catch it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21"
+        },
+        "phrase": "so that the privacy notice in feature 21 can describe deletion truthfully.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 27",
+          "id": null,
+          "label": null,
+          "mention": "feature 27"
+        },
+        "phrase": "before feature 27 builds account settings",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 12",
+          "id": null,
+          "label": null,
+          "mention": "Feature 12"
+        },
+        "phrase": "Feature 12 turns that refusal into a visible expected failure",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "invariant 1",
+          "mention": "Spec 0002's invariant 1"
+        },
+        "phrase": "Spec 0002's invariant 1 is honoured on **production**, not merely on a preview",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

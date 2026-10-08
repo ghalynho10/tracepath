@@ -2,8 +2,10 @@
 
 import logging
 import math
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Annotated, NoReturn
+from typing import Annotated, Any, NoReturn
 
 import anthropic
 import typer
@@ -52,9 +54,11 @@ from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
 from tracepath.graph.read import read_graph
 from tracepath.pipeline import (
+    CorpusResolution,
     HeldView,
     HeldViewIncomplete,
     ProvenanceMismatch,
+    UnitResult,
     build_held_view,
     collapsed_links,
     graph_build,
@@ -73,11 +77,25 @@ from tracepath.rebuild import (
 )
 from tracepath.report import (
     EVAL_FILE,
+    HELD_LABEL,
+    HELD_OUT_LABEL,
+    UNCHECKED_LINE,
     EvalEntryUnusable,
+    HeldOutRefused,
+    Question,
+    Report,
+    Sidecar,
+    SidecarInvalid,
+    examples_digest,
     holding_units,
-    read_question,
+    question_from,
+    read_eval_set,
+    read_sidecar,
     report_lines,
+    resolve_start,
+    result_lines,
     score,
+    verdict,
 )
 from tracepath.traverse.graph_slice import GraphSlice, NodeKind, SliceError, drop_held
 from tracepath.traverse.render import render_chain
@@ -276,6 +294,98 @@ def _holds_held(graph: GraphSlice) -> bool:
     )
 
 
+@dataclass(frozen=True)
+class _Committed:
+    """What the committed run files hold, read once: no API call, no graph."""
+
+    results: tuple[UnitResult, ...]
+    corpus: CorpusResolution
+    settled: dict[tuple[str, str], int]
+
+
+def _committed(base: Path, corpus_snapshot: Path, commit: str) -> _Committed:
+    """Rebuild every fully extracted unit from the run files, for scoring."""
+    results = committed_units(base, corpus_snapshot)
+    corpus = resolve_accepted(results, records_for_units(results, corpus_snapshot, commit))
+    return _Committed(results, corpus, settled_run_counts(base))
+
+
+@dataclass(frozen=True)
+class _Scored:
+    """One scored question, the chain `trace` prints, and why there is none."""
+
+    report: Report
+    chain: Chain | None
+    missing: str | None
+
+
+def _score_question(
+    question: Question,
+    graph: GraphSlice,
+    committed: _Committed,
+    corpus_snapshot: Path,
+    *,
+    with_held: bool,
+) -> _Scored:
+    """The body `trace --eval` and `eval` share: resolve the start, walk, score.
+
+    The start is resolved once, and the clean walk starts at that same id (spec 0006
+    AC-13). Under the held view the printed chain is the held walk; the clean walk,
+    over the same read with held items dropped, decides `reached` (spec 0005 AC-12).
+
+    Raises:
+        EvalEntryUnusable: a cited line sits before the first unit of its file.
+        OSError: a cited file cannot be read.
+    """
+    start = resolve_start(question, graph)
+    chain: Chain | None = None
+    missing: str | None = None
+    if start.id is None and question.start_at is not None:
+        file, line = question.start_at
+        missing = f"no entity at {file}:{line}, so the walk has no start."
+    elif start.id is not None:
+        try:
+            chain = walk(graph, start.id)
+        except StartNotInGraph as exc:
+            missing = str(exc)
+    clean: Chain | None = chain
+    if with_held and start.id is not None:
+        try:
+            clean = walk(drop_held(graph), start.id)
+        except StartNotInGraph:
+            clean = None
+    split = holding_units(corpus_snapshot, (item.file for item in question.items))
+    report = score(
+        question,
+        clean,
+        committed.results,
+        committed.corpus,
+        committed.settled,
+        split,
+        with_held=with_held,
+        held=chain if with_held else None,
+        start=start,
+    )
+    return _Scored(report, chain, missing)
+
+
+def _question(
+    entries: Sequence[Mapping[str, Any]],
+    sidecar: Sidecar | None,
+    number: int,
+    *,
+    held_out: bool,
+) -> Question:
+    """Question N with its sidecar absence items, if the sidecar lists any."""
+    notes = sidecar.questions.get(number) if sidecar is not None else None
+    return question_from(
+        entries,
+        number,
+        absence=notes.absence if notes is not None else None,
+        held_out=held_out,
+    )
+
+
 @app.command()
 def trace(
     start: str | None = typer.Argument(
@@ -300,77 +410,181 @@ def trace(
         help="Walk through held items too, each printed as held (spec 0005). "
         "Needs a graph from `load --with-held`.",
     ),
+    release_held_out: bool = typer.Option(
+        False,
+        "--release-held-out",
+        help="Run a held out eval file (spec 0006). Only once features 13 and 11 committed.",
+    ),
 ) -> None:
     """Walk the chain from one item and print every step, each citing its record.
 
     Breadth first along the seven typed links, both ways, at most three hops. A Record
-    or Unresolved node is printed and not expanded. With `--eval N`, the start is
-    question N's first trace entry, and the chain is then scored against its expected
-    items. The walk never reads the eval set; only the scoring after it does. With
-    `--with-held`, the chain runs through held items, each marked held, and the
-    scoring walks twice: without held items and with them.
+    or Unresolved node is printed and not expanded. With `--eval N`, the start comes
+    from question N, and the chain is then scored against its expected items. The walk
+    never reads the eval set; only the scoring after it does. With `--with-held`, the
+    chain runs through held items, each marked held, and the scoring walks twice:
+    without held items and with them.
     """
     if (start is None) == (eval_question is None):
         _fail("give one START id or --eval N, not both and not neither.")
+    if release_held_out and eval_question is None:
+        _fail("--release-held-out reads an eval file, so it needs --eval N.")
     base = Path(root)
+    question: Question | None = None
+    held_out = False
     try:
-        question = (
-            read_question(base / eval_file, eval_question) if eval_question is not None else None
-        )
+        if eval_question is not None:
+            eval_set = read_eval_set(base / eval_file, release_held_out=release_held_out)
+            held_out = eval_set.held_out
+            question = _question(
+                eval_set.entries,
+                read_sidecar(base, base / eval_file),
+                eval_question,
+                held_out=held_out,
+            )
         settings = load_neo4j_settings()
         with connect(settings) as driver:
             graph = read_graph(driver, settings.database, with_held=with_held)
-    except (EvalEntryUnusable, SettingsInvalid, GraphUnavailable, SliceError) as exc:
+    except (
+        EvalEntryUnusable,
+        HeldOutRefused,
+        SidecarInvalid,
+        SettingsInvalid,
+        GraphUnavailable,
+        SliceError,
+    ) as exc:
         _fail(str(exc))
     if with_held and not _holds_held(graph):
         _fail(NO_HELD_ITEMS)
 
-    begin = question.start if question is not None else str(start)
-    chain: Chain | None
-    try:
-        chain = walk(graph, begin)
-    except StartNotInGraph as exc:
-        if question is None:
+    if question is None:
+        try:
+            chain = walk(graph, str(start))
+        except StartNotInGraph as exc:
             _fail(str(exc))
-        chain, missing = None, str(exc)
-    if chain is not None:
         for line in render_chain(chain):
             _say(line)
-    if question is None:
         return
-
-    # Under the held view the printed chain is the held walk; the clean walk, over the
-    # same read with held items dropped, is the one that decides `reached` (AC-12).
-    clean: Chain | None = chain
-    if with_held:
-        try:
-            clean = walk(drop_held(graph), begin)
-        except StartNotInGraph:
-            clean = None
 
     corpus_snapshot = base / snapshot
     try:
-        results = committed_units(base, corpus_snapshot)
-        corpus = resolve_accepted(results, records_for_units(results, corpus_snapshot, commit))
-        split = holding_units(corpus_snapshot, (item.file for item in question.items))
-    except (RebuildFailed, RecordError, OSError) as exc:
+        scored = _score_question(
+            question,
+            graph,
+            _committed(base, corpus_snapshot, commit),
+            corpus_snapshot,
+            with_held=with_held,
+        )
+    except (RebuildFailed, RecordError, EvalEntryUnusable, OSError, UnicodeDecodeError) as exc:
         _fail(str(exc))
-    report = score(
-        question,
-        clean,
-        results,
-        corpus,
-        settled_run_counts(base),
-        split,
-        with_held=with_held,
-        held=chain if with_held else None,
-    )
-    if chain is not None:
+    if held_out:
+        _say(HELD_OUT_LABEL)
+    if scored.chain is not None:
+        for line in render_chain(scored.chain):
+            _say(line)
         _say("")
-    for line in report_lines(report):
+    for line in report_lines(scored.report):
         _say(line)
-    if chain is None:
-        _fail(missing)
+    if scored.chain is None:
+        _fail(scored.missing or "the walk has no start.")
+
+
+@app.command(name="eval")
+def eval_set_command(
+    eval_file: str = typer.Option(
+        str(EVAL_FILE), "--eval-file", help="The eval set, relative to --root."
+    ),
+    root: str = typer.Option(".", "--root", help="The repository root to read."),
+    snapshot: str = typer.Option(
+        "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
+    ),
+    commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+    with_held: bool = typer.Option(
+        False,
+        "--with-held",
+        help="Score under the held item view too (spec 0005). "
+        "Needs a graph from `load --with-held`.",
+    ),
+    release_held_out: bool = typer.Option(
+        False,
+        "--release-held-out",
+        help="Run a held out eval file (spec 0006). Only once features 13 and 11 committed.",
+    ),
+) -> None:
+    """Score every question of an eval file: pass, fail or inconclusive, difference shown.
+
+    No API call. Prints each question's report block, then its result and its evidence,
+    and never a total or a rate. Exits 0 when every question reached a result, and 1
+    when one could not be scored or the run itself failed.
+    """
+    base = Path(root)
+    path = base / eval_file
+    try:
+        eval_set = read_eval_set(path, release_held_out=release_held_out)
+        sidecar = read_sidecar(base, path)
+        settings = load_neo4j_settings()
+        with connect(settings) as driver:
+            graph = read_graph(driver, settings.database, with_held=with_held)
+    except (
+        EvalEntryUnusable,
+        HeldOutRefused,
+        SidecarInvalid,
+        SettingsInvalid,
+        GraphUnavailable,
+        SliceError,
+    ) as exc:
+        _fail(str(exc))
+    if with_held and not _holds_held(graph):
+        _fail(NO_HELD_ITEMS)
+    corpus_snapshot = base / snapshot
+    try:
+        committed = _committed(base, corpus_snapshot, commit)
+    except (RebuildFailed, RecordError, OSError, UnicodeDecodeError) as exc:
+        _fail(str(exc))
+
+    # Above the first block, in this order (AC-9c): held out, unchecked, held view.
+    header: list[str] = []
+    if eval_set.held_out:
+        header.append(HELD_OUT_LABEL)
+    if sidecar is not None:
+        try:
+            digest = examples_digest(base)
+        except OSError as exc:
+            _fail(f"cannot read a tracked example: {exc}")
+        if digest is not None and digest != sidecar.examples_sha256:
+            header.append(UNCHECKED_LINE)
+    if with_held:
+        header.append(HELD_LABEL)
+    for line in header:
+        _say(line)
+
+    unusable = False
+    for number in range(1, len(eval_set.entries) + 1):
+        if header or number > 1:
+            _say("")
+        notes = sidecar.questions.get(number) if sidecar is not None else None
+        try:
+            question = _question(eval_set.entries, sidecar, number, held_out=eval_set.held_out)
+            report = _score_question(
+                question, graph, committed, corpus_snapshot, with_held=with_held
+            ).report
+        except EvalEntryUnusable as exc:
+            _say(f"Question {number}: UNUSABLE, {exc}")
+            unusable = True
+            continue
+        except (OSError, UnicodeDecodeError) as exc:
+            _say(f"Question {number}: UNUSABLE, a cited file cannot be read ({exc})")
+            unusable = True
+            continue
+        lines = report_lines(report)
+        # The held view's label prints once, above the first block (AC-9b).
+        for line in lines[1:] if lines[:1] == (HELD_LABEL,) else lines:
+            _say(line)
+        _say("")
+        for line in result_lines(report, verdict(report), notes.evidence if notes else None):
+            _say(line)
+    if unusable:
+        _fail("a question could not be scored; its UNUSABLE line says why.")
 
 
 @app.command()

@@ -1,0 +1,585 @@
+{
+  "record": "0007",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2403,
+  "output_tokens": 29530,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "aecf4df3018640078ebb12c6f92f3384",
+  "artifact_format_version": 3,
+  "unit_sha256": "eda085bc21589158c8ed4d6149ffb26ea969a366f50b246df92af11faaab179b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The product has a real front door. Every feature from 9 onward has a real user to attach rows to, and the thread spec 0001 opened at feature 1 finally runs on a real identity.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The password path is gone rather than guarded, so the class of bug where a flag is set in the wrong environment cannot happen for authentication at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`currentOrigin()` gets its first caller, which unblocks a spec 0002 verify step that has been stranded since 2026-08-22 on code that had never run outside a build.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`docs/archive/app-shell-direction.md` section 2, marked **BLOCKED** pending exactly this feature's trigger decision, is unblocked. Choosing no trigger keeps \\\"land on `/profile` if no profile row exists\\\" meaningful, so the app shell feature inherits a rule rather than redesigning it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Between this feature and feature 9, a brand new user's happy path ends on a visible error.** They land on `/health` and see the `record_not_found` that spec 0003 **AC-14** exists to prove. It ends when feature 9 ships.\",\"rejected_spans\":[\"That is the honest state and the tracer bullet working, not a defect, and [verify.md](verify.md) carries it as an expected outcome so `/check verify` does not read it as a failure.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**`/health` as the landing destination is provisional and is the single most likely thing here to calcify by accident.** The real rule belongs to `docs/archive/app-shell-direction.md` section 2 and the app shell feature owns it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A deep link does not survive sign in.** The protected layout discards what was asked for. Deferred to the app shell feature, with the constraint already settled here so the validator is designed once: reject anything that is not a single leading slash path.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The refusal hook runs inside signup, so a broken hook is a total outage of the front door** resting on one Postgres function. This is accepted on the visibility axis rather than the reach axis: a broken hook fails **loudly**, nobody can create an account, existing users keep signing in, it is noticed on the first attempt, and it rolls back in one step by setting `enabled = false` on the stanza. The alternative fails quietly, where one rare person gets an empty account and reads their own data as lost. AC-10 is the price: the hook must reject on its own internal error too.\",\"rejected_spans\":[\"This project prefers a loud total failure to a quiet wrong answer, the same call already made for the missing profile and for `currentOrigin()` throwing rather than guessing.\"],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The done when clause cannot be proved by a machine.** Google blocks automated browsers, and this project has Vercel deployment protection on, so a run would have to clear Vercel SSO before it ever reached Google. Two walls, not one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Feature 7 is explicitly not the feature that brings Playwright**\",\"rejected_spans\":[\"so AGENTS.md's line about it arriving with the first feature needing a browser stays true and the next feature does not reopen it.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Google's consent screen does not name this product, and that is a user visible misrepresentation on the front door.** Verified 2026-08-30 by running the real handshake: the screen reads \\\"Sign in to `serbucmdtvbspkbmxewl.supabase.co`\\\", tells the person Google will let *that host* access their information, and points them at that host's Privacy Policy and Terms of Service, which do not exist. The word \\\"JobHunt\\\" appears nowhere. GitHub's screen, run minutes earlier against the same project, reads \\\"Authorize JobHunt\\\" correctly, so this is Google specific rather than a misconfiguration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Cause is inferred, not confirmed**: Google appears to derive the displayed name from an Authorized domain, and the only authorized domains are the two `supabase.co` hosts, which this project does not own and cannot verify. Both remedies need a domain we own, so see the Follow-up.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Not a v1 blocker**: sign in works and both providers were exercised live.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \\\"over the entire lifetime of the app\\\", so it never goes back down. Confirmed not to block feature 7: Branding flags no field, Verification status says verification is not required in Testing, and a real sign in completed.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32.\",\"rejected_spans\":[\"precisely because a meter counted over the app's lifetime is not something to leave until launch readiness.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Session forced logout was never an option to weigh.** Both projects report \\\"Configuring user sessions is only available on the Pro Plan and above\\\". The spec's judgement to keep the defaults stands, but on a paid plan it becomes a real choice rather than a settled one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A load bearing invariant now sits on a surface the vendor marks BETA.** Auth Hooks is labelled beta in the Supabase dashboard, and this design puts the one account rule on it. it is a real dependency on a surface whose shape the vendor may still change.\",\"rejected_spans\":[\"That is accepted because the rollback is one switch and the failure is loud, but\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A wildcard in the development project's allowlist is broader than an exact URL.** The vendor's own guidance recommends wildcards for preview and local, and exact paths for production, which is what this does, but it remains a real widening on the non production project.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The entry page at `/` still shows a sign in invitation to a signed in visitor. That defers to the app shell feature, because options that fix it require `/` to read the session, which contradicts spec 0006's accepted security model (\\\"no session check, no Supabase client, no Server Action, no user data of any kind\\\") and its **AC-4**.\",\"rejected_spans\":[\"That is the same contract that settled the search route as `/search` rather than a `/` that branches on session, so this is one decision, not two coincidences.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**What does not defer**: `COPY-1` and the two status chips become false for **every** visitor the moment this ships, signed in or not, and fixing them needs no session read. Those change in this feature, per AC-16.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Four Accepted specs carry statements this feature makes false, and one carries an old debt. They are amended alongside this spec: spec 0001's file tree lists `browser.ts`; spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists; spec 0004's follow up asks for a production refusal \\\"in the mint and in the development sign in both\\\", which shrinks to the mint only; spec 0006 **AC-7** is superseded; and spec 0005's component inventory still owes its `Logo` row.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The seeded fixture users keep their password hashes in `supabase/seed.sql`. They are inert once no password path exists, and the mint has never used them.\",\"rejected_spans\":[\"so removing them is churn in feature 8's artifact for no gain.\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"mention\":\"spec 0001 opened at feature 1\"},\"phrase\":\"the thread spec 0001 opened at feature 1 finally runs on a real identity\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"mention\":\"a spec 0002 verify step\"},\"phrase\":\"which unblocks a spec 0002 verify step that has been stranded since 2026-08-22 on code that had never run outside a build\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"spec 0003 **AC-14**\"},\"phrase\":\"the `record_not_found` that spec 0003 **AC-14** exists to prove\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"mention\":\"feature 9 ships\"},\"phrase\":\"It ends when feature 9 ships.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"AC-10 is the price: the hook must reject on its own internal error too.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"mention\":\"the Follow-up\"},\"phrase\":\"Both remedies need a domain we own, so see the Follow-up.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"feature 21 (Terms and privacy notices)\"},\"phrase\":\"feature 21 (Terms and privacy notices) is what produces them\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"phrase\":\"**Updated 2026-08-31**\",\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"feature 21's row\"},\"phrase\":\"The dependency is now on feature 21's row\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"mention\":\"the feature\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 32\",\"mention\":\"feature 32\"},\"phrase\":\"to be built after feature 32\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"its **AC-4**\"},\"phrase\":\"which contradicts spec 0006's accepted security model (\\\"no session check, no Supabase client, no Server Action, no user data of any kind\\\") and its **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-16\",\"mention\":\"AC-16\"},\"phrase\":\"Those change in this feature, per AC-16.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0001\",\"mention\":\"spec 0001's file tree lists `browser.ts`\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"spec 0001's file tree lists `browser.ts`\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0002\",\"mention\":\"spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0004\",\"mention\":\"spec 0004's follow up asks for a production refusal \\\"in the mint and in the development sign in both\\\"\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"spec 0004's follow up asks for a production refusal \\\"in the mint and in the development sign in both\\\", which shrinks to the mint only\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-7\",\"mention\":\"spec 0006 **AC-7**\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"spec 0006 **AC-7** is superseded\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The product has a real front door. Every feature from 9 onward has a real user to attach rows to, and the thread spec 0001 opened at feature 1 finally runs on a real identity.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The password path is gone rather than guarded, so the class of bug where a flag is set in the wrong environment cannot happen for authentication at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`currentOrigin()` gets its first caller, which unblocks a spec 0002 verify step that has been stranded since 2026-08-22 on code that had never run outside a build.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`docs/archive/app-shell-direction.md` section 2, marked **BLOCKED** pending exactly this feature's trigger decision, is unblocked. Choosing no trigger keeps \"land on `/profile` if no profile row exists\" meaningful, so the app shell feature inherits a rule rather than redesigning it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Between this feature and feature 9, a brand new user's happy path ends on a visible error.** They land on `/health` and see the `record_not_found` that spec 0003 **AC-14** exists to prove. It ends when feature 9 ships.",
+        "rejected_spans": [
+          "That is the honest state and the tracer bullet working, not a defect, and [verify.md](verify.md) carries it as an expected outcome so `/check verify` does not read it as a failure."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**`/health` as the landing destination is provisional and is the single most likely thing here to calcify by accident.** The real rule belongs to `docs/archive/app-shell-direction.md` section 2 and the app shell feature owns it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A deep link does not survive sign in.** The protected layout discards what was asked for. Deferred to the app shell feature, with the constraint already settled here so the validator is designed once: reject anything that is not a single leading slash path.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The refusal hook runs inside signup, so a broken hook is a total outage of the front door** resting on one Postgres function. This is accepted on the visibility axis rather than the reach axis: a broken hook fails **loudly**, nobody can create an account, existing users keep signing in, it is noticed on the first attempt, and it rolls back in one step by setting `enabled = false` on the stanza. The alternative fails quietly, where one rare person gets an empty account and reads their own data as lost. AC-10 is the price: the hook must reject on its own internal error too.",
+        "rejected_spans": [
+          "This project prefers a loud total failure to a quiet wrong answer, the same call already made for the missing profile and for `currentOrigin()` throwing rather than guessing."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The done when clause cannot be proved by a machine.** Google blocks automated browsers, and this project has Vercel deployment protection on, so a run would have to clear Vercel SSO before it ever reached Google. Two walls, not one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Feature 7 is explicitly not the feature that brings Playwright**",
+        "rejected_spans": [
+          "so AGENTS.md's line about it arriving with the first feature needing a browser stays true and the next feature does not reopen it."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Google's consent screen does not name this product, and that is a user visible misrepresentation on the front door.** Verified 2026-08-30 by running the real handshake: the screen reads \"Sign in to `serbucmdtvbspkbmxewl.supabase.co`\", tells the person Google will let *that host* access their information, and points them at that host's Privacy Policy and Terms of Service, which do not exist. The word \"JobHunt\" appears nowhere. GitHub's screen, run minutes earlier against the same project, reads \"Authorize JobHunt\" correctly, so this is Google specific rather than a misconfiguration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Cause is inferred, not confirmed**: Google appears to derive the displayed name from an Authorized domain, and the only authorized domains are the two `supabase.co` hosts, which this project does not own and cannot verify. Both remedies need a domain we own, so see the Follow-up.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Not a v1 blocker**: sign in works and both providers were exercised live.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \"over the entire lifetime of the app\", so it never goes back down. Confirmed not to block feature 7: Branding flags no field, Verification status says verification is not required in Testing, and a real sign in completed.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32.",
+        "rejected_spans": [
+          "precisely because a meter counted over the app's lifetime is not something to leave until launch readiness."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Session forced logout was never an option to weigh.** Both projects report \"Configuring user sessions is only available on the Pro Plan and above\". The spec's judgement to keep the defaults stands, but on a paid plan it becomes a real choice rather than a settled one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A load bearing invariant now sits on a surface the vendor marks BETA.** Auth Hooks is labelled beta in the Supabase dashboard, and this design puts the one account rule on it. it is a real dependency on a surface whose shape the vendor may still change.",
+        "rejected_spans": [
+          "That is accepted because the rollback is one switch and the failure is loud, but"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A wildcard in the development project's allowlist is broader than an exact URL.** The vendor's own guidance recommends wildcards for preview and local, and exact paths for production, which is what this does, but it remains a real widening on the non production project.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The entry page at `/` still shows a sign in invitation to a signed in visitor. That defers to the app shell feature, because options that fix it require `/` to read the session, which contradicts spec 0006's accepted security model (\"no session check, no Supabase client, no Server Action, no user data of any kind\") and its **AC-4**.",
+        "rejected_spans": [
+          "That is the same contract that settled the search route as `/search` rather than a `/` that branches on session, so this is one decision, not two coincidences."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**What does not defer**: `COPY-1` and the two status chips become false for **every** visitor the moment this ships, signed in or not, and fixing them needs no session read. Those change in this feature, per AC-16.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Four Accepted specs carry statements this feature makes false, and one carries an old debt. They are amended alongside this spec: spec 0001's file tree lists `browser.ts`; spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists; spec 0004's follow up asks for a production refusal \"in the mint and in the development sign in both\", which shrinks to the mint only; spec 0006 **AC-7** is superseded; and spec 0005's component inventory still owes its `Logo` row.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The seeded fixture users keep their password hashes in `supabase/seed.sql`. They are inert once no password path exists, and the mint has never used them.",
+        "rejected_spans": [
+          "so removing them is churn in feature 8's artifact for no gain."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001 opened at feature 1"
+        },
+        "phrase": "the thread spec 0001 opened at feature 1 finally runs on a real identity",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": null,
+          "mention": "a spec 0002 verify step"
+        },
+        "phrase": "which unblocks a spec 0002 verify step that has been stranded since 2026-08-22 on code that had never run outside a build",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "spec 0003 **AC-14**"
+        },
+        "phrase": "the `record_not_found` that spec 0003 **AC-14** exists to prove",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "feature 9 ships"
+        },
+        "phrase": "It ends when feature 9 ships.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "AC-10 is the price: the hook must reject on its own internal error too.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": null,
+          "mention": "the Follow-up"
+        },
+        "phrase": "Both remedies need a domain we own, so see the Follow-up.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21 (Terms and privacy notices)"
+        },
+        "phrase": "feature 21 (Terms and privacy notices) is what produces them",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "phrase": "**Updated 2026-08-31**",
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21's row"
+        },
+        "phrase": "The dependency is now on feature 21's row",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "the feature"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 32",
+          "id": null,
+          "label": null,
+          "mention": "feature 32"
+        },
+        "phrase": "to be built after feature 32",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "its **AC-4**"
+        },
+        "phrase": "which contradicts spec 0006's accepted security model (\"no session check, no Supabase client, no Server Action, no user data of any kind\") and its **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16"
+        },
+        "phrase": "Those change in this feature, per AC-16.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001's file tree lists `browser.ts`"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "spec 0001's file tree lists `browser.ts`",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": null,
+          "mention": "spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "spec 0002's configuration table gives `DEV_SESSION_ENABLED` to Preview with a purpose that no longer exists",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0004",
+          "id": null,
+          "label": null,
+          "mention": "spec 0004's follow up asks for a production refusal \"in the mint and in the development sign in both\""
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "spec 0004's follow up asks for a production refusal \"in the mint and in the development sign in both\", which shrinks to the mint only",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-7",
+          "label": null,
+          "mention": "spec 0006 **AC-7**"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "spec 0006 **AC-7** is superseded",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

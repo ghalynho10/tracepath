@@ -1,0 +1,8 @@
+# Predictions for questions 1, 2, 4 and 5 (spec 0006)
+
+Locked before the paid step (spec 0006 build step 8), after the code commit, from the corpus text at `2e40bcf`, the eval file and the runner's rules. No `eval` run over the eval file, and no extraction of the eight units, came before them. Written by the build session at the engineer's request on 2026-10-07. Each line gives the expected result, then its main reason. K of M counts the expected items besides the start (spec 0006 AC-10b).
+
+- **Question 1**: `FAIL · 0 of 1`. `spec 0003 AC-14` is not reached, reason `no_link`: spec 0008 AC-7 never names spec 0003 or its AC-14, so no typed link joins them; the connection is a reading across records, not a reference in either.
+- **Question 2**: `FAIL · 0 of 5`. The start, spec 0011 AC-12, names no other record, so the walk from it reaches none of 0014 AC-20a, 0008 AC-10b or binding rule 6; those three point at each other ("Amends", "Added by"), but their tie back to 0011 is the quantity "25 weekly calls", which is text and not a reference.
+- **Question 4**: `INCONCLUSIVE · absence not provable`. Both items, spec 0007 AC-4 and AC-19, are held for review (`known_trap_flag`), so each item's first cause is `held_for_review` whatever the walk from 0008 AC-14 does.
+- **Question 5**: `FAIL · 0 of 6`. The start (the entity on spec 0007 line 313) names neither the 0007 Follow-up items, nor the scope row, the Resolved entry or spec 0009 by an id; it reaches them only through "feature 21", which ends the walk at a node it prints and does not expand (an unresolved node, or a record node if it ever resolved), and `load` writes no `SPECIFIED_BY` or feature row `PART_OF` link to go around it.

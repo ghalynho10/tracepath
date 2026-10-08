@@ -1,0 +1,19 @@
+{
+  "linked-records-research.json": {
+    "examples_sha256": "b0885554b109ca584599335fc3a396b2fd4a1918e8dfcdd1ddb3b08d1f46a8cf",
+    "questions": {
+      "1": {"evidence": "light", "reason": "0008 AC-7 is a link target in examples/0008-preamble.md, the other two items are in no example"},
+      "2": {"evidence": "weaker", "reason": "0008 AC-10b and spec 0001's binding rule 6 (3 of 6 expected items) are link targets in examples/0008-preamble.md"},
+      "3": {"evidence": "none", "reason": "no expected item sits in a record an example draws on (spec 0004 AC-1)"},
+      "4": {
+        "evidence": "light",
+        "reason": "0008 AC-14 is a link target in examples/0008-preamble.md",
+        "absence": [
+          {"label": "spec 0007 AC-4", "file": "specs/0007-auth-and-per-user-isolation/index.md", "line": 25},
+          {"label": "spec 0007 AC-19", "file": "specs/0007-auth-and-per-user-isolation/index.md", "line": 42}
+        ]
+      },
+      "5": {"evidence": "weaker", "reason": "the feature 21 row (scope.md line 179) is the input of examples/feature-21-scope-row.md, whose output points at spec 0009 ACs"}
+    }
+  }
+}

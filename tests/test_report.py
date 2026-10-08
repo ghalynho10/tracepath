@@ -102,16 +102,18 @@ def test_the_start_is_the_first_trace_entry_with_trailing_text_ignored() -> None
     assert question.start == "0002/AC-10"
 
 
-def test_a_first_entry_with_no_spec_ac_form_is_refused_naming_the_question() -> None:
+def test_a_first_entry_with_no_spec_ac_form_starts_from_its_file_and_line() -> None:
+    """Spec 0006 AC-12 replaces the refusal: the start is read from the graph instead."""
     entries = [
         {"trace": [trace_entry("spec 0012 AC-1", SPEC_0012, 20)]},
         {"trace": [trace_entry("spec 0007 Consequences", SPEC_0012, 92)]},
     ]
 
-    with pytest.raises(EvalEntryUnusable, match="question 2") as caught:
-        question_from(entries, 2)
+    question = question_from(entries, 2)
 
-    assert "spec 0007 Consequences" in str(caught.value)
+    assert question.start is None
+    assert question.start_at == (SPEC_0012, 92)
+    assert question.start_label == "spec 0007 Consequences"
 
 
 @pytest.mark.parametrize("entry", [{"question": "x"}, {"trace": []}])
@@ -150,10 +152,12 @@ def test_ac_34_a_letter_suffixed_criterion_keeps_its_letter_in_the_start() -> No
     assert question.start == "0004/AC-6a"
 
 
-def test_ac_34_a_record_string_not_starting_with_spec_is_refused() -> None:
-    """covers: AC-34 (the regex is anchored at the start, so nothing is guessed)."""
-    with pytest.raises(EvalEntryUnusable, match="question 1"):
-        one_question(trace_entry("see spec 0002 AC-10", SPEC_0012, 31))
+def test_ac_34_a_record_string_not_starting_with_spec_gives_no_ac_start() -> None:
+    """covers: AC-34 (the regex is anchored at the start, so no AC id is guessed)."""
+    question = one_question(trace_entry("see spec 0002 AC-10", SPEC_0012, 31))
+
+    assert question.start is None
+    assert question.start_at == (SPEC_0012, 31)
 
 
 # AC-1: question 3 is a superseded criterion, and its chain touches no worked example.
@@ -234,7 +238,7 @@ def test_ac_37_every_expected_item_gets_one_reached_or_not_reached_line(
 
     item_lines = [line for line in lines if line.startswith(("  reached ", "  not reached "))]
     assert item_lines == [
-        f"  reached      spec 0012 AC-7 · {SPEC_0012}:26 · hop 0 · 0012/AC-7",
+        f"  reached      spec 0012 AC-7 · {SPEC_0012}:26 · hop 0 · the start · 0012/AC-7",
         f"  not reached  spec 0012 AC-3 · {SPEC_0012}:22 · held_for_review",
     ]
 

@@ -1,0 +1,107 @@
+{
+  "held_out": true,
+  "repo": "jobhunt",
+  "read_at": "2026-10-07",
+  "entries": [
+    {
+      "shape": "build_plan_value_corrected_in_another_record",
+      "question": "Why does test/integration/profile-form.test.ts read the $ACTION_ field index out of the rendered /profile page and scope its read to one form, when spec 0010's build plan says to confirm the fields $ACTION_REF_1 / $ACTION_1:0 / $ACTION_1:1 are present?",
+      "why_multiple_records": "Spec 0010 holds the stale value (index 1) in its build plan, unmarked, and names the identity form on /profile as the one action driven without a browser. The correction, and the reason a second form on the same page shifts the index, live only in spec 0004's Follow up, which also records why the technique was deferred to feature 9 in the first place. Reading 0010 alone gives the wrong field names; reading 0004 alone does not say which form or page the test drives.",
+      "trace": [
+        {
+          "record": "spec 0004 Follow-up (Server Action without a browser)",
+          "file": "docs/specs/0004-test-foundation/index.md",
+          "line": 172,
+          "quote": "**Driving a Server Action without a browser is deferred to feature 9, deliberately.** [...] It is deferred rather than met because there is nothing honest to drive yet: the only Server Action in the repository is `signInWithDevPassword`, which feature 7 deletes, and the first real write path is feature 9's profile form."
+        },
+        {
+          "record": "spec 0010 AC-14",
+          "file": "docs/specs/0010-profile-entry/index.md",
+          "line": 41,
+          "quote": "The identity save Server Action, as this feature's representative write path, is driven once from a test with no browser [...]: fetch the page with the edit form open, read the rendered form's hidden action fields, and post them back; a redirect carrying the session cookie means it ran."
+        },
+        {
+          "record": "spec 0010 Build plan step 2",
+          "file": "docs/specs/0010-profile-entry/index.md",
+          "line": 188,
+          "quote": "Before building the other four forms, spike the `useActionState` hidden field shape spec 0004's Follow up recipe assumes: render the identity form, fetch the page, confirm `$ACTION_REF_1` / `$ACTION_1:0` / `$ACTION_1:1` / `$ACTION_KEY` are present in the HTML."
+        },
+        {
+          "record": "spec 0004 Follow-up, correction of 2026 09 02",
+          "file": "docs/specs/0004-test-foundation/index.md",
+          "line": 172,
+          "quote": "**`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** This wording said `1` until then, which is wrong on any page carrying more than one form: `/profile` renders the identity form as `$ACTION_REF_2`, because the signed in header's sign out form is numbered first. Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside.",
+          "also": {
+            "line": 172,
+            "quote": "Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel."
+          }
+        }
+      ],
+      "corroboration": {
+        "record": "spec 0010 verify.md, unticked steps note",
+        "file": "docs/specs/0010-profile-entry/verify.md",
+        "line": 135,
+        "quote": "there is no way to stage that over HTTP, because the page is the only thing that hands out the action id."
+      },
+      "answer": "The recipe was written in spec 0004 before any real form existed (the only action was the dev password sign in, due for deletion), so it assumed index 1. Spec 0010's identity form on /profile was the first real target, and its build plan copied that assumption. On /profile, though, the signed in header's sign out form is numbered first, so the identity form renders as $ACTION_REF_2. The test therefore reads the index from the rendered page and scopes the read to the identity form, or it would also harvest and post the sign out action's field. Spec 0004 recorded the correction on 2026 09 02; spec 0010's build step still says 1.",
+      "confidence": "high",
+      "confidence_note": "Every quote read directly. A grep for 'ACTION_' across the whole 0010 directory finds only build steps 2 and 8 (lines 188, 194), so the stale index-1 wording in 0010 carries no correction marker. The verify.md corroboration wraps across lines 135 to 137. Did not open test/integration/profile-form.test.ts, so the claim about what the test does rests on spec 0004's description and 0010 verify.md line 8."
+    },
+    {
+      "shape": "mandated_format_caused_misread",
+      "question": "Why does spec 0018 say to read a pair's `distribution` and never its `summary` when asking how the five reruns split, given that spec 0017 requires every verdict to carry a count like '5 of 5 succeeded'?",
+      "why_multiple_records": "Spec 0017 explains what the count is and why it is mandatory: it is the success denominator, so a verdict resting on 3 successes can be told apart from one resting on 5. Spec 0018 records that the same count was read as a band tally, which produced a false 'stable at 5 of 5' claim, and gives the real splits. Reading 0017 alone, the format looks unambiguous. Reading 0018 alone, the misread looks like carelessness rather than a property of the format.",
+      "trace": [
+        {
+          "record": "spec 0017 AC-3, verdict rule",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 30,
+          "quote": "A pair's verdict needs at least 3 of its 5 reruns to be scored successes; with fewer than 3, the pair is `inconclusive` (sub reason `insufficient-successes`) [...] compute how many of the successes landed on each band. If one band holds a strict majority (more than half of the successes), that is the pair's verdict band"
+        },
+        {
+          "record": "spec 0017 AC-6",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 36,
+          "quote": "Every printed and reported verdict names its own denominator (e.g. \"good_match, 3 of 3 succeeded\" or, for a distribution shaped verdict, \"3 strong_match / 2 possible_match, 5 of 5 succeeded\"), never just a band on its own, so a reader can tell a verdict resting on the minimum 3 successes apart from one resting on all 5, and can see a split even where the pair still passed."
+        },
+        {
+          "record": "spec 0017 AC-9, report contents",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 39,
+          "quote": "per pair, its status (`pass`/`fail`/`inconclusive`), sub reason where relevant, denominator, and every observed band (or band distribution)"
+        },
+        {
+          "record": "spec 0018 Review findings, caution",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 43,
+          "quote": "A caution that belongs in the record, because it caused a wrong conclusion once already. The report's `summary` field reads like `\"possible_match, 5 of 5 succeeded\"`, and the `5 of 5` there is the **success denominator**, meaning all five reruns returned a band rather than failing. It is not the count landing on that band. Reading it as the band count is what produced the claim that both pairs were stable at 5 of 5, which the distributions above disprove. Read `distribution`, never `summary`, when the question is how the reruns split.",
+          "also": {
+            "line": 40,
+            "quote": "| `control-one-gap` | `good_match` 1, `possible_match` 4 | `possible_match` 5 | `good_match` |"
+          }
+        },
+        {
+          "record": "spec 0018 AC-4",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 24,
+          "quote": "The correction states the per pair distributions rather than a summary line, removes the \"stable disagreement\" inference, and points at this spec."
+        },
+        {
+          "record": "spec 0018 Follow-up",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 105,
+          "quote": "The report's `summary` field is easy to misread as a band count when it is a success denominator, and it caused a wrong conclusion in this spec's own first draft. Worth considering whether `formatReportTable` and the JSON should make the distribution the prominent value, since the distribution is what anyone reasoning about a disagreement actually needs."
+        }
+      ],
+      "answer": "Spec 0017 made every verdict carry 'N of 5 succeeded' on purpose. N counts reruns that returned any band, as opposed to failing, so a reader can tell a verdict resting on the 3-success floor from one resting on all 5. It does not count how many reruns landed on the verdict band, which only needs a strict majority of successes. Spec 0018 found that reading the count as a band tally produced the claim that two pairs were stable at 5 of 5. The per pair distributions, which the report records separately, showed 1 to 4 and 3 to 2 splits on the first run. So 0018 tells readers to use `distribution`, corrected the recorded evidence to state distributions, and left open a follow up to make the distribution the prominent value in the report.",
+      "confidence": "high",
+      "confidence_note": "Every quote read directly from the two spec index files. The 'stable disagreement' claim that 0018 corrects lives in docs/scope/scope.md, which was out of bounds and not opened, so whether that correction landed is unconfirmed here. Did not open test/eval/report.ts or formatReportTable to see the summary field's current format."
+    }
+  ],
+  "method_notes": [
+    "Every quote was read from the named file at the named line in this session; nothing is from memory.",
+    "Only records 0004, 0010, 0016, 0017 and 0018 were opened. No forbidden record and not docs/scope/scope.md. Some quotes name forbidden records in passing (0004 and 0010 mention feature 7 and other specs); nothing in the answers relies on those records' content.",
+    "The working directory is not a git repository, so no commit or clean-tree state is recorded.",
+    "No code built, nothing in the corpus changed."
+  ]
+}
