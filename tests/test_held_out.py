@@ -1,4 +1,4 @@
-"""The held out questions and their guard (spec 0006 AC-24 to AC-28b).
+"""The held out questions and their guard (spec 0006 AC-22 to AC-30).
 
 The three file checks run on synthetic held out files, one that keeps every rule and
 one that breaks each, so each check is shown to catch what it guards. They also run on
@@ -16,7 +16,9 @@ import pytest
 from typer.testing import CliRunner
 
 from tests.conftest import UNREACHABLE_URI
+from tracepath.artifacts import RUNS_DIR
 from tracepath.cli import app
+from tracepath.report import holding_units
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT_DIR = ROOT / "corpus" / "jobhunt"
@@ -123,6 +125,32 @@ def misplaced_quotes(held_out: dict[str, Any]) -> list[Citation]:
     return wrong
 
 
+def shape_problems(held_out: dict[str, Any]) -> list[str]:
+    """AC-22: two entries, each with a trace; problems name counts and positions only."""
+    entries = held_out["entries"]
+    problems = [f"{len(entries)} entries, expected 2"] if len(entries) != 2 else []
+    problems += [
+        f"entry {n} has an empty trace" for n, e in enumerate(entries, 1) if not e.get("trace")
+    ]
+    return problems
+
+
+def units_with_artifacts(held_out: dict[str, Any], runs: Path) -> list[tuple[str, str]]:
+    """AC-30: `(record, section_slug)` of each cited unit with a folder under `runs`.
+
+    The unit holding a line is the last one starting at or before it, split as
+    `report.py` splits it. A line before a file's first unit has no unit, so no artifact.
+    """
+    cited = [(f, line) for f, line, _ in citations(held_out) if (SNAPSHOT_DIR / f).is_file()]
+    split = holding_units(SNAPSHOT_DIR, (f for f, _ in cited))
+    found: dict[tuple[str, str], None] = {}
+    for file, line in cited:
+        before = [h for h in split[file] if h.unit.start_line <= line]
+        if before and (runs / before[-1].unit.record_id / before[-1].section_slug).is_dir():
+            found[(before[-1].unit.record_id, before[-1].section_slug)] = None
+    return list(found)
+
+
 def cite(file: str, line: int) -> dict[str, Any]:
     """A trace step quoting the corpus line as it stands, list marker dropped."""
     text = (SNAPSHOT_DIR / file).read_text().splitlines()[line - 1]
@@ -153,6 +181,30 @@ def real_held_out() -> dict[str, Any]:
         pytest.skip("eval/held-out.json is written at spec 0006 build step 10")
     payload: dict[str, Any] = json.loads(HELD_OUT.read_text())
     return payload
+
+
+# AC-22: two entries, each with an expected chain. Messages carry counts only.
+
+
+def test_ac_22_two_entries_each_with_a_trace_pass() -> None:
+    """covers: AC-22 (the check passes a good file)."""
+    assert shape_problems(GOOD) == []
+
+
+def test_ac_22_a_third_entry_or_an_empty_trace_is_caught() -> None:
+    """covers: AC-22 (the check fails a bad file)."""
+    three = held_out_file([cite(SPEC_0004, 19)], [cite(SPEC_0010, 27)], [cite(SPEC_0010, 28)])
+    empty = held_out_file([cite(SPEC_0004, 19)], [])
+
+    assert shape_problems(three) == ["3 entries, expected 2"]
+    assert shape_problems(empty) == ["entry 2 has an empty trace"]
+
+
+def test_ac_22_the_held_out_file_holds_two_entries_each_with_a_trace() -> None:
+    """covers: AC-22."""
+    problems = shape_problems(real_held_out())
+
+    assert problems == []
 
 
 # AC-24: no record on the exclusion list.
@@ -229,6 +281,35 @@ def test_ac_26_a_quote_in_a_file_other_than_index_or_scope_is_caught() -> None:
 def test_ac_26_every_quote_of_the_held_out_file_is_at_its_exact_line() -> None:
     """covers: AC-26."""
     assert misplaced_quotes(real_held_out()) == []
+
+
+# AC-30: no run artifact for a unit holding a cited line. Messages carry
+# record and section names only.
+
+
+def test_ac_30_cited_units_without_a_runs_folder_pass(tmp_path: Path) -> None:
+    """covers: AC-30 (the check passes when no cited unit has artifacts)."""
+    assert units_with_artifacts(GOOD, tmp_path) == []
+
+
+def test_ac_30_a_cited_unit_with_a_runs_folder_is_caught(tmp_path: Path) -> None:
+    """covers: AC-30 (the check fails a unit holding a cited line, and only that unit)."""
+    split = holding_units(SNAPSHOT_DIR, [SPEC_0004])[SPEC_0004]
+    holding = [h for h in split if h.unit.start_line <= 19][-1]
+    other = next(h for h in split if h.unit.start_line > 19)
+    (tmp_path / holding.unit.record_id / holding.section_slug).mkdir(parents=True)
+    (tmp_path / other.unit.record_id / other.section_slug).mkdir(parents=True)
+
+    found = units_with_artifacts(held_out_file([cite(SPEC_0004, 19)]), tmp_path)
+
+    assert found == [(holding.unit.record_id, holding.section_slug)]
+
+
+def test_ac_30_no_unit_the_held_out_file_cites_has_a_run_artifact() -> None:
+    """covers: AC-30 (the artifacts half; the commit order is a /check verify step)."""
+    found = units_with_artifacts(real_held_out(), ROOT / RUNS_DIR)
+
+    assert found == []
 
 
 # AC-27, AC-28, AC-28b: the guard.
