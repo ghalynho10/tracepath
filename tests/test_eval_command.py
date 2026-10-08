@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
 SPEC_0012 = "docs/specs/0012-model-client-router/index.md"
 FILE_0012 = "specs/0012-model-client-router/index.md"
+FILE_0001 = "specs/0001-stack-and-architecture/index.md"
 
 
 def step(record: str, line: int, file: str = SPEC_0012) -> dict[str, Any]:
@@ -516,3 +517,47 @@ def test_ac_9c_lines_above_the_first_block_come_in_order(git_root: Path, held_gr
 
     assert code == 0, stderr
     assert stdout.splitlines()[:4] == [HELD_OUT_LABEL, UNCHECKED_LINE, HELD_LABEL, ""]
+
+
+def test_a_snapshot_document_that_cannot_be_decoded_gives_a_message_and_exit_1(
+    tmp_path: Path, default_graph: Path
+) -> None:
+    """covers: the same failure message `trace --eval` gives (no traceback)."""
+    snapshot = tmp_path / "snapshot"
+    shutil.copytree(SNAPSHOT, snapshot)
+    (snapshot / FILE_0001).write_bytes(b"\xff\xfe not utf 8")
+
+    result = runner.invoke(
+        app,
+        [
+            "eval",
+            "--eval-file",
+            "eval/scorable.json",
+            "--root",
+            str(default_graph),
+            "--snapshot",
+            str(snapshot),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert result.stderr.strip()
+    assert not isinstance(result.exception, UnicodeDecodeError)
+
+
+def test_a_tracked_example_missing_from_the_work_tree_gives_a_message_and_exit_1(
+    tmp_path: Path, default_graph: Path
+) -> None:
+    """covers: AC-20 (a tracked example that cannot be read stops the run cleanly)."""
+    root = write_root(tmp_path)
+    (root / "examples").mkdir()
+    (root / "examples" / "gone.md").write_text("x")
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "add", "examples"], check=True)
+    (root / "examples" / "gone.md").unlink()
+
+    code, _, stderr = run(root, "eval", eval_file="eval/scorable.json")
+
+    assert code == 1
+    assert "cannot read a tracked example" in stderr
+    assert "Traceback" not in stderr

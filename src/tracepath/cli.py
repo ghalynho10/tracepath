@@ -539,7 +539,7 @@ def eval_set_command(
     corpus_snapshot = base / snapshot
     try:
         committed = _committed(base, corpus_snapshot, commit)
-    except (RebuildFailed, RecordError) as exc:
+    except (RebuildFailed, RecordError, OSError, UnicodeDecodeError) as exc:
         _fail(str(exc))
 
     # Above the first block, in this order (AC-9c): held out, unchecked, held view.
@@ -547,7 +547,10 @@ def eval_set_command(
     if eval_set.held_out:
         header.append(HELD_OUT_LABEL)
     if sidecar is not None:
-        digest = examples_digest(base)
+        try:
+            digest = examples_digest(base)
+        except OSError as exc:
+            _fail(f"cannot read a tracked example: {exc}")
         if digest is not None and digest != sidecar.examples_sha256:
             header.append(UNCHECKED_LINE)
     if with_held:
