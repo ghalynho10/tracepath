@@ -44,6 +44,17 @@ QUESTION_3 = ("trace", "--eval", "3", "--with-held", "--eval-file", str(ROOT / E
 #: What that command printed when experiment 0010 recorded the second result.
 RECORDED = ROOT / "experiments" / "0010-held-item-view" / "data" / "trace-1.txt"
 
+#: The outside links line as experiment 0010 recorded it, and as it reads once `0007 ##
+#: Consequences` is extracted (spec 0006, `3420bc7`).
+OUTSIDE_BEFORE = (
+    "Accepted links written outside the expected sections that touch 0002 or 0007: 0.\n"
+)
+OUTSIDE_AFTER = (
+    "Accepted links written outside the expected sections that touch 0002 or 0007: 1.\n"
+    "  0007#consequences:4 -[unclassified]-> 0002 · "
+    "specs/0007-auth-and-per-user-isolation/index.md · Consequences\n"
+)
+
 runner = CliRunner()
 
 
@@ -413,14 +424,21 @@ def test_ac_27_trace_eval_3_with_held_twice_prints_identical_output(loads: Loads
 def test_ac_27_question_3_still_prints_the_result_experiment_0010_recorded(loads: Loads) -> None:
     """covers: spec 0005 AC-27 (the recorded second result does not drift).
 
-    The record is frozen, so the one wording change made since, spec 0006 AC-10's start
-    marker on an item line at hop 0, is applied to it here rather than written into it.
+    The record is frozen, so what changed since is applied to it here rather than written
+    into it: spec 0006 AC-10's start marker on an item line at hop 0, and the one accepted
+    link outside the expected sections that `0007 ## Consequences`, extracted for spec
+    0006 (`3420bc7`), now writes into question 3's records.
     """
     code, stdout, stderr = loads.question_3[0]
-    recorded = RECORDED.read_text().replace(" · hop 0 · ", " · hop 0 · the start · ")
+    recorded = (
+        RECORDED.read_text()
+        .replace(" · hop 0 · ", " · hop 0 · the start · ")
+        .replace(OUTSIDE_BEFORE, OUTSIDE_AFTER)
+    )
 
     assert (code, stderr) == (0, "")
-    assert recorded != RECORDED.read_text(), "the record holds a hop 0 item line"
+    assert recorded.count("hop 0 · the start") == 1, "the record holds one hop 0 item line"
+    assert OUTSIDE_BEFORE in RECORDED.read_text(), "the record holds the outside links line"
     assert stdout == recorded
 
 
