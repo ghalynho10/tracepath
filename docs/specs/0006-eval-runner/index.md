@@ -263,7 +263,7 @@ Tracer Bullet: the thinnest real thread first (the runner over a fixture, then o
 - The lexically lowest id for question 5's start is a tie break, not a judgment. If three entities share line 313, the start may not be the one a person would pick, and the result says which it was.
 - `eval/runner.json` is hand written, so a flag can be wrong. The digest only says the examples changed, not that a flag is still right.
 - The hop 0 marker changes three existing test strings and the wording of one line of spec 0004's report. The rule for reaching an item does not change.
-- No prediction is locked for questions 1, 2, 4 and 5, so their first results are findings, not tests of a stated prediction as question 3's were.
+- Predictions for questions 1, 2, 4 and 5 were locked before the extraction, in `experiments/0011-eval-runner/predictions.md` (commits `a8da2bc` and `9c53144`), so each first result is scored against its prediction (AC-33b).
 - The held out guard stops a slip, not a person who passes the flag.
 - Question 4 will read `INCONCLUSIVE` after this extraction, because both tempting items are held for `known_trap_flag` and a held link names AC-4. It can pass only after feature 11 releases them (AC-17e).
 - Extraction costs about $2.8 central and up to about $30.1 by the tool's wider rule; the central figure rests on a ratio measured on 54 earlier runs and may be low for prose heavy sections like `0007:Consequences`.
