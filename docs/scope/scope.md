@@ -131,7 +131,7 @@ spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report
   - [x] The sidecar `eval/runner.json`, the evidence flags and the examples digest test (AC-18 to AC-21)
   - [x] The held out guard: refusal without `--release-held-out`, and its file tests (AC-24 to AC-28b)
   - [ ] Gate: `extract --dry-run` over the eight units, then the engineer's go and ceiling, the paid step, and the first full run recorded in `experiments/0011-eval-runner/` (AC-31 to AC-34)
-  - [ ] The two held out questions, written in a fresh session and committed before feature 13 starts (AC-22, AC-23, AC-30)
+  - [x] The two held out questions, written in a fresh session and committed before feature 13 starts (AC-22, AC-23, AC-30)
 - [ ] Verify it: `/check verify eval runner`
 - [ ] Test it: `/test eval runner`
 
