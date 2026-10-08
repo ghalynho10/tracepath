@@ -1,0 +1,107 @@
+Held item view (spec 0005): a second result. Experiment 0009 stays the first.
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 1: Why does the landing rule's profile existence read (src/lib/landing-rule.ts) have its own dedicated query instead of reusing readOwnProfile(), which already reads the same row?
+Start item: 0008/AC-7, from the first trace entry "spec 0008 AC-7".
+
+Expected items:
+  held only    spec 0008 AC-7 · specs/0008-app-shell-and-navigation/index.md:54 · hop 0 · the start · 0008/AC-7 · via 0008/AC-7
+  not reached  spec 0003 AC-14 · specs/0003-data-model/index.md:34 · held_for_review
+
+Visited steps matching no expected item: 12 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0008 or 0003: 1.
+  0001#binding-rules:10 -[amended-by]-> 0008 · specs/0001-stack-and-architecture/index.md · Binding rules
+Across records: no. No expected item outside 0008 was reached from the start.
+Across records through held items: no.
+
+Question 1: FAIL · 0 of 1 expected items reached besides the start.
+Evidence: light · 0008 AC-7 is a link target in examples/0008-preamble.md, the other two items are in no example
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 2: Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?
+Start item: 0011/AC-12, from the first trace entry "spec 0011 AC-12".
+
+Expected items:
+  reached      spec 0011 AC-12 · specs/0011-usage-gating-and-kill-switch/index.md:37 · hop 0 · the start · 0011/AC-12
+  not reached  spec 0014 Decision item 2 and AC-20a · specs/0014-apply-redirect-and-application-record/index.md:69 · held_for_review
+  not reached  spec 0014 Decision item 2 and AC-20a (also) · specs/0014-apply-redirect-and-application-record/index.md:51 · held_for_review
+  not reached  spec 0008 AC-10b · specs/0008-app-shell-and-navigation/index.md:62 · held_for_review
+  not reached  spec 0001 binding rule 6 and amendment item Three · specs/0001-stack-and-architecture/index.md:133 · link_held
+  not reached  spec 0001 binding rule 6 and amendment item Three (also) · specs/0001-stack-and-architecture/index.md:143 · held_for_review
+
+Visited steps matching no expected item: 0 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0011 or 0014 or 0008 or 0001: 0.
+Across records: no. No expected item outside 0011 was reached from the start.
+Across records through held items: no.
+
+Question 2: FAIL · 0 of 5 expected items reached besides the start.
+Evidence: weaker · 0008 AC-10b and spec 0001's binding rule 6 (3 of 6 expected items) are link targets in examples/0008-preamble.md
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 3: Why is password sign in impossible on production?
+Start item: 0002/AC-10, from the first trace entry "spec 0002 AC-10 (struck)".
+
+Expected items:
+  held only    spec 0002 AC-10 (struck) · specs/0002-deployment-and-environments/index.md:31 · hop 0 · the start · 0002/AC-10 · via 0002/AC-10
+  not reached  spec 0007 AC-12 and key invariant 1 · specs/0007-auth-and-per-user-isolation/index.md:35 · held_for_review
+  not reached  spec 0007 AC-12 and key invariant 1 (also) · specs/0007-auth-and-per-user-isolation/index.md:142 · held_for_review
+  held only    spec 0007 AC-13 · specs/0007-auth-and-per-user-isolation/index.md:36 · hop 2 · 0007/AC-13 · via 0002/AC-10, 0002/AC-10 -[SUPERSEDED_BY]-> 0002#requirements:6, 0002#requirements:6, 0002#requirements:6 -[UNCLASSIFIED]-> 0007/AC-13, 0007/AC-13
+  held only    spec 0002 test scenario (struck) · specs/0002-deployment-and-environments/index.md:232 · hop 1 · 0002#feature-design:71 · via 0002/AC-10, 0002#feature-design:71 -[VERIFIES]-> 0002/AC-10
+
+Visited steps matching no expected item: 2 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0002 or 0007: 1.
+  0007#consequences:4 -[unclassified]-> 0002 · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+Across records: no. No expected item outside 0002 was reached from the start.
+Across records through held items: yes (0007/AC-13, hop 2)
+
+Question 3: FAIL · 0 of 4 expected items reached besides the start.
+Evidence: no overlap with a worked example · no expected item sits in a record an example draws on (spec 0004 AC-1)
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 4: Why is the return path cookie's max age 10 minutes? Is it matched to the lifetime of the PKCE code verifier cookie Supabase writes on the same sign in action, or to the session policy spec 0007 AC-19 records?
+Start item: 0008/AC-14, from the first checked entry "docs/specs/0008-app-shell-and-navigation/index.md line 67 (AC-14)".
+
+Items that should not be reached:
+  not reached  spec 0007 AC-4 · specs/0007-auth-and-per-user-isolation/index.md:25 · held_for_review
+  not reached  spec 0007 AC-19 · specs/0007-auth-and-per-user-isolation/index.md:42 · held_for_review
+
+Visited steps matching no expected item: 5 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0007: 3.
+  0007#consequences:4 -[unclassified]-> 0002 · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+  0007#feature-design:54 -[verifies]-> 0007/AC-14 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:59 -[verifies]-> 0007/AC-15 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+Across records: no. No expected item outside 0008 was reached from the start.
+Across records through held items: no.
+
+Question 4: INCONCLUSIVE · absence not provable.
+  spec 0007 AC-4 · specs/0007-auth-and-per-user-isolation/index.md:25 · start not in the clean slice
+  spec 0007 AC-19 · specs/0007-auth-and-per-user-isolation/index.md:42 · start not in the clean slice
+Evidence: light · 0008 AC-14 is a link target in examples/0008-preamble.md
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 5: Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?
+Start item: 0007#consequences:19, from the first trace entry "spec 0007 Consequences", the entity at specs/0007-auth-and-per-user-isolation/index.md:313, the lowest id of the 3 entities on that line.
+
+Expected items:
+  held only    spec 0007 Consequences · specs/0007-auth-and-per-user-isolation/index.md:313 · hop 0 · the start · 0007#consequences:19 · via 0007#consequences:19
+  not reached  spec 0007 Follow-up · specs/0007-auth-and-per-user-isolation/index.md:335 · held_for_review
+  not reached  spec 0007 Follow-up (also) · specs/0007-auth-and-per-user-isolation/index.md:336 · held_for_review
+  not reached  scope.md feature 21 row · scope/scope.md:179 · held_for_review
+  not reached  scope.md feature 21 row (also) · scope/scope.md:180 · no_link
+  not reached  scope.md Resolved, custom domain · scope/scope.md:516 · no_link
+  not reached  spec 0009 Summary · specs/0009-terms-and-privacy-notices/index.md:17 · no_link
+
+Visited steps matching no expected item: 1 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0007 or feature-21 or scope or 0009: 2.
+  0007#feature-design:54 -[verifies]-> 0007/AC-14 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:59 -[verifies]-> 0007/AC-15 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+Across records: no. No expected item outside 0007 was reached from the start.
+Across records through held items: no.
+
+Question 5: FAIL · 0 of 6 expected items reached besides the start.
+Evidence: weaker · the feature 21 row (scope.md line 179) is the input of examples/feature-21-scope-row.md, whose output points at spec 0009 ACs
