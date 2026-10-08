@@ -9,9 +9,11 @@
 1. **Spec**: `5c8bda4` designed spec 0006, and `dacc314` amended it (predictions, extraction range, start marker) before this record was written.
 2. **Code**: `e24801d`, build steps 1 to 6. Nothing under `src/` changed from it to this record's commit (AC-34: `git diff e24801d HEAD -- src` is empty).
 3. **Extraction**: the range `282b9a4` to `8fd0436`, eight commits, one per unit: `282b9a4` 0008 Requirements, `4d015e5` 0003 Requirements, `3420bc7` 0007 Consequences, `b6560a1` 0011 Requirements, `8845d8f` 0014 Decision, `42994ed` 0007 Follow-up, `f014a43` scope Resolved, `8fd0436` 0009 Summary. Then `ffc64e8` rebuilt the review queue (933 held items from 26 units) and the graph build. Nothing under `examples/` or `src/tracepath/extract/` changed from `5c8bda4` to `8fd0436` (AC-32).
-4. **Result**: the commit that adds this file. A file cannot carry its own commit's hash; `git log -1 -- experiments/0011-eval-runner/README.md` names it.
+4. **Result**: `4629330`, the commit that adds this file. `a722027` later added [the held view reading](#predicted-reasons-under-the-held-item-view-a-second-reading).
 
 The predictions were locked at `a8da2bc` (questions 1, 2, 4 and 5) and `9c53144` (question 5 relocked to one count), both before the first extraction commit `282b9a4` (AC-33b). They are in [predictions.md](predictions.md) and scored below.
+
+The spend gate (spec 0006 AC-31): `extract --dry-run` over the eight units at `a8da2bc` matched spec 0006's counts token for token, and the engineer gave the go at `--ceiling 9` before `282b9a4`. Spend: $4.3007.
 
 ## Found before the results were read
 
