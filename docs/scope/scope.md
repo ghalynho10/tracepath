@@ -148,6 +148,7 @@ Let a person type a plain English question and get a start item for the walk, in
 ### 7. Name resolution · needs a decision
 Match records that name the same thing by number, nickname, or file name, so a chain doesn't quietly break across names. When a match isn't confident, the name is marked unresolved and shown, never guessed.
 **Done when:** a chain whose links use different names for the same record resolves correctly, and an uncertain match shows up as unresolved in the output.
+**Eval count, 2026-10-08** (see feature 13): no `not reached` item ends at an Unresolved node in either eval output, so this feature breaks 0 questions today. Spec [0006](../specs/0006-eval-runner/index.md) expects question 5's "feature 21" reference to need it once the held items are released.
 - [ ] Design it (spec): `/architect name resolution`
 
 ## Slice 4: History aware traversal
@@ -157,6 +158,7 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 **Done when:** a chain that crosses a superseded or corrected record shows the replacement as current and marks the older one as history.
 **Known risk, recorded 2026-09-23 from the first real extraction runs:** extraction can keep a struck claim and lose its replacement, storing both as one span marked struck, so the current fact arrives already labelled obsolete. Measured on bullet 3 of spec 0012's `## Consequences`, 1 of 3 runs at `medium` effort and 2 of 3 at `low`. Only run disagreement caught it, which is not a guarantee. This row's Done when must hold against that input, not just against a correctly split one. See spec [0002](../specs/0002-data-model/index.md) `## Consequences` and [experiment 0002](../../experiments/0002-effort-low-fidelity/README.md).
 **Handoff from spec [0004](../specs/0004-first-traced-chain/index.md) (2026-10-05):** the first walk stops at a whole Record and prints only the stored `struck` flag. Finding the replacement inside a Record that a supersession link lands on, and showing it as current, is this feature's job.
+**Eval count, 2026-10-08** (see feature 13): one question touches it, question 3, through its struck test scenario in the default view; none in the held view's `not reached` items.
 - [ ] Design it (spec): `/architect history aware traversal`
 
 ## Slice 5: Whole corpus
@@ -169,11 +171,41 @@ Extend extraction from the hand picked records to every record in the snapshot, 
 ### 13. Extraction accuracy · needs a decision · from spec 0003
 Whether extracted items are right, not only repeatable. Prompt `0003.1` failed the accuracy bar (experiment 0005's `data/method-notes.md`: at least two thirds of entity marks and of relationship marks per unit agree) on 3 of 6 results in [experiment 0006](../../experiments/0006-accuracy-bar-recheck/README.md) (`0015` entities 2/10, `feature-33` entities 5/10 and relationships 3/5), after 5 of 6 in experiment 0005; the bar's dropped link clause is unmeasured. Spec 0003 closed feature 12 without fixing this (AC-32 to AC-35) and lists the candidate causes in its Follow up: no written definitions for the eight entity types, splitting and label refinements, checkable facts left in rejected text, the workflow stage question, and the deliberate decision link. Its fix ladder: rules the model was never given, then prompt or example quality, then vocabulary gaps.
 **Ordering:** after feature 6, so fixes are chosen by which gaps actually break eval chains. Before feature 11, because accuracy fixes change the prompt and so the review volume, and setting the routing policy first risks tuning thresholds around a defect, the same reason feature 11 waits on feature 12. Its order against features 7 (name resolution) and 8 (history aware traversal) is decided by feature 6's results: fix first whichever of unresolved names, history, or extraction accuracy breaks the most eval questions. Feature 5 is not blocked by it, and feature 10 (Slice 6) is unaffected. Spec 0002's vocabulary revisit Follow up (`8bcd9df`) is split (decided 2026-10-04): only the ruling of experiment 0008's one `0006 ## Feature design` sentence happens before feature 5, and it joins this feature's evidence; the full written definitions for the eight types stay here, after feature 6, chosen on evidence across all five eval questions.
+**Evidence from feature 6, counted 2026-10-08.** Source: `experiments/0011-eval-runner/data/eval.txt` and `eval-with-held.txt` only. Each item that prints `not reached` is classed by its printed reason: `held_for_review` counts toward feature 13; an Unresolved node at the end of the walk toward feature 7; a `SUPERSEDED_BY` step or a struck item toward feature 8. When the printed reason is `held_for_review`, the reason decides, so a struck item with that reason counts toward 13. A struck item with any other reason counts toward 8. Anything else is listed as fitting none. Question 4 is `INCONCLUSIVE` and its two `not reached` items are the wanted outcome of an absence question, so it is listed but not counted.
+
+Default view (`eval.txt`), items by class:
+
+| Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
+| --- | --- | --- | --- | --- | --- |
+| 1 | FAIL | 2 | 0 | 0 | 0 |
+| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
+| 3 | FAIL | 4 | 0 | 1 (the struck test scenario, `link_held`) | 0 |
+| 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
+| 5 | FAIL | 4 | 0 | 0 | 3 (`no_link`) |
+| Items | | 14 | 0 | 1 | 4 |
+| Questions broken | | 4 | 0 | 1 | |
+
+Held view (`eval-with-held.txt`), `not reached` items only:
+
+| Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
+| --- | --- | --- | --- | --- | --- |
+| 1 | FAIL | 1 | 0 | 0 | 0 |
+| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
+| 3 | FAIL | 2 | 0 | 0 | 0 |
+| 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
+| 5 | FAIL | 3 | 0 | 0 | 3 (`no_link`) |
+| Items | | 10 | 0 | 0 | 4 |
+| Questions broken | | 4 | 0 | 0 | |
+
+The word Unresolved appears in neither file, so feature 7 counts zero in both views. In the held view, question 3's three `held only` items (two struck, one reached through a `SUPERSEDED_BY` step) are not `not reached`, so they are outside this count. Counted anyway, feature 8 would touch question 3 only, one question, and the order would not change.
+
+**Queued next, 2026-10-08:** this feature, by the rule above. It breaks 4 of the 5 questions in both views, against 1 for feature 8 (default view only) and 0 for feature 7. One caution carried with it: `held_for_review` is the output of the routing rules, so the count shows that held items break the chains, not yet that an extraction defect holds them. Whether the cause is accuracy or the routing policy of feature 11 is part of the design question here, and the committed numeric criterion (Guard, below) must say which it is testing.
+
 **Guard, set 2026-10-06** (see feature 5): this feature may still choose which causes to fix from feature 6's results, but it commits a written, numeric criterion for when a fix succeeds before trying any fix; git order proves it came first. The held out questions (feature 6) are committed before it starts and stay unrun and unread until this feature and feature 11 have both locked their choices.
 
 **Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** no worked example and no prompt change may draw on a section cited by `eval/held-out.json` (spec 0006 AC-25 tests the examples). This feature re checks the evidence flags in `eval/runner.json` whenever it edits `examples/`, because spec 0006 AC-20's digest test fails until they are re checked. Running the held out questions is `tracepath eval --eval-file eval/held-out.json --release-held-out`, and only once this feature and feature 11 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 **Done when:** each cause in spec 0003's Follow up is fixed, ruled out, or carried as a recorded decision; any prompt change is re checked on fresh held out units against the same bar, with the dropped link clause measured this time; and either the bar passes, or the remaining gap is measured on the eval questions and accepted in a spec.
-- [ ] Design it (spec): `/architect extraction accuracy` · after feature 6 ships, since the eval runner produces the evidence the fixes are chosen on
+- [ ] Design it (spec): `/architect extraction accuracy` · next, unblocked: feature 6 shipped and its counted evidence is in the table above
 
 ### 11. Review volume and routing policy · needs a decision · from spec 0002
 How much the routing rules should hold back, decided on logged evidence rather than on feel. Measured over the 8 units extracted so far: **403 queue rows against 71 accepted entities**, by reason `runs_disagree` 340, `endpoint_not_accepted` 98, `known_trap_flag` 77, `unclassified_type` 1, and concentrated in the heterogeneous units (0012 122, feature-21 114, 0021 76, 0006 53, 0008 38). Extrapolated across 188 sections that is thousands of rows with one reviewer, which is not a workable review step. HANDOFF's own plan was always to loosen routing once logged review decisions showed where it over flags; `artifacts/review-log.json` now exists and is empty, so that evidence can finally start accumulating. Measure the accept to review ratio **per unit kind**, since the counts above say the problem is concentrated rather than uniform, then decide a loosening policy. Two things this must not do: loosen the comparison itself, which spec 0002 names as the one change that would put unverified items into the graph, and treat near duplicate queue entries from AC-11a's line sensitivity as extraction defects. Spec 0002's AC-11(d) adds no rows today and is not the cause. **Added 2026-09-23**: neither is AC-11(e), but it is not nothing either. Spec 0002's AC-7 amendment puts a `label` into the comparison signature, model produced text and a new source of run to run disagreement the same way flags were; the 403 against 71 count above was measured before that lands (feature 4's build plan tasks 16 and 17, unbuilt). Re measure after those land, not before, or this feature's per unit kind ratio is measuring a signature that no longer exists.
@@ -191,7 +223,7 @@ How much the routing rules should hold back, decided on logged evidence rather t
 **Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** the held out questions are run with `tracepath eval --eval-file eval/held-out.json --release-held-out`, only once this feature and feature 13 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
-- [ ] Design it (spec): `/architect review volume and routing policy` · blocked until feature 6 ships, because the eval runner is what produces the evidence this decision rests on
+- [ ] Design it (spec): `/architect review volume and routing policy` · feature 6 has shipped, so the eval runner exists; still waits on feature 13 by the order above
 
 ## Slice 6: Rationale and alternatives
 
