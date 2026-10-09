@@ -169,6 +169,34 @@ Extend extraction from the hand picked records to every record in the snapshot, 
 ### 13. Extraction accuracy · needs a decision · from spec 0003
 Whether extracted items are right, not only repeatable. Prompt `0003.1` failed the accuracy bar (experiment 0005's `data/method-notes.md`: at least two thirds of entity marks and of relationship marks per unit agree) on 3 of 6 results in [experiment 0006](../../experiments/0006-accuracy-bar-recheck/README.md) (`0015` entities 2/10, `feature-33` entities 5/10 and relationships 3/5), after 5 of 6 in experiment 0005; the bar's dropped link clause is unmeasured. Spec 0003 closed feature 12 without fixing this (AC-32 to AC-35) and lists the candidate causes in its Follow up: no written definitions for the eight entity types, splitting and label refinements, checkable facts left in rejected text, the workflow stage question, and the deliberate decision link. Its fix ladder: rules the model was never given, then prompt or example quality, then vocabulary gaps.
 **Ordering:** after feature 6, so fixes are chosen by which gaps actually break eval chains. Before feature 11, because accuracy fixes change the prompt and so the review volume, and setting the routing policy first risks tuning thresholds around a defect, the same reason feature 11 waits on feature 12. Its order against features 7 (name resolution) and 8 (history aware traversal) is decided by feature 6's results: fix first whichever of unresolved names, history, or extraction accuracy breaks the most eval questions. Feature 5 is not blocked by it, and feature 10 (Slice 6) is unaffected. Spec 0002's vocabulary revisit Follow up (`8bcd9df`) is split (decided 2026-10-04): only the ruling of experiment 0008's one `0006 ## Feature design` sentence happens before feature 5, and it joins this feature's evidence; the full written definitions for the eight types stay here, after feature 6, chosen on evidence across all five eval questions.
+**Evidence from feature 6, counted 2026-10-08.** Source: `experiments/0011-eval-runner/data/eval.txt` and `eval-with-held.txt` only. Each item that prints `not reached` is classed by its printed reason: `held_for_review` counts toward feature 13; an Unresolved node at the end of the walk toward feature 7; a `SUPERSEDED_BY` step or a struck item toward feature 8. When the printed reason is `held_for_review`, the reason decides, so a struck item with that reason counts toward 13. A struck item with any other reason counts toward 8. Anything else is listed as fitting none. Question 4 is `INCONCLUSIVE` and its two `not reached` items are the wanted outcome of an absence question, so it is listed but not counted.
+
+Default view (`eval.txt`), items by class:
+
+| Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
+| --- | --- | --- | --- | --- | --- |
+| 1 | FAIL | 2 | 0 | 0 | 0 |
+| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
+| 3 | FAIL | 4 | 0 | 1 (the struck test scenario, `link_held`) | 0 |
+| 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
+| 5 | FAIL | 4 | 0 | 0 | 3 (`no_link`) |
+| Items | | 14 | 0 | 1 | 4 |
+| Questions broken | | 4 | 0 | 1 | |
+
+Held view (`eval-with-held.txt`), `not reached` items only:
+
+| Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
+| --- | --- | --- | --- | --- | --- |
+| 1 | FAIL | 1 | 0 | 0 | 0 |
+| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
+| 3 | FAIL | 2 | 0 | 0 | 0 |
+| 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
+| 5 | FAIL | 3 | 0 | 0 | 3 (`no_link`) |
+| Items | | 10 | 0 | 0 | 4 |
+| Questions broken | | 4 | 0 | 0 | |
+
+The word Unresolved appears in neither file, so feature 7 counts zero in both views. In the held view, question 3's three `held only` items (two struck, one reached through a `SUPERSEDED_BY` step) are not `not reached`, so they are outside this count. Counted anyway, feature 8 would touch question 3 only, one question, and the order would not change.
+
 **Guard, set 2026-10-06** (see feature 5): this feature may still choose which causes to fix from feature 6's results, but it commits a written, numeric criterion for when a fix succeeds before trying any fix; git order proves it came first. The held out questions (feature 6) are committed before it starts and stay unrun and unread until this feature and feature 11 have both locked their choices.
 
 **Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** no worked example and no prompt change may draw on a section cited by `eval/held-out.json` (spec 0006 AC-25 tests the examples). This feature re checks the evidence flags in `eval/runner.json` whenever it edits `examples/`, because spec 0006 AC-20's digest test fails until they are re checked. Running the held out questions is `tracepath eval --eval-file eval/held-out.json --release-held-out`, and only once this feature and feature 11 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
