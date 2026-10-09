@@ -148,7 +148,7 @@ Let a person type a plain English question and get a start item for the walk, in
 ### 7. Name resolution · needs a decision
 Match records that name the same thing by number, nickname, or file name, so a chain doesn't quietly break across names. When a match isn't confident, the name is marked unresolved and shown, never guessed.
 **Done when:** a chain whose links use different names for the same record resolves correctly, and an uncertain match shows up as unresolved in the output.
-**Eval count, 2026-10-08** (see feature 13): no `not reached` item ends at an Unresolved node in either eval output, so this feature breaks 0 questions today. Spec [0006](../specs/0006-eval-runner/index.md) expects question 5's "feature 21" reference to need it once the held items are released.
+**Eval count, 2026-10-08** (see feature 13): not measurable from eval output, which prints no chain (spec 0006 AC-9c); question 5's three `no_link` items are the likely cases, to confirm with `trace --eval 5 --with-held`. Spec [0006](../specs/0006-eval-runner/index.md) expects question 5's "feature 21" reference to need it once the held items are released.
 - [ ] Design it (spec): `/architect name resolution`
 
 ## Slice 4: History aware traversal
@@ -177,29 +177,29 @@ Default view (`eval.txt`), items by class:
 
 | Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
 | --- | --- | --- | --- | --- | --- |
-| 1 | FAIL | 2 | 0 | 0 | 0 |
-| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
-| 3 | FAIL | 4 | 0 | 1 (the struck test scenario, `link_held`) | 0 |
+| 1 | FAIL | 2 | not measurable | 0 | 0 |
+| 2 | FAIL | 4 | not measurable | 0 | 1 (`link_held`) |
+| 3 | FAIL | 4 | not measurable | 1 (the struck test scenario, `link_held`) | 0 |
 | 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
-| 5 | FAIL | 4 | 0 | 0 | 3 (`no_link`) |
-| Items | | 14 | 0 | 1 | 4 |
-| Questions broken | | 4 | 0 | 1 | |
+| 5 | FAIL | 4 | not measurable | 0 | 3 (`no_link`) |
+| Items | | 14 | not measurable | 1 | 4 |
+| Questions broken | | 4 | not measurable | 1 | |
 
 Held view (`eval-with-held.txt`), `not reached` items only:
 
 | Question | Result | Feature 13 | Feature 7 | Feature 8 | Fits none |
 | --- | --- | --- | --- | --- | --- |
-| 1 | FAIL | 1 | 0 | 0 | 0 |
-| 2 | FAIL | 4 | 0 | 0 | 1 (`link_held`) |
-| 3 | FAIL | 2 | 0 | 0 | 0 |
+| 1 | FAIL | 1 | not measurable | 0 | 0 |
+| 2 | FAIL | 4 | not measurable | 0 | 1 (`link_held`) |
+| 3 | FAIL | 2 | not measurable | 0 | 0 |
 | 4 | INCONCLUSIVE | not counted (2 `held_for_review`) | not counted | not counted | not counted |
-| 5 | FAIL | 3 | 0 | 0 | 3 (`no_link`) |
-| Items | | 10 | 0 | 0 | 4 |
-| Questions broken | | 4 | 0 | 0 | |
+| 5 | FAIL | 3 | not measurable | 0 | 3 (`no_link`) |
+| Items | | 10 | not measurable | 0 | 4 |
+| Questions broken | | 4 | not measurable | 0 | |
 
-The word Unresolved appears in neither file, so feature 7 counts zero in both views. In the held view, question 3's three `held only` items (two struck, one reached through a `SUPERSEDED_BY` step) are not `not reached`, so they are outside this count. Counted anyway, feature 8 would touch question 3 only, one question, and the order would not change.
+Corrected 2026-10-09: the feature 7 column is not evidence. `eval` prints no chain (spec [0006](../specs/0006-eval-runner/index.md) AC-9c), so an Unresolved node can never appear in `eval.txt` or `eval-with-held.txt`, and a count of 0 there would be true whatever the graph holds. Feature 7 is not measurable from eval output. Question 5's three `no_link` items are the likely feature 7 cases (its prediction names the unresolved "feature 21" node). Confirm with `uv run tracepath trace --eval 5 --with-held`, which prints the chain, before features 7 and 8 are ordered. In the held view, question 3's three `held only` items (two struck, one reached through a `SUPERSEDED_BY` step) are not `not reached`, so they are outside this count. Counted anyway, feature 8 would touch question 3 only, one question, and the order would not change.
 
-**Queued next, 2026-10-08:** this feature, by the rule above. It breaks 4 of the 5 questions in both views, against 1 for feature 8 (default view only) and 0 for feature 7. One caution carried with it: `held_for_review` is the output of the routing rules, so the count shows that held items break the chains, not yet that an extraction defect holds them. Whether the cause is accuracy or the routing policy of feature 11 is part of the design question here, and the committed numeric criterion (Guard, below) must say which it is testing.
+**Queued next, 2026-10-08:** this feature, by the rule above. It breaks 4 of the 5 questions in both views, against 1 for feature 8 (default view only); feature 7 is not measurable from eval output (see the correction above). The queue is unchanged. One caution carried with it: `held_for_review` is the output of the routing rules, so the count shows that held items break the chains, not yet that an extraction defect holds them. Whether the cause is accuracy or the routing policy of feature 11 is part of the design question here, and the committed numeric criterion (Guard, below) must say which it is testing.
 
 **Guard, set 2026-10-06** (see feature 5): this feature may still choose which causes to fix from feature 6's results, but it commits a written, numeric criterion for when a fix succeeds before trying any fix; git order proves it came first. The held out questions (feature 6) are committed before it starts and stay unrun and unread until this feature and feature 11 have both locked their choices.
 
