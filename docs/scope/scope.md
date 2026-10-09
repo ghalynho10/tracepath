@@ -20,7 +20,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 3 | Corpus snapshot & eval set | Foundation | done |
 | 4 | Data model | Foundation | done |
 | 5 | First traced chain | Slice 1 | in-progress |
-| 6 | Eval runner | Slice 2 | in-progress |
+| 6 | Eval runner | Slice 2 | done |
 | 7 | Name resolution | Slice 3 | planned |
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
@@ -117,7 +117,7 @@ spec [0005](../specs/0005-held-item-view/index.md) · amends spec [0002](../spec
 
 ## Slice 2: Eval runner
 
-### 6. Eval runner · in-progress
+### 6. Eval runner · done
 One small script that runs the five eval questions and compares each returned chain to its expected chain. From here on, every later slice is measured by it.
 **Done when:** one command prints pass or fail per question with the difference shown, and the runner reproduces experiment 0009's question 3 output from the run files as committed at `36a6bc5`.
 **Changed 2026-10-06** (see feature 5): the Done when used to end "and the slice 1 question passes". That question failed on routing, not on the walk or the runner, so a finish line waiting on it would tie this feature to feature 11's policy and close the cycle again. The runner reuses feature 14's view for all five questions.
