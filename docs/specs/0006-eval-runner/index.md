@@ -1,7 +1,7 @@
 # 0006. Eval runner
 
 **Date**: 2026-10-07
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
@@ -281,4 +281,5 @@ Tracer Bullet: the thinnest real thread first (the runner over a fixture, then o
 - [ ] **Feature 7 and feature 8**: question 5's result is evidence for alias resolution ("feature 21") and for `SPECIFIED_BY` and feature `PART_OF` links. Neither is built here.
 - [ ] **Duplicate section names**: spec 0004's follow up stays open (`unit_for()` and the two `Build plan` units of spec 0007). None of the eight units is affected.
 - [ ] **`verify.md`** owes steps for every AC, added by `/develop` with the build.
-- [ ] **`/sync`** adds `tracepath eval` and `eval/runner.json` to `AGENTS.md` after the build.
+- [x] **`/sync`** adds `tracepath eval` and `eval/runner.json` to `AGENTS.md` after the build.
+- [ ] **A future held out file** must set `"held_out"` to the JSON value `true`. The reader treats the string `"true"` as not held out, so the refusal would not apply.

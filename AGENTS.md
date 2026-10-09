@@ -27,6 +27,9 @@ uv run tracepath load            # rebuild the graph from artifacts/runs/, no AP
 uv run tracepath trace START     # walk a chain; trace --eval N scores eval question N
 uv run tracepath load --with-held # also write held items, marked held (spec 0005); rewrites graph-build.json with held_view, so a plain load after restores the default
 uv run tracepath trace START --with-held   # walk through held items, each printed HELD:; refuses a graph not loaded --with-held
+uv run tracepath eval            # score every question of eval/linked-records-research.json: pass, fail or inconclusive, no API call (spec 0006); eval/runner.json is its sidecar (evidence flags and the examples digest)
+uv run tracepath eval --with-held   # score under the held item view too; needs a graph from load --with-held
+uv run tracepath eval --eval-file F --release-held-out   # run a held out file; refused without the flag, and only once features 13 and 11 have committed
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
