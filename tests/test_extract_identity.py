@@ -413,6 +413,67 @@ def test_where_one_id_carries_struck_and_unstruck_text_only_the_unstruck_keeps_i
     assert old.canonical_id == "0021#requirements:1"
 
 
+def _one_verbatim_entity(span: str) -> ExtractionOutput:
+    return ExtractionOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "id": "AC-10",
+                    "id_source": "verbatim",
+                    "type": "AcceptanceCriterion",
+                    "span": span,
+                }
+            ],
+            "relationships": [],
+        }
+    )
+
+
+def test_a_span_opening_with_its_id_is_struck_when_its_whole_body_is_struck() -> None:
+    # The model's span keeps `**AC-10**:`, which sits outside the `~~` markers. The body
+    # after it is wholly struck, so the entity is struck (AC-5); the later unstruck
+    # SUPERSEDED note is not part of the span.
+    unit = unit_of(
+        "- **AC-10**: ~~Password sign in is impossible on production.~~ "
+        "· **SUPERSEDED 2026-08-30 by spec 0007.** Kept rather than deleted.\n"
+    )
+    raw = _one_verbatim_entity("**AC-10**: Password sign in is impossible on production.")
+
+    output = assign_ids(locate_output(unit, raw), "0002", "requirements")
+
+    assert output.entities[0].struck is True
+    assert output.entities[0].canonical_id == "0002/AC-10"
+
+
+def test_a_span_opening_with_its_id_is_not_struck_when_it_runs_into_live_text() -> None:
+    # Only the first sentence is struck. A span that also holds the live text after it
+    # is a current fact and must not be filed as obsolete (spec 0001, amendment b).
+    unit = unit_of(
+        "- **AC-10**: ~~The entry page has two real submits.~~ "
+        "The `COPY-1` label is gone because it became false.\n"
+    )
+    raw = _one_verbatim_entity(
+        "**AC-10**: The entry page has two real submits. "
+        "The `COPY-1` label is gone because it became false."
+    )
+
+    output = assign_ids(locate_output(unit, raw), "0007", "requirements")
+
+    assert output.entities[0].struck is False
+
+
+def test_a_span_opening_with_its_id_is_not_struck_when_nothing_is_struck() -> None:
+    unit = unit_of("- **AC-10**: The page renders.\n")
+
+    output = assign_ids(
+        locate_output(unit, _one_verbatim_entity("**AC-10**: The page renders.")),
+        "0007",
+        "requirements",
+    )
+
+    assert output.entities[0].struck is False
+
+
 def test_an_endpoint_naming_no_entity_raises_rather_than_writing_a_dangling_link() -> None:
     unit = unit_of("- **AC-1**: the criterion.\n")
     raw = ExtractionOutput.model_validate(
