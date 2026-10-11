@@ -54,6 +54,8 @@ OUTSIDE_AFTER = (
     "  0007#consequences:4 -[unclassified]-> 0002 · "
     "specs/0007-auth-and-per-user-isolation/index.md · Consequences\n"
 )
+HOP_0_STRUCK_BEFORE = "hop 0  0002/AC-10  AcceptanceCriterion  struck: false  HELD:"
+HOP_0_STRUCK_AFTER = "hop 0  0002/AC-10  AcceptanceCriterion  struck: true  HELD:"
 
 runner = CliRunner()
 
@@ -427,18 +429,22 @@ def test_ac_27_question_3_still_prints_the_result_experiment_0010_recorded(loads
     The record is frozen, so what changed since is applied to it here rather than written
     into it: spec 0006 AC-10's start marker on an item line at hop 0, and the one accepted
     link outside the expected sections that `0007 ## Consequences`, extracted for spec
-    0006 (`3420bc7`), now writes into question 3's records.
+    0006 (`3420bc7`), now writes into question 3's records, and `struck: true` on the
+    hop 0 item `0002/AC-10`, whose span opens with its id and sits wholly inside a struck
+    range (spec 0002 AC-5; the record predates the fix that reads that span correctly).
     """
     code, stdout, stderr = loads.question_3[0]
     recorded = (
         RECORDED.read_text()
         .replace(" · hop 0 · ", " · hop 0 · the start · ")
         .replace(OUTSIDE_BEFORE, OUTSIDE_AFTER)
+        .replace(HOP_0_STRUCK_BEFORE, HOP_0_STRUCK_AFTER)
     )
 
     assert (code, stderr) == (0, "")
     assert recorded.count("hop 0 · the start") == 1, "the record holds one hop 0 item line"
     assert OUTSIDE_BEFORE in RECORDED.read_text(), "the record holds the outside links line"
+    assert RECORDED.read_text().count(HOP_0_STRUCK_BEFORE) == 1, "the record holds the hop 0 item"
     assert stdout == recorded
 
 

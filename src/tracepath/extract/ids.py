@@ -32,6 +32,10 @@ from tracepath.extract.units import Unit, UnitKind
 #: The one section the binding rule label pre-check reads (spec 0003, AC-5).
 BINDING_RULES_SECTION = "Binding rules"
 
+#: The id token a verbatim entity's span opens with, e.g. `**AC-10**: `. It sits outside
+#: any `~~` markers, so it must not decide whether the entity is struck.
+SPAN_ID_PREFIX = re.compile(r"\s*\**AC-\d+[a-z]?\**\s*:\s*")
+
 
 class IdAssignmentError(Exception):
     """An output cannot be given canonical ids as it stands."""
@@ -115,11 +119,14 @@ def locate_output(unit: Unit, output: ExtractionOutput) -> LocatedOutput:
         if location is None and entity.id_source is IdSource.VERBATIM:
             location = locate_line(unit, entity.span)
         span_offset = _struck_probe(unit, entity, location)
+        struck = is_struck(struck_ranges, span_offset) or _body_is_struck(
+            unit, entity, struck_ranges
+        )
         located.append(
             LocatedEntity(
                 entity=entity,
                 location=location,
-                struck=is_struck(struck_ranges, span_offset),
+                struck=struck,
                 followup_status=(
                     checkbox_status_at(checkboxes, location.offset if location else None)
                     if entity.type is EntityType.FOLLOW_UP
@@ -186,6 +193,33 @@ def _struck_probe(unit: Unit, entity: ExtractedEntity, location: Location | None
     if span_location is not None:
         return span_location.offset
     return location.offset if location else None
+
+
+def _body_is_struck(
+    unit: Unit, entity: ExtractedEntity, struck_ranges: tuple[StruckRange, ...]
+) -> bool:
+    """True when a span that opens with its id token has its whole body inside one struck range.
+
+    The model's span for a struck criterion starts at `**AC-10**:`, which is outside the
+    `~~`, so testing where the span starts misses it (spec 0002 AC-5). The body after
+    the token is what decides. A body that runs on into live text is not struck, so a
+    current fact is never filed as obsolete.
+    """
+    if entity.id_source is not IdSource.VERBATIM:
+        return False
+    prefix = SPAN_ID_PREFIX.match(entity.span)
+    if prefix is None:
+        return False
+    body = entity.span[prefix.end() :]
+    if not body.strip():
+        return False
+    where = locate_line(unit, body)
+    if where is None:
+        return False
+    for struck in struck_ranges:
+        if struck.contains(where.offset):
+            return where.offset + len(body) <= struck.end
+    return False
 
 
 def _ordering_key(located: LocatedEntity) -> tuple[int, int, int]:
