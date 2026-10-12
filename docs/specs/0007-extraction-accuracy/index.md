@@ -3,10 +3,11 @@
 **Date**: 2026-10-09
 **Status**: In Progress
 **Amended**: 2026-10-12, after AC-31 stopped the build, with no paid call. The calibration count moves to the `claude-sonnet-5-5` figure (AC-31, AC-31f, AC-31g), and build plan steps 1 and 4 are written (specs 0001 and 0002 amended). Reasons and counts in [rationale.md](rationale.md).
+**Amended again**: 2026-10-12, before any paid call. Step one's ruling is cut to what the gate reads, in two stages: stage one rules released entities against a few control entities, and stage two rules released links only if stage one passes and the engineer wants the pass on by default. The full bar is no longer measured in this step (AC-18b, AC-19 to AC-19i, AC-25 to AC-25f, AC-28 to AC-28e). Reasons in [rationale.md](rationale.md).
 
 ## Summary
 
-This spec is the first measured step of feature 13 (extraction accuracy). It does two things. It moves the extraction model from `claude-sonnet-5` to `claude-sonnet-5-5` (same price, a base decision, not an accuracy claim). And it adds a code pass that narrows one hold: an acceptance criterion item whose three runs agree on its id and type is no longer held only because it carries the `multi_condition_split` flag. The item keeps the flag, so the engineer's ruling convention applies unchanged. The step is measured by comparing the pass off against on over the same run files, with the engineer's blind rulings. It passes on what it changed (the released entities and the released links each reach two thirds agreement, and nothing accepted before is lost), while experiment 0005's full bar is reported every time. The pass releases items on code's authority, so it stays off by default until a measurement passes. The flag change and the type definitions stay in feature 13 and get their own spec or amendment once this step's rulings exist.
+This spec is the first measured step of feature 13 (extraction accuracy). It does two things. It moves the extraction model from `claude-sonnet-5` to `claude-sonnet-5-5` (same price, a base decision, not an accuracy claim). And it adds a code pass that narrows one hold: an acceptance criterion item whose three runs agree on its id and type is no longer held only because it carries the `multi_condition_split` flag. The item keeps the flag, so the engineer's ruling convention applies unchanged. The step is measured by comparing the pass off against on over the same run files, with the engineer's blind rulings. It passes on what it changed, in two stages: first the released entities reach two thirds agreement and nothing accepted before is lost; then, only if the engineer wants the pass on by default, the released links reach two thirds too. Experiment 0005's full bar is not measured in this step; it is measured once on feature 13's final state. The pass releases items on code's authority, so it stays off by default until a measurement passes. The flag change and the type definitions stay in feature 13 and get their own spec or amendment once this step's rulings exist.
 
 ## Requirements
 
@@ -55,27 +56,31 @@ This spec is the first measured step of feature 13 (extraction accuracy). It doe
 
 *The measure*
 - **AC-18**: The full bar is experiment 0005's, with three clauses per unit: at least two thirds of ruled entity marks agree, at least two thirds of ruled relationship marks agree, and no more than 1 in 5 sampled dropped links is real.
-- **AC-18b**: The full bar is computed and reported for both arms in every chosen unit, and it is not the gate of this spec; feature 13's Done when still requires its final state to meet it.
+- **AC-18b**: The full bar is not computed in this step. It is measured once, on feature 13's final state, as feature 13's Done when requires. **Amended 2026-10-12**: it was computed and reported for both arms; the pass creates and drops no links, so the relationship and dropped link marks could not move with it.
 - **AC-18c**: A mark the engineer rules `unsure` is counted on its own and is neither agree nor disagree.
 - **AC-18d**: A disagreement that comes only from knowledge not in the text is reported apart and does not fail a unit.
 - **AC-18e**: A sampled item left unruled is reported apart from the counts.
-- **AC-19**: The gate of this spec: in every chosen unit, at least two thirds of the ruled released entity marks agree. The pass changes only the released items, so the step is judged on what it changed.
+- **AC-19**: The gate of stage one: in every chosen unit, at least two thirds of the ruled released entity marks agree (4 of 5 when all 5 are ruled). The pass changes only the released items, so the step is judged on what it changed. **Amended 2026-10-12**: over the 5 released entity marks of AC-25b, not up to 10.
 - **AC-19b**: No regression: every entity and link accepted without `--code-pass` is accepted with it, checked by code over the chosen units.
-- **AC-19c**: A chosen unit with fewer than 5 released entities is inconclusive, and the step passes only when no chosen unit is inconclusive.
-- **AC-19d**: When the step fails or is inconclusive, the pass stays off, the result is recorded, and what comes next is the engineer's decision.
-- **AC-19e**: The gate (AC-19 to AC-19g) and its reason are committed before the first paid call.
-- **AC-19f**: In every chosen unit with at least 5 ruled released link marks, at least two thirds agree, the full bar's own relationship threshold.
-- **AC-19g**: A chosen unit with fewer than 5 ruled released link marks is reported, not gated, and the result says so.
+- **AC-19c**: A chosen unit with fewer than 5 released entities is inconclusive, and stage one passes only when no chosen unit is inconclusive.
+- **AC-19d**: When either stage fails or is inconclusive, the pass stays off, the result is recorded, and what comes next is the engineer's decision.
+- **AC-19e**: The gate (AC-19 to AC-19i) and its reason are committed before the first paid call.
+- **AC-19f**: The gate of stage two: in every chosen unit where 5 released link marks are drawn, at least two thirds of the ruled ones agree, the full bar's own relationship threshold. **Amended 2026-10-12**: the unit is gated by how many are drawn, not how many are ruled.
+- **AC-19g**: A chosen unit where fewer than 5 released link marks are drawn is reported, not gated, and the result says so.
+- **AC-19h**: Stage two runs only after stage one passes and the engineer says they want the pass on by default; otherwise no link is drawn or ruled. **Added 2026-10-12.**
+- **AC-19i**: A stage one pass alone never turns the default of the pass on; that needs stage two to pass. **Added 2026-10-12.**
 - **AC-20**: The control is the run files read without `--code-pass` and the treatment is the same run files read with it.
 - **AC-21**: A dropped link is a relationship, keyed by `relationship_signature`, that at least one of the three runs wrote and that is not accepted after the cross unit hold. It is real when the engineer rules it a true relationship stated in the text.
 - **AC-22**: The chosen units are listed in `experiments/<step folder>/units.json` with the `expected_model`, and the step is scored from no other list.
 - **AC-22b**: The artifacts of the chosen units were extracted after the commit date of `units.json` (shown by their `extracted_at` values), so the units were chosen first.
 - **AC-23**: No chosen unit is in records 0004, 0005, 0010, 0016, 0017, 0018 or 0020 (the held out questions may cite them), in records 0006, 0008, 0012, 0019 or `scope` (worked examples draw on them), or in records 0002 or 0021 (the pass was checked on them).
 - **AC-24**: No chosen unit is one experiments 0005 and 0006 ruled, read from the unit lists in those two experiments' READMEs.
-- **AC-25**: Per unit, the step draws from the control arm 10 entity marks from its accepted entities, 5 relationship marks from its accepted links and 15 dropped links, at random.
-- **AC-25b**: Per unit, the step draws from the released items up to 10 released entity marks and up to 5 released link marks, the links found by resolving the corpus with and without the pass.
+- **AC-25**: Stage one draws, per unit, 3 entity marks from the control arm's accepted entities, at random, mixed blind with the marks of AC-25b. **Amended 2026-10-12**: it drew 10 entity marks, 5 relationship marks and 15 dropped links from the control arm.
+- **AC-25b**: Stage one draws, per unit, 5 released entity marks, at random. **Amended 2026-10-12**: it drew up to 10.
 - **AC-25c**: The seed of each draw is recorded.
 - **AC-25d**: A draw that asks for more items than exist rules all there are and states the shortfall.
+- **AC-25e**: Stage two draws, per unit, up to 5 released link marks, at random, the links found by resolving the corpus with and without the pass. **Added 2026-10-12.**
+- **AC-25f**: This step draws no relationship marks from the control arm and no dropped links. **Added 2026-10-12.**
 - **AC-26**: The engineer rules the drawn items mixed, each under an opaque id and in shuffled order.
 - **AC-26b**: The hash of the file naming each item's arm is committed before the rulings.
 - **AC-26c**: The arm file itself is committed after the rulings.
@@ -83,10 +88,11 @@ This spec is the first measured step of feature 13 (extraction accuracy). It doe
 - **AC-26e**: After the rulings, code counts as disagree an entity the engineer tagged `gap:bundled-ac` and ruled agree whose entity carries no `multi_condition_split` flag, and reports how many it flipped.
 - **AC-27**: An item present in both arms, the same canonical id with the same span text for an entity or the same signature for a link, is ruled once.
 - **AC-27b**: Each arm's score is computed from the item rulings.
-- **AC-28**: The result shows the full bar of both arms side by side for every chosen unit.
+- **AC-28**: The result shows, for every chosen unit, the ruled released entity marks and the ruled control entity marks side by side, and the ruled released link marks when stage two ran. **Amended 2026-10-12**: it showed the full bar of both arms.
 - **AC-28b**: The result shows the number of held items on the chosen units.
 - **AC-28c**: The result shows eval chain reach from `tracepath eval` over `eval/linked-records-research.json`, before and after the chosen units landed in the graph.
-- **AC-28d**: Neither the held item count nor eval chain reach is a pass condition.
+- **AC-28d**: None of the held item count, eval chain reach and the control entity marks is a pass condition.
+- **AC-28e**: The result states that experiment 0005's full bar was not measured in this step and is owed on feature 13's final state. **Added 2026-10-12.**
 - **AC-29**: `extract` exits 1 before any call when the settings model differs from the model given by `--expect-model`.
 - **AC-29b**: Scoring refuses any run whose artifact `model` differs from the `expected_model` in `units.json`.
 - **AC-30**: The tests and tooling of this spec never open `eval/held-out.json`.
@@ -135,7 +141,7 @@ Switch the model and add an off by default code pass that narrows one hold, then
 | Report | the counts of AC-17 | routing each unit twice and resolving the corpus twice, with and without the pass |
 | Manifest | `code_pass` | the flag passed to `load` |
 | Units list | expected model, chosen units | written by hand into `units.json` (AC-22) |
-| Measure | the sample | the accepted and dropped sets of the chosen units, drawn with a recorded seed (AC-25) |
+| Measure | the sample | stage one: the control arm's accepted entities and the released entities of the chosen units; stage two: the released links; each drawn with a recorded seed (AC-25 to AC-25f) |
 | Measure | the arm key | a file written by the draw, hashed before rulings (AC-26b) |
 | Estimate | rates per model | the model in the settings (AC-5c), recorded spend at the artifact's model (AC-5d), the first paid call's measured cost (AC-31c) |
 | Estimate | calibration count, cached prefix | the free count of `0014:Requirements` under `claude-sonnet-5-5`, 61,110 (AC-31f); the cache write billed on `claude-sonnet-5` in experiment 0008, 57,494, until the first paid call on `claude-sonnet-5-5` reports its own (AC-31g). **Added 2026-10-12** |
@@ -144,7 +150,7 @@ Switch the model and add an off by default code pass that narrows one hold, then
 - With the flag off, the output is what it was for the same run files (AC-6, AC-6b). `code_pass` is absent from the manifest when off, like `held_view`. The default graph gains the chosen units when they land (AC-32).
 - The run files under `artifacts/runs/` are never edited, and a `load --code-pass` rewrites the tracked `artifacts/graph-build.json` (a plain `load` restores it).
 - Code decides no span, no type, no link. It decides only that the `multi_condition_split` flag alone does not hold an item whose three runs agree on id and type.
-- Items released this way are still not known to be correct. Their accuracy is what the measure tests (AC-19), and the default is turned on only after a pass.
+- Items released this way are still not known to be correct. Their accuracy is what the measure tests (AC-19, AC-19f), and the default is turned on only after stage two passes (AC-19i).
 
 **Failure and edge cases**:
 - A run without the bullet's entity, or with it under another type, or with two claimants of its id: the id is not code decided and the report counts it (AC-10, AC-17).
@@ -172,8 +178,9 @@ Approach: Tracer Bullet. The free changes first, then one real extraction measur
 4. Amend spec 0002: `accepted_by` may read `code_pass`, line 199 and the flag churn test (line 234) say what the pass changes. Satisfies **AC-34**. **Written 2026-10-12.**
 5. Write `units.json` (0009, 0013, 0015 `## Requirements`, expected model `claude-sonnet-5-5`), check it against AC-23 and AC-24 with a test, and commit it together with the gate of AC-19 and its reason, before any paid call. Satisfies **AC-19e**, **AC-22**, **AC-23**, **AC-24**.
 6. Run the free token count (AC-31). If it matches, state the per call bound and wait for the engineer's go, then run one paid call by setting the ceiling just above that bound and using `--resume` for the rest of the unit. Then give a measured estimate for the remaining calls, wait for the go again, and run `tracepath extract --expect-model claude-sonnet-5-5` with a ceiling, one unit per command, with the repository as root. Record eval chain reach before and after. Satisfies **AC-22b**, **AC-28c**, **AC-31** to **AC-32**. **Amended 2026-10-12**: after the first paid call, compare its reported cache write with the cached prefix (57,494) before giving the measured estimate (AC-31c); a difference is recorded in this spec before the estimate uses it.
-7. Build the sampler and the blind packet (opaque ids, shuffled, flags hidden, arm key hashed first). The engineer rules, then code applies the flip of AC-26e, both arms are scored and the result recorded. Satisfies **AC-18** to **AC-19g**, **AC-20**, **AC-21**, **AC-25** to **AC-30**.
-8. Only after a pass, and if the engineer says so, flip the default of the pass in its own commit. Not before. Satisfies **AC-33**, **AC-33b** by what it leaves out.
+7. Stage one. Build the sampler and the blind packet (opaque ids, shuffled, flags hidden, arm key hashed first), drawing 3 control entity marks and 5 released entity marks per unit. The engineer rules, then code applies the flip of AC-26e, checks no regression, scores each unit and records the result. Satisfies **AC-18c** to **AC-19e**, **AC-20**, **AC-25** to **AC-25d**, **AC-25f** to **AC-30**, and **AC-18**, **AC-18b**, **AC-21** by what it leaves out (they define the full bar owed on feature 13's final state). **Amended 2026-10-12**: it drew the full bar's sample from both arms.
+8. Stage two, only if stage one passed and the engineer says they want the pass on by default: draw up to 5 released link marks per unit, the engineer rules them, and code scores and records them. Satisfies **AC-19f** to **AC-19h**, **AC-25e**. **Added 2026-10-12.**
+9. Only after stage two passes, and if the engineer says so, flip the default of the pass in its own commit. Not before. Satisfies **AC-19i**, and **AC-33**, **AC-33b** by what it leaves out.
 
 ## Consequences
 
@@ -188,9 +195,12 @@ Approach: Tracer Bullet. The free changes first, then one real extraction measur
 - The pass releases items on code's authority, though the runs agreeing shows repeatability and not correctness. Feature 11 starts from a hold narrowed here, and each report counts what was released.
 - The graph mixes models until feature 9, so a chain can cross units made by two models. `load` says so (AC-4).
 - The three chosen units join the default graph when they land, so eval reach may move once (AC-32, AC-28c).
-- The flag change and the type definitions are not designed here. Feature 13 stays open until they are, and its final state must meet the full bar, which this spec only reports.
-- A pass here does not show the rest of the bar is met: the other accepted entities, the relationship marks and the dropped links are reported, not gated.
-- Ruling is heavy: up to 15 control items, 15 released items and 15 dropped links per unit. An item present in both arms is ruled once (AC-27).
+- The flag change and the type definitions are not designed here. Feature 13 stays open until they are, and its final state must meet the full bar, which this spec does not measure.
+- A pass here does not show the rest of the bar is met: the other accepted entities, the relationship marks and the dropped links are not measured in this step. The full bar is measured once, on feature 13's final state.
+- The gate rests on 5 released entity marks per unit: one disagreement in five still passes (4 of 5), two fail. A unit near the line can go either way on one ruling.
+- The 3 control entity marks per unit say little about the control arm. They are there so the released marks are ruled blind, and their score is reported, not gated.
+- Stage two's packet holds only released links, so the engineer rules them knowing their arm; opaque ids and shuffled order still apply.
+- Ruling is light: 8 entity marks per unit in stage one (about 24 over the three units), plus up to 5 released link marks per unit in stage two when it runs, against about 135 marks before the cut.
 
 **Neutral**:
 - A second tracked queue file exists (AC-8) until the default flips.
