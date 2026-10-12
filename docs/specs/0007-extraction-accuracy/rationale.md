@@ -73,10 +73,22 @@ Three readings in this spec are the author's, not the engineer's, and are flagge
 - **After the cross unit hold** (AC-21): a dropped link is taken after it, because that is what a chain sees.
 - **Scope of this spec**: the engineer cut the flag change, the type definitions and all machinery for comparing two prompt states (separate roots, per arm checks) from this spec. They come back in a later spec or amendment, designed from this step's rulings. The cross checks' findings about that machinery are kept in the Follow up as inputs.
 
+**The calibration count, amended 2026-10-12.** AC-31 stopped the build: under `claude-sonnet-5-5` the calibration unit counts 61,110 tokens, against the 61,108 experiment 0006 measured and `claude-sonnet-5` still counts. The engineer asked for every chosen unit to be counted under both models before deciding, with a rule set in advance: one constant difference is an overhead per request, and differences that vary mean a tokenizer change and stop the work. All four differ by exactly 2 tokens (Evidence), across units from 59,433 to 62,028 tokens with different texts, so the text is tokenized the same and the new model adds 2 tokens to each request. The calibration count moves to the new model's figure, 61,110 (AC-31f), so the check keeps its job: it still catches a prompt that changed under the measured figures. The runner up, a calibration figure per model, would keep `claude-sonnet-5` priced too, but nothing in this spec extracts on it, and without it a run on that model refuses before any call, which spends nothing.
+
+The cached prefix stays 57,494 (AC-31g). It was measured from a billed cache write on `claude-sonnet-5` (experiment 0008), not from the count endpoint, which counts the whole request and cannot split it into its cached and uncached parts. So no free count can say whether the 2 tokens sit in the prefix. It cannot be checked until the first paid call on `claude-sonnet-5-5` reports its cache write, and build plan step 6 compares it then. The engineer chose to keep the figure rather than move it by 2, because moving it would assume where the overhead sits. Either way the effect is at most 2 tokens at the $4 cache write rate, $0.000008 per call.
+
 Where the pass lives (a pure function that returns a set of ids, called from rebuild only, read by `route_runs`) is the author's call. `run_unit` has no command line caller, so extraction does not need it. The runner up, hiding the logic inside `route_runs`, would mix the pass into the comparison with no way to switch it off.
 
 ## Evidence
 
 - Held item counts: the table above, from `load --with-held` and `trace --eval N --with-held` on 2026-10-09, with the graph restored by a plain `load` after.
 - The scarcity of fresh units: from `split_units` over the corpus specs, minus the records in AC-24, 2026-10-09. Never extracted sections with acceptance criteria in Requirements: 0009 (24), 0013 (12), 0015 (17).
+- The free token counts of 2026-10-12, `messages.count_tokens` only, no extraction call, the same request `count_input()` builds (`src/tracepath/extract/metered.py`), prompt `0003.1`:
+
+  | Unit | `claude-sonnet-5` | `claude-sonnet-5-5` | Difference |
+  |---|---|---|---|
+  | `0014:Requirements` (calibration) | 61,108 | 61,110 | +2 |
+  | `0009:Requirements` | 62,028 | 62,030 | +2 |
+  | `0013:Requirements` | 59,433 | 59,435 | +2 |
+  | `0015:Requirements` | 61,284 | 61,286 | +2 |
 - Estimated cost is not given here. It is measured at step 5 from a per call cost and the real number of calls, as `docs/reflexes.md` requires.

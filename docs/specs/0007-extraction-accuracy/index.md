@@ -2,6 +2,7 @@
 
 **Date**: 2026-10-09
 **Status**: In Progress
+**Amended**: 2026-10-12, after AC-31 stopped the build, with no paid call. The calibration count moves to the `claude-sonnet-5-5` figure (AC-31, AC-31f, AC-31g), and build plan steps 1 and 4 are written (specs 0001 and 0002 amended). Reasons and counts in [rationale.md](rationale.md).
 
 ## Summary
 
@@ -91,7 +92,9 @@ This spec is the first measured step of feature 13 (extraction accuracy). It doe
 - **AC-30**: The tests and tooling of this spec never open `eval/held-out.json`.
 
 *Money*
-- **AC-31**: The free token count under `claude-sonnet-5-5` runs before any paid call, and the work stops with a report when it differs from the calibration count.
+- **AC-31**: The free token count under `claude-sonnet-5-5` runs before any paid call, and the work stops with a report when it differs from the calibration count. **Amended 2026-10-12**: it differed (61,110 against 61,108) and the work stopped. Every unit counted differs by the same 2 tokens, so the figures are moved as AC-31f and AC-31g say.
+- **AC-31f**: The calibration count in `cost.py` is 61,110, the count of `0014:Requirements` under `claude-sonnet-5-5`. **Added 2026-10-12.**
+- **AC-31g**: The cached prefix in `cost.py` stays 57,494 until a paid call on `claude-sonnet-5-5` reports its cache write. **Added 2026-10-12.**
 - **AC-31b**: The first paid call on `claude-sonnet-5-5` runs only on the engineer's go, given after its per call bound is stated.
 - **AC-31c**: After that call, a measured estimate for the remaining calls is given and the engineer's go waited for again.
 - **AC-31d**: No paid call runs without the engineer's go.
@@ -135,6 +138,7 @@ Switch the model and add an off by default code pass that narrows one hold, then
 | Measure | the sample | the accepted and dropped sets of the chosen units, drawn with a recorded seed (AC-25) |
 | Measure | the arm key | a file written by the draw, hashed before rulings (AC-26b) |
 | Estimate | rates per model | the model in the settings (AC-5c), recorded spend at the artifact's model (AC-5d), the first paid call's measured cost (AC-31c) |
+| Estimate | calibration count, cached prefix | the free count of `0014:Requirements` under `claude-sonnet-5-5`, 61,110 (AC-31f); the cache write billed on `claude-sonnet-5` in experiment 0008, 57,494, until the first paid call on `claude-sonnet-5-5` reports its own (AC-31g). **Added 2026-10-12** |
 
 **Key invariants**:
 - With the flag off, the output is what it was for the same run files (AC-6, AC-6b). `code_pass` is absent from the manifest when off, like `held_view`. The default graph gains the chosen units when they land (AC-32).
@@ -162,12 +166,12 @@ Switch the model and add an off by default code pass that narrows one hold, then
 
 Approach: Tracer Bullet. The free changes first, then one real extraction measured both ways over the same runs.
 
-1. Amend spec 0001: record the switch to `claude-sonnet-5-5`, its same price, the engineering reason (measure features 13 and 11 on the model that will be kept), that the graph mixes models until feature 9, and that `claude-sonnet-5` stays available. Satisfies **AC-1**, **AC-3**.
-2. Change `DEFAULT_MODEL`; update the places that pin its name (`tests/test_extract_client.py:71`, `tests/test_extract_guards.py:835`, `AGENTS.md:10`, `.env.example:12-13`); price a call at the model's rates in `cost.py`, refusing an unknown model; make `review-queue` rows read the artifact's model; add the units per model line to `load`; add `extract --expect-model` and the model name in the estimate line. Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5** to **AC-5f**, **AC-29**, **AC-31e**.
+1. Amend spec 0001: record the switch to `claude-sonnet-5-5`, its same price, the engineering reason (measure features 13 and 11 on the model that will be kept), that the graph mixes models until feature 9, and that `claude-sonnet-5` stays available. Satisfies **AC-1**, **AC-3**. **Written 2026-10-12.**
+2. Change `DEFAULT_MODEL`; update the places that pin its name (`tests/test_extract_client.py:71`, `tests/test_extract_guards.py:835`, `AGENTS.md:10`, `.env.example:12-13`); price a call at the model's rates in `cost.py`, refusing an unknown model; make `review-queue` rows read the artifact's model; add the units per model line to `load`; add `extract --expect-model` and the model name in the estimate line. Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5** to **AC-5f**, **AC-29**, **AC-31e**. **Amended 2026-10-12**: also set `cost.py`'s calibration count to 61,110 and keep its cached prefix at 57,494; satisfies **AC-31f**, **AC-31g**.
 3. Write `code_decided_ids` with its pure tests, thread it through `committed_units`, `_committed` and `route_runs`, then add `--code-pass`, the separate queue file, the manifest key, the `accepted_by` stamp, the refusal in `eval` and `trace --eval`, and the report (which resolves the corpus twice). Satisfies **AC-6** to **AC-17**.
-4. Amend spec 0002: `accepted_by` may read `code_pass`, line 199 and the flag churn test (line 234) say what the pass changes. Satisfies **AC-34**.
+4. Amend spec 0002: `accepted_by` may read `code_pass`, line 199 and the flag churn test (line 234) say what the pass changes. Satisfies **AC-34**. **Written 2026-10-12.**
 5. Write `units.json` (0009, 0013, 0015 `## Requirements`, expected model `claude-sonnet-5-5`), check it against AC-23 and AC-24 with a test, and commit it together with the gate of AC-19 and its reason, before any paid call. Satisfies **AC-19e**, **AC-22**, **AC-23**, **AC-24**.
-6. Run the free token count (AC-31). If it matches, state the per call bound and wait for the engineer's go, then run one paid call by setting the ceiling just above that bound and using `--resume` for the rest of the unit. Then give a measured estimate for the remaining calls, wait for the go again, and run `tracepath extract --expect-model claude-sonnet-5-5` with a ceiling, one unit per command, with the repository as root. Record eval chain reach before and after. Satisfies **AC-22b**, **AC-28c**, **AC-31** to **AC-32**.
+6. Run the free token count (AC-31). If it matches, state the per call bound and wait for the engineer's go, then run one paid call by setting the ceiling just above that bound and using `--resume` for the rest of the unit. Then give a measured estimate for the remaining calls, wait for the go again, and run `tracepath extract --expect-model claude-sonnet-5-5` with a ceiling, one unit per command, with the repository as root. Record eval chain reach before and after. Satisfies **AC-22b**, **AC-28c**, **AC-31** to **AC-32**. **Amended 2026-10-12**: after the first paid call, compare its reported cache write with the cached prefix (57,494) before giving the measured estimate (AC-31c); a difference is recorded in this spec before the estimate uses it.
 7. Build the sampler and the blind packet (opaque ids, shuffled, flags hidden, arm key hashed first). The engineer rules, then code applies the flip of AC-26e, both arms are scored and the result recorded. Satisfies **AC-18** to **AC-19g**, **AC-20**, **AC-21**, **AC-25** to **AC-30**.
 8. Only after a pass, and if the engineer says so, flip the default of the pass in its own commit. Not before. Satisfies **AC-33**, **AC-33b** by what it leaves out.
 
@@ -180,6 +184,7 @@ Approach: Tracer Bullet. The free changes first, then one real extraction measur
 - The pass never adds a hold, so the worst case is that an item is released that should not have been, which the measure is built to find.
 
 **Negative / tradeoffs**:
+- A run on `claude-sonnet-5` now stops at the calibration check, since that model counts 61,108 and the figure is 61,110 (AC-31f). It stops before any call, so nothing is spent; pricing that model again needs its own calibration figure first.
 - The pass releases items on code's authority, though the runs agreeing shows repeatability and not correctness. Feature 11 starts from a hold narrowed here, and each report counts what was released.
 - The graph mixes models until feature 9, so a chain can cross units made by two models. `load` says so (AC-4).
 - The three chosen units join the default graph when they land, so eval reach may move once (AC-32, AC-28c).
@@ -197,7 +202,8 @@ Approach: Tracer Bullet. The free changes first, then one real extraction measur
 - [ ] Design inputs for those later steps, from this spec's cross checks (read only, cited lines read by the author): a control arm of an earlier prompt state needs its own root, because `run-N.json` would collide (`artifacts.py:227-235`); an arm root resolved alone computes a different cross unit hold than the main graph (`pipeline.py:269-270`); a load of an arm clears the one Neo4j graph (`cli.py:249`); `--snapshot` is joined to `--root` (`cli.py:624`); the control must be extracted before the prompt change is committed (`examples.py:17`); `prompt_version` is the only record of an arm's state.
 - [ ] Known gap: a link the pass releases carries no marker (`link_row` has no `accepted_by`, `model.py:128-140`), so a chain can grow through unmarked links. AC-17 counts them per unit.
 - [ ] Verify before the paid run: Anthropic's Sonnet 5.5 migration guide on effort levels being recalibrated, and that the structured output request the client sends is accepted at `medium`. The model pages confirm the price ($2 and $10 per million tokens), the cache read rate ($0.10), the 512 token cache minimum and the retirement date; they do not state the effort recalibration. Not verified.
-- [ ] Verify that the tokenizer is unchanged from `claude-sonnet-5` to `claude-sonnet-5-5`, which `cost.py`'s calibration count (61,108 tokens) assumes. The free token count (AC-31) shows it before any paid call.
+- [x] Verify that the tokenizer is unchanged from `claude-sonnet-5` to `claude-sonnet-5-5`, which `cost.py`'s calibration count (61,108 tokens) assumes. The free token count (AC-31) shows it before any paid call. **Checked 2026-10-12**: four units counted under both models each differ by exactly 2 tokens, so the text is tokenized the same and the request carries a fixed overhead on the new model (rationale, Evidence). The calibration count moved (AC-31f).
+- [ ] Compare the first paid call's reported cache write on `claude-sonnet-5-5` with the cached prefix (57,494). The 2 token overhead may sit in the cached part or the uncached part, and no free count can tell which. At $4 per million tokens for a cache write the difference is at most $0.000008 per call, so it cannot move a bound or an estimate, but the figure is a measurement and is corrected if it differs (AC-31g).
 - [ ] Eval runs made for AC-28c are report only, not a rerun for feature 11's policy. The routing policy is committed before any question is rerun for that purpose.
 - [ ] A separate `/debug`: `struck: false` on `0002/AC-10`.
 - [ ] The `HeldLink` docstring in `src/tracepath/pipeline.py:72` says a review step releases a held link, and none exists (carried from `docs/session-notes.md`).
