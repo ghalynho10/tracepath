@@ -27,12 +27,26 @@ than this file's commit (AC-22b).
 
 ## Gate
 
-The gate and its reason are spec 0007's AC-19 to AC-19g, committed in `501ee17` before
-any paid call (AC-19e). In short: in every chosen unit, at least two thirds of the ruled
-released entity marks agree; nothing accepted without the pass is lost with it; a unit
-with fewer than 5 released entities is inconclusive; released link marks are gated at
-two thirds only where a unit has at least 5 of them. Experiment 0005's full bar is
-reported for both arms and is not this step's gate.
+The gate and its reason are spec 0007's AC-19 to AC-19i, as committed in `c004a30`
+before any paid call (AC-19e). The step runs in two stages. Both gates count over every
+drawn mark, not only the ruled ones: a mark ruled `unsure`, ruled disagree or left
+unruled counts against, so ruling hard items `unsure` can never make a unit pass.
+
+- **Stage one** (AC-19, AC-19b, AC-19c): per unit, 5 released entity marks are drawn,
+  mixed blind with 3 control entity marks that are ruled but not gated (AC-25, AC-25b).
+  Every chosen unit needs at least 4 of its 5 released marks ruled agree. A unit with
+  fewer than 5 released entities is inconclusive, and stage one passes only when no unit
+  is inconclusive. Nothing accepted without the pass may be lost with it.
+- **Stage two** (AC-19f to AC-19i): runs only after stage one passes and the engineer
+  wants the pass on by default. Per unit, up to 5 released link marks are drawn, mixed
+  blind with 2 control accepted links that are ruled but not gated (AC-25e, AC-25g).
+  Every unit with at least one released link needs two thirds of its drawn released
+  link marks ruled agree, however few are drawn (1 of 1, 2 of 2, 2 of 3, 3 of 4, 4 of 5).
+  A unit with none is reported as having none. A stage one pass alone never turns the
+  pass on by default.
+
+No dropped links are drawn (AC-25f). Experiment 0005's full bar is not measured in this
+step; it is owed on feature 13's final state (AC-18b, AC-28e).
 
 ## Configuration
 
