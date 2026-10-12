@@ -5,7 +5,7 @@ a fake: the command under test talks to the proxy over real HTTP through the rea
 and the proxy relays to the fake API or injects one fault on a chosen messages call.
 
 The fake answers the token count endpoint (the calibration unit at its measured
-61,108, every other unit at `COUNTED`) and streams a valid, empty extraction for every
+61,110, every other unit at `COUNTED`) and streams a valid, empty extraction for every
 messages call. Its first messages call writes the 57,494 token cache and every later
 one reads it, as the real API did in experiment 0009.
 """
@@ -23,7 +23,7 @@ import httpx2
 #: What the fake counts for a unit other than the calibration unit: `0010 Context`'s
 #: real count (57,494 cached prefix plus 65 uncached).
 COUNTED = 57_559
-CALIBRATION = 61_108
+CALIBRATION = 61_110
 CACHED_PREFIX = 57_494
 UNCACHED = 65
 OUTPUT_TOKENS = 80

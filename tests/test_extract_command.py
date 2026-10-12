@@ -433,7 +433,7 @@ def fake_api(monkeypatch: pytest.MonkeyPatch) -> Iterator[SimpleNamespace]:
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     monkeypatch.delenv("ANTHROPIC_EFFORT", raising=False)
     state = SimpleNamespace(
-        messages=FakeMessages(61_108),
+        messages=FakeMessages(61_110),
         built=0,
         script=Script([first_call(), *[settled() for _ in range(30)]]),
     )

@@ -160,7 +160,7 @@ class CountsBySection:
     def count_tokens(self, **request: Any) -> SimpleNamespace:
         content = request["messages"][0]["content"]
         if content.startswith("Record: 0014\n") and "Section: Requirements\n" in content:
-            return SimpleNamespace(input_tokens=61_108)
+            return SimpleNamespace(input_tokens=61_110)
         if content.startswith("Record: 0007\n") and "Section: Feature design\n" in content:
             return SimpleNamespace(input_tokens=70_000)
         return SimpleNamespace(input_tokens=COUNTED)

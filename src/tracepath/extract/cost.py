@@ -36,11 +36,13 @@ RATES: dict[str, Rates] = {
 #: uncached input is its count minus this.
 CACHED_PREFIX_TOKENS = 57_494
 
-#: Experiment 0006's calibration unit and its counted input. A count that differs
+#: Experiment 0006's calibration unit and its counted input under `claude-sonnet-5-5`
+#: (spec 0007 AC-31f): 2 tokens above the 61,108 `claude-sonnet-5` counts, the same
+#: fixed overhead every unit counted under both models shows. A count that differs
 #: means the prompt or the counting changed under the figures above, and nothing is
 #: priced on them (spec 0004, Value sourcing).
 CALIBRATION_ADDRESS = "0014:Requirements"
-CALIBRATION_TOKENS = 61_108
+CALIBRATION_TOKENS = 61_110
 
 #: The central output per call, by section name, each the mean of a measured unit's
 #: three runs under `0003.1` (experiment 0008 `data/run.json`, the unseen unit figures).
@@ -141,7 +143,7 @@ def check_calibration(counted: int) -> None:
     if counted != CALIBRATION_TOKENS:
         raise EstimateUnavailable(
             f"the calibration unit {CALIBRATION_ADDRESS} counts {counted:,} input tokens, not "
-            f"the {CALIBRATION_TOKENS:,} experiment 0006 measured, so the cached prefix of "
+            f"the {CALIBRATION_TOKENS:,} measured (spec 0007 AC-31f), so the cached prefix of "
             f"{CACHED_PREFIX_TOKENS:,} no longer applies and nothing is priced"
         )
 
