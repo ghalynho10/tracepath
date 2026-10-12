@@ -1,0 +1,370 @@
+{
+  "record": "0013",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0013-job-search-and-results-list/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-12T15:31:09+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1942,
+  "output_tokens": 5014,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "514668c0c62c4621ab8790b77e368b9d",
+  "artifact_format_version": 3,
+  "unit_sha256": "fe9a388c995245b1e8fa1624c5d3e5cd52a834866d3db876f12040b717786656",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want to search real job listings by title and location,\",\"rejected_spans\":[\"so I can see what is actually available rather than a mock.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want my own weekly preferences to prefill the search\",\"rejected_spans\":[\"so I do not retype them every visit.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want a clear, honest reason when a search is blocked or fails,\",\"rejected_spans\":[\"so I know whether it is my own usage, a shared limit, or something broken.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want Adzuna's attribution requirements met exactly as written,\",\"rejected_spans\":[\"so the app stays inside the terms that let it use their data at all.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: A signed in user who submits a search with at least one of title or location filled sees real Adzuna listings for the configured country (United States) rendered on the page, first page only, up to 20 results, no pagination this slice.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: A search submitted with both title and location blank is refused before any external call runs, with a visible validation message, and spends no usage gate budget.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: Every search that passes AC-2's check is checked through `checkUsageGate(\\\"job_search\\\")` before the Adzuna call runs. A refusal, for any of the five reasons feature 10 defines, renders the exact sentence from `src/lib/usage-gating/copy.ts`'s `SENTENCES` map for that reason, and the Adzuna call never runs.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: A search that runs successfully and matches zero listings renders a visible \\\"no results\\\" state, clearly distinct from both the gate refusal state (AC-3) and the failure state (AC-5).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: An Adzuna call that fails outright (network error, timeout, a non success response) is reported through `failure()` with `external_service_failed`; a response that does not match the expected shape is reported with `response_malformed`. Either renders a visible failure state distinct from AC-4's empty state.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: Every rendered result carries its own \\\"Jobs by Adzuna\\\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \\\"Jobs\\\" links to `https://www.adzuna.com`, and the word \\\"Adzuna\\\" is the Adzuna logo image, also linked to `https://www.adzuna.com`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \\\"(estimated)\\\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \\\"Adzuna Jobsworth\\\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \\\"Salary estimate powered by Adzuna Jobsworth\\\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: Each result shows its title, company, location, a relative posted date (e.g. \\\"posted 3 days ago\\\", computed at render from the raw timestamp), a salary range when present, and its description snippet, plus a real, working link that opens the source posting (`job_url`) in a new tab.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: On a first visit to `/search` carrying neither `q` nor `where`, the title and location fields prefill from the caller's `job_preference` row (the first entry of `desired_titles` and of `desired_locations`) when present; a caller with no `job_preference` row, or an empty array, sees blank fields. **Blank fields mean \\\"you have stated no preferences\\\" and may mean nothing else**: when the read itself fails, the page says so in `COPY-6` rather than presenting the same screen. The failure does not block the form: the fields are still typeable and a search still runs. Landing on the page this way never itself runs a search or spends gate budget, on any of these three paths; a search only runs once the URL carries `q` or `where`.\",\"rejected_spans\":[\"because a failure that renders as an ordinary outcome is the silent failure `AGENTS.md` forbids, and the reader who did state preferences would otherwise have no way to tell a database fault from their own empty profile\",\"since the prefill is a convenience and nothing downstream depends on it\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: The `job_search` call type spends exactly one gate check and, when allowed, exactly one outbound Adzuna call per **document request** to `/search` that carries a non empty `q` or `where` from a signed in caller: never zero, never two. A fresh submit, a reload, a shared link, and **a browser back or forward navigation** each cause such a request on a deployed build, so each costs one. Three kinds of request cost nothing, and they are consequences of this rule rather than exceptions to it, because none of them reaches the Adzuna call: one carrying neither parameter (AC-9), one whose parameters are both blank (AC-2), and one from a caller who is not signed in (the `(app)` layout redirects first). **No automatic or speculative request may carry `q` or `where`**, a `<Link>` prefetch above all. Verify this against a production build (`pnpm build && pnpm start`), never `next dev`.\",\"rejected_spans\":[\"that would spend a person's weekly budget on hover, with no intent behind it\",\"for the reason Consequences gives\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts`, naming Adzuna as the recipient, as part of this build, satisfying spec 0009 AC-5's drift guard.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: This feature moves its own claim (`filtered search`) from planned to working in the entry page's \\\"What's real today\\\" card (spec 0006, AC-8).\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-2\"},\"phrase\":\"AC-2's check\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"id\":null,\"mention\":\"feature 10\"},\"phrase\":\"the five reasons feature 10 defines\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"phrase\":\"the gate refusal state (AC-3)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"phrase\":\"the failure state (AC-5)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"phrase\":\"distinct from AC-4's empty state\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-10\",\"mention\":\"spec 0005, AC-10\"},\"phrase\":\"(spec 0005, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"phrase\":\"one carrying neither parameter (AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-2\"},\"phrase\":\"one whose parameters are both blank (AC-2)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-5\",\"mention\":\"spec 0009 AC-5\"},\"phrase\":\"satisfying spec 0009 AC-5's drift guard\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, AC-8\"},\"phrase\":\"(spec 0006, AC-8)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want to search real job listings by title and location,",
+        "rejected_spans": [
+          "so I can see what is actually available rather than a mock."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want my own weekly preferences to prefill the search",
+        "rejected_spans": [
+          "so I do not retype them every visit."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want a clear, honest reason when a search is blocked or fails,",
+        "rejected_spans": [
+          "so I know whether it is my own usage, a shared limit, or something broken."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want Adzuna's attribution requirements met exactly as written,",
+        "rejected_spans": [
+          "so the app stays inside the terms that let it use their data at all."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: A signed in user who submits a search with at least one of title or location filled sees real Adzuna listings for the configured country (United States) rendered on the page, first page only, up to 20 results, no pagination this slice.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: A search submitted with both title and location blank is refused before any external call runs, with a visible validation message, and spends no usage gate budget.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: Every search that passes AC-2's check is checked through `checkUsageGate(\"job_search\")` before the Adzuna call runs. A refusal, for any of the five reasons feature 10 defines, renders the exact sentence from `src/lib/usage-gating/copy.ts`'s `SENTENCES` map for that reason, and the Adzuna call never runs.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: A search that runs successfully and matches zero listings renders a visible \"no results\" state, clearly distinct from both the gate refusal state (AC-3) and the failure state (AC-5).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: An Adzuna call that fails outright (network error, timeout, a non success response) is reported through `failure()` with `external_service_failed`; a response that does not match the expected shape is reported with `response_malformed`. Either renders a visible failure state distinct from AC-4's empty state.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: Each result shows its title, company, location, a relative posted date (e.g. \"posted 3 days ago\", computed at render from the raw timestamp), a salary range when present, and its description snippet, plus a real, working link that opens the source posting (`job_url`) in a new tab.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: On a first visit to `/search` carrying neither `q` nor `where`, the title and location fields prefill from the caller's `job_preference` row (the first entry of `desired_titles` and of `desired_locations`) when present; a caller with no `job_preference` row, or an empty array, sees blank fields. **Blank fields mean \"you have stated no preferences\" and may mean nothing else**: when the read itself fails, the page says so in `COPY-6` rather than presenting the same screen. The failure does not block the form: the fields are still typeable and a search still runs. Landing on the page this way never itself runs a search or spends gate budget, on any of these three paths; a search only runs once the URL carries `q` or `where`.",
+        "rejected_spans": [
+          "because a failure that renders as an ordinary outcome is the silent failure `AGENTS.md` forbids, and the reader who did state preferences would otherwise have no way to tell a database fault from their own empty profile",
+          "since the prefill is a convenience and nothing downstream depends on it"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: The `job_search` call type spends exactly one gate check and, when allowed, exactly one outbound Adzuna call per **document request** to `/search` that carries a non empty `q` or `where` from a signed in caller: never zero, never two. A fresh submit, a reload, a shared link, and **a browser back or forward navigation** each cause such a request on a deployed build, so each costs one. Three kinds of request cost nothing, and they are consequences of this rule rather than exceptions to it, because none of them reaches the Adzuna call: one carrying neither parameter (AC-9), one whose parameters are both blank (AC-2), and one from a caller who is not signed in (the `(app)` layout redirects first). **No automatic or speculative request may carry `q` or `where`**, a `<Link>` prefetch above all. Verify this against a production build (`pnpm build && pnpm start`), never `next dev`.",
+        "rejected_spans": [
+          "that would spend a person's weekly budget on hover, with no intent behind it",
+          "for the reason Consequences gives"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts`, naming Adzuna as the recipient, as part of this build, satisfying spec 0009 AC-5's drift guard.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: This feature moves its own claim (`filtered search`) from planned to working in the entry page's \"What's real today\" card (spec 0006, AC-8).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "phrase": "AC-2's check",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10"
+        },
+        "phrase": "the five reasons feature 10 defines",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "phrase": "the gate refusal state (AC-3)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "phrase": "the failure state (AC-5)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "phrase": "distinct from AC-4's empty state",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-10",
+          "label": null,
+          "mention": "spec 0005, AC-10"
+        },
+        "phrase": "(spec 0005, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "phrase": "one carrying neither parameter (AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "phrase": "one whose parameters are both blank (AC-2)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-5",
+          "label": null,
+          "mention": "spec 0009 AC-5"
+        },
+        "phrase": "satisfying spec 0009 AC-5's drift guard",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, AC-8"
+        },
+        "phrase": "(spec 0006, AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
