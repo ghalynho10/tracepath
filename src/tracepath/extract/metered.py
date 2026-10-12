@@ -400,7 +400,8 @@ def run_metered(
                     lost: Exception | None = exc
                 else:
                     lost = None
-                cost = attempt_cost(attempt, plan.bound)
+                # Priced at the model its artifact names (spec 0007 AC-5d).
+                cost = attempt_cost(attempt, plan.bound, artifact.model)
                 total += cost
                 calls += 1
                 settled = attempt.output is not None
@@ -411,7 +412,7 @@ def run_metered(
                         attempt=number,
                         path=path,
                         cost_usd=cost,
-                        recorded_usd=recorded_cost(attempt),
+                        recorded_usd=recorded_cost(attempt, artifact.model),
                         settled=settled,
                         null_usage=_null_usage(attempt),
                         error=attempt.error,

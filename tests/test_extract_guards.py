@@ -104,12 +104,14 @@ def dropped(number: int = 1) -> Attempt:
 
 def test_ac_55_the_bound_of_0010_context_is_max_tokens_output_its_input_and_one_write() -> None:
     """covers: AC-55. 57,559 counted: 65 uncached, 64,000 output, 57,494 written."""
-    assert per_call_bound(57_559) == pytest.approx((65 * 2 + 64_000 * 10 + 57_494 * 4) / 1e6)
+    assert per_call_bound(57_559, SETTINGS.model) == pytest.approx(
+        (65 * 2 + 64_000 * 10 + 57_494 * 4) / 1e6
+    )
 
 
 def test_ac_55_the_bound_of_0007_feature_design_is_0_8907() -> None:
     """covers: AC-55 (the figure the spec states for `0007 ## Feature design`)."""
-    assert round(per_call_bound(67_865), 4) == 0.8907
+    assert round(per_call_bound(67_865, SETTINGS.model), 4) == 0.8907
 
 
 # AC-10a: a failed attempt counts at its unit's bound.
@@ -117,7 +119,7 @@ def test_ac_55_the_bound_of_0007_feature_design_is_0_8907() -> None:
 
 def test_ac_10a_a_dropped_attempt_counts_at_the_bound_not_its_recorded_tokens() -> None:
     """covers: AC-10a."""
-    assert attempt_cost(dropped(), 0.8701) == 0.8701
+    assert attempt_cost(dropped(), 0.8701, SETTINGS.model) == 0.8701
 
 
 # AC-7b: the ceiling must be a finite number above 0.
@@ -169,7 +171,7 @@ def test_ac_8_the_largest_bound_among_the_units_is_the_one_checked(
 ) -> None:
     """covers: AC-8 (a ceiling the first unit's bound fits, the second's does not)."""
     fake_api.messages = CountsBySection()
-    between = (per_call_bound(COUNTED) + per_call_bound(70_000)) / 2
+    between = (per_call_bound(COUNTED, SETTINGS.model) + per_call_bound(70_000, SETTINGS.model)) / 2
 
     code, _, _ = invoke(
         tmp_path, "0002:Requirements", "0007:Feature design", "--ceiling", f"{between:.6f}"
@@ -377,8 +379,14 @@ def test_ac_14b_the_summary_prints_the_guards_total_and_the_recorded_total(
     """covers: AC-14b."""
     outcome = run(tmp_path, Script([first_call(), dropped(1), settled(), settled()]))
 
-    guard = attempt_cost(first_call(), BOUND) + BOUND + 2 * attempt_cost(settled(), BOUND)
-    recorded = recorded_cost(first_call()) + 2 * recorded_cost(settled())
+    guard = (
+        attempt_cost(first_call(), BOUND, SETTINGS.model)
+        + BOUND
+        + 2 * attempt_cost(settled(), BOUND, SETTINGS.model)
+    )
+    recorded = recorded_cost(first_call(), SETTINGS.model) + 2 * recorded_cost(
+        settled(), SETTINGS.model
+    )
     assert (
         f"Spent ${guard:.4f} by the running total's rule (a failed attempt at its per call "
         f"bound), ${recorded:.4f} by the usage the artifacts recorded."
@@ -541,7 +549,7 @@ def test_ac_62_a_resume_checks_each_attempt_against_the_ceiling(unit_dir: Any) -
     """covers: AC-62."""
     root, target = unit_dir
     script = Script([first_call(), settled()])
-    ceiling = attempt_cost(first_call(), BOUND) + BOUND - 0.0001
+    ceiling = attempt_cost(first_call(), BOUND, SETTINGS.model) + BOUND - 0.0001
 
     outcome = run(
         root, script, [Plan(target, (RunPlan(2, 1, 0), RunPlan(3, 1, 0)), BOUND)], ceiling
@@ -790,7 +798,7 @@ def test_ac_9_over_http_the_ceiling_stops_the_command_before_a_call_its_bound_co
 
 def test_the_fake_api_bound_is_the_bound_of_0010_context() -> None:
     """The fake counts `0010 Context` as the real endpoint did, so its bound is AC-55's."""
-    assert math.isclose(per_call_bound(fake.COUNTED), 0.870106)
+    assert math.isclose(per_call_bound(fake.COUNTED, SETTINGS.model), 0.870106)
 
 
 def test_a_failed_attempt_payload_writes_its_kind_as_a_string() -> None:
@@ -832,7 +840,7 @@ def test_ac_60b_the_command_refuses_a_resume_at_another_prompt_before_any_call(
     code, _, stderr = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--resume")
 
     assert code == 1
-    assert "model claude-older-model (now claude-sonnet-5)" in flat(stderr)
+    assert f"model claude-older-model (now {SETTINGS.model})" in flat(stderr)
     assert fake_api.script.calls == []
 
 

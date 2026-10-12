@@ -2,6 +2,7 @@
 
 import logging
 import math
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -22,7 +23,12 @@ from tracepath.artifacts import (
     write_graph_build,
     write_review_queue,
 )
-from tracepath.config import SettingsInvalid, load_anthropic_settings, load_neo4j_settings
+from tracepath.config import (
+    DEFAULT_MODEL,
+    SettingsInvalid,
+    load_anthropic_settings,
+    load_neo4j_settings,
+)
 from tracepath.extract.address import UnitAddressError, resolve_address, resolve_addresses
 from tracepath.extract.client import build_client, system_prompt
 from tracepath.extract.cost import (
@@ -169,7 +175,12 @@ def review_queue(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
-    model: str = typer.Option("claude-sonnet-5", "--model", help="The model the artifacts name."),
+    model: str = typer.Option(
+        DEFAULT_MODEL,
+        "--model",
+        help="The model a held link names when its unit has no run artifacts. "
+        "Every other row names the model its unit's artifacts name.",
+    ),
 ) -> None:
     """Rebuild the review queue from the committed run artifacts. No API call, no graph.
 
@@ -188,7 +199,10 @@ def review_queue(
     records = records_for_units(results, corpus_snapshot, commit)
     corpus = resolve_accepted(results, records)
     queued_at = max(a.extracted_at for r in results for a in r.artifacts)
-    rows = review_rows(results, corpus.held, model, queued_at)
+    try:
+        rows = review_rows(results, corpus.held, model, queued_at)
+    except ProvenanceMismatch as exc:
+        _fail(str(exc))
 
     write_review_queue(base, list(rows))
     ensure_review_log(base)
@@ -279,6 +293,9 @@ def load_graph(
         )
     versions = ", ".join(f"{v}: {n}" for v, n in manifest["prompt_versions"].items())
     _say(f"Units per prompt version: {versions}.")
+    # The graph mixes models until feature 9, so a load says which made what (spec 0007 AC-4).
+    models = Counter(provenance.model for provenance in provenances)
+    _say(f"Units per model: {', '.join(f'{m}: {n}' for m, n in sorted(models.items()))}.")
     for partial in partial_units(base):
         _say(
             f"Not loaded: {partial.record} {partial.section} has {partial.settled_runs} "
@@ -609,6 +626,11 @@ def extract(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
+    expect_model: str | None = typer.Option(
+        None,
+        "--expect-model",
+        help="Refuse before any call unless the settings name this model (spec 0007 AC-29).",
+    ),
 ) -> None:
     """Extract units with the model, three runs each, every attempt written as it settles.
 
@@ -631,6 +653,12 @@ def extract(
         settings = load_anthropic_settings()
     except (UnitAddressError, ExampleError, SettingsInvalid) as exc:
         _fail(str(exc))
+    # An old `ANTHROPIC_MODEL` in `.env` overrides the default silently (spec 0007 AC-29).
+    if expect_model is not None and settings.model != expect_model:
+        _fail(
+            f"--expect-model {expect_model}, but the settings name {settings.model} "
+            "(check ANTHROPIC_MODEL in `.env`), so no call is made."
+        )
 
     client = build_client(settings)
     try:
@@ -673,7 +701,8 @@ def extract(
             [
                 UnitCount(t.address, t.unit.section, counted[t.address], len(runs[t.address]))
                 for t in targets
-            ]
+            ],
+            settings.model,
         )
     except EstimateUnavailable as exc:
         _fail(str(exc))

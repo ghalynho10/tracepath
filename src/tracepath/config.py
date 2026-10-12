@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
-#: The model spec 0001 chose for extraction. Its judgement heavy calls are what the
-#: known trap flags exist to catch, so a smaller model is not a drop in swap.
-DEFAULT_MODEL = "claude-sonnet-5"
+#: The model spec 0001 chose for extraction, moved to `claude-sonnet-5-5` by spec 0007
+#: (same price). Its judgement heavy calls are what the known trap flags exist to
+#: catch, so a smaller model is not a drop in swap.
+DEFAULT_MODEL = "claude-sonnet-5-5"
 
 #: Runs per unit, from spec 0001's run policy. The run comparator's whole signal is
 #: the variation between these, so there is no point running fewer.

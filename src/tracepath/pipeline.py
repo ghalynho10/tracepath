@@ -570,6 +570,14 @@ def review_rows(
     Rows keep each unit's own order, which `route_runs()` already sorted by lowest
     located offset (AC-11b), and a unit's cross unit held links follow its routed rows,
     ordered by signature so the file is stable from one run to the next.
+
+    Each row names the model its unit's run artifacts name, so a queue over units made
+    by two models says which made each row (spec 0007 AC-5). `model` names only a held
+    link whose unit is not among `results` (AC-5b).
+
+    Raises:
+        ProvenanceMismatch: a unit's runs name more than one model, prompt version or
+            corpus commit, so no one model fits its rows.
     """
     by_unit: dict[tuple[str, str], list[HeldLink]] = {}
     for link in held:
@@ -578,10 +586,12 @@ def review_rows(
     rows: list[dict[str, Any]] = []
     for result in results:
         key = (result.unit.record_id, result.unit.section)
+        # Only the model is read here; who accepted what plays no part in a queue row.
+        unit_model = unit_provenance(result, accepted_by="").model
         for item in result.routed.review:
-            rows.append(review_entry(key[0], key[1], item, model, queued_at))
+            rows.append(review_entry(key[0], key[1], item, unit_model, queued_at))
         for link in sorted(by_unit.pop(key, []), key=lambda h: str(h.item.signature)):
-            rows.append(review_entry(link.record, link.section, link.item, model, queued_at))
+            rows.append(review_entry(link.record, link.section, link.item, unit_model, queued_at))
 
     # A held link whose unit is not among the results would otherwise vanish silently.
     for (record, section), links in sorted(by_unit.items()):
