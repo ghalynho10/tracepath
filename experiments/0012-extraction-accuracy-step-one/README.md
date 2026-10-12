@@ -54,6 +54,15 @@ Model `claude-sonnet-5-5`, effort `medium`, prompt `0003.1`, corpus commit `2e40
 One paid extraction serves both arms: the control is the run files read without
 `--code-pass`, the treatment the same files read with it (AC-20).
 
+Cached prefix, as billed on `claude-sonnet-5-5`: the first call on that model
+(`0009:Requirements` run 1, `artifacts/runs/0009/requirements/run-1.json`) wrote a 57,493
+token cache, against the 57,494 in `cost.py` (measured on `claude-sonnet-5`, experiment
+0008). Its input was 4,537 uncached plus 57,493 cached, the 62,030 the free count gave.
+The difference is 1 token at the $4 per million cache write rate, $0.0000039 per call.
+The engineer accepted it as recorded data, not a spec change: `cost.py` stays at 57,494,
+and the note on spec 0007 AC-31g is deferred to the `/architect` session for the later
+steps.
+
 ## Result
 
 Not yet run.
