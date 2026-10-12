@@ -1,0 +1,458 @@
+{
+  "record": "0009",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-12T07:14:11+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4537,
+  "output_tokens": 8469,
+  "cache_creation_input_tokens": 57493,
+  "cache_read_input_tokens": 0,
+  "run_id": "cb29ced0f49043448ba34679bd6791cb",
+  "artifact_format_version": 3,
+  "unit_sha256": "03c1c56e972bbafde31564905ff02e933694bab92d5f7b9aa086219a4aa79b98",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a person signing in, I want to read plainly what is stored about me and who else sees it,\",\"rejected_spans\":[\"so that I can decide whether to hand over my career history.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a person who has signed in, I want a way to have everything about me removed,\",\"rejected_spans\":[\"so that leaving is as real as joining.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want the notices to stay true as the product grows,\",\"rejected_spans\":[\"so that they do not become a document that describes a product that no longer exists.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want Google's consent screen to name JobHunt and the 100 user cap lifted,\",\"rejected_spans\":[\"so that every new sign in stops spending a slot that never comes back.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: `/terms` and `/privacy` exist as routes in the `(marketing)` group. Each composes `EntryHeader` with `navigation=\\\"none\\\"` and `EntryFooter`, and each ships zero client JavaScript.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: The privacy notice names every category of personal data stored, and its list matches the applied schema. From the identity provider: the email address, display name and avatar URL in `auth.users`. From this app's own tables: full name, location and written summary (`profile`); skill names (`profile_skill`); company, job title, location, description and start and end month (`work_experience`); desired titles, desired locations, remote preference, minimum pay and its currency (`job_preference`); the source and its job id, job title, company, location, link, description, salary range and currency, posted and applied timestamps (`application`); and the question key with the person's own typed answer (`application_answer`). It also names the `created_at` and `updated_at` timestamps every one of these tables carries,\",\"rejected_spans\":[\"since when a record was made and last changed is itself personal data.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: The privacy notice names every third party receiving data today and what each receives: Supabase (everything, as the database and the identity store), Vercel (IP address and IP derived location data, per Vercel's own Privacy Notice), Sentry (error and performance events), Google and GitHub (only the sign in handshake, and only for whichever the person chooses).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: The notice states that Sentry receives no personal data, and that claim holds against the running configuration (`userInfo: false`, `httpBodies: []`, `cookies: false`). A change that made it false fails a test.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Adding a key to `src/env.ts` that no registry entry accounts for fails the unit suite.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: Both pages render their recipient list from one typed registry module,\",\"rejected_spans\":[\"so the prose on the page cannot disagree with the list the test checks.\"],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: The privacy notice states the retention policy in words: data is kept until the person asks for it to be removed, there is no fixed period, and dormant accounts are not deleted automatically.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: The privacy notice publishes `contact@usejobhunt.dev` for deletion and data requests, phrased as requesting deletion by contacting, never as a control the person can operate.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: The published address receives mail. Configured and verified by the engineer on 2026-09-01, before this spec was written, and re confirmed at verify time\",\"rejected_spans\":[\"because an address that silently stops delivering is the failure this criterion exists for.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: The privacy notice describes deletion truthfully: the operator removes the account record, which cascades to every table holding that person's data. Nothing is left behind.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: The privacy notice identifies JobHunt as the service, Ghaly Nicolas Jules, resident in the United States, as the person responsible, and the contact address above.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: The privacy notice carries the GDPR and UK GDPR shape, and names the lawful basis for each purpose rather than the word alone: contract necessity for the identity, profile and application data; and legitimate interest for error monitoring. It lists the rights (access, correction, deletion, portability, objection, restriction) and how to exercise each.\",\"rejected_spans\":[\"because the service cannot be provided to somebody without processing their career history\",\"because keeping the service working is not something the person is asked to opt into\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: The privacy notice discloses how data received from Google is accessed, used, stored and shared, and states plainly that data is not sold, not used for advertising, not shared with data brokers, and not used to train models. It carries no Limited Use affirmation.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"The privacy notice discloses the session cookie as strictly necessary to sign in, and states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so the claim cannot become false in silence.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24.\",\"rejected_spans\":[\"**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.** Found false on the deployed site: the notice claimed one cookie is set when the codebase sets, in three kinds, more than that.\",\"**This fact was already known in this repository**: `src/features/auth/AGENTS.md:29` documents the verifier as a host only cookie that breaks sign in across a preview URL, and names it as documented expected behaviour. It simply never reached the page a visitor actually reads, which is the strongest argument for AC-24's registry being the one source both the code's own behaviour and the notice's prose read from.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: The terms page states what the service is, that it is free with no guarantee of availability, and that it may change or stop. Four clauses are settled here rather than left to the build: - **Acceptable use**: no automated scraping of the service, no using it to apply on another person's behalf, and no attempt to reach another user's data. Breaking these is what \\\"removed for abuse\\\" means. - **Content ownership and licence**: the person keeps ownership of their profile and resume content. The licence granted is non exclusive, limited to operating the service for them, revoked when their data is deleted, and explicitly not sublicensable and not for training models. - **Warranty and liability**: the service is provided as is with no warranty, and liability is limited to the fullest extent the law allows. No cap figure is stated, because the service is free and there is no payment to anchor one against. - **How the terms change**: the published version is updated in place and the effective date bumped. There is no advance notice, which matches AC-16 and is the only mechanism this project can actually perform, having no email capability. It also states the governing law and venue: the laws of the State of Georgia, United States of America, with venue in the state and federal courts located in Georgia. The clause writes \\\"State of Georgia, United States of America\\\" in full rather than \\\"Georgia\\\", because Georgia is also a country and the readers this notice is written for are explicitly worldwide.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: Both pages carry an effective date, and state that continued use means accepting the version currently published.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-17**: Both pages set their own `robots` metadata so they are indexable, and both existing robots assertions in `src/app/layout.test.ts` still pass unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-18\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-18**: The entry page footer's reserved centre slot links both pages.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-19\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-19**: `/sign-in` renders a static line under the two provider forms saying that continuing means agreeing to the Terms and the Privacy Notice, with both linked, and the page still ships zero client JavaScript.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-20\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-20**: Both pages carry their own title and description metadata, have exactly one `h1` with headings in order, and every link is keyboard reachable with a visible focus ring (WCAG 2.2 AA).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-21\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-21**: In the Google Cloud console, `usejobhunt.dev` is added as an authorized domain, the privacy policy and terms fields hold the two live URLs, and the app is moved out of Testing.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-22\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-22**: Brand verification is submitted, so the consent screen names JobHunt rather than the Supabase host.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-23\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-23**: The stored field list is rendered from a typed field registry, and a test fails when `src/lib/supabase/database.types.ts`, which is generated from the applied schema, shows a column in a personal data table that no registry entry names. A migration that adds a column the notice does not mention fails the suite rather than quietly making the notice incomplete.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-24\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all.\",\"rejected_spans\":[\"This measures what a visitor experiences rather than what the source text appears to do, per this project's own standing rule that a system level guarantee must be proved at the outcome, not at the code (`docs/reflexes.md`, added 2026-08-28).\",\"This is a known incomplete blacklist, the same accepted shape `no-tracking.test.ts`'s script tag scan and `recipients.test.ts`'s `RECIPIENT_CONFIG_MODULES` list already carry: a wrapper function or a direct `Set-Cookie` response header write would pass it silently. It exists because it is cheap and catches the ordinary case; the integration test above is what actually backs the claim on the page.\",\"the first draft of this criterion nearly listed one on the public page (`src/features/demo/refresh-session.ts`'s session jar, a plain `Map`), caught only because the cross check verified the claim against the response, not the source text.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"phrase\":\"**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.**\",\"date\":\"2026-09-18\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5b\",\"mention\":\"spec 0008 AC-5b\"},\"phrase\":\"`jobhunt_return_path` (spec 0008 AC-5b)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-24\"},\"phrase\":\"the cookie half now has its own guard, AC-24\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-15\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-16\"},\"phrase\":\"which matches AC-16\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-24\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"phrase\":\"the same way AC-5 enforces the recipient list and AC-23 enforces the field list\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-24\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-23\"},\"phrase\":\"the same way AC-5 enforces the recipient list and AC-23 enforces the field list\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a person signing in, I want to read plainly what is stored about me and who else sees it,",
+        "rejected_spans": [
+          "so that I can decide whether to hand over my career history."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a person who has signed in, I want a way to have everything about me removed,",
+        "rejected_spans": [
+          "so that leaving is as real as joining."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want the notices to stay true as the product grows,",
+        "rejected_spans": [
+          "so that they do not become a document that describes a product that no longer exists."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want Google's consent screen to name JobHunt and the 100 user cap lifted,",
+        "rejected_spans": [
+          "so that every new sign in stops spending a slot that never comes back."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: `/terms` and `/privacy` exist as routes in the `(marketing)` group. Each composes `EntryHeader` with `navigation=\"none\"` and `EntryFooter`, and each ships zero client JavaScript.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: The privacy notice names every category of personal data stored, and its list matches the applied schema. From the identity provider: the email address, display name and avatar URL in `auth.users`. From this app's own tables: full name, location and written summary (`profile`); skill names (`profile_skill`); company, job title, location, description and start and end month (`work_experience`); desired titles, desired locations, remote preference, minimum pay and its currency (`job_preference`); the source and its job id, job title, company, location, link, description, salary range and currency, posted and applied timestamps (`application`); and the question key with the person's own typed answer (`application_answer`). It also names the `created_at` and `updated_at` timestamps every one of these tables carries,",
+        "rejected_spans": [
+          "since when a record was made and last changed is itself personal data."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: The privacy notice names every third party receiving data today and what each receives: Supabase (everything, as the database and the identity store), Vercel (IP address and IP derived location data, per Vercel's own Privacy Notice), Sentry (error and performance events), Google and GitHub (only the sign in handshake, and only for whichever the person chooses).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: The notice states that Sentry receives no personal data, and that claim holds against the running configuration (`userInfo: false`, `httpBodies: []`, `cookies: false`). A change that made it false fails a test.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Adding a key to `src/env.ts` that no registry entry accounts for fails the unit suite.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: Both pages render their recipient list from one typed registry module,",
+        "rejected_spans": [
+          "so the prose on the page cannot disagree with the list the test checks."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: The privacy notice states the retention policy in words: data is kept until the person asks for it to be removed, there is no fixed period, and dormant accounts are not deleted automatically.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: The privacy notice publishes `contact@usejobhunt.dev` for deletion and data requests, phrased as requesting deletion by contacting, never as a control the person can operate.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: The published address receives mail. Configured and verified by the engineer on 2026-09-01, before this spec was written, and re confirmed at verify time",
+        "rejected_spans": [
+          "because an address that silently stops delivering is the failure this criterion exists for."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: The privacy notice describes deletion truthfully: the operator removes the account record, which cascades to every table holding that person's data. Nothing is left behind.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: The privacy notice identifies JobHunt as the service, Ghaly Nicolas Jules, resident in the United States, as the person responsible, and the contact address above.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: The privacy notice carries the GDPR and UK GDPR shape, and names the lawful basis for each purpose rather than the word alone: contract necessity for the identity, profile and application data; and legitimate interest for error monitoring. It lists the rights (access, correction, deletion, portability, objection, restriction) and how to exercise each.",
+        "rejected_spans": [
+          "because the service cannot be provided to somebody without processing their career history",
+          "because keeping the service working is not something the person is asked to opt into"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: The privacy notice discloses how data received from Google is accessed, used, stored and shared, and states plainly that data is not sold, not used for advertising, not shared with data brokers, and not used to train models. It carries no Limited Use affirmation.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "The privacy notice discloses the session cookie as strictly necessary to sign in, and states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so the claim cannot become false in silence.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24.",
+        "rejected_spans": [
+          "**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.** Found false on the deployed site: the notice claimed one cookie is set when the codebase sets, in three kinds, more than that.",
+          "**This fact was already known in this repository**: `src/features/auth/AGENTS.md:29` documents the verifier as a host only cookie that breaks sign in across a preview URL, and names it as documented expected behaviour. It simply never reached the page a visitor actually reads, which is the strongest argument for AC-24's registry being the one source both the code's own behaviour and the notice's prose read from."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: The terms page states what the service is, that it is free with no guarantee of availability, and that it may change or stop. Four clauses are settled here rather than left to the build: - **Acceptable use**: no automated scraping of the service, no using it to apply on another person's behalf, and no attempt to reach another user's data. Breaking these is what \"removed for abuse\" means. - **Content ownership and licence**: the person keeps ownership of their profile and resume content. The licence granted is non exclusive, limited to operating the service for them, revoked when their data is deleted, and explicitly not sublicensable and not for training models. - **Warranty and liability**: the service is provided as is with no warranty, and liability is limited to the fullest extent the law allows. No cap figure is stated, because the service is free and there is no payment to anchor one against. - **How the terms change**: the published version is updated in place and the effective date bumped. There is no advance notice, which matches AC-16 and is the only mechanism this project can actually perform, having no email capability. It also states the governing law and venue: the laws of the State of Georgia, United States of America, with venue in the state and federal courts located in Georgia. The clause writes \"State of Georgia, United States of America\" in full rather than \"Georgia\", because Georgia is also a country and the readers this notice is written for are explicitly worldwide.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: Both pages carry an effective date, and state that continued use means accepting the version currently published.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-17**: Both pages set their own `robots` metadata so they are indexable, and both existing robots assertions in `src/app/layout.test.ts` still pass unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-18",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-18**: The entry page footer's reserved centre slot links both pages.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-19",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-19**: `/sign-in` renders a static line under the two provider forms saying that continuing means agreeing to the Terms and the Privacy Notice, with both linked, and the page still ships zero client JavaScript.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-20",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-20**: Both pages carry their own title and description metadata, have exactly one `h1` with headings in order, and every link is keyboard reachable with a visible focus ring (WCAG 2.2 AA).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-21",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-21**: In the Google Cloud console, `usejobhunt.dev` is added as an authorized domain, the privacy policy and terms fields hold the two live URLs, and the app is moved out of Testing.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-22",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-22**: Brand verification is submitted, so the consent screen names JobHunt rather than the Supabase host.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-23",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-23**: The stored field list is rendered from a typed field registry, and a test fails when `src/lib/supabase/database.types.ts`, which is generated from the applied schema, shows a column in a personal data table that no registry entry names. A migration that adds a column the notice does not mention fails the suite rather than quietly making the notice incomplete.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-24",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all.",
+        "rejected_spans": [
+          "This measures what a visitor experiences rather than what the source text appears to do, per this project's own standing rule that a system level guarantee must be proved at the outcome, not at the code (`docs/reflexes.md`, added 2026-08-28).",
+          "This is a known incomplete blacklist, the same accepted shape `no-tracking.test.ts`'s script tag scan and `recipients.test.ts`'s `RECIPIENT_CONFIG_MODULES` list already carry: a wrapper function or a direct `Set-Cookie` response header write would pass it silently. It exists because it is cheap and catches the ordinary case; the integration test above is what actually backs the claim on the page.",
+          "the first draft of this criterion nearly listed one on the public page (`src/features/demo/refresh-session.ts`'s session jar, a plain `Map`), caught only because the cross check verified the claim against the response, not the source text."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "phrase": "**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.**",
+        "date": "2026-09-18",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5b",
+          "label": null,
+          "mention": "spec 0008 AC-5b"
+        },
+        "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-24"
+        },
+        "phrase": "the cookie half now has its own guard, AC-24",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-16"
+        },
+        "phrase": "which matches AC-16",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-24"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-24"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-23"
+        },
+        "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
