@@ -1,0 +1,423 @@
+{
+  "record": "0015",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-12T15:32:47+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3793,
+  "output_tokens": 8038,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "626e714d018243f68692ae723840351f",
+  "artifact_format_version": 3,
+  "unit_sha256": "140e1c158974b84cbb4de4d18b905713b79e3104c7bb4e47d52eb4d6c47fc4d7",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a job seeker, I want each search result scored against my own profile\",\"rejected_spans\":[\"so that I can tell at a glance which listings are worth reading in full.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a job seeker, I want to see which of my skills matched and which were not mentioned in the posting, not just a number,\",\"rejected_spans\":[\"so that I can judge the score myself rather than trust it blindly.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a job seeker with a profile that has no skills and no work history yet, I want to be told to add one rather than shown a score built on nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want a scoring failure to be visible and never mistaken for a working score, and a usage cap refusal to read differently from an actual failure.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,\",\"rejected_spans\":[\"so the model selects the closest anchored description rather than free floating a judgment (an anchored band rubric, not an open numeric range, matching scope.md's own wording).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: Across the genuinely varied listings feature 15's ground truth set will author, scored results spread across at least three of the five bands rather than clustering on one. This is exercised by feature 16's eval harness once feature 15 exists, not by this feature's own unit tests,\",\"rejected_spans\":[\"since it needs authored real world variety this feature does not carry on its own.\"],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: `callTier(\\\"ai_scoring\\\", \u2026)` is called exactly once per listing, never batched across listings in one call, matching spec 0012's settled call shape.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \\\"\u2026\\\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \\\"missing skills\\\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: A `sponsorshipSignal` field is a required enum of `sponsors`, `does_not_sponsor`, or `not_stated`, resolved from whether the listing's visible text states a sponsorship stance explicitly. `not_stated` renders nothing on the card, the same visible outcome an absent field would have had, but as an explicit value rather than an omission a model could produce by accident. The signal is never used to compute or adjust the band, and when present (`sponsors` or `does_not_sponsor`) it renders as its own separate badge, distinct from the band badge (`COPY-6`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: A profile with zero `profile_skill` rows and zero `work_experience` rows is never scored. `/search` renders its plain, unscored result list (today's shape) plus a visible line linking to `/profile` to add skills or experience (`COPY-5`), and no `ai_scoring` call is made for any listing on that render. A profile with either skills or work history, even if the other is empty, is scored normally. This gate layers onto spec 0008's AC-6 landing rule without replacing it: a thin profile still lands on `/search`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: When the caller's profile clears the AC-7 gate, every listing `searchListings()` returns for that render is scored: one `ai_scoring` call per listing, fired concurrently rather than sequentially.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: The result list renders immediately, in Adzuna's original order, with a pending indicator on every card while scoring runs in the background. It re-sorts exactly once, once every listing's outcome (a score, a gate refusal, or a failure) has resolved: scored cards first, ordered by band (`strong_match` first, `not_a_match` last, ties within a band keeping Adzuna's original relative order, since a stable sort never reorders equal elements), then every refused or failed card after them in its own original relative order. No further re-sort happens after that. Outcomes are matched back to their card by `sourceJobId` (never by array position), since the list itself reorders.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: A listing whose `ai_scoring` call fails (a vendor error or a malformed response) shows a visible \\\"could not be scored\\\" state on that card alone (`COPY-3`); the other listings in the same render keep their own real outcome. A failed scoring attempt never writes or renders anything that reads as a working score.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: When any of the concurrent calls is refused by the usage gate (`{ allowed: false }`), the affected cards show no band and no per card failure note. Instead, one page level notice appears once, naming the limit reached (reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011). When refusals in the same batch carry more than one distinct reason (possible since 20 concurrent calls can straddle more than one cap boundary), the notice uses whichever reason the first refused call, in the listing's original order, carried. Kept visibly distinct from the per card failure state in AC-10.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: The prompt built from the caller's profile is bounded regardless of how much the user wrote: the full `summary` (already capped at 4000 characters, spec 0010 AC-3), at most 50 skills (in `readProfileSections()`'s own `lower(name)` ascending order, the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9), the full `job_preference` row when present (already bounded by spec 0010 AC-9's own limits, no new cap needed), and at most the 5 most recent `work_experience` entries in the order `readProfileSections()` already returns them, each entry's own `description` truncated to 300 characters before it enters the prompt. When a listing's own `descriptionSnippet` is absent (an optional field, spec 0013), the prompt states plainly that no description was returned for this posting and the model reasons from the title alone.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: `scoreListings()` (`src/features/scoring/score-listings.ts`) opens its own named span, `scoring.score_listings`, as its first statement, before it dispatches any of the concurrent `scoreListing()` calls (each of which runs its own gate check), recording the listing count; once every outcome has resolved it also records how many scored, how many were refused, and how many failed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: The entry page's \\\"What's real today\\\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: Every pending card carries `aria-busy=\\\"true\\\"` until its outcome resolves. A single polite live region announces, exactly once and **only when at least one listing was actually scored**, that results are now ranked (`COPY-7`); a batch in which every call was refused or failed ranks nothing, leaves the list in Adzuna's own order, and therefore announces nothing. And the reader's keyboard focus survives the re-sort: a reader who was focused on a control inside a result card before the ranking arrived is left focused on **that same control**, in its new position, never on the document body. Matching this project's WCAG 2.2 AA bar (`AGENTS.md`).\",\"rejected_spans\":[\"*Both the announcement clause and the focus clause were corrected on 2026-09-06, after `/check verify` drove the running app and found the first firing over an unranked list and the second not holding at all; the original wording of each is in Follow-up.*\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-17**: Focus survives the re-sort by being **restored, not preserved**, and the difference is forced by the mechanism: the ranked list arrives as a `<Suspense>` reveal, which destroys the fallback's nodes outright, so the browser drops focus to `<body>` the moment the control the reader was on stops existing. Nothing short of client JavaScript can hold focus across that. The restoration obeys four rules, each written as what the reader experiences rather than what the code sets:\\n  - It acts **only when focus was actually orphaned**, that is, the active element is the body (or nothing) at the moment the ranked list arrives. A reader whose focus is still on a live element, the search box, the header, a card control outside the boundary, is never moved. Stealing focus from someone who is using the page is a worse defect than the one this fixes.\\n  - It restores **the same control**, found by a key that is unique per control and stable across the reorder, never by position in the list, because position is exactly what the re-sort changes. The key is `<source>:<sourceJobId>:<control>`, where the first two segments are the `Listing` fields `result-list.tsx` already composes into its React key, and `<control>` is one of exactly two literals: `posting-link` for the \\\"View the posting\\\" link, `apply` for the apply control. A third focusable control added to a card later adds a third literal here first.\\n  - It **remembers at most one key, and forgets it the moment it is used or declined**. `FocusRestorer` consumes and clears the recorded key on every mount, whether it restored anything or not. Without this, two searches in one browser tab share one module instance, and a key left over from the first search could match a listing that also appears in the second (Adzuna returns overlapping results for similar searches) and pull focus onto a control the reader never touched on this page. That is the same \\\"stealing focus from a reader who is using the page\\\" defect the first rule exists to prevent, arriving by a different door.\\n  - The recorder listens for `focusin` **on the document, filtered by `event.target.closest('[data-focus-key]')`**, rather than on a results container, because no such container element exists: the `<Suspense>` block is one sibling in a bare fragment alongside the notices. A `focusin` on anything without a key (the search box, the header) is a no operation and leaves the last remembered key alone; it does not need to clear it, because focus resting on a live element already stops the first rule from firing.\\n  - When that key is absent from the ranked list, it focuses the results list container, which carries `tabindex=\\\"-1\\\"` and an accessible name (`COPY-8`), rather than leaving the reader on the body. This is a defensive path and is not expected to run: the ranked list holds the same `sourceJobId` set as the pending list, only reordered.\\n  - The restored control is **brought into view**, so focus is moved without `preventScroll`. A card that moved from the bottom of the list to the top takes the reader with it, which is what keeps the restored focus visible rather than parked off screen (WCAG 2.2, Focus Not Obscured).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":null,\"mention\":\"spec 0012's settled call shape\"},\"phrase\":\"matching spec 0012's settled call shape\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-6\",\"mention\":\"spec 0008's AC-6\"},\"phrase\":\"This gate layers onto spec 0008's AC-6 landing rule without replacing it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-8\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"phrase\":\"clears the AC-7 gate\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"mention\":\"spec 0011\"},\"phrase\":\"reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-11\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"phrase\":\"Kept visibly distinct from the per card failure state in AC-10.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-3\",\"mention\":\"spec 0010 AC-3\"},\"phrase\":\"already capped at 4000 characters, spec 0010 AC-3\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-9\",\"mention\":\"spec 0010 AC-9\"},\"phrase\":\"the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":null,\"mention\":\"spec 0013\"},\"phrase\":\"an optional field, spec 0013\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, AC-8\"},\"phrase\":\"The entry page's \\\"What's real today\\\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a job seeker, I want each search result scored against my own profile",
+        "rejected_spans": [
+          "so that I can tell at a glance which listings are worth reading in full."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a job seeker, I want to see which of my skills matched and which were not mentioned in the posting, not just a number,",
+        "rejected_spans": [
+          "so that I can judge the score myself rather than trust it blindly."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a job seeker with a profile that has no skills and no work history yet, I want to be told to add one rather than shown a score built on nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want a scoring failure to be visible and never mistaken for a working score, and a usage cap refusal to read differently from an actual failure.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,",
+        "rejected_spans": [
+          "so the model selects the closest anchored description rather than free floating a judgment (an anchored band rubric, not an open numeric range, matching scope.md's own wording)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: Across the genuinely varied listings feature 15's ground truth set will author, scored results spread across at least three of the five bands rather than clustering on one. This is exercised by feature 16's eval harness once feature 15 exists, not by this feature's own unit tests,",
+        "rejected_spans": [
+          "since it needs authored real world variety this feature does not carry on its own."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: `callTier(\"ai_scoring\", \u2026)` is called exactly once per listing, never batched across listings in one call, matching spec 0012's settled call shape.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \"\u2026\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \"missing skills\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: A `sponsorshipSignal` field is a required enum of `sponsors`, `does_not_sponsor`, or `not_stated`, resolved from whether the listing's visible text states a sponsorship stance explicitly. `not_stated` renders nothing on the card, the same visible outcome an absent field would have had, but as an explicit value rather than an omission a model could produce by accident. The signal is never used to compute or adjust the band, and when present (`sponsors` or `does_not_sponsor`) it renders as its own separate badge, distinct from the band badge (`COPY-6`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: A profile with zero `profile_skill` rows and zero `work_experience` rows is never scored. `/search` renders its plain, unscored result list (today's shape) plus a visible line linking to `/profile` to add skills or experience (`COPY-5`), and no `ai_scoring` call is made for any listing on that render. A profile with either skills or work history, even if the other is empty, is scored normally. This gate layers onto spec 0008's AC-6 landing rule without replacing it: a thin profile still lands on `/search`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: When the caller's profile clears the AC-7 gate, every listing `searchListings()` returns for that render is scored: one `ai_scoring` call per listing, fired concurrently rather than sequentially.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: The result list renders immediately, in Adzuna's original order, with a pending indicator on every card while scoring runs in the background. It re-sorts exactly once, once every listing's outcome (a score, a gate refusal, or a failure) has resolved: scored cards first, ordered by band (`strong_match` first, `not_a_match` last, ties within a band keeping Adzuna's original relative order, since a stable sort never reorders equal elements), then every refused or failed card after them in its own original relative order. No further re-sort happens after that. Outcomes are matched back to their card by `sourceJobId` (never by array position), since the list itself reorders.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: A listing whose `ai_scoring` call fails (a vendor error or a malformed response) shows a visible \"could not be scored\" state on that card alone (`COPY-3`); the other listings in the same render keep their own real outcome. A failed scoring attempt never writes or renders anything that reads as a working score.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: When any of the concurrent calls is refused by the usage gate (`{ allowed: false }`), the affected cards show no band and no per card failure note. Instead, one page level notice appears once, naming the limit reached (reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011). When refusals in the same batch carry more than one distinct reason (possible since 20 concurrent calls can straddle more than one cap boundary), the notice uses whichever reason the first refused call, in the listing's original order, carried. Kept visibly distinct from the per card failure state in AC-10.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: The prompt built from the caller's profile is bounded regardless of how much the user wrote: the full `summary` (already capped at 4000 characters, spec 0010 AC-3), at most 50 skills (in `readProfileSections()`'s own `lower(name)` ascending order, the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9), the full `job_preference` row when present (already bounded by spec 0010 AC-9's own limits, no new cap needed), and at most the 5 most recent `work_experience` entries in the order `readProfileSections()` already returns them, each entry's own `description` truncated to 300 characters before it enters the prompt. When a listing's own `descriptionSnippet` is absent (an optional field, spec 0013), the prompt states plainly that no description was returned for this posting and the model reasons from the title alone.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: `scoreListings()` (`src/features/scoring/score-listings.ts`) opens its own named span, `scoring.score_listings`, as its first statement, before it dispatches any of the concurrent `scoreListing()` calls (each of which runs its own gate check), recording the listing count; once every outcome has resolved it also records how many scored, how many were refused, and how many failed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: The entry page's \"What's real today\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: Every pending card carries `aria-busy=\"true\"` until its outcome resolves. A single polite live region announces, exactly once and **only when at least one listing was actually scored**, that results are now ranked (`COPY-7`); a batch in which every call was refused or failed ranks nothing, leaves the list in Adzuna's own order, and therefore announces nothing. And the reader's keyboard focus survives the re-sort: a reader who was focused on a control inside a result card before the ranking arrived is left focused on **that same control**, in its new position, never on the document body. Matching this project's WCAG 2.2 AA bar (`AGENTS.md`).",
+        "rejected_spans": [
+          "*Both the announcement clause and the focus clause were corrected on 2026-09-06, after `/check verify` drove the running app and found the first firing over an unranked list and the second not holding at all; the original wording of each is in Follow-up.*"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-17**: Focus survives the re-sort by being **restored, not preserved**, and the difference is forced by the mechanism: the ranked list arrives as a `<Suspense>` reveal, which destroys the fallback's nodes outright, so the browser drops focus to `<body>` the moment the control the reader was on stops existing. Nothing short of client JavaScript can hold focus across that. The restoration obeys four rules, each written as what the reader experiences rather than what the code sets:\n  - It acts **only when focus was actually orphaned**, that is, the active element is the body (or nothing) at the moment the ranked list arrives. A reader whose focus is still on a live element, the search box, the header, a card control outside the boundary, is never moved. Stealing focus from someone who is using the page is a worse defect than the one this fixes.\n  - It restores **the same control**, found by a key that is unique per control and stable across the reorder, never by position in the list, because position is exactly what the re-sort changes. The key is `<source>:<sourceJobId>:<control>`, where the first two segments are the `Listing` fields `result-list.tsx` already composes into its React key, and `<control>` is one of exactly two literals: `posting-link` for the \"View the posting\" link, `apply` for the apply control. A third focusable control added to a card later adds a third literal here first.\n  - It **remembers at most one key, and forgets it the moment it is used or declined**. `FocusRestorer` consumes and clears the recorded key on every mount, whether it restored anything or not. Without this, two searches in one browser tab share one module instance, and a key left over from the first search could match a listing that also appears in the second (Adzuna returns overlapping results for similar searches) and pull focus onto a control the reader never touched on this page. That is the same \"stealing focus from a reader who is using the page\" defect the first rule exists to prevent, arriving by a different door.\n  - The recorder listens for `focusin` **on the document, filtered by `event.target.closest('[data-focus-key]')`**, rather than on a results container, because no such container element exists: the `<Suspense>` block is one sibling in a bare fragment alongside the notices. A `focusin` on anything without a key (the search box, the header) is a no operation and leaves the last remembered key alone; it does not need to clear it, because focus resting on a live element already stops the first rule from firing.\n  - When that key is absent from the ranked list, it focuses the results list container, which carries `tabindex=\"-1\"` and an accessible name (`COPY-8`), rather than leaving the reader on the body. This is a defensive path and is not expected to run: the ranked list holds the same `sourceJobId` set as the pending list, only reordered.\n  - The restored control is **brought into view**, so focus is moved without `preventScroll`. A card that moved from the bottom of the list to the top takes the reader with it, which is what keeps the restored focus visible rather than parked off screen (WCAG 2.2, Focus Not Obscured).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "spec 0012's settled call shape"
+        },
+        "phrase": "matching spec 0012's settled call shape",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-6",
+          "label": null,
+          "mention": "spec 0008's AC-6"
+        },
+        "phrase": "This gate layers onto spec 0008's AC-6 landing rule without replacing it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "phrase": "clears the AC-7 gate",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011"
+        },
+        "phrase": "reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-11"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "phrase": "Kept visibly distinct from the per card failure state in AC-10.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-3",
+          "label": null,
+          "mention": "spec 0010 AC-3"
+        },
+        "phrase": "already capped at 4000 characters, spec 0010 AC-3",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-9",
+          "label": null,
+          "mention": "spec 0010 AC-9"
+        },
+        "phrase": "the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": null,
+          "mention": "spec 0013"
+        },
+        "phrase": "an optional field, spec 0013",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, AC-8"
+        },
+        "phrase": "The entry page's \"What's real today\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
