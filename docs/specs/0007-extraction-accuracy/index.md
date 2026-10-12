@@ -1,7 +1,7 @@
 # 0007. Extraction accuracy, step one: the model and the code pass
 
 **Date**: 2026-10-09
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
