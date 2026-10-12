@@ -2,7 +2,7 @@
 
 **Date started**: 2026-10-11
 **Spec**: [0007](../../docs/specs/0007-extraction-accuracy/index.md), the measure (AC-18 to AC-30)
-**Status**: units chosen, nothing extracted yet
+**Status**: units extracted; stage one packet drawn, awaiting the engineer's rulings
 
 ## Question
 
@@ -62,6 +62,36 @@ The difference is 1 token at the $4 per million cache write rate, $0.0000039 per
 The engineer accepted it as recorded data, not a spec change: `cost.py` stays at 57,494,
 and the note on spec 0007 AC-31g is deferred to the `/architect` session for the later
 steps.
+
+## Stage one sample
+
+`prepare_stage_one.py` (no API call) draws, per unit, 5 entity marks from the entities
+the code pass releases and 3 from the control arm's accepted entities, each draw with
+its own seed (AC-25 to AC-25c), and writes three files under `data/`:
+
+- `stage-one-packet.md`: the items mixed per unit, shuffled, under opaque ids, each
+  showing only its span, type and source line (AC-26, AC-26d). The engineer rules here.
+- `stage-one-arms.sha256`: the hash of the arm file, committed before any ruling
+  (AC-26b).
+- `stage-one-arms.json`: the arm file, naming every seed, every draw and its shortfall,
+  and each item's arm. Kept uncommitted until the rulings are in (AC-26c); its hash
+  must then match.
+
+Drawn 2026-10-12, 22 items: `0009` 8, `0013` 6, `0015` 8. Shortfall (AC-25d): `0013`'s
+released draw asked for 5 and found 3, so under AC-19c `0013` is inconclusive and stage
+one cannot pass as drawn. Every other draw found what it asked for.
+
+The seeds come from `secrets` at draw time, not from the script, so the arms cannot be
+recomputed from committed code before the arm file is committed. The script refuses to
+run once any of the three files exists, so the sample is drawn once.
+
+## Eval chain reach (AC-28c)
+
+`data/eval-before.txt` was recorded before the paid run, `data/eval-after.txt` after
+the three units landed in the default graph (`tracepath load` then `tracepath eval`,
+plain, no `--code-pass`). Every question's verdict is unchanged (1, 2, 3 and 5 fail,
+4 is inconclusive). Question 5 counts one more accepted link outside its expected
+sections (3 against 2).
 
 ## Result
 
