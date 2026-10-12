@@ -12,16 +12,20 @@ belongs to the run that made the calls, and adding it up again here would double
 a cost that was never paid twice.
 """
 
-from dataclasses import dataclass
+from collections import Counter
+from collections.abc import Sequence
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from tracepath.artifacts import RUNS_DIR, RunArtifact, read_run
 from tracepath.config import RUNS_PER_UNIT
+from tracepath.extract.codepass import code_decided_ids, parse_bullets
 from tracepath.extract.compare import route_runs
 from tracepath.extract.ids import assign_ids, label_binding_rules, locate_output
 from tracepath.extract.records import Record, records_for
 from tracepath.extract.units import Unit, split_units
-from tracepath.pipeline import UnitResult
+from tracepath.pipeline import CorpusResolution, UnitResult
+from tracepath.resolve.endpoints import ResolvedLink
 
 
 class RebuildFailed(Exception):
@@ -113,13 +117,31 @@ def partial_units(root: Path) -> tuple[PartialUnit, ...]:
     )
 
 
-def committed_units(root: Path, snapshot: Path) -> tuple[UnitResult, ...]:
+def apply_code_pass(results: Sequence[UnitResult]) -> tuple[UnitResult, ...]:
+    """The same units routed again with the code pass (spec 0007).
+
+    Only routing is redone, from the very outputs already identified, so every span,
+    entity and link the runs wrote is what it was; only acceptance can differ (AC-15).
+    """
+    return tuple(
+        replace(
+            result,
+            routed=route_runs(result.identified, code_decided_ids(result.unit, result.identified)),
+        )
+        for result in results
+    )
+
+
+def committed_units(
+    root: Path, snapshot: Path, *, code_pass: bool = False
+) -> tuple[UnitResult, ...]:
     """Every fully extracted unit, re-identified from its artifacts. No API calls.
 
     Only settled runs are read, and only a unit holding the run policy's full count of
     them is rebuilt. A unit cut short is not extracted (`partial_units()`): comparing
     fewer runs than the policy asks for says nothing about stability, and one run
-    cannot be compared at all.
+    cannot be compared at all. With `code_pass`, each unit is routed with the code
+    pass applied (spec 0007, `apply_code_pass()`).
 
     Raises:
         RebuildFailed: there are no artifacts to rebuild from.
@@ -154,7 +176,81 @@ def committed_units(root: Path, snapshot: Path) -> tuple[UnitResult, ...]:
                 output_tokens=0,
             )
         )
-    return tuple(results)
+    return apply_code_pass(results) if code_pass else tuple(results)
+
+
+def released_links(
+    without: CorpusResolution, with_pass: CorpusResolution
+) -> tuple[ResolvedLink, ...]:
+    """The links accepted with the code pass and not without it (spec 0007 AC-17, AC-25b).
+
+    Found by resolving the whole corpus both ways, so a link that waited on a released
+    entity in another unit counts too. Compared as a multiset: two equal links in one
+    resolution are two links.
+    """
+    before = Counter(without.resolution.links)
+    found: list[ResolvedLink] = []
+    for link in with_pass.resolution.links:
+        if before[link] > 0:
+            before[link] -= 1
+        else:
+            found.append(link)
+    return tuple(found)
+
+
+@dataclass(frozen=True)
+class CodePassUnit:
+    """What `load --code-pass` prints for one unit (spec 0007 AC-17).
+
+    `not_decided` counts parsed bullets whose id is not code decided, `repeated` names
+    the ids two parsed bullets carry (AC-11), `struck` counts bullets opening with `~~`
+    after the colon, and `unparsed` the other top level `- **AC-` bullets.
+    """
+
+    record: str
+    section: str
+    decided: tuple[str, ...]
+    released_entities: int
+    released_links: int
+    not_decided: int
+    repeated: tuple[str, ...]
+    struck: int
+    unparsed: int
+
+
+def code_pass_report(
+    with_pass: Sequence[UnitResult], links: Sequence[ResolvedLink]
+) -> tuple[CodePassUnit, ...]:
+    """One report row per unit, `links` being `released_links()` of the whole corpus.
+
+    A released link is counted in the unit whose section it was written in, the same
+    place `graph_build()` counts a unit's accepted links by.
+    """
+    rows: list[CodePassUnit] = []
+    for result in with_pass:
+        parse = parse_bullets(result.unit)
+        decided = code_decided_ids(result.unit, result.identified)
+        place = (result.unit.path, result.unit.section)
+        rows.append(
+            CodePassUnit(
+                record=result.unit.record_id,
+                section=result.unit.section,
+                decided=tuple(
+                    i
+                    for i in dict.fromkeys(parse.parsed)
+                    if f"{result.unit.record_id}/{i}" in decided
+                ),
+                released_entities=len(result.released),
+                released_links=sum(1 for link in links if (link.file, link.section) == place),
+                not_decided=sum(
+                    1 for i in parse.parsed if f"{result.unit.record_id}/{i}" not in decided
+                ),
+                repeated=parse.repeated,
+                struck=parse.struck,
+                unparsed=parse.unparsed,
+            )
+        )
+    return tuple(rows)
 
 
 def records_for_units(

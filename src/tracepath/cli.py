@@ -14,9 +14,13 @@ from rich.console import Console
 
 from tracepath import __version__
 from tracepath.artifacts import (
+    GRAPH_BUILD,
     REVIEW_LOG,
     REVIEW_QUEUE,
+    REVIEW_QUEUE_CODE_PASS,
     ArtifactCollisionError,
+    ManifestUnreadable,
+    built_with_code_pass,
     ensure_review_log,
     now_utc,
     review_log_entries,
@@ -74,10 +78,14 @@ from tracepath.pipeline import (
     unit_provenance,
 )
 from tracepath.rebuild import (
+    CodePassUnit,
     RebuildFailed,
+    apply_code_pass,
+    code_pass_report,
     committed_units,
     partial_units,
     records_for_units,
+    released_links,
     settled_run_counts,
     unit_passes,
 )
@@ -114,6 +122,12 @@ err_console = Console(stderr=True)
 #: Who accepted what a load writes. Nothing is reviewed by hand yet (spec 0002), so
 #: every accepted item was accepted by the three run agreement rule.
 ACCEPTED_BY = "auto"
+
+#: The help of every `--code-pass` option (spec 0007 AC-7).
+CODE_PASS_HELP = (
+    "Route with the code pass of spec 0007: a parsed criterion whose three runs agree on "
+    "its id and type is not held by a multi_condition_split flag alone. Off by default."
+)
 
 #: Why `trace --with-held` refuses a graph a default load wrote (spec 0005 AC-26b).
 NO_HELD_ITEMS = (
@@ -181,17 +195,20 @@ def review_queue(
         help="The model a held link names when its unit has no run artifacts. "
         "Every other row names the model its unit's artifacts name.",
     ),
+    code_pass: bool = typer.Option(False, "--code-pass", help=CODE_PASS_HELP),
 ) -> None:
     """Rebuild the review queue from the committed run artifacts. No API call, no graph.
 
     Every held item needs somewhere durable to live, or AC-11c's promise that a held
     link sits in a file tracked in git is not true. The artifacts are the source of
     truth (spec 0001), so the queue is derived from them and never hand maintained.
+    With `--code-pass`, the queue goes to its own file and the default one is left
+    alone (spec 0007 AC-8).
     """
     base = Path(root)
     corpus_snapshot = base / snapshot
     try:
-        results = committed_units(base, corpus_snapshot)
+        results = committed_units(base, corpus_snapshot, code_pass=code_pass)
     except RebuildFailed as exc:
         err_console.print(f"[red]✗[/red] {exc}")
         raise typer.Exit(code=1) from None
@@ -204,11 +221,12 @@ def review_queue(
     except ProvenanceMismatch as exc:
         _fail(str(exc))
 
-    write_review_queue(base, list(rows))
+    queue = REVIEW_QUEUE_CODE_PASS if code_pass else REVIEW_QUEUE
+    write_review_queue(base, list(rows), queue)
     ensure_review_log(base)
     console.print(
         f"[green]✓[/green] {len(rows)} held items from {len(results)} units "
-        f"→ {REVIEW_QUEUE}, log at {REVIEW_LOG}"
+        f"→ {queue}, log at {REVIEW_LOG}"
     )
 
 
@@ -224,21 +242,32 @@ def load_graph(
         "--with-held",
         help="Also write the items review holds back, each marked held (spec 0005).",
     ),
+    code_pass: bool = typer.Option(False, "--code-pass", help=CODE_PASS_HELP),
 ) -> None:
     """Rebuild the graph from the committed run artifacts. No API call.
 
     Clears the graph, creates the constraints and loads every fully extracted unit,
     every write asserting its own row count, then writes `artifacts/graph-build.json`.
     With `--with-held`, held items are written too, marked held; nothing is accepted.
+    With `--code-pass`, units are routed with the code pass, each entity it released
+    stamped `accepted_by` `code_pass`, and a report per unit says what it changed.
     """
     base = Path(root)
     corpus_snapshot = base / snapshot
     held: HeldView | None = None
+    report: tuple[CodePassUnit, ...] = ()
     try:
         settings = load_neo4j_settings()
         results = committed_units(base, corpus_snapshot)
         records = records_for_units(results, corpus_snapshot, commit)
         corpus = resolve_accepted(results, records)
+        if code_pass:
+            # The whole corpus resolved both ways, so a link released in another unit
+            # is counted too (spec 0007 AC-17).
+            plain = corpus
+            results = apply_code_pass(results)
+            corpus = resolve_accepted(results, records)
+            report = code_pass_report(results, released_links(plain, corpus))
         if with_held:
             held = build_held_view(results, corpus, records)
         provenances = [unit_provenance(result, ACCEPTED_BY) for result in results]
@@ -250,6 +279,7 @@ def load_graph(
             review_log_entries(base),
             unit_passes(base),
             held,
+            code_pass=code_pass,
         )
         with connect(settings) as driver:
             written = load(
@@ -291,6 +321,8 @@ def load_graph(
             f"Not written, no first run item behind them: "
             f"{held.not_written_entities + held.not_written_links} queue rows."
         )
+    for line in _code_pass_lines(report):
+        _say(line)
     versions = ", ".join(f"{v}: {n}" for v, n in manifest["prompt_versions"].items())
     _say(f"Units per prompt version: {versions}.")
     # The graph mixes models until feature 9, so a load says which made what (spec 0007 AC-4).
@@ -302,6 +334,53 @@ def load_graph(
             "settled runs of 3, so it is not extracted."
         )
     _say(f"Build manifest: {path.relative_to(base).as_posix()}")
+
+
+def _code_pass_lines(report: Sequence[CodePassUnit]) -> tuple[str, ...]:
+    """The code pass report `load --code-pass` prints, one line per unit (spec 0007 AC-17)."""
+    if not report:
+        return ()
+    lines = ["Code pass (spec 0007), per unit:"]
+    for row in report:
+        decided = ", ".join(row.decided) if row.decided else "none"
+        repeated = f" (ids on two bullets: {', '.join(row.repeated)})" if row.repeated else ""
+        lines.append(
+            f"  {row.record} {row.section}: code decided {len(row.decided)} ({decided}); "
+            f"{row.released_entities} entities released, {row.released_links} links "
+            f"released; {row.not_decided} parsed bullets not code decided{repeated}; "
+            f"{row.struck} bullets opening with ~~ after the colon left to the model; "
+            f"{row.unparsed} other AC bullets failed the parse."
+        )
+    lines.append(
+        f"Code pass total: {sum(r.released_entities for r in report)} entities and "
+        f"{sum(r.released_links for r in report)} links released, each entity stamped "
+        "accepted_by code_pass."
+    )
+    return tuple(lines)
+
+
+def _refuse_code_pass_mismatch(base: Path, code_pass: bool) -> None:
+    """Exit 1 unless the graph was loaded with the routing this command will score.
+
+    Read from `artifacts/graph-build.json` before any connection (spec 0007 AC-7c); a
+    missing `code_pass` key means the graph was loaded without the pass.
+    """
+    try:
+        built = built_with_code_pass(base)
+    except ManifestUnreadable as exc:
+        _fail(str(exc))
+    if built == code_pass:
+        return
+    if code_pass:
+        _fail(
+            f"--code-pass scores the code pass routing, but {GRAPH_BUILD.as_posix()} says the "
+            "graph was loaded without it. Run `tracepath load --code-pass` first, or drop "
+            "--code-pass."
+        )
+    _fail(
+        f"{GRAPH_BUILD.as_posix()} says the graph was loaded with --code-pass, but this "
+        "command scores the default routing. Add --code-pass, or run `tracepath load` first."
+    )
 
 
 def _holds_held(graph: GraphSlice) -> bool:
@@ -320,9 +399,13 @@ class _Committed:
     settled: dict[tuple[str, str], int]
 
 
-def _committed(base: Path, corpus_snapshot: Path, commit: str) -> _Committed:
-    """Rebuild every fully extracted unit from the run files, for scoring."""
-    results = committed_units(base, corpus_snapshot)
+def _committed(base: Path, corpus_snapshot: Path, commit: str, code_pass: bool) -> _Committed:
+    """Rebuild every fully extracted unit from the run files, for scoring.
+
+    With `code_pass`, routed with the pass, so the scoring explains the routing the
+    graph holds (spec 0007 AC-7d).
+    """
+    results = committed_units(base, corpus_snapshot, code_pass=code_pass)
     corpus = resolve_accepted(results, records_for_units(results, corpus_snapshot, commit))
     return _Committed(results, corpus, settled_run_counts(base))
 
@@ -432,6 +515,9 @@ def trace(
         "--release-held-out",
         help="Run a held out eval file (spec 0006). Only once features 13 and 11 committed.",
     ),
+    code_pass: bool = typer.Option(
+        False, "--code-pass", help=CODE_PASS_HELP + " Needs --eval N and a graph from it."
+    ),
 ) -> None:
     """Walk the chain from one item and print every step, each citing its record.
 
@@ -446,6 +532,8 @@ def trace(
         _fail("give one START id or --eval N, not both and not neither.")
     if release_held_out and eval_question is None:
         _fail("--release-held-out reads an eval file, so it needs --eval N.")
+    if code_pass and eval_question is None:
+        _fail("--code-pass changes the routing scored, so it needs --eval N.")
     base = Path(root)
     question: Question | None = None
     held_out = False
@@ -459,6 +547,7 @@ def trace(
                 eval_question,
                 held_out=held_out,
             )
+            _refuse_code_pass_mismatch(base, code_pass)
         settings = load_neo4j_settings()
         with connect(settings) as driver:
             graph = read_graph(driver, settings.database, with_held=with_held)
@@ -488,7 +577,7 @@ def trace(
         scored = _score_question(
             question,
             graph,
-            _committed(base, corpus_snapshot, commit),
+            _committed(base, corpus_snapshot, commit, code_pass),
             corpus_snapshot,
             with_held=with_held,
         )
@@ -527,6 +616,9 @@ def eval_set_command(
         "--release-held-out",
         help="Run a held out eval file (spec 0006). Only once features 13 and 11 committed.",
     ),
+    code_pass: bool = typer.Option(
+        False, "--code-pass", help=CODE_PASS_HELP + " Needs a graph from `load --code-pass`."
+    ),
 ) -> None:
     """Score every question of an eval file: pass, fail or inconclusive, difference shown.
 
@@ -539,6 +631,7 @@ def eval_set_command(
     try:
         eval_set = read_eval_set(path, release_held_out=release_held_out)
         sidecar = read_sidecar(base, path)
+        _refuse_code_pass_mismatch(base, code_pass)
         settings = load_neo4j_settings()
         with connect(settings) as driver:
             graph = read_graph(driver, settings.database, with_held=with_held)
@@ -555,7 +648,7 @@ def eval_set_command(
         _fail(NO_HELD_ITEMS)
     corpus_snapshot = base / snapshot
     try:
-        committed = _committed(base, corpus_snapshot, commit)
+        committed = _committed(base, corpus_snapshot, commit, code_pass)
     except (RebuildFailed, RecordError, OSError, UnicodeDecodeError) as exc:
         _fail(str(exc))
 
