@@ -31,6 +31,24 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 14 | Held item view | Slice 1, before Slice 2 | done |
 | 15 | Question to start item | step 1 after Slice 2, step 2 after Slice 5 | planned |
 
+## v1 finish line
+
+_Recorded 2026-10-13._ v1 is done when: "You ask tracepath a why question about JobHunt and it prints a chain of cited steps across documents for at least 3 of the 5 eval questions, over the whole corpus. Question 4 (an absence question) is expected to stay inconclusive and question 5 is expected to need feature 7."
+
+**v1 needs, in this order:**
+1. Feature 13 step one closed after the engineer's stage one rulings, whatever their result. There is no fourth unit, and the code pass stays off.
+2. Feature 11.
+3. Feature 9.
+4. Feature 15 step one.
+
+**After v1:** feature 13's later steps, features 7, 8 and 10, and the cross model experiment (see Deferred).
+
+**To reconcile:** feature 9's Done when says all five eval questions pass. That is stricter than this line, which asks for at least 3 of 5 and expects questions 4 and 5 not to pass. Feature 9's Done when is left as written until the engineer decides which wording stands.
+
+**Tripwire, before feature 9 starts:** look at how the released entity marks were ruled.
+- If most are ruled disagree (a wrong cut or type), the engineer revisits the order before feature 9 starts. A prompt change after the whole corpus run would force a re extraction.
+- If most are ruled agree, the hold itself is the problem, and it belongs to feature 11.
+
 ## Foundations
 
 ### 1. Stack & architecture
@@ -207,6 +225,7 @@ Corrected 2026-10-09: the feature 7 column is not evidence. `eval` prints no cha
 
 **Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** no worked example and no prompt change may draw on a section cited by `eval/held-out.json` (spec 0006 AC-25 tests the examples). This feature re checks the evidence flags in `eval/runner.json` whenever it edits `examples/`, because spec 0006 AC-20's digest test fails until they are re checked. Running the held out questions is `tracepath eval --eval-file eval/held-out.json --release-held-out`, and only once this feature and feature 11 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 **Done when:** each cause in spec 0003's Follow up is fixed, ruled out, or carried as a recorded decision; any prompt change is re checked on fresh held out units against the same bar, with the dropped link clause measured this time; and either the bar passes, or the remaining gap is measured on the eval questions and accepted in a spec.
+**Paused decision, recorded 2026-10-13 (v1 finish line):** this feature's later steps (the flag change and the type definitions) are paused. For v1, step one closes after the engineer's stage one rulings, whatever their result, with no fourth unit and the code pass left off. Whether the later steps run, and when, is decided after v1. Until then this Done when is not required for v1.
 spec [0007](../specs/0007-extraction-accuracy/index.md) (step one: the model switch and the code pass) · amends spec [0001](../specs/0001-stack-and-architecture/index.md) and spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/rebuild.py`, `src/tracepath/cli.py`
 - [x] Design it (spec): `/architect extraction accuracy` · step one only; the flag change and the type definitions are designed in a later spec or amendment from this step's rulings
 - [ ] Build it: `/develop extraction accuracy`
