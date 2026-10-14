@@ -2,7 +2,7 @@
 
 **Date started**: 2026-10-11
 **Spec**: [0007](../../docs/specs/0007-extraction-accuracy/index.md), the measure (AC-18 to AC-30)
-**Status**: units extracted; stage one packet drawn, awaiting the engineer's rulings
+**Status**: stage one ruled and scored 2026-10-14: inconclusive, the code pass stays off
 
 ## Question
 
@@ -95,4 +95,56 @@ sections (3 against 2).
 
 ## Result
 
-Not yet run.
+Scored 2026-10-14 by `score_stage_one.py` (no API call) into
+`data/stage-one-result.json`, from the ruled packet (`2b4baf4`) and the arm file
+committed after it (`f5244a1`), whose hash matches the one committed before any ruling
+(`dd92c57`).
+
+**Stage one is inconclusive** (AC-19c): `0013` holds only 3 released entities, short of
+the 5 the gate needs. The other two units pass. So the pass stays off (AC-19d) and
+stage two is not run (AC-19h).
+
+| Unit | Released marks ruled agree | Gate | Control marks ruled agree | Held items, pass off / on |
+|---|---|---|---|---|
+| `0009` `## Requirements` | 5 of 5 | pass | 1 of 3 | 16 / 9 |
+| `0013` `## Requirements` | 3 of 3 | inconclusive | 1 of 3 | 9 / 4 |
+| `0015` `## Requirements` | 5 of 5 | pass | 1 of 3 | 18 / 3 |
+
+- **Released marks**: 13 drawn, 13 ruled agree, none disagree, unsure or unruled. 11 of
+  the 13 carry `gap:bundled-ac`: a bundled criterion kept whole, ruled agree by the
+  convention.
+- **The flip of AC-26e** turned 3 rulings to disagree, all on control items: one
+  `AcceptanceCriterion` in each unit, ruled agree with `gap:bundled-ac`, whose entity
+  the model did not flag `multi_condition_split`. No released item was flipped, since
+  every released entity carries the flag (AC-12b). Before the flip the control marks
+  read 6 agree, 3 disagree.
+- **No regression** (AC-19b): over the three units, every entity and link accepted
+  without the pass is accepted with it, checked by code.
+- **Set apart**: no item unruled (AC-18e), no `unsure` (AC-18c), no disagreement
+  citing knowledge not in the text (AC-18d, by keyword search of the reasons).
+- **Provenance**: every run of the three units names `claude-sonnet-5-5` (AC-29b) and
+  was extracted after `units.json` was first committed (AC-22b).
+- **Eval chain reach** (AC-28c): see the section above; no question's verdict moved.
+- None of the held item counts, eval chain reach or the control marks is a pass
+  condition (AC-28d). Experiment 0005's full bar was not measured in this step; it is
+  owed on feature 13's final state (AC-28e).
+
+**Known weakness: an item's type partly reveals its arm.** AC-10 makes every released
+entity an `AcceptanceCriterion`, while AC-25 draws control marks from all accepted
+entities. 5 of the 9 control items were typed `Feature`, so they were visibly control,
+and the 13 released items sat among only 17 `AcceptanceCriterion` items (4 of them
+control). The released marks were therefore ruled less blind than the design meant.
+A later step that wants a blind control should draw it from accepted entities of the
+released items' type.
+
+**The scope's tripwire** (feature 13, before feature 9 starts): every released mark was
+ruled agree, so this falls on the "most are ruled agree" side: the cuts and types are
+right, and the hold itself is the problem, which belongs to feature 11.
+
+## Conclusion
+
+On the two units that could be gated, the items the code pass releases were right by
+the engineer's rulings, 10 of 10, and nothing accepted before was lost. `0013` had
+too few released items to gate, so stage one does not pass, and the pass stays off by
+default as the scope's v1 line already decided (feature 13 step one closes after these
+rulings, whatever their result, with no fourth unit).
