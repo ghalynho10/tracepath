@@ -214,9 +214,14 @@ def test_ac_5_every_row_names_the_model_its_units_artifacts_name() -> None:
     assert {row["model"] for row in rows if (row["record"], row["section"]) == moved_key} == {
         "claude-sonnet-5-5"
     }
-    assert {row["model"] for row in rows if (row["record"], row["section"]) != moved_key} == {
-        "claude-sonnet-5"
-    }
+    # The other units keep the model their own committed artifacts name, whichever it is.
+    own = {(r.unit.record_id, r.unit.section): r.artifacts[0].model for r in results}
+    assert all(
+        row["model"] == own[(row["record"], row["section"])]
+        for row in rows
+        if (row["record"], row["section"]) != moved_key
+    )
+    assert "fallback-model" not in {row["model"] for row in rows}
 
 
 def test_ac_5b_the_model_option_defaults_to_the_default_model() -> None:
