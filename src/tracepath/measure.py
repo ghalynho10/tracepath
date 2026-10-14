@@ -5,19 +5,22 @@ hand and committed before any paid call (AC-22, AC-22b), and the step is scored 
 no other list. Code refuses a list naming a unit the step must not use (AC-23, AC-24).
 The sample is drawn per unit and per arm with a given seed (AC-25 to AC-25d), then
 mixed into one packet under opaque ids that shows nothing of an item's arm (AC-26,
-AC-26d); the arm key that names each item's arm is a separate value (AC-26b).
+AC-26d); the arm key that names each item's arm is a separate value (AC-26b). Once
+ruled, the packet is parsed, the flip of AC-26e applied, and each unit scored against
+stage one's gate (AC-19 to AC-19c).
 """
 
 import json
 import random
 import re
-from collections.abc import Iterable, Sequence
+from collections import Counter
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 from tracepath.extract.ids import IdentifiedEntity
 from tracepath.extract.units import Unit
-from tracepath.pipeline import UnitResult
+from tracepath.pipeline import CorpusResolution, UnitResult
 
 #: Records no chosen unit may come from, each with why (spec 0007 AC-23). The held out
 #: records are listed by number only: the held out file itself is never opened (AC-30).
@@ -289,3 +292,188 @@ def arm_key(
             for i in items
         ],
     }
+
+
+#: Stage one's gate (AC-19, AC-19c): per unit, 5 released marks drawn, 4 ruled agree.
+STAGE_ONE_RELEASED = 5
+STAGE_ONE_AGREE = 4
+
+AGREE = "agree"
+DISAGREE = "disagree"
+UNSURE = "unsure"
+#: The tag the engineer gives a bundled criterion ruled agree by the convention (AC-26e).
+BUNDLED_TAG = "gap:bundled-ac"
+
+PASS = "pass"
+FAIL = "fail"
+INCONCLUSIVE = "inconclusive"
+
+_RULED_HEAD = re.compile(r"^- \[x\] (agree|disagree|unsure) · `(P\d+)` · ")
+_ANY_HEAD = re.compile(r"^- \[[ x]\] .*`(P\d+)`")
+_REASON = "  - reason:"
+
+
+class RulingsRefused(Exception):
+    """A ruled packet cannot be read as it stands."""
+
+
+@dataclass(frozen=True)
+class Ruling:
+    """One ruled item: its mark and the engineer's reason, which carries any tag."""
+
+    opaque_id: str
+    mark: str
+    reason: str
+
+
+def parse_rulings(text: str) -> dict[str, Ruling]:
+    """Every ruled item of a packet, keyed by opaque id. An unruled item is absent.
+
+    A ruled item's line reads `- [x] <mark> · `Pnn` · <type>`.
+
+    Raises:
+        RulingsRefused: an item line is ticked but its mark is not one word of the
+            three, or an id appears twice, so a ruling would be misread.
+    """
+    rulings: dict[str, Ruling] = {}
+    current: str | None = None
+    for line in text.splitlines():
+        head = _ANY_HEAD.match(line)
+        if head is not None:
+            current = None
+            ruled = _RULED_HEAD.match(line)
+            if line.startswith("- [x]") and ruled is None:
+                raise RulingsRefused(f"cannot read the mark of {head.group(1)}: {line!r}")
+            if ruled is not None:
+                current = ruled.group(2)
+                if current in rulings:
+                    raise RulingsRefused(f"{current} is ruled twice")
+                rulings[current] = Ruling(current, ruled.group(1), "")
+        elif current is not None and line.startswith(_REASON):
+            reason = line.removeprefix(_REASON).strip()
+            rulings[current] = Ruling(current, rulings[current].mark, reason)
+    return rulings
+
+
+def flip_bundled(
+    rulings: Mapping[str, Ruling], flagged: frozenset[str]
+) -> tuple[dict[str, Ruling], tuple[str, ...]]:
+    """AC-26e: an item tagged bundled and ruled agree whose entity is unflagged disagrees.
+
+    `flagged` names the items whose entity carries `multi_condition_split`. Returns the
+    rulings with the flip applied and the ids it flipped.
+    """
+    flipped = tuple(
+        sorted(
+            i
+            for i, r in rulings.items()
+            if r.mark == AGREE and BUNDLED_TAG in r.reason and i not in flagged
+        )
+    )
+    after = {i: Ruling(i, DISAGREE, r.reason) if i in flipped else r for i, r in rulings.items()}
+    return after, flipped
+
+
+@dataclass(frozen=True)
+class ArmScore:
+    """One arm's drawn marks in one unit and how they were ruled (AC-27b).
+
+    `knowledge` counts the disagreements whose reason says they come from knowledge
+    not in the text, reported apart (AC-18d); they are also counted in `disagree`.
+    """
+
+    drawn: int
+    agree: int
+    disagree: int
+    unsure: int
+    unruled: int
+    knowledge: int
+
+
+def arm_score(ids: Sequence[str], rulings: Mapping[str, Ruling]) -> ArmScore:
+    """Score the items `ids` names from the rulings; a missing ruling is unruled (AC-18e)."""
+    marks = Counter(rulings[i].mark if i in rulings else "" for i in ids)
+    knowledge = sum(
+        1
+        for i in ids
+        if i in rulings and rulings[i].mark == DISAGREE and "knowledge" in rulings[i].reason.lower()
+    )
+    return ArmScore(
+        drawn=len(ids),
+        agree=marks[AGREE],
+        disagree=marks[DISAGREE],
+        unsure=marks[UNSURE],
+        unruled=marks[""],
+        knowledge=knowledge,
+    )
+
+
+def unit_gate(released: ArmScore) -> str:
+    """Stage one's gate on one unit (AC-19, AC-19c).
+
+    Fewer than 5 released marks drawn is inconclusive. Otherwise the unit passes when
+    at least 4 are ruled agree: `unsure`, disagree and unruled all count against.
+    """
+    if released.drawn < STAGE_ONE_RELEASED:
+        return INCONCLUSIVE
+    return PASS if released.agree >= STAGE_ONE_AGREE else FAIL
+
+
+def stage_one_verdict(gates: Iterable[str], regressions: Sequence[str]) -> str:
+    """Stage one over every unit, from each unit's gate and the regression check.
+
+    Any unit failing, or anything lost, fails it (AC-19, AC-19b); otherwise it passes
+    only when no unit is inconclusive (AC-19c).
+    """
+    found = set(gates)
+    if FAIL in found or regressions:
+        return FAIL
+    return INCONCLUSIVE if INCONCLUSIVE in found else PASS
+
+
+def regressions(
+    without: Sequence[UnitResult],
+    with_pass: Sequence[UnitResult],
+    corpus_without: CorpusResolution,
+    corpus_with: CorpusResolution,
+    units: Iterable[tuple[str, str]],
+) -> tuple[str, ...]:
+    """AC-19b over the chosen units: what is accepted without the pass and not with it.
+
+    Each entry names one lost entity or link; empty when nothing is lost.
+    """
+    chosen = set(units)
+    found: list[str] = []
+    after = {(r.unit.record_id, r.unit.section): r for r in with_pass}
+    places: set[tuple[str, str]] = set()
+    for result in without:
+        key = (result.unit.record_id, result.unit.section)
+        if key not in chosen:
+            continue
+        places.add((result.unit.path, result.unit.section))
+        kept = {e.canonical_id for e in after[key].routed.accepted_entities}
+        found += [
+            f"entity {e.canonical_id} lost"
+            for e in result.routed.accepted_entities
+            if e.canonical_id not in kept
+        ]
+    lost = Counter(
+        link for link in corpus_without.resolution.links if (link.file, link.section) in places
+    ) - Counter(link for link in corpus_with.resolution.links)
+    found += [
+        f"link {link.source_record} {link.type.value} at {link.file}:{link.line} lost"
+        for link in lost.elements()
+    ]
+    return tuple(found)
+
+
+def held_items(result: UnitResult, corpus: CorpusResolution) -> int:
+    """How many items one unit holds back, the rows it puts in the review queue (AC-28b).
+
+    Its routed review items, then the links held because an endpoint in another unit
+    was not accepted.
+    """
+    key = (result.unit.record_id, result.unit.section)
+    return len(result.routed.review) + sum(
+        1 for link in corpus.held if (link.record, link.section) == key
+    )

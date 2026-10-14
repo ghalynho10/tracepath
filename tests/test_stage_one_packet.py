@@ -20,16 +20,29 @@ from tracepath.extract.schema import ExtractionOutput
 from tracepath.extract.units import Unit, UnitKind
 from tracepath.measure import (
     CONTROL,
+    FAIL,
+    INCONCLUSIVE,
+    PASS,
     RELEASED,
     EntityMark,
+    Ruling,
+    RulingsRefused,
     arm_key,
+    arm_score,
     build_packet,
     control_marks,
     draw,
+    flip_bundled,
+    held_items,
     packet_markdown,
+    parse_rulings,
+    regressions,
     released_marks,
+    stage_one_verdict,
+    unit_gate,
 )
-from tracepath.pipeline import UnitResult
+from tracepath.pipeline import CorpusResolution, UnitResult
+from tracepath.resolve.endpoints import Resolution
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "experiments" / "0012-extraction-accuracy-step-one" / "prepare_stage_one.py"
@@ -235,3 +248,110 @@ def test_the_script_refuses_to_draw_a_second_sample(
 
     with pytest.raises(SystemExit, match="already exist"):
         script.build()
+
+
+# After the rulings: parse, flip, score and gate (AC-18c, AC-19 to AC-19c, AC-26e).
+
+RULED = """# Packet
+
+## 0099:Requirements
+
+- [x] agree · `P01` · AcceptanceCriterion
+
+  - source: specs/0099-crafted/index.md:12
+  - span: claim 1
+  - reason: gap:bundled-ac (two conditions)
+
+- [x] disagree · `P02` · Feature
+  - source: specs/0099-crafted/index.md:13
+  - span: claim 2
+  - reason: needs knowledge not in the text
+
+- [ ] agree / disagree / unsure · `P03` · AcceptanceCriterion
+  - span: claim 3
+  - reason:
+
+- [x] unsure · `P04` · AcceptanceCriterion
+  - span: claim 4
+  - reason:
+"""
+
+
+def test_rulings_are_read_from_the_ticked_lines_with_their_reasons() -> None:
+    """covers: AC-18e (an unruled item is absent, so it is reported apart)."""
+    rulings = parse_rulings(RULED)
+
+    assert {i: r.mark for i, r in rulings.items()} == {
+        "P01": "agree",
+        "P02": "disagree",
+        "P04": "unsure",
+    }
+    assert rulings["P01"].reason == "gap:bundled-ac (two conditions)"
+
+
+def test_a_ticked_line_whose_mark_cannot_be_read_is_refused() -> None:
+    """A misread mark would score silently, so it stops the scoring."""
+    with pytest.raises(RulingsRefused, match="P01"):
+        parse_rulings(RULED.replace("- [x] agree · `P01`", "- [x] agre · `P01`"))
+
+
+def test_ac_26e_a_bundled_agree_on_an_unflagged_entity_counts_disagree() -> None:
+    """covers: AC-26e (flipped only when tagged, ruled agree and unflagged; counted)."""
+    rulings = parse_rulings(RULED)
+
+    after, flipped = flip_bundled(rulings, frozenset())
+    kept, none = flip_bundled(rulings, frozenset({"P01"}))
+
+    assert flipped == ("P01",) and after["P01"].mark == "disagree"
+    assert none == () and kept["P01"].mark == "agree"
+    assert after["P02"] == rulings["P02"]
+
+
+def test_ac_19_and_ac_18c_every_mark_not_ruled_agree_counts_against() -> None:
+    """covers: AC-19 (4 of 5), AC-18c (unsure counts against in the gate), AC-18d."""
+    rulings = {f"P{n}": Ruling(f"P{n}", "agree", "") for n in range(1, 4)}
+    rulings["P4"] = Ruling("P4", "unsure", "")
+    ids = ["P1", "P2", "P3", "P4", "P5"]
+
+    three = arm_score(ids, rulings)
+    four = arm_score(ids, {**rulings, "P5": Ruling("P5", "agree", "")})
+
+    assert (three.agree, three.unsure, three.unruled) == (3, 1, 1)
+    assert unit_gate(three) == FAIL
+    assert unit_gate(four) == PASS
+    knowledge = arm_score(["P02"], parse_rulings(RULED))
+    assert (knowledge.disagree, knowledge.knowledge) == (1, 1)
+
+
+def test_ac_19c_fewer_than_5_released_is_inconclusive_and_holds_stage_one() -> None:
+    """covers: AC-19c, and AC-19b's place in the verdict."""
+    all_agree = {f"P{n}": Ruling(f"P{n}", "agree", "") for n in range(1, 4)}
+
+    short = unit_gate(arm_score(["P1", "P2", "P3"], all_agree))
+
+    assert short == INCONCLUSIVE
+    assert stage_one_verdict([PASS, INCONCLUSIVE, PASS], ()) == INCONCLUSIVE
+    assert stage_one_verdict([PASS, PASS], ()) == PASS
+    assert stage_one_verdict([PASS, INCONCLUSIVE], ()) == INCONCLUSIVE
+    assert stage_one_verdict([PASS, PASS], ("entity lost",)) == FAIL
+    assert stage_one_verdict([FAIL, INCONCLUSIVE], ()) == FAIL
+
+
+def test_ac_19b_an_entity_accepted_only_without_the_pass_is_named_lost() -> None:
+    """covers: AC-19b (checked by code over the chosen units)."""
+    without, with_pass = results()
+    empty = CorpusResolution(Resolution((), ()), ())
+    chosen = [("0099", "Requirements")]
+
+    assert regressions([without], [with_pass], empty, empty, chosen) == ()
+    # Read the arms the other way round, the released entity is what a pass would lose.
+    assert regressions([with_pass], [without], empty, empty, chosen) == ("entity 0099/AC-2 lost",)
+    assert regressions([with_pass], [without], empty, empty, []) == ()
+
+
+def test_ac_28b_held_items_are_the_units_queue_rows() -> None:
+    """covers: AC-28b."""
+    without, with_pass = results()
+    empty = CorpusResolution(Resolution((), ()), ())
+
+    assert (held_items(without, empty), held_items(with_pass, empty)) == (1, 0)
