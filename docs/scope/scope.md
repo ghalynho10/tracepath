@@ -233,7 +233,7 @@ spec [0007](../specs/0007-extraction-accuracy/index.md) (step one: the model swi
   - [ ] The code pass, behind `--code-pass`, with its spec 0002 amendment (AC-6 to AC-17, AC-34)
   - [ ] The units list, the committed gate and the free token count, then the engineer's go for the first paid call (AC-19 to AC-19g, AC-22 to AC-24, AC-31 to AC-32)
   - [ ] The sampler, the blind packet and the scoring, after the paid extraction (AC-18 to AC-28d, AC-29b, AC-30)
-- [ ] Verify it: `/check verify extraction accuracy`
+- [x] Verify it: `/check verify extraction accuracy`
 - [ ] Test it: `/test extraction accuracy`
 - [ ] Later steps (flag change, type definitions): `/architect extraction accuracy, later steps` · after step one's rulings, each with fresh units chosen beforehand
 
