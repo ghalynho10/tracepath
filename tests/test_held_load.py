@@ -20,6 +20,7 @@ import pytest
 from neo4j import Driver
 from typer.testing import CliRunner
 
+from tests.committed_cache import uncached_rebuild
 from tests.test_trace_eval import QUESTIONS
 from tracepath import cli
 from tracepath.artifacts import GRAPH_BUILD, RUNS_DIR
@@ -205,7 +206,8 @@ def loads(
         )
         missing_start = trace(root, "9999/AC-1", "--with-held")
 
-        code, _, stderr = load(root, "--with-held")
+        with uncached_rebuild():  # the second load must rebuild, not read the first one's memo
+            code, _, stderr = load(root, "--with-held")
         assert code == 0, stderr
         second = (root / GRAPH_BUILD).read_bytes()
         yield Loads(

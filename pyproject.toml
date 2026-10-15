@@ -60,4 +60,5 @@ addopts = ["--strict-markers"]
 markers = [
     "integration: needs a running Neo4j (docker compose up -d)",
     "slow: a measurement over the whole corpus; skip with -m \"not slow\"",
+    "uncached_rebuild: runs the real committed_units, not the test run's memo (tests/committed_cache.py)",
 ]
