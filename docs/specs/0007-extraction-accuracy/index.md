@@ -1,7 +1,7 @@
 # 0007. Extraction accuracy, step one: the model and the code pass
 
 **Date**: 2026-10-09
-**Status**: In Progress
+**Status**: Accepted (step one)
 **Amended**: 2026-10-12, after AC-31 stopped the build, with no paid call. The calibration count moves to the `claude-sonnet-5-5` figure (AC-31, AC-31f, AC-31g), and build plan steps 1 and 4 are written (specs 0001 and 0002 amended). Reasons and counts in [rationale.md](rationale.md).
 **Amended again**: 2026-10-12, before any paid call. Step one's ruling is cut to what the gate reads, in two stages: stage one rules released entities against a few control entities, and stage two rules released links only if stage one passes and the engineer wants the pass on by default. The full bar is no longer measured in this step (AC-18b, AC-19 to AC-19i, AC-25 to AC-25f, AC-28 to AC-28e). Reasons in [rationale.md](rationale.md).
 **Amended, gate fixes**: 2026-10-12, before any paid call. Both gates count over every drawn mark, so a mark not ruled agree counts against; stage two gates every unit with a released link, however few; stage two's packet mixes in 2 control links per unit, blind (AC-18c, AC-18d, AC-19, AC-19f, AC-19g, AC-25f, AC-25g, AC-26b, AC-26c, AC-28, AC-28d). Reasons in [rationale.md](rationale.md).

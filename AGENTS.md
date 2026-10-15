@@ -30,6 +30,9 @@ uv run tracepath trace START --with-held   # walk through held items, each print
 uv run tracepath eval            # score every question of eval/linked-records-research.json: pass, fail or inconclusive, no API call (spec 0006); eval/runner.json is its sidecar (evidence flags and the examples digest)
 uv run tracepath eval --with-held   # score under the held item view too; needs a graph from load --with-held
 uv run tracepath eval --eval-file F --release-held-out   # run a held out file; refused without the flag, and only once features 13 and 11 have committed
+uv run tracepath load --code-pass   # spec 0007: route with the code pass; load, review-queue, eval and trace --eval each take --code-pass, off by default; eval and trace --eval refuse a graph loaded the other way
+uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code-pass.json, never over the default review-queue.json
+uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # refuses (exit 1) before any call when the settings model differs from M
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration
