@@ -113,9 +113,11 @@ stage two is not run (AC-19h).
 - **Released marks**: 13 drawn, 13 ruled agree, none disagree, unsure or unruled. 11 of
   the 13 carry `gap:bundled-ac`: a bundled criterion kept whole, ruled agree by the
   convention.
-- **The flip of AC-26e** turned 3 rulings to disagree, all on control items: one
-  `AcceptanceCriterion` in each unit, ruled agree with `gap:bundled-ac`, whose entity
-  the model did not flag `multi_condition_split`. No released item was flipped, since
+- **The flip of AC-26e** turned 3 rulings to disagree, all on control items: 1 in
+  `0009` (`P06`), 2 in `0013` (`P11`, `P14`) and 0 in `0015`, as
+  `data/stage-one-result.json` records. Each is an `AcceptanceCriterion` ruled agree
+  with `gap:bundled-ac` whose entity the model did not flag `multi_condition_split`.
+  No released item was flipped, since
   every released entity carries the flag (AC-12b). Before the flip the control marks
   read 6 agree, 3 disagree.
 - **No regression** (AC-19b): over the three units, every entity and link accepted
@@ -128,6 +130,12 @@ stage two is not run (AC-19h).
 - None of the held item counts, eval chain reach or the control marks is a pass
   condition (AC-28d). Experiment 0005's full bar was not measured in this step; it is
   owed on feature 13's final state (AC-28e).
+
+**The engineer's reading** (added 2026-10-14, after the result; it changes neither the
+recorded result nor the gate): all 13 released items were ruled agree. The step reads
+inconclusive only by the minimum of 5 released items per unit set before any ruling
+(AC-19c), which `0013` missed with 3. The engineer judges the evidence clear, and step
+one closes as the v1 finish line planned.
 
 **Known weakness: an item's type partly reveals its arm.** AC-10 makes every released
 entity an `AcceptanceCriterion`, while AC-25 draws control marks from all accepted
