@@ -1,7 +1,9 @@
 name: CI
 
 on:
+  # Push runs on main only, so a pull request is checked once, by its own pull_request run.
   push:
+    branches: [main]
   pull_request:
 
 jobs:
@@ -39,5 +41,27 @@ jobs:
         run: uv run ruff format --check .
       - name: Typecheck
         run: uv run mypy
+      # Not paths-ignore: main requires this job, and a skipped workflow would block the merge.
+      # Any failure to work out the changed files leaves docs_only unset, so the suite runs.
+      - name: Detect documentation only change
+        id: changes
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          files="$(git diff --name-only "$BASE...$HEAD" 2>/dev/null || git diff --name-only "$BASE" "$HEAD" 2>/dev/null || true)"
+          if [ -z "$files" ]; then
+            echo "No changed files found, running the full suite."
+            exit 0
+          fi
+          echo "Changed files:"
+          echo "$files"
+          if echo "$files" | grep -qvE '^(docs/|[^/]+\.md$)'; then
+            echo "A file outside docs/ and top level .md changed, running the full suite."
+          else
+            echo "Only docs/ and top level .md files changed, skipping the Test step."
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Test
+        if: steps.changes.outputs.docs_only != 'true'
         run: uv run pytest
