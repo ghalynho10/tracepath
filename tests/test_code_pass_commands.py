@@ -161,6 +161,41 @@ def test_ac_7c_a_matching_setting_goes_on_to_connect(
     assert "graph-build.json" not in stderr
 
 
+@pytest.mark.parametrize("command", [("trace", "--eval", "3"), ("eval",)])
+@pytest.mark.parametrize(
+    ("manifest", "says"),
+    [("{cut short", "cannot be read"), ("[]", "is not a JSON object")],
+    ids=["not json", "not an object"],
+)
+def test_ac_7c_an_unreadable_manifest_is_refused_with_a_message(
+    tmp_path: Path, command: tuple[str, ...], manifest: str, says: str
+) -> None:
+    """covers: AC-7c (a manifest that cannot say how the graph was loaded stops the command)."""
+    root = eval_root(tmp_path, None)
+    (root / GRAPH_BUILD).write_text(manifest)
+
+    result = runner.invoke(app, [*command, "--root", str(root)], env={"NEO4J_URI": UNREACHABLE_URI})
+
+    assert result.exit_code == 1
+    assert f"artifacts/graph-build.json {says}" in flat(result.stderr)
+    assert result.exception is None or isinstance(result.exception, SystemExit)
+    assert "localhost:1" not in result.stderr
+
+
+def test_ac_5_review_queue_refuses_a_unit_whose_runs_name_two_models(tmp_path: Path) -> None:
+    """covers: AC-5 (no one model fits that unit's rows, so no queue is written)."""
+    root = runs_root(tmp_path, "0009")
+    run_file = root / RUNS_DIR / "0009" / "requirements" / "run-2.json"
+    run = json.loads(run_file.read_text())
+    run_file.write_text(json.dumps({**run, "model": "claude-sonnet-5"}))
+
+    result = runner.invoke(app, ["review-queue", "--root", str(root), "--snapshot", str(SNAPSHOT)])
+
+    assert result.exit_code == 1
+    assert "runs mix models ['claude-sonnet-5', 'claude-sonnet-5-5']" in flat(result.stderr)
+    assert not (root / REVIEW_QUEUE).exists()
+
+
 def test_trace_with_the_pass_needs_an_eval_question() -> None:
     """covers: AC-7 (`trace` takes `--code-pass` only with `--eval`)."""
     code, stderr = invoke_unreachable("trace", "0002/AC-1", "--code-pass")

@@ -80,3 +80,27 @@ def test_ac_24_a_unit_already_ruled_is_refused(unit: StepUnit) -> None:
 def test_ac_24_another_section_of_a_ruled_record_is_allowed() -> None:
     """covers: AC-24 (it names units, not records)."""
     check_units([StepUnit("0013", "Requirements")], frozenset({("0013", "Feature design")}))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        None,
+        "{not json",
+        '{"units": [{"record": "0009", "section": "Requirements"}]}',
+        '{"expected_model": "claude-sonnet-5-5", "units": [{"record": "0009"}]}',
+        '{"expected_model": "claude-sonnet-5-5", "units": []}',
+        '{"expected_model": 5, "units": [{"record": "0009", "section": "Requirements"}]}',
+    ],
+    ids=["missing", "not json", "no model", "no section", "no units", "model not text"],
+)
+def test_ac_22_a_list_that_cannot_name_its_model_and_units_is_refused(
+    tmp_path: Path, text: str | None
+) -> None:
+    """covers: AC-22 (the step is scored from this list only, so a broken one stops it)."""
+    path = tmp_path / "units.json"
+    if text is not None:
+        path.write_text(text)
+
+    with pytest.raises(UnitsRefused, match=r"units\.json"):
+        read_step_units(path, ROOT)

@@ -228,13 +228,13 @@ Corrected 2026-10-09: the feature 7 column is not evidence. `eval` prints no cha
 **Paused decision, recorded 2026-10-13 (v1 finish line):** this feature's later steps (the flag change and the type definitions) are paused. For v1, step one closes after the engineer's stage one rulings, whatever their result, with no fourth unit and the code pass left off. Whether the later steps run, and when, is decided after v1. Until then this Done when is not required for v1.
 spec [0007](../specs/0007-extraction-accuracy/index.md) (step one: the model switch and the code pass) · amends spec [0001](../specs/0001-stack-and-architecture/index.md) and spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract/`, `src/tracepath/rebuild.py`, `src/tracepath/cli.py`
 - [x] Design it (spec): `/architect extraction accuracy` · step one only; the flag change and the type definitions are designed in a later spec or amendment from this step's rulings
-- [ ] Build it: `/develop extraction accuracy`
-  - [ ] The model switch, with its spec 0001 amendment, per model rates and `--expect-model` (AC-1 to AC-5f, AC-29, AC-31e)
-  - [ ] The code pass, behind `--code-pass`, with its spec 0002 amendment (AC-6 to AC-17, AC-34)
-  - [ ] The units list, the committed gate and the free token count, then the engineer's go for the first paid call (AC-19 to AC-19g, AC-22 to AC-24, AC-31 to AC-32)
-  - [ ] The sampler, the blind packet and the scoring, after the paid extraction (AC-18 to AC-28d, AC-29b, AC-30)
+- [x] Build it: `/develop extraction accuracy`
+  - [x] The model switch, with its spec 0001 amendment, per model rates and `--expect-model` (AC-1 to AC-5f, AC-29, AC-31e)
+  - [x] The code pass, behind `--code-pass`, with its spec 0002 amendment (AC-6 to AC-17, AC-34)
+  - [x] The units list, the committed gate and the free token count, then the engineer's go for the first paid call (AC-19 to AC-19g, AC-22 to AC-24, AC-31 to AC-32)
+  - [x] The sampler, the blind packet and the scoring, after the paid extraction (AC-18 to AC-28d, AC-29b, AC-30)
 - [x] Verify it: `/check verify extraction accuracy`
-- [ ] Test it: `/test extraction accuracy`
+- [x] Test it: `/test extraction accuracy`
 - [ ] Later steps (flag change, type definitions): `/architect extraction accuracy, later steps` · after step one's rulings, each with fresh units chosen beforehand
 
 ### 11. Review volume and routing policy · needs a decision · from spec 0002

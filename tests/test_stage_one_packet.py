@@ -4,19 +4,23 @@ No API call, no database. Each test names the criterion it covers. The runs are 
 by hand so one entity is released by the code pass and one is accepted either way.
 """
 
+import hashlib
 import importlib.util
 import json
+import shutil
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 import pytest
 
+from tracepath.artifacts import RUNS_DIR
 from tracepath.extract.codepass import code_decided_ids
 from tracepath.extract.compare import route_runs
 from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
-from tracepath.extract.schema import ExtractionOutput
+from tracepath.extract.schema import ExtractionOutput, RelationshipType
 from tracepath.extract.units import Unit, UnitKind
 from tracepath.measure import (
     CONTROL,
@@ -24,6 +28,7 @@ from tracepath.measure import (
     INCONCLUSIVE,
     PASS,
     RELEASED,
+    RULED_BY,
     EntityMark,
     Ruling,
     RulingsRefused,
@@ -42,10 +47,12 @@ from tracepath.measure import (
     unit_gate,
 )
 from tracepath.pipeline import CorpusResolution, UnitResult
-from tracepath.resolve.endpoints import Resolution
+from tracepath.resolve.endpoints import Resolution, ResolvedEndpoint, ResolvedLink, Target
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "experiments" / "0012-extraction-accuracy-step-one" / "prepare_stage_one.py"
+STEP = ROOT / "experiments" / "0012-extraction-accuracy-step-one"
+SCRIPT = STEP / "prepare_stage_one.py"
+SCORE = STEP / "score_stage_one.py"
 
 TEXT = """## Requirements
 
@@ -228,11 +235,12 @@ def test_ac_26b_the_arm_key_names_every_item_and_every_seed() -> None:
     assert named == {i.opaque_id: list(i.arms) for i in items}
 
 
-def load_script() -> ModuleType:
-    spec = importlib.util.spec_from_file_location("exp0012_prepare_stage_one", SCRIPT)
+def load_script(path: Path = SCRIPT) -> ModuleType:
+    name = f"exp0012_{path.stem}"
+    spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    sys.modules["exp0012_prepare_stage_one"] = module
+    sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -295,6 +303,14 @@ def test_a_ticked_line_whose_mark_cannot_be_read_is_refused() -> None:
         parse_rulings(RULED.replace("- [x] agree · `P01`", "- [x] agre · `P01`"))
 
 
+def test_an_item_ruled_twice_is_refused() -> None:
+    """Two rulings of one item would leave the score to whichever was read last."""
+    twice = RULED + "\n- [x] agree · `P02` · Feature\n  - reason:\n"
+
+    with pytest.raises(RulingsRefused, match="P02 is ruled twice"):
+        parse_rulings(twice)
+
+
 def test_ac_26e_a_bundled_agree_on_an_unflagged_entity_counts_disagree() -> None:
     """covers: AC-26e (flipped only when tagged, ruled agree and unflagged; counted)."""
     rulings = parse_rulings(RULED)
@@ -355,3 +371,95 @@ def test_ac_28b_held_items_are_the_units_queue_rows() -> None:
     empty = CorpusResolution(Resolution((), ()), ())
 
     assert (held_items(without, empty), held_items(with_pass, empty)) == (1, 0)
+
+
+def link(file: str = "specs/0099-crafted/index.md", line: int = 12) -> ResolvedLink:
+    return ResolvedLink(
+        type=RelationshipType.SATISFIES,
+        source=ResolvedEndpoint("0099/AC-2", Target.ENTITY),
+        target=ResolvedEndpoint("0099/AC-1", Target.ENTITY),
+        phrase=None,
+        date=None,
+        source_record="0099",
+        file=file,
+        section="Requirements",
+        line=line,
+    )
+
+
+def test_ac_19b_a_link_accepted_only_without_the_pass_is_named_lost() -> None:
+    """covers: AC-19b (the links: in the chosen units only, counted as a multiset)."""
+    without, with_pass = results()
+    chosen = [("0099", "Requirements")]
+    ours, other = link(), link("specs/0098-other/index.md", 4)
+
+    def lost(before: tuple[ResolvedLink, ...], after: tuple[ResolvedLink, ...]) -> tuple[str, ...]:
+        return regressions(
+            [without],
+            [with_pass],
+            CorpusResolution(Resolution(before, ()), ()),
+            CorpusResolution(Resolution(after, ()), ()),
+            chosen,
+        )
+
+    assert lost((ours, other), ()) == (
+        "link 0099 satisfies at specs/0099-crafted/index.md:12 lost",
+    ), "the link in a unit not chosen is not checked"
+    assert lost((ours,), (ours,)) == ()
+    assert len(lost((ours, ours), (ours,))) == 1, "one of two equal links lost is a loss"
+
+
+# The scoring script itself (experiment 0012's `score_stage_one.py`), on committed files.
+
+
+def test_ac_29b_scoring_refuses_runs_on_another_model(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """covers: AC-29b (a `units.json` expecting another model than the runs name)."""
+    script = load_script(SCORE)
+    # A root holding only the one unit's runs and the READMEs AC-24 reads, so the
+    # script rebuilds one unit, not the whole corpus.
+    root = tmp_path / "root"
+    shutil.copytree(ROOT / RUNS_DIR / "0009", root / RUNS_DIR / "0009")
+    for readme in RULED_BY:
+        (root / readme).parent.mkdir(parents=True)
+        shutil.copy(ROOT / readme, root / readme)
+    monkeypatch.setattr(script, "ROOT", root)
+    arms = b'{"items": []}\n'
+    files = {
+        "UNITS": json.dumps(
+            {
+                "expected_model": "claude-sonnet-5",
+                "units": [{"record": "0009", "section": "Requirements"}],
+            }
+        ),
+        "PACKET": "# Packet\n",
+        "HASH": f"{hashlib.sha256(arms).hexdigest()}  arms\n",
+    }
+    for name, text in files.items():
+        (tmp_path / name).write_text(text)
+        monkeypatch.setattr(script, name, tmp_path / name)
+    (tmp_path / "ARMS").write_bytes(arms)
+    monkeypatch.setattr(script, "ARMS", tmp_path / "ARMS")
+    monkeypatch.setattr(script, "RESULT", tmp_path / "result.json")
+    # The commit date is read from git for the committed list only; this list has none.
+    monkeypatch.setattr(script, "units_committed_at", lambda: datetime(2026, 10, 1, tzinfo=UTC))
+
+    with pytest.raises(SystemExit, match=r"0009:Requirements runs name \['claude-sonnet-5-5'\]"):
+        script.score()
+
+    assert not (tmp_path / "result.json").exists(), "nothing is scored from refused runs"
+
+
+def test_ac_27b_the_committed_result_is_scored_again_from_the_committed_rulings(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """covers: AC-27b, AC-19b, AC-28b (the recorded stage one result, byte for byte)."""
+    script = load_script(SCORE)
+    monkeypatch.setattr(script, "RESULT", tmp_path / "result.json")
+
+    script.score()
+
+    assert (tmp_path / "result.json").read_bytes() == (
+        STEP / "data" / "stage-one-result.json"
+    ).read_bytes()

@@ -9,8 +9,11 @@ from typing import Any
 from tracepath.extract.codepass import code_decided_ids, parse_bullets
 from tracepath.extract.compare import ReviewReason, ReviewReasonName, RoutedUnit, route_runs
 from tracepath.extract.ids import IdentifiedOutput, assign_ids, locate_output
-from tracepath.extract.schema import ExtractionOutput
+from tracepath.extract.schema import ExtractionOutput, RelationshipType
 from tracepath.extract.units import Unit, UnitKind
+from tracepath.pipeline import CorpusResolution, UnitResult
+from tracepath.rebuild import code_pass_report, released_links
+from tracepath.resolve.endpoints import Resolution, ResolvedEndpoint, ResolvedLink, Target
 
 TEXT = """## Requirements
 
@@ -252,3 +255,59 @@ def test_ac_15_the_pass_changes_acceptance_and_nothing_the_runs_wrote() -> None:
     assert [r.detail for r in link_on.reasons] == ["0099/AC-1"]
     assert {e.canonical_id for e in on.accepted_entities} == {"0099/AC-2"}
     assert off.accepted_entities == ()
+
+
+# AC-17: the report `load --code-pass` prints, from routing and resolving both ways.
+
+
+def resolved(source: str, file: str = "specs/0099-crafted/index.md") -> ResolvedLink:
+    """One resolved link written in `file`'s Requirements section."""
+    return ResolvedLink(
+        type=RelationshipType.SATISFIES,
+        source=ResolvedEndpoint(source, Target.ENTITY),
+        target=ResolvedEndpoint("0099/AC-1", Target.ENTITY),
+        phrase=None,
+        date=None,
+        source_record=file.split("/")[1][:4],
+        file=file,
+        section="Requirements",
+        line=3,
+    )
+
+
+def corpus(*links: ResolvedLink) -> CorpusResolution:
+    return CorpusResolution(Resolution(links, ()), ())
+
+
+def test_ac_17_released_links_are_the_links_only_the_pass_accepts() -> None:
+    """covers: AC-17 (links released, counted as a multiset, never a link only lost)."""
+    kept, twice, lost = resolved("0099/AC-2"), resolved("0099/AC-6"), resolved("0099/AC-3")
+
+    found = released_links(corpus(kept, twice, lost), corpus(kept, twice, twice))
+
+    assert found == (twice,), "a second copy is a second link; a link only lost is not released"
+
+
+def test_ac_17_the_report_counts_each_bullet_and_release_in_its_own_unit() -> None:
+    """covers: AC-17 (every count of one unit's row, on known text and runs)."""
+    outputs = [plain((SPLIT,)), plain(), plain()]
+    decided = code_decided_ids(unit_of(), outputs)
+    result = UnitResult(
+        unit=unit_of(),
+        section_slug="requirements",
+        artifacts=(),
+        identified=tuple(outputs),
+        routed=route_runs(outputs, decided),
+        input_tokens=0,
+        output_tokens=0,
+    )
+    here, elsewhere = resolved("0099/AC-2"), resolved("0098/AC-1", "specs/0098-other/index.md")
+
+    [row] = code_pass_report([result], [here, elsewhere])
+
+    assert row.decided == ("AC-1", "AC-2")
+    assert row.released_entities == 1, "AC-1 is accepted either way; only AC-2 is released"
+    assert row.released_links == 1, "the link written in another unit's file counts there"
+    assert row.not_decided == 2, "each AC-6 bullet counts, the id being on two of them"
+    assert row.repeated == ("AC-6",)
+    assert (row.struck, row.unparsed) == (1, 1)
