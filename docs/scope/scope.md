@@ -253,6 +253,8 @@ How much the routing rules should hold back, decided on logged evidence rather t
 
 **Held out questions, noted 2026-10-07 from spec [0006](../specs/0006-eval-runner/index.md):** the held out questions are run with `tracepath eval --eval-file eval/held-out.json --release-held-out`, only once this feature and feature 13 have both committed their choices. Extracting their sections is the one paid step: a measured estimate first, then the engineer's go.
 
+Before the held out questions are run (eval --eval-file eval/held-out.json --release-held-out, once features 13 and 11 have locked their choices), the engineer reads both questions and checks each expected chain step against the corpus at 2e40bcf, the way extracted items are ruled; any correction is committed before the first run, so the result cannot shape it. Until then the tests verify only their form (AC-22, AC-24 to AC-26, AC-30), not whether their expected chains are right.
+
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
 - [ ] Design it (spec): `/architect review volume and routing policy` · feature 6 has shipped, so the eval runner exists; still waits on feature 13 by the order above
 
