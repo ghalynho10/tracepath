@@ -136,6 +136,7 @@ def test_trace_eval_prints_the_chain_then_the_scored_items(loaded: Path) -> None
     assert lines[-1].startswith("Across records: no.")
 
 
+@pytest.mark.uncached_rebuild
 def test_trace_eval_twice_prints_identical_output(loaded: Path) -> None:
     first = trace_eval(loaded, 1)
     second = trace_eval(loaded, 1)
@@ -143,6 +144,7 @@ def test_trace_eval_twice_prints_identical_output(loaded: Path) -> None:
     assert first == second
 
 
+@pytest.mark.uncached_rebuild
 def test_a_reload_from_the_same_artifacts_leaves_the_output_unchanged(loaded: Path) -> None:
     before = trace_eval(loaded, 1)
 

@@ -1,12 +1,18 @@
 """Shared fixtures. Integration tests use the real Neo4j from `docker compose up -d`."""
 
 import logging
+import shutil
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 
+from tests.committed_cache import install, uncached_rebuild, uninstall
+from tracepath.artifacts import RUNS_DIR
 from tracepath.config import Neo4jSettings, load_neo4j_settings
 from tracepath.graph import GraphUnavailable, connect
+
+ROOT = Path(__file__).resolve().parents[1]
 
 # Nothing listens on port 1, so connecting there fails for real, with no mock.
 UNREACHABLE_URI = "bolt://localhost:1"
@@ -49,3 +55,31 @@ def reset_tracepath_log_level() -> Iterator[None]:
     level = logger.level
     yield
     logger.setLevel(level)
+
+
+def pytest_collection_finish(session: pytest.Session) -> None:
+    """Memoise `committed_units` once every test module has imported it."""
+    install()
+
+
+def pytest_unconfigure(config: pytest.Config) -> None:
+    """Put the real `committed_units` back."""
+    uninstall()
+
+
+@pytest.fixture(autouse=True)
+def rebuild_cache_mode(request: pytest.FixtureRequest) -> Iterator[None]:
+    """A test marked `uncached_rebuild` gets the real rebuild, never the memo."""
+    if request.node.get_closest_marker("uncached_rebuild") is None:
+        yield
+        return
+    with uncached_rebuild():
+        yield
+
+
+@pytest.fixture(scope="session")
+def real_corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """One copy of the committed run files for the whole test run, read only by its users."""
+    root = tmp_path_factory.mktemp("real_corpus")
+    shutil.copytree(ROOT / RUNS_DIR, root / RUNS_DIR)
+    return root
