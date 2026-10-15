@@ -9,6 +9,7 @@
 **Amended**: 2026-10-03 by spec [0003](../0003-extraction-stability-heterogeneous-units/index.md), feature 12's close out, with no API call. One amendment, marked inline below: **AC-13** names the check the code actually makes (a returned row count, not result counters), and the API table, the failure case scenario and `verify.md` are reworded to match.
 **Amended**: 2026-10-05 by spec [0004](../0004-first-traced-chain/index.md), before any build. One amendment, marked inline in the relationships table: the typed relationships gain `prompt_version`, `model` and `commit`, and every entity gains `file_line`.
 **Amended**: 2026-10-07 by spec [0005](../0005-held-item-view/index.md), before any build. One amendment, marked inline below: **AC-11(f)** (`load --with-held` also writes held items, marked held, and the default load still writes only accepted ones), with the properties it adds in the entity, `:Unresolved` and relationships tables. No routing decision changes.
+**Amended**: 2026-10-12 by spec [0007](../0007-extraction-accuracy/index.md) (AC-34), with no paid call. One amendment, marked inline in three places: `accepted_by` may also read `code_pass`, in the entity property table, the Value sourcing row for accepting an item, and the flag churn test.
 
 ## Summary
 
@@ -110,7 +111,7 @@ Reasoning, the options weighed, the corpus spike and its six hand runs: see [rat
 | `struck` | bool | yes | Set from the pre-check's character ranges (AC-5), never by the model. |
 | `followup_status` | str \| null | no | `open` or `done` for a `FollowUp`, null otherwise. Parsed from the checkbox. |
 | `file`, `section`, `line`, `commit` | str, str, int \| null, str | yes except `line` | The citation. `line` is null when it cannot be located (AC-4). |
-| `model`, `prompt_version`, `extracted_at`, `accepted_by` | str, str, str, str | yes | Provenance. `accepted_by` is `auto` or `review`. |
+| `model`, `prompt_version`, `extracted_at`, `accepted_by` | str, str, str, str | yes | Provenance. `accepted_by` is `auto` or `review`. **Amended 2026-10-12** by spec [0007](../0007-extraction-accuracy/index.md) (AC-16, AC-34): or `code_pass`, written only by `load --code-pass` on an entity the code pass released. |
 | `held`, `held_reasons` | bool, list[str] | no | **Added 2026-10-07** (AC-11f). Written only by `load --with-held`. `held` is `true` or absent, never `false`. `held_reasons` is one string per reason, the reason name or `name:detail`. A held entity has no `accepted_by`. |
 
 `:Unresolved`, one per reference the code could not name.
@@ -196,7 +197,7 @@ This feature ships no terminal command. Its surface is the Pydantic models plus 
 | decide agreement | agree or disagree across the three runs | `compare_runs()`'s signature (AC-11), never span text or citations. **Amended 2026-09-23**: the signature is (collapsed id, type), with flags removed, compared as a multiset. **Amended 2026-09-23 (AC-11e)**: a normalized `label`, when present, joins the signature too, on an entity and on a reference endpoint alike |
 | hold an unlocatable **derived** entity | the reason `span_not_located` | code, from a **derived** entity's own `line` being null after `locate_line()` (AC-11d). **Added 2026-09-23**. For a derived entity a null `line` is the absence of an identity, so it is a review trigger in its own right and never a signature that can accept on its count. A verbatim entity never takes this reason: its canonical id is its identity whatever its line |
 | hold a link | the reason `endpoint_not_accepted` and the entity it names | code, from the accepted set after routing (AC-11c). **Added 2026-09-23** |
-| accept an item | `accepted_by` | `auto` when no review trigger fired, `review` when a person ruled on it |
+| accept an item | `accepted_by` | `auto` when no review trigger fired, `review` when a person ruled on it. **Amended 2026-10-12** by spec [0007](../0007-extraction-accuracy/index.md) (AC-34): `code_pass` when the code pass released it, which happens only under `--code-pass` (off by default), for a criterion code parsed from a `## Requirements` bullet whose three runs agree on its id and type `AcceptanceCriterion`, whose only trigger was `known_trap_flag`, and whose runs carry no flag but `multi_condition_split` (spec 0007 AC-9 to AC-12, AC-16). It keeps its flag. A plain load never writes `code_pass` |
 | record provenance | `model`, `prompt_version`, `extracted_at` | the run artifact's own header (spec 0001's artifact fields) |
 
 **Key invariants**
@@ -231,7 +232,7 @@ None beyond spec 0001's `.env` (`NEO4J_*`, the Anthropic key).
 - Review routing: an `unclassified` entity routes to review and stays out of the graph until ruled on, while an `UNCLASSIFIED` link with its phrase is written straight through, verifies **AC-10**, **AC-11**.
 - **Added 2026-09-23** · Held link: a relationship whose endpoint entity was routed to review routes to review itself, under `endpoint_not_accepted`, and no `:Unresolved` node is created for it. The load then writes exactly the links it asked for and the counter assertion passes, which is the regression test for the `asked to write 7 but the database wrote 2` failure, verifies **AC-7**, **AC-11**, **AC-13**. · **Amended 2026-09-23**: this holds whether the endpoint named the entity by a verbatim id or by a matching `label`; a labeled reference gets no exemption from the hold rule, and a real example is spec 0001's `## Binding rules` section producing an entity labeled `binding rule 6` that a run disagreement routes to review, while 0008's preamble references it in the same batch.
 - **Added 2026-09-23** · Counting, not setting: three runs where one produces two entities sharing a signature and the others produce one read as a disagreement, and the surplus routes to review rather than being accepted invisibly, verifies **AC-11**.
-- **Added 2026-09-23** · Flag churn: three runs agreeing on every collapsed id and type, differing only in flags, read as agreement, and every flagged item still routes to review on its flag alone, verifies **AC-11**.
+- **Added 2026-09-23** · Flag churn: three runs agreeing on every collapsed id and type, differing only in flags, read as agreement, and every flagged item still routes to review on its flag alone, verifies **AC-11**. · **Amended 2026-10-12** by spec [0007](../0007-extraction-accuracy/index.md) (AC-34): this holds as written without `--code-pass`. With it, one case changes: a code decided criterion (spec 0007 AC-9 to AC-11) whose runs carry no flag but `multi_condition_split` is accepted rather than routed to review, keeps that flag, and is stamped `accepted_by` `code_pass` (spec 0007 AC-12, AC-12b, AC-16). Any other flag, and `runs_disagree`, still hold it, and agreement itself is unchanged.
 
 ## Build plan
 

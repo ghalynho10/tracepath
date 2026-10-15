@@ -25,6 +25,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 
+from tracepath.extract.codepass import RELEASED_FLAGS
 from tracepath.extract.ids import IdentifiedEntity, IdentifiedOutput
 from tracepath.extract.schema import (
     EntityType,
@@ -110,12 +111,17 @@ class ReviewItem:
 
 @dataclass(frozen=True)
 class RoutedUnit:
-    """What of a unit enters the graph, and what waits for a person."""
+    """What of a unit enters the graph, and what waits for a person.
+
+    `released` names the accepted entities the code pass let through, each one held by
+    its flag alone without it (spec 0007 AC-12). Empty when the pass is off.
+    """
 
     comparison: RunComparison
     accepted_entities: tuple[IdentifiedEntity, ...]
     accepted_relationships: tuple[ExtractedRelationship, ...]
     review: tuple[ReviewItem, ...]
+    released: frozenset[str] = frozenset()
 
 
 def entity_identity(entity: IdentifiedEntity) -> str:
@@ -320,13 +326,35 @@ def _queue_key(item: ReviewItem) -> tuple[int, int, str]:
     return (0, item.offset, str(item.signature))
 
 
-def route_runs(outputs: Sequence[IdentifiedOutput]) -> RoutedUnit:
+def _flag_alone_releasable(canonical_id: str, outputs: Sequence[IdentifiedOutput]) -> bool:
+    """Whether every run's entity with this id carries no flag but the released ones.
+
+    A subset, so a run whose entity carries no flag at all qualifies (spec 0007 AC-12).
+    Every run is read, not only the first, so a flag another run raised still holds it.
+    """
+    return all(
+        set(entity.entity.known_trap_flags) <= RELEASED_FLAGS
+        for output in outputs
+        for entity in output.entities
+        if entity.canonical_id == canonical_id
+    )
+
+
+def route_runs(
+    outputs: Sequence[IdentifiedOutput], code_decided: frozenset[str] = frozenset()
+) -> RoutedUnit:
     """Compare the runs of one unit and split it into what is accepted and what waits.
 
     The first run supplies the accepted items, since every accepted signature is one
     all the runs produced the same number of times. Entities are settled before
     relationships, because whether a link is held depends on whether its endpoint was
     accepted (AC-11c).
+
+    `code_decided` is the code pass's set (`code_decided_ids()`, spec 0007). An entity
+    in it whose only reason is `known_trap_flag`, and whose runs carry no flag but
+    `multi_condition_split`, is accepted and named in `released` (AC-12). It keeps its
+    flags, and an entity held for any other reason keeps every reason (AC-12b, AC-12c).
+    The pass only ever drops that one reason, so it never adds a hold (AC-13).
 
     Raises:
         ComparisonError: fewer than two outputs were given.
@@ -337,10 +365,18 @@ def route_runs(outputs: Sequence[IdentifiedOutput]) -> RoutedUnit:
 
     accepted_entities: list[IdentifiedEntity] = []
     review: list[ReviewItem] = []
+    released: set[str] = set()
     seen: set[str] = set()
 
     for entity in first.entities:
         reasons = _entity_reasons(entity, comparison)
+        if (
+            reasons == (ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG),)
+            and entity.canonical_id in code_decided
+            and _flag_alone_releasable(entity.canonical_id, outputs)
+        ):
+            released.add(entity.canonical_id)
+            reasons = ()
         if reasons:
             review.append(_item_for(entity, reasons))
             seen.add(str(entity_signature(entity)))
@@ -383,4 +419,5 @@ def route_runs(outputs: Sequence[IdentifiedOutput]) -> RoutedUnit:
         accepted_entities=tuple(accepted_entities),
         accepted_relationships=tuple(accepted_links),
         review=tuple(sorted(review, key=_queue_key)),
+        released=frozenset(released),
     )

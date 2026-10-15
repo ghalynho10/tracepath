@@ -1,0 +1,259 @@
+{
+  "shuffle_seed": 32465156349839,
+  "draws": [
+    {
+      "unit": "0009:Requirements",
+      "arm": "released",
+      "seed": 181890470753594,
+      "asked": 5,
+      "pool": 7,
+      "drawn": 5,
+      "shortfall": 0
+    },
+    {
+      "unit": "0009:Requirements",
+      "arm": "control",
+      "seed": 64329218554802,
+      "asked": 3,
+      "pool": 19,
+      "drawn": 3,
+      "shortfall": 0
+    },
+    {
+      "unit": "0013:Requirements",
+      "arm": "released",
+      "seed": 7307338969747,
+      "asked": 5,
+      "pool": 3,
+      "drawn": 3,
+      "shortfall": 2
+    },
+    {
+      "unit": "0013:Requirements",
+      "arm": "control",
+      "seed": 115959287612662,
+      "asked": 3,
+      "pool": 11,
+      "drawn": 3,
+      "shortfall": 0
+    },
+    {
+      "unit": "0015:Requirements",
+      "arm": "released",
+      "seed": 142337713347467,
+      "asked": 5,
+      "pool": 8,
+      "drawn": 5,
+      "shortfall": 0
+    },
+    {
+      "unit": "0015:Requirements",
+      "arm": "control",
+      "seed": 134294719292287,
+      "asked": 3,
+      "pool": 10,
+      "drawn": 3,
+      "shortfall": 0
+    }
+  ],
+  "items": [
+    {
+      "opaque_id": "P01",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-1",
+      "span": "**AC-1**: `/terms` and `/privacy` exist as routes in the `(marketing)` group. Each composes `EntryHeader` with `navigation=\"none\"` and `EntryFooter`, and each ships zero client JavaScript.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P02",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-13",
+      "span": "**AC-13**: The privacy notice discloses how data received from Google is accessed, used, stored and shared, and states plainly that data is not sold, not used for advertising, not shared with data brokers, and not used to train models. It carries no Limited Use affirmation.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P03",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-2",
+      "span": "**AC-2**: The privacy notice names every category of personal data stored, and its list matches the applied schema. From the identity provider: the email address, display name and avatar URL in `auth.users`. From this app's own tables: full name, location and written summary (`profile`); skill names (`profile_skill`); company, job title, location, description and start and end month (`work_experience`); desired titles, desired locations, remote preference, minimum pay and its currency (`job_preference`); the source and its job id, job title, company, location, link, description, salary range and currency, posted and applied timestamps (`application`); and the question key with the person's own typed answer (`application_answer`). It also names the `created_at` and `updated_at` timestamps every one of these tables carries,",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P04",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009#requirements:4",
+      "span": "As the operator, I want Google's consent screen to name JobHunt and the 100 user cap lifted,",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P05",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-21",
+      "span": "**AC-21**: In the Google Cloud console, `usejobhunt.dev` is added as an authorized domain, the privacy policy and terms fields hold the two live URLs, and the app is moved out of Testing.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P06",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-19",
+      "span": "**AC-19**: `/sign-in` renders a static line under the two provider forms saying that continuing means agreeing to the Terms and the Privacy Notice, with both linked, and the page still ships zero client JavaScript.",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P07",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009#requirements:2",
+      "span": "As a person who has signed in, I want a way to have everything about me removed,",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P08",
+      "unit": "0009:Requirements",
+      "canonical_id": "0009/AC-20",
+      "span": "**AC-20**: Both pages carry their own title and description metadata, have exactly one `h1` with headings in order, and every link is keyboard reachable with a visible focus ring (WCAG 2.2 AA).",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P09",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013/AC-7",
+      "span": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P10",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013/AC-8",
+      "span": "**AC-8**: Each result shows its title, company, location, a relative posted date (e.g. \"posted 3 days ago\", computed at render from the raw timestamp), a salary range when present, and its description snippet, plus a real, working link that opens the source posting (`job_url`) in a new tab.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P11",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013/AC-2",
+      "span": "**AC-2**: A search submitted with both title and location blank is refused before any external call runs, with a visible validation message, and spends no usage gate budget.",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P12",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013#requirements:1",
+      "span": "As a signed in user, I want to search real job listings by title and location,",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P13",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013/AC-5",
+      "span": "**AC-5**: An Adzuna call that fails outright (network error, timeout, a non success response) is reported through `failure()` with `external_service_failed`; a response that does not match the expected shape is reported with `response_malformed`. Either renders a visible failure state distinct from AC-4's empty state.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P14",
+      "unit": "0013:Requirements",
+      "canonical_id": "0013/AC-3",
+      "span": "**AC-3**: Every search that passes AC-2's check is checked through `checkUsageGate(\"job_search\")` before the Adzuna call runs. A refusal, for any of the five reasons feature 10 defines, renders the exact sentence from `src/lib/usage-gating/copy.ts`'s `SENTENCES` map for that reason, and the Adzuna call never runs.",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P15",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-15",
+      "span": "**AC-15**: The entry page's \"What's real today\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list.",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P16",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-16",
+      "span": "**AC-16**: Every pending card carries `aria-busy=\"true\"` until its outcome resolves. A single polite live region announces, exactly once and **only when at least one listing was actually scored**, that results are now ranked (`COPY-7`); a batch in which every call was refused or failed ranks nothing, leaves the list in Adzuna's own order, and therefore announces nothing. And the reader's keyboard focus survives the re-sort: a reader who was focused on a control inside a result card before the ranking arrived is left focused on **that same control**, in its new position, never on the document body. Matching this project's WCAG 2.2 AA bar (`AGENTS.md`).",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P17",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015#requirements:4",
+      "span": "As the operator, I want a scoring failure to be visible and never mistaken for a working score, and a usage cap refusal to read differently from an actual failure.",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P18",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-9",
+      "span": "**AC-9**: The result list renders immediately, in Adzuna's original order, with a pending indicator on every card while scoring runs in the background. It re-sorts exactly once, once every listing's outcome (a score, a gate refusal, or a failure) has resolved: scored cards first, ordered by band (`strong_match` first, `not_a_match` last, ties within a band keeping Adzuna's original relative order,), then every refused or failed card after them in its own original relative order. No further re-sort happens after that. Outcomes are matched back to their card by `sourceJobId` (never by array position),",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P19",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-4",
+      "span": "**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \"\u2026\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P20",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015#requirements:2",
+      "span": "As a job seeker, I want to see which of my skills matched and which were not mentioned in the posting, not just a number,",
+      "arms": [
+        "control"
+      ]
+    },
+    {
+      "opaque_id": "P21",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-12",
+      "span": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them.",
+      "arms": [
+        "released"
+      ]
+    },
+    {
+      "opaque_id": "P22",
+      "unit": "0015:Requirements",
+      "canonical_id": "0015/AC-5",
+      "span": "**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \"missing skills\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`).",
+      "arms": [
+        "released"
+      ]
+    }
+  ]
+}

@@ -19,7 +19,7 @@ from typer.testing import CliRunner
 from tests.test_extract_client import recorded_stream, replaying_client
 from tracepath import cli, config
 from tracepath.artifacts import RUNS_DIR, read_run
-from tracepath.config import AnthropicSettings
+from tracepath.config import DEFAULT_MODEL, AnthropicSettings
 from tracepath.extract import client as client_module
 from tracepath.extract.address import Target, UnitAddressError, resolve_address, resolve_addresses
 from tracepath.extract.client import Attempt, FailureKind
@@ -52,12 +52,15 @@ QUESTION_3 = [
     "0007:Requirements",
     "0007:Feature design",
 ]
+#: The command runs on `DEFAULT_MODEL`, so the settings tests pass in name it too.
 SETTINGS = AnthropicSettings(
-    api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
+    api_key="sk-ant-test", model=DEFAULT_MODEL, runs_per_unit=3, effort="medium"
 )
+#: `DEFAULT_MODEL`'s cache read rate (spec 0007 AC-5f), written out for the arithmetic below.
+READ_RATE = 0.10
 COUNTED = 62_000
 #: The per call bound of a unit counting `COUNTED` (AC-55).
-BOUND = per_call_bound(COUNTED)
+BOUND = per_call_bound(COUNTED, SETTINGS.model)
 
 runner = CliRunner()
 
@@ -230,17 +233,20 @@ def test_a_dropped_attempt_is_written_as_a_failed_run_with_null_usage(tmp_path: 
 
 def test_a_failed_attempt_counts_at_its_bound_whatever_it_recorded() -> None:
     """covers: AC-10a (amended 2026-10-06)."""
-    assert attempt_cost(failed(input_tokens=90_000, output_tokens=60_000), BOUND) == BOUND
-    assert attempt_cost(failed(input_tokens=10, output_tokens=2), BOUND) == BOUND
-    assert attempt_cost(failed(), BOUND) == BOUND
+    assert (
+        attempt_cost(failed(input_tokens=90_000, output_tokens=60_000), BOUND, SETTINGS.model)
+        == BOUND
+    )
+    assert attempt_cost(failed(input_tokens=10, output_tokens=2), BOUND, SETTINGS.model) == BOUND
+    assert attempt_cost(failed(), BOUND, SETTINGS.model) == BOUND
 
 
 def test_a_settled_attempt_counts_at_its_recorded_usage_cache_included() -> None:
     attempt = settled(cache_read=57_494, cache_write=1_000)
 
-    expected = (4_000 * 2.0 + 27_000 * 10.0 + 1_000 * 4.0 + 57_494 * 0.2) / 1e6
+    expected = (4_000 * 2.0 + 27_000 * 10.0 + 1_000 * 4.0 + 57_494 * READ_RATE) / 1e6
 
-    assert attempt_cost(attempt, BOUND) == pytest.approx(expected)
+    assert attempt_cost(attempt, BOUND, SETTINGS.model) == pytest.approx(expected)
 
 
 def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> None:
@@ -248,7 +254,11 @@ def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> 
 
     outcome, _ = run(tmp_path, script, "0002:Requirements")
 
-    expected = attempt_cost(first_call(), BOUND) + BOUND + 2 * attempt_cost(settled(), BOUND)
+    expected = (
+        attempt_cost(first_call(), BOUND, SETTINGS.model)
+        + BOUND
+        + 2 * attempt_cost(settled(), BOUND, SETTINGS.model)
+    )
     assert outcome.total_usd == pytest.approx(expected)
 
 
@@ -257,7 +267,7 @@ def test_the_running_total_sums_each_attempt_by_its_own_rule(tmp_path: Path) -> 
 
 def test_a_call_one_more_failure_could_carry_past_the_ceiling_is_not_made(tmp_path: Path) -> None:
     script = Script([first_call(), settled(), settled()])
-    ceiling = attempt_cost(first_call(), BOUND) + BOUND - 0.0001
+    ceiling = attempt_cost(first_call(), BOUND, SETTINGS.model) + BOUND - 0.0001
 
     outcome, _ = run(tmp_path, script, "0002:Requirements", ceiling=ceiling)
 
@@ -267,7 +277,7 @@ def test_a_call_one_more_failure_could_carry_past_the_ceiling_is_not_made(tmp_pa
 
 def test_a_call_exactly_at_the_ceiling_is_made(tmp_path: Path) -> None:
     script = Script([first_call(), settled(), settled()])
-    ceiling = attempt_cost(first_call(), BOUND) + BOUND
+    ceiling = attempt_cost(first_call(), BOUND, SETTINGS.model) + BOUND
 
     _, _ = run(tmp_path, script, "0002:Requirements", ceiling=ceiling)
 
@@ -373,10 +383,10 @@ def test_the_summary_says_none_when_every_attempt_reported_usage(tmp_path: Path)
 def test_the_central_and_wider_figures_for_question_3s_four_units() -> None:
     counts = [UnitCount(a, a.split(":")[1], COUNTED, 3) for a in QUESTION_3]
 
-    result = estimate(counts)
+    result = estimate(counts, SETTINGS.model)
 
     uncached = COUNTED - 57_494
-    write, read = 57_494 * 4.0, 57_494 * 0.2
+    write, read = 57_494 * 4.0, 57_494 * READ_RATE
 
     def calls(n: int, output: int, writes: bool) -> float:
         each = uncached * 2.0 + output * 10.0
@@ -393,7 +403,7 @@ def test_the_central_and_wider_figures_for_question_3s_four_units() -> None:
 
 
 def test_a_section_with_no_measured_output_is_not_priced_centrally() -> None:
-    result = estimate([UnitCount("0002:Consequences", "Consequences", COUNTED, 3)])
+    result = estimate([UnitCount("0002:Consequences", "Consequences", COUNTED, 3)], SETTINGS.model)
 
     assert result.central_usd is None
     assert result.wider_usd > 0
@@ -423,7 +433,7 @@ def fake_api(monkeypatch: pytest.MonkeyPatch) -> Iterator[SimpleNamespace]:
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     monkeypatch.delenv("ANTHROPIC_EFFORT", raising=False)
     state = SimpleNamespace(
-        messages=FakeMessages(61_108),
+        messages=FakeMessages(61_110),
         built=0,
         script=Script([first_call(), *[settled() for _ in range(30)]]),
     )
@@ -567,8 +577,8 @@ def by_hand(*sections: str) -> tuple[float, float]:
     measured = {"Requirements": 27_384, "Feature design": 26_721}
 
     def calls(n: int, output: int, first: bool) -> float:
-        cache = 57_494 * 4.0 if first else 57_494 * 0.2
-        return (n * (uncached * 2.0 + output * 10.0) + cache + (n - 1) * 57_494 * 0.2) / 1e6
+        cache = 57_494 * 4.0 if first else 57_494 * READ_RATE
+        return (n * (uncached * 2.0 + output * 10.0) + cache + (n - 1) * 57_494 * READ_RATE) / 1e6
 
     central = sum(calls(3, measured[s], i == 0) for i, s in enumerate(sections))
     # Amended 2026-10-06: every wider call writes the cache.
@@ -590,12 +600,14 @@ def test_ac_6b_the_dry_run_prints_a_counted_line_for_every_requested_unit(
 def test_ac_6c_the_dry_run_states_the_standard_rates_it_assumed(
     tmp_path: Path, fake_api: SimpleNamespace
 ) -> None:
-    """covers: AC-6c and AC-49 (standard interactive rates, not Batch)."""
+    """covers: AC-6c and AC-49 (standard interactive rates, not Batch); spec 0007 AC-5c,
+    AC-31e (the settings model's rates, the model named)."""
     _, stdout, _ = invoke(tmp_path, "0002:Requirements", "--ceiling", "20", "--dry-run")
 
     assert (
-        "Rates assumed, standard interactive pricing, not Batch: input $2.00, output $10.00, "
-        "1 hour cache write $4.00, cache read $0.20, per million tokens."
+        "Rates assumed for claude-sonnet-5-5, standard interactive pricing, not Batch: "
+        "input $2.00, output $10.00, 1 hour cache write $4.00, cache read $0.10, "
+        "per million tokens."
     ) in flat(stdout)
 
 

@@ -8,7 +8,7 @@ reach the graph.
 import logging
 from collections import Counter
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +24,7 @@ from tracepath.extract.client import (
     ExtractionFailed,
     run_with_retry,
 )
+from tracepath.extract.codepass import CODE_PASS
 from tracepath.extract.compare import (
     ReviewItem,
     ReviewReason,
@@ -117,6 +118,11 @@ class UnitResult:
     output_tokens: int
     cache_creation_input_tokens: int = 0
     cache_read_input_tokens: int = 0
+
+    @property
+    def released(self) -> frozenset[str]:
+        """The accepted entities the code pass let through (spec 0007 AC-16)."""
+        return self.routed.released
 
 
 class UnitFailed(Exception):
@@ -570,6 +576,14 @@ def review_rows(
     Rows keep each unit's own order, which `route_runs()` already sorted by lowest
     located offset (AC-11b), and a unit's cross unit held links follow its routed rows,
     ordered by signature so the file is stable from one run to the next.
+
+    Each row names the model its unit's run artifacts name, so a queue over units made
+    by two models says which made each row (spec 0007 AC-5). `model` names only a held
+    link whose unit is not among `results` (AC-5b).
+
+    Raises:
+        ProvenanceMismatch: a unit's runs name more than one model, prompt version or
+            corpus commit, so no one model fits its rows.
     """
     by_unit: dict[tuple[str, str], list[HeldLink]] = {}
     for link in held:
@@ -578,10 +592,12 @@ def review_rows(
     rows: list[dict[str, Any]] = []
     for result in results:
         key = (result.unit.record_id, result.unit.section)
+        # Only the model is read here; who accepted what plays no part in a queue row.
+        unit_model = unit_provenance(result, accepted_by="").model
         for item in result.routed.review:
-            rows.append(review_entry(key[0], key[1], item, model, queued_at))
+            rows.append(review_entry(key[0], key[1], item, unit_model, queued_at))
         for link in sorted(by_unit.pop(key, []), key=lambda h: str(h.item.signature)):
-            rows.append(review_entry(link.record, link.section, link.item, model, queued_at))
+            rows.append(review_entry(link.record, link.section, link.item, unit_model, queued_at))
 
     # A held link whose unit is not among the results would otherwise vanish silently.
     for (record, section), links in sorted(by_unit.items()):
@@ -737,9 +753,13 @@ def load(
     by_type: dict[EntityType, list[dict[str, object]]] = {}
     part_of: list[dict[str, str]] = []
     for result, provenance in zip(results, provenances, strict=True):
+        # Only an entity the code pass released says so; the rest of the unit keeps
+        # the load's own `accepted_by` (spec 0007 AC-16).
+        released = replace(provenance, accepted_by=CODE_PASS)
         for entity in result.routed.accepted_entities:
+            stamp = released if entity.canonical_id in result.released else provenance
             by_type.setdefault(entity.entity.type, []).append(
-                entity_row(entity, result.unit, commit, provenance)
+                entity_row(entity, result.unit, commit, stamp)
             )
             part_of.append({"from_id": entity.canonical_id, "to_id": result.unit.record_id})
     written["entities"] = write_entities(driver, database, dict(by_type))
@@ -769,6 +789,8 @@ def graph_build(
     review_log_entries: int,
     passes: Mapping[tuple[str, str], tuple[str, ...]],
     held: HeldView | None = None,
+    *,
+    code_pass: bool = False,
 ) -> dict[str, Any]:
     """The build manifest `load` writes to `artifacts/graph-build.json` (spec 0004 AC-17).
 
@@ -780,7 +802,9 @@ def graph_build(
     held links are the ones routing held inside it plus the ones `resolve_accepted()`
     held for an endpoint in another unit, so the two together account for every link
     its first run produced. A `held_view` key, the view's six counts, is there only
-    when the load wrote a held view (spec 0005 AC-24); a default load has none.
+    when the load wrote a held view (spec 0005 AC-24); a default load has none. A
+    `code_pass` key, `true`, is there only when the load applied the code pass (spec
+    0007 AC-6b, AC-7b), so `eval` can refuse to score routing the graph does not hold.
     """
     units: list[dict[str, Any]] = []
     for result, provenance in zip(results, provenances, strict=True):
@@ -818,4 +842,6 @@ def graph_build(
     }
     if held is not None:
         manifest["held_view"] = held.counts()
+    if code_pass:
+        manifest["code_pass"] = True
     return manifest

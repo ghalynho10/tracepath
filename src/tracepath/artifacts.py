@@ -26,6 +26,10 @@ RUNS_DIR = ARTIFACTS_DIR / "runs"
 REVIEW_QUEUE = ARTIFACTS_DIR / "review-queue.json"
 REVIEW_LOG = ARTIFACTS_DIR / "review-log.json"
 
+#: The queue `review-queue --code-pass` writes, beside the default one and never over
+#: it, until a measured result turns the pass on (spec 0007 AC-8, AC-8b).
+REVIEW_QUEUE_CODE_PASS = ARTIFACTS_DIR / "review-queue-code-pass.json"
+
 #: The build manifest every `load` rewrites (spec 0004 AC-17). Derived, like the graph,
 #: so it is replaced rather than appended to; it is not a run artifact.
 GRAPH_BUILD = ARTIFACTS_DIR / "graph-build.json"
@@ -343,9 +347,15 @@ def review_entry(
     }
 
 
-def write_review_queue(root: Path, entries: list[dict[str, Any]]) -> Path:
-    """Write the review queue, replacing whatever was there."""
-    path = root / REVIEW_QUEUE
+class ManifestUnreadable(Exception):
+    """The build manifest exists but cannot be read as a JSON object."""
+
+
+def write_review_queue(
+    root: Path, entries: list[dict[str, Any]], name: Path = REVIEW_QUEUE
+) -> Path:
+    """Write a review queue, `name` under `root`, replacing whatever was there."""
+    path = root / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(entries, indent=2) + "\n")
     return path
@@ -384,6 +394,26 @@ def review_log_entries(root: Path) -> int:
         return 0
     entries = json.loads(path.read_text())
     return len(entries) if isinstance(entries, list) else 0
+
+
+def built_with_code_pass(root: Path) -> bool:
+    """Whether the last `load` applied the code pass, read from its manifest (spec 0007 AC-7c).
+
+    A missing manifest, or one with no `code_pass` key, means it did not.
+
+    Raises:
+        ManifestUnreadable: the manifest exists but is not a JSON object.
+    """
+    path = root / GRAPH_BUILD
+    if not path.exists():
+        return False
+    try:
+        manifest = json.loads(path.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ManifestUnreadable(f"{GRAPH_BUILD} cannot be read ({exc})") from exc
+    if not isinstance(manifest, dict):
+        raise ManifestUnreadable(f"{GRAPH_BUILD} is not a JSON object")
+    return manifest.get("code_pass", False) is True
 
 
 def write_graph_build(root: Path, manifest: dict[str, Any]) -> Path:

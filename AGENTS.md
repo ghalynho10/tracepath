@@ -7,7 +7,7 @@ A terminal tool that answers "why was this built this way?" by walking a chain a
 - **Language / Runtime**: Python 3.12+, managed by uv
 - **CLI**: Typer (commands) + Rich (terminal output)
 - **Graph store**: Neo4j 5 Community in one Docker container, official `neo4j` driver v6, raw hand written Cypher. The graph is derived and disposable: JSON run artifacts are the source of truth.
-- **Extraction**: Claude Sonnet 5 via the Anthropic SDK, native structured outputs, Pydantic models as the single schema
+- **Extraction**: Claude Sonnet 5.5 (`claude-sonnet-5-5`, spec 0007; earlier units ran on `claude-sonnet-5`) via the Anthropic SDK, native structured outputs, Pydantic models as the single schema
 - **Config**: `.env` loaded with `python-dotenv` (see `.env.example`)
 - Full decision: [spec 0001](docs/specs/0001-stack-and-architecture/index.md)
 

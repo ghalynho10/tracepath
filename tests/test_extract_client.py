@@ -65,10 +65,13 @@ def test_settings_carry_the_model_and_run_policy_the_spec_chose(
     monkeypatch.setattr("tracepath.config.load_dotenv", lambda *a, **k: False)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    monkeypatch.delenv("ANTHROPIC_EFFORT", raising=False)
 
     settings = load_anthropic_settings()
 
-    assert settings.model == DEFAULT_MODEL == "claude-sonnet-5"
+    # Spec 0007 AC-1 moved the default; AC-2 kept the effort at `medium`.
+    assert settings.model == DEFAULT_MODEL == "claude-sonnet-5-5"
+    assert settings.effort == "medium"
     assert settings.runs_per_unit == RUNS_PER_UNIT == 3
 
 
@@ -398,7 +401,7 @@ def metered_0021(client: anthropic.Anthropic, root: Path, runs: int) -> RunOutco
     """`0021 ## Requirements` through the metered path, as `tracepath extract` runs it."""
     target = resolve_address(SNAPSHOT, "0021:Requirements")
     settings = settings_for(runs=runs)
-    plans = [Plan(target, fresh_runs(runs), per_call_bound(70_000))]
+    plans = [Plan(target, fresh_runs(runs), per_call_bound(70_000, settings.model))]
     return run_metered(
         plans, calls_through(client, settings), settings, root, "2e40bcf", now_utc(), 100.0, print
     )
