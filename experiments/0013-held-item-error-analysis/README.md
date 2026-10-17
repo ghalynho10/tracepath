@@ -2,7 +2,7 @@
 
 **Date started**: 2026-10-15
 **Feeds**: feature 11, before its decision rule is written
-**Status**: packet drawn 2026-10-15, ruled and scored 2026-10-17; the notes await the engineer's sorting
+**Status**: packet drawn 2026-10-15, ruled and scored 2026-10-17; failures sorted by the engineer 2026-10-17
 
 ## Question
 
