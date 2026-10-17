@@ -1,0 +1,484 @@
+{
+  "groups": {
+    "a": {
+      "drawn": 4,
+      "agree": 2,
+      "disagree": 2,
+      "unsure": 0
+    },
+    "b": {
+      "drawn": 4,
+      "agree": 3,
+      "disagree": 1,
+      "unsure": 0
+    },
+    "c": {
+      "drawn": 4,
+      "agree": 1,
+      "disagree": 3,
+      "unsure": 0
+    },
+    "d": {
+      "drawn": 4,
+      "agree": 4,
+      "disagree": 0,
+      "unsure": 0
+    },
+    "e": {
+      "drawn": 4,
+      "agree": 4,
+      "disagree": 0,
+      "unsure": 0
+    }
+  },
+  "items": [
+    {
+      "opaque_id": "H01",
+      "group": "a",
+      "kind": "entity",
+      "type": "Consequence",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "\"That defers to the app shell feature\" describes the first sentence, not its own claim; \"because ...\" is rationale. Type Consequence is right.",
+      "should_have_been": "span: \"The entry page at `/` still shows a sign in invitation to a signed in visitor.\"; rejected: \"That defers to the app shell feature, because options that fix it require `/` to read the session, which contradicts spec 0006's accepted security model (...) and its **AC-4**.\"",
+      "counts": [
+        3,
+        5,
+        2
+      ],
+      "wording_run": 1,
+      "record": "0007",
+      "section": "Consequences",
+      "signature": [
+        "line:25",
+        "Consequence"
+      ]
+    },
+    {
+      "opaque_id": "H02",
+      "group": "b",
+      "kind": "entity",
+      "type": "Consequence",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "a prediction: not checkable when written, checkable later, and nothing scheduled the later check. Not a FollowUp: it names no owed action. No type covers this. Passes the three question test. Leaving the parenthesis out is right (nothing disappears).",
+      "should_have_been": "type unclassified",
+      "counts": [
+        0,
+        1,
+        1
+      ],
+      "wording_run": 2,
+      "record": "0013",
+      "section": "Feature design",
+      "signature": [
+        "line:5",
+        "Consequence"
+      ]
+    },
+    {
+      "opaque_id": "H03",
+      "group": "b",
+      "kind": "link",
+      "type": "superseded-by",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        0,
+        1,
+        1
+      ],
+      "wording_run": 2,
+      "record": "0021",
+      "section": "Requirements",
+      "signature": [
+        "superseded-by",
+        "line:66",
+        "0021/AC-9"
+      ]
+    },
+    {
+      "opaque_id": "H04",
+      "group": "b",
+      "kind": "link",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        0,
+        1,
+        1
+      ],
+      "wording_run": 2,
+      "record": "0008",
+      "section": "Requirements",
+      "signature": [
+        "unclassified",
+        "0008/AC-9",
+        "ref:/|label:binding rule 6"
+      ]
+    },
+    {
+      "opaque_id": "H05",
+      "group": "d",
+      "kind": "entity",
+      "type": "Feature",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0003",
+      "section": "Requirements",
+      "signature": [
+        "line:5",
+        "Feature"
+      ]
+    },
+    {
+      "opaque_id": "H06",
+      "group": "a",
+      "kind": "entity",
+      "type": "FollowUp",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        2
+      ],
+      "wording_run": 1,
+      "record": "0007",
+      "section": "Follow-up",
+      "signature": [
+        "line:9",
+        "FollowUp"
+      ]
+    },
+    {
+      "opaque_id": "H07",
+      "group": "a",
+      "kind": "entity",
+      "type": "Consequence",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "guide test used. Sentence 2 explains why sentence 1 holds: removing it loses backing, not a condition. The prompt (client.py:75-78) keeps clauses carrying a checkable fact in the span, so guide and prompt diverge here. Per JobHunt author: sentence 1 follows from Supabase pricing (type question); sentence 3 is a deferred claim with a trigger (separate item). Type Consequence is right.",
+      "should_have_been": "span: \"**Session forced logout was never an option to weigh.**\"; rejected: \"Both projects report \\\"Configuring user sessions is only available on the Pro Plan and above\\\".\"",
+      "counts": [
+        2,
+        2,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0007",
+      "section": "Consequences",
+      "signature": [
+        "line:19",
+        "Consequence"
+      ]
+    },
+    {
+      "opaque_id": "H08",
+      "group": "e",
+      "kind": "link",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0021",
+      "section": "Requirements",
+      "signature": [
+        "unclassified",
+        "0021/AC-12",
+        "0021/AC-15"
+      ]
+    },
+    {
+      "opaque_id": "H09",
+      "group": "c",
+      "kind": "entity",
+      "type": "Constraint",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "three conditions that can fail independently (idempotence can fail while the rest holds). Sentence 2 is rationale in its entirety, including \"Production carries no fake users and no scaffold row\" and the evaluation \"which is correct\".",
+      "should_have_been": "split into: (a) \"**The `scaffold_check` fixture and its two seeded users** stay in `supabase/seed.sql`\", Constraint; (b) \"made idempotent\", Constraint; (c) \"the migration workflow applies that file to the **development project only**, never production\", Constraint; rejected: \"Production carries no fake users and no scaffold row, which is correct: production has no sign in path at all until feature 7, so the thread is proved on a preview against the development project.\"",
+      "counts": [
+        0,
+        1,
+        0
+      ],
+      "wording_run": 2,
+      "record": "0002",
+      "section": "Feature design",
+      "signature": [
+        "line:70|label:the `scaffold_check` fixture and its two seeded users",
+        "Constraint"
+      ]
+    },
+    {
+      "opaque_id": "H10",
+      "group": "e",
+      "kind": "link",
+      "type": "verifies",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0002",
+      "section": "Feature design",
+      "signature": [
+        "verifies",
+        "line:179",
+        "ref:0002/AC-3"
+      ]
+    },
+    {
+      "opaque_id": "H11",
+      "group": "e",
+      "kind": "link",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0015",
+      "section": "Feature design",
+      "signature": [
+        "unclassified",
+        "line:52",
+        "ref:0015/AC-17"
+      ]
+    },
+    {
+      "opaque_id": "H12",
+      "group": "a",
+      "kind": "entity",
+      "type": "Constraint",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        2,
+        1,
+        2
+      ],
+      "wording_run": 1,
+      "record": "0002",
+      "section": "Feature design",
+      "signature": [
+        "line:72",
+        "Constraint"
+      ]
+    },
+    {
+      "opaque_id": "H13",
+      "group": "d",
+      "kind": "entity",
+      "type": "AcceptanceCriterion",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0014",
+      "section": "Requirements",
+      "signature": [
+        "0014/AC-7",
+        "AcceptanceCriterion"
+      ]
+    },
+    {
+      "opaque_id": "H14",
+      "group": "d",
+      "kind": "entity",
+      "type": "AcceptanceCriterion",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0008",
+      "section": "Requirements",
+      "signature": [
+        "0008/AC-9",
+        "AcceptanceCriterion"
+      ]
+    },
+    {
+      "opaque_id": "H15",
+      "group": "d",
+      "kind": "entity",
+      "type": "AcceptanceCriterion",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0003",
+      "section": "Requirements",
+      "signature": [
+        "0003/AC-2",
+        "AcceptanceCriterion"
+      ]
+    },
+    {
+      "opaque_id": "H16",
+      "group": "c",
+      "kind": "link",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "a dependency the text states (\"which needs feature 21's privacy policy and terms served from an authorized domain\"), so blocked-by, not unclassified.",
+      "should_have_been": "type blocked-by; to: feature-21 (the scope row), not \"feature 21's privacy policy and terms\"",
+      "counts": [
+        0,
+        0,
+        1
+      ],
+      "wording_run": 3,
+      "record": "0007",
+      "section": "Follow-up",
+      "signature": [
+        "unclassified",
+        "line:11",
+        "ref:feature 21/"
+      ]
+    },
+    {
+      "opaque_id": "H17",
+      "group": "c",
+      "kind": "entity",
+      "type": "FollowUp",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        0,
+        0
+      ],
+      "wording_run": 1,
+      "record": "0007",
+      "section": "Follow-up",
+      "signature": [
+        "line:5",
+        "FollowUp"
+      ]
+    },
+    {
+      "opaque_id": "H18",
+      "group": "b",
+      "kind": "link",
+      "type": "superseded-by",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        0,
+        1,
+        1
+      ],
+      "wording_run": 2,
+      "record": "0021",
+      "section": "Requirements",
+      "signature": [
+        "superseded-by",
+        "line:41",
+        "0021/AC-6"
+      ]
+    },
+    {
+      "opaque_id": "H19",
+      "group": "e",
+      "kind": "link",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "agree",
+      "note": "",
+      "should_have_been": "",
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "wording_run": 1,
+      "record": "0011",
+      "section": "Requirements",
+      "signature": [
+        "unclassified",
+        "0011/AC-14",
+        "0011/AC-6"
+      ]
+    },
+    {
+      "opaque_id": "H20",
+      "group": "c",
+      "kind": "entity",
+      "type": "unclassified",
+      "model": "claude-sonnet-5",
+      "mark": "disagree",
+      "note": "part of the paragraph \"Why the grant is load bearing rather than tidy up\", a reason; also reads as a pointer to build plan tasks 10 and 11 (a claim about the spec's own content).",
+      "should_have_been": "not an item; rejected span of the grant item at line 101 (\"**One explicit `grant select` to `service_role`** ...\")",
+      "counts": [
+        0,
+        0,
+        1
+      ],
+      "wording_run": 3,
+      "record": "0002",
+      "section": "Feature design",
+      "signature": [
+        "line:52",
+        "unclassified"
+      ]
+    }
+  ]
+}
