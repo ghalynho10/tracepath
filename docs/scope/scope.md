@@ -25,7 +25,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 8 | History aware traversal | Slice 4 | planned |
 | 9 | Whole corpus | Slice 5 | planned |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
-| 11 | Review volume and routing policy | after Slice 2, before Slice 5 | planned |
+| 11 | Review volume and routing policy | after Slice 2, before Slice 5 | in-progress |
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | in-progress |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
@@ -238,7 +238,7 @@ spec [0007](../specs/0007-extraction-accuracy/index.md) (step one: the model swi
 - [x] Test it: `/test extraction accuracy`
 - [ ] Later steps (flag change, type definitions): `/architect extraction accuracy, later steps` · after step one's rulings, each with fresh units chosen beforehand
 
-### 11. Review volume and routing policy · needs a decision · from spec 0002
+### 11. Review volume and routing policy · in progress · from spec 0002
 How much the routing rules should hold back, decided on logged evidence rather than on feel. Measured over the 8 units extracted so far: **403 queue rows against 71 accepted entities**, by reason `runs_disagree` 340, `endpoint_not_accepted` 98, `known_trap_flag` 77, `unclassified_type` 1, and concentrated in the heterogeneous units (0012 122, feature-21 114, 0021 76, 0006 53, 0008 38). Extrapolated across 188 sections that is thousands of rows with one reviewer, which is not a workable review step. HANDOFF's own plan was always to loosen routing once logged review decisions showed where it over flags; `artifacts/review-log.json` now exists and is empty, so that evidence can finally start accumulating. Measure the accept to review ratio **per unit kind**, since the counts above say the problem is concentrated rather than uniform, then decide a loosening policy. Two things this must not do: loosen the comparison itself, which spec 0002 names as the one change that would put unverified items into the graph, and treat near duplicate queue entries from AC-11a's line sensitivity as extraction defects. Spec 0002's AC-11(d) adds no rows today and is not the cause. **Added 2026-09-23**: neither is AC-11(e), but it is not nothing either. Spec 0002's AC-7 amendment puts a `label` into the comparison signature, model produced text and a new source of run to run disagreement the same way flags were; the 403 against 71 count above was measured before that lands (feature 4's build plan tasks 16 and 17, unbuilt). Re measure after those land, not before, or this feature's per unit kind ratio is measuring a signature that no longer exists.
 **Two candidate framings, both open.** Weigh them against each other rather than starting from the first.
 
@@ -256,7 +256,16 @@ How much the routing rules should hold back, decided on logged evidence rather t
 Before the held out questions are run (eval --eval-file eval/held-out.json --release-held-out, once features 13 and 11 have locked their choices), the engineer reads both questions and checks each expected chain step against the corpus at 2e40bcf, the way extracted items are ruled; any correction is committed before the first run, so the result cannot shape it. Until then the tests verify only their form (AC-22, AC-24 to AC-26, AC-30), not whether their expected chains are right.
 
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
-- [ ] Design it (spec): `/architect review volume and routing policy` · feature 6 has shipped, so the eval runner exists; still waits on feature 13 by the order above
+spec [0008](../specs/0008-review-volume-and-routing-policy/index.md)
+- [x] Design it (spec): `/architect review volume and routing policy` · the decision rule and both candidates' exact conditions are committed; which, if either, is adopted is recorded in a later amendment once `/develop` measures them
+- [ ] Build it: `/develop review volume and routing policy`
+  - [ ] The per unit kind ratio script and the narrow hold release mechanism, wired through `load`, `eval`, `trace --eval`, and `review-queue` (AC-1 to AC-7)
+  - [ ] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
+  - [ ] The gated blind ruling, only if the comparison table triggers it (AC-9, AC-10 to AC-10e)
+  - [ ] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
+  - [ ] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
+- [ ] Verify it: `/check verify review volume and routing policy`
+- [ ] Test it: `/test review volume and routing policy`
 
 ## Slice 6: Rationale and alternatives
 
