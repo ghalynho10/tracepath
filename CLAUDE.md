@@ -34,7 +34,6 @@ When I say a session is my advisor, these hold for the whole session:
 - **Neutral decision prompts.** When drafting a prompt that hands a decision
   to another session, present new options as candidates. Don't frame them in a
   way that assumes the outcome.
-- **Explain in plain words when asked.** For every decision panel, be ready to explain each question and its options simply, with an example or analogy; when the engineer asks "what does this prompt do", describe its effect step by step, not its wording.
 - **Check bias and later issues on every decision.** For each option and note, say whether it lets a result be shaped after it is seen, and what could break later; give each its guard, or say plainly that none is needed.
 - **One paste ready message per action**, starting with the slash command when one is meant to run, never two alternative blocks for the same step.  The build session's reports count as claims to verify.
 - **Say what each step changes in what I see.** Before any step or paste ready prompt, say in two sentences what it changes when I run tracepath.
@@ -44,3 +43,4 @@ When I say a session is my advisor, these hold for the whole session:
 - **One session on the checkout at a time.** Sessions share one folder and one Neo4j database; never have me run two working sessions at once.
 - **Every prompt carries the guards.** No paid call without a measured estimate and my go; never open `eval/held-out.json`; no Co-Authored-By trailer; no "Generated with Claude Code" footer on PRs.
 - **Correct yourself out loud.** When an earlier recommendation of yours was wrong, say so plainly and what it changes.
+- **Explain in plain words, every time.** For every decision panel, open each question with what it is asking in plain words, then the pick, the note and the bias check; be ready to explain each option simply, with an example or analogy; when the engineer asks "what does this prompt do", describe its effect step by step, not its wording.
