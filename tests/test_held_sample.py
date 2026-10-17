@@ -6,9 +6,11 @@ link names `0001/AC-3` in another unit and agrees, and one link names a record t
 corpus does not hold and appears in run 1 only.
 """
 
+import hashlib
 import importlib.util
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -26,6 +28,7 @@ from tracepath.pipeline import UnitResult, review_rows
 ROOT = Path(__file__).resolve().parents[1]
 STEP = ROOT / "experiments" / "0013-held-item-error-analysis"
 SCRIPT = STEP / "prepare_held_sample.py"
+SCORE = STEP / "score_held_sample.py"
 MODEL = "claude-sonnet-5"
 
 TEXT = """## Requirements
@@ -59,9 +62,9 @@ OTHER_UNIT = Unit(
 )
 
 
-def load_script() -> ModuleType:
-    name = f"exp0013_{SCRIPT.stem}"
-    spec = importlib.util.spec_from_file_location(name, SCRIPT)
+def load_script(path: Path = SCRIPT) -> ModuleType:
+    name = f"exp0013_{path.stem}"
+    spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
@@ -403,3 +406,176 @@ def test_the_committed_packet_holds_twenty_items_each_with_its_slots() -> None:
     assert ids == [f"H{n:02d}" for n in range(1, 21)]
     assert text.count("\n  - note:") == 20
     assert text.count("\n  - should have been:") == 20
+
+
+# The scoring script (`score_held_sample.py`): its refusals, on packets and git repos built here.
+
+RULED = """# Packet
+
+- [x] agree · `H01` · entity · Constraint
+  - source: specs/x.md:3
+  - span: one claim
+  - note:
+  - should have been:
+
+- [x] disagree · `H02` · link · unclassified
+  - from source: specs/x.md:4
+  - from span: a claim
+  - to words: binding rule 6
+  - to target: not resolved
+  - note: a dependency the text states, so `blocked-by`
+  - should have been: type blocked-by
+"""
+ARMS = {
+    "items": [
+        {
+            "opaque_id": opaque_id,
+            "group": group,
+            "record": "0099",
+            "section": "Requirements",
+            "signature": ["line:3", "Constraint"],
+            "canonical_id": None,
+            "counts": [1, 0, 0],
+            "model": MODEL,
+            "wording_run": 1,
+        }
+        for opaque_id, group in (("H01", "c"), ("H02", "e"))
+    ]
+}
+
+SC = load_script(SCORE)
+
+
+def test_each_item_gives_its_mark_note_and_should_have_been() -> None:
+    rulings = SC.parse_rulings(RULED)
+
+    assert rulings["H01"] == SC.Ruling("H01", "entity", "Constraint", "agree", "", "")
+    assert rulings["H02"].note == "a dependency the text states, so `blocked-by`"
+    assert rulings["H02"].should_have_been == "type blocked-by"
+
+
+@pytest.mark.parametrize(
+    ("head", "refusal"),
+    [
+        ("- [ ] agree / disagree / unsure · `H01` · entity · Constraint", "not ticked"),
+        ("- [x] agree / disagree · `H01` · entity · Constraint", "no one readable mark"),
+        ("- [x] agree disagree · `H01` · entity · Constraint", "no one readable mark"),
+        ("- [x] · `H01` · entity · Constraint", "cannot read"),
+    ],
+)
+def test_an_unticked_double_marked_or_unreadable_item_is_refused(head: str, refusal: str) -> None:
+    text = RULED.replace("- [x] agree · `H01` · entity · Constraint", head)
+    with pytest.raises(SystemExit, match=refusal):
+        SC.parse_rulings(text)
+
+
+def test_an_item_ruled_twice_is_refused() -> None:
+    with pytest.raises(SystemExit, match="H01 appears twice"):
+        SC.parse_rulings(RULED + RULED.split("\n\n", 1)[1])
+
+
+def test_marks_are_counted_per_group_against_what_each_group_drew() -> None:
+    result = SC.score(SC.parse_rulings(RULED), ARMS)
+
+    assert result["groups"]["c"] == {"drawn": 1, "agree": 1, "disagree": 0, "unsure": 0}
+    assert result["groups"]["e"] == {"drawn": 1, "agree": 0, "disagree": 1, "unsure": 0}
+    assert result["groups"]["a"]["drawn"] == 0
+    assert result["items"][1]["group"] == "e"
+    assert result["items"][1]["counts"] == [1, 0, 0]
+
+
+def test_a_packet_and_arm_file_naming_different_items_are_refused() -> None:
+    with pytest.raises(SystemExit, match="name different items"):
+        SC.score(SC.parse_rulings(RULED), {"items": ARMS["items"][:1]})
+
+
+def test_the_result_copies_notes_verbatim_and_marks_a_blank_one() -> None:
+    text = SC.result_markdown(SC.score(SC.parse_rulings(RULED), ARMS))
+
+    assert "| e | 1 | 0 | 1 | 0 |" in text
+    assert "- `H02` · link · unclassified · `claude-sonnet-5` · disagree" in text
+    assert "  - note: a dependency the text states, so `blocked-by`" in text
+    assert "  - note: _(blank)_" in text
+
+
+def git(root: Path, *args: str) -> None:
+    subprocess.run(
+        ["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+
+
+def repo(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, arms_first: bool, hash_of: bytes | None
+) -> Path:
+    """A git repo holding a packet, an arm file and its hash, committed in a given order."""
+    script_root = tmp_path / "repo"
+    data = script_root / "data"
+    data.mkdir(parents=True)
+    arms = (json.dumps(ARMS) + "\n").encode()
+    git(script_root, "init", "-q")
+    (data / "held-packet.md").write_text(RULED.replace("[x] agree", "[ ] agree"))
+    (data / "held-arms.sha256").write_text(f"{hashlib.sha256(hash_of or arms).hexdigest()}  a\n")
+    git(script_root, "add", ".")
+    git(script_root, "commit", "-q", "-m", "draw")
+    steps = [("held-packet.md", RULED.encode()), ("held-arms.json", arms)]
+    for name, content in reversed(steps) if arms_first else steps:
+        (data / name).write_bytes(content)
+        git(script_root, "add", ".")
+        git(script_root, "commit", "-q", "-m", name)
+    monkeypatch.setattr(SC, "ROOT", script_root)
+    files = {
+        "PACKET": "held-packet.md",
+        "ARMS": "held-arms.json",
+        "HASH": "held-arms.sha256",
+        "RESULT": "r.json",
+    }
+    for name, file in files.items():
+        monkeypatch.setattr(SC, name, data / file)
+    return data
+
+
+def test_an_arm_file_whose_hash_differs_from_the_committed_one_is_refused(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    data = repo(monkeypatch, tmp_path, arms_first=False, hash_of=b"another file")
+
+    with pytest.raises(SystemExit, match="does not match the hash"):
+        SC.run()
+    assert not (data / "r.json").exists()
+
+
+def test_an_arm_file_committed_before_the_ruled_packet_is_refused(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    data = repo(monkeypatch, tmp_path, arms_first=True, hash_of=None)
+
+    with pytest.raises(SystemExit, match="not after the ruled packet"):
+        SC.run()
+    assert not (data / "r.json").exists()
+
+
+def test_an_arm_file_committed_after_the_ruled_packet_is_scored(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    data = repo(monkeypatch, tmp_path, arms_first=False, hash_of=None)
+
+    SC.run()
+
+    assert json.loads((data / "r.json").read_text())["groups"]["e"]["disagree"] == 1
+
+
+def test_the_committed_result_is_scored_again_from_the_committed_rulings(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    committed = STEP / "data" / "held-result.json"
+    if not committed.exists():
+        pytest.skip("the rulings have not been scored yet")
+    script = load_script(SCORE)
+    monkeypatch.setattr(script, "RESULT", tmp_path / "result.json")
+
+    script.run()
+
+    assert (tmp_path / "result.json").read_bytes() == committed.read_bytes()

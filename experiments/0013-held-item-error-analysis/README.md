@@ -2,7 +2,7 @@
 
 **Date started**: 2026-10-15
 **Feeds**: feature 11, before its decision rule is written
-**Status**: packet drawn 2026-10-15, awaiting the engineer's rulings
+**Status**: packet drawn 2026-10-15, ruled and scored 2026-10-17; the notes await the engineer's sorting
 
 ## Question
 
@@ -81,8 +81,15 @@ Each item has a ruling slot (`agree` / `disagree` / `unsure`), a free `note:`, a
   are in; its hash must then match.
 
 The script refuses to run once any of the three exists, so the sample is drawn once.
+
+`score_held_sample.py` (no API call) writes `data/held-result.json`. It reads the
+committed packet and arm file, and refuses unless the arm file hashes to the committed
+`held-arms.sha256`, the commit adding the arm file comes after the packet's last
+commit, and every item carries exactly one readable mark.
+
 `tests/test_held_sample.py` covers the grouping, the exclusions, the wording, the
-ends, the packet's blindness, the arm file and that refusal, on crafted runs.
+ends, the packet's blindness, the arm file and the refusal to draw twice, on crafted
+runs; and the scorer's three refusals, on packets and git repos built in the test.
 
 ## Configuration
 
@@ -110,7 +117,101 @@ Drawn 2026-10-15, 4 per group, 20 items, no shortfall.
   its group.
 - Only one run's wording is shown per item, the earliest run's that holds the
   signature; another run may word the same item differently.
+- An end shown `not resolved` does not rule out group e. A group e link's waiting end
+  always matches a known entity, but its other end need not: after the exclusions,
+  38 of group e's 179 links show one end `not resolved`.
+- Rulings used the ruling guide's test throughout.
+- H07's note records input from the JobHunt author.
 
 ## Result
 
-Not yet ruled. The scoring script is written after the rulings are in.
+Scored 2026-10-17 by `score_held_sample.py` (no API call) into `data/held-result.json`,
+from the ruled packet (`7b2ebe8`) and the arm file committed after it (`6e0f137`),
+whose hash matches the one committed before any ruling (`cb75e5c`).
+
+4 items per group show kinds of failure, not rates. There is no pass or fail. Each
+note and "should have been" below is copied verbatim from the packet; the engineer
+sorts the notes afterwards.
+
+| Group | Drawn | Agree | Disagree | Unsure |
+|---|---|---|---|---|
+| a | 4 | 2 | 2 | 0 |
+| b | 4 | 3 | 1 | 0 |
+| c | 4 | 1 | 3 | 0 |
+| d | 4 | 4 | 0 | 0 |
+| e | 4 | 4 | 0 | 0 |
+
+#### Group a
+
+- `H01` · entity · Consequence · `claude-sonnet-5` · disagree
+  - note: "That defers to the app shell feature" describes the first sentence, not its own claim; "because ..." is rationale. Type Consequence is right.
+  - should have been: span: "The entry page at `/` still shows a sign in invitation to a signed in visitor."; rejected: "That defers to the app shell feature, because options that fix it require `/` to read the session, which contradicts spec 0006's accepted security model (...) and its **AC-4**."
+- `H06` · entity · FollowUp · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H07` · entity · Consequence · `claude-sonnet-5` · disagree
+  - note: guide test used. Sentence 2 explains why sentence 1 holds: removing it loses backing, not a condition. The prompt (client.py:75-78) keeps clauses carrying a checkable fact in the span, so guide and prompt diverge here. Per JobHunt author: sentence 1 follows from Supabase pricing (type question); sentence 3 is a deferred claim with a trigger (separate item). Type Consequence is right.
+  - should have been: span: "**Session forced logout was never an option to weigh.**"; rejected: "Both projects report \"Configuring user sessions is only available on the Pro Plan and above\"."
+- `H12` · entity · Constraint · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+
+#### Group b
+
+- `H02` · entity · Consequence · `claude-sonnet-5` · disagree
+  - note: a prediction: not checkable when written, checkable later, and nothing scheduled the later check. Not a FollowUp: it names no owed action. No type covers this. Passes the three question test. Leaving the parenthesis out is right (nothing disappears).
+  - should have been: type unclassified
+- `H03` · link · superseded-by · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H04` · link · unclassified · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H18` · link · superseded-by · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+
+#### Group c
+
+- `H09` · entity · Constraint · `claude-sonnet-5` · disagree
+  - note: three conditions that can fail independently (idempotence can fail while the rest holds). Sentence 2 is rationale in its entirety, including "Production carries no fake users and no scaffold row" and the evaluation "which is correct".
+  - should have been: split into: (a) "**The `scaffold_check` fixture and its two seeded users** stay in `supabase/seed.sql`", Constraint; (b) "made idempotent", Constraint; (c) "the migration workflow applies that file to the **development project only**, never production", Constraint; rejected: "Production carries no fake users and no scaffold row, which is correct: production has no sign in path at all until feature 7, so the thread is proved on a preview against the development project."
+- `H16` · link · unclassified · `claude-sonnet-5` · disagree
+  - note: a dependency the text states ("which needs feature 21's privacy policy and terms served from an authorized domain"), so blocked-by, not unclassified.
+  - should have been: type blocked-by; to: feature-21 (the scope row), not "feature 21's privacy policy and terms"
+- `H17` · entity · FollowUp · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H20` · entity · unclassified · `claude-sonnet-5` · disagree
+  - note: part of the paragraph "Why the grant is load bearing rather than tidy up", a reason; also reads as a pointer to build plan tasks 10 and 11 (a claim about the spec's own content).
+  - should have been: not an item; rejected span of the grant item at line 101 ("**One explicit `grant select` to `service_role`** ...")
+
+#### Group d
+
+- `H05` · entity · Feature · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H13` · entity · AcceptanceCriterion · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H14` · entity · AcceptanceCriterion · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H15` · entity · AcceptanceCriterion · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+
+#### Group e
+
+- `H08` · link · unclassified · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H10` · link · verifies · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H11` · link · unclassified · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
+- `H19` · link · unclassified · `claude-sonnet-5` · agree
+  - note: _(blank)_
+  - should have been: _(blank)_
