@@ -215,3 +215,14 @@ sorts the notes afterwards.
 - `H19` · link · unclassified · `claude-sonnet-5` · agree
   - note: _(blank)_
   - should have been: _(blank)_
+
+## Kinds of failure (sorted by the engineer after scoring)
+
+- A reason or description kept inside the item: H01, H07
+- Made an item from a sentence that isn't one: H02 (a prediction), H20 (a reason or a pointer)
+- Separate conditions kept as one item: H09
+- A stated dependency typed unclassified instead of blocked-by, with the wrong end: H16
+
+## Addendum
+
+H02, reconsidered 2026-10-17 while grouping the failures, after the group table had been shared: re reading the source, the sentence is not an item rather than an unclassified one. The mark stays disagree, so the result table does not change. The committed packet keeps the original ruling.
