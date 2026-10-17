@@ -30,6 +30,11 @@ REVIEW_LOG = ARTIFACTS_DIR / "review-log.json"
 #: it, until a measured result turns the pass on (spec 0007 AC-8, AC-8b).
 REVIEW_QUEUE_CODE_PASS = ARTIFACTS_DIR / "review-queue-code-pass.json"
 
+#: The queue `review-queue --narrow-hold` writes, never over the default one (spec 0008
+#: AC-5e), and the one it writes with `--code-pass` too, never over either single file.
+REVIEW_QUEUE_NARROW_HOLD = ARTIFACTS_DIR / "review-queue-narrow-hold.json"
+REVIEW_QUEUE_CODE_PASS_NARROW_HOLD = ARTIFACTS_DIR / "review-queue-code-pass-narrow-hold.json"
+
 #: The build manifest every `load` rewrites (spec 0004 AC-17). Derived, like the graph,
 #: so it is replaced rather than appended to; it is not a run artifact.
 GRAPH_BUILD = ARTIFACTS_DIR / "graph-build.json"
@@ -404,6 +409,22 @@ def built_with_code_pass(root: Path) -> bool:
     Raises:
         ManifestUnreadable: the manifest exists but is not a JSON object.
     """
+    return _built_with(root, "code_pass")
+
+
+def built_with_narrow_hold(root: Path) -> bool:
+    """Whether the last `load` applied the narrow hold rule (spec 0008 AC-5c, AC-5d).
+
+    A missing manifest, or one with no `narrow_hold` key, means it did not.
+
+    Raises:
+        ManifestUnreadable: the manifest exists but is not a JSON object.
+    """
+    return _built_with(root, "narrow_hold")
+
+
+def _built_with(root: Path, key: str) -> bool:
+    """Whether the manifest holds `key` set to `true`; absent means false."""
     path = root / GRAPH_BUILD
     if not path.exists():
         return False
@@ -413,7 +434,7 @@ def built_with_code_pass(root: Path) -> bool:
         raise ManifestUnreadable(f"{GRAPH_BUILD} cannot be read ({exc})") from exc
     if not isinstance(manifest, dict):
         raise ManifestUnreadable(f"{GRAPH_BUILD} is not a JSON object")
-    return manifest.get("code_pass", False) is True
+    return manifest.get(key, False) is True
 
 
 def write_graph_build(root: Path, manifest: dict[str, Any]) -> Path:

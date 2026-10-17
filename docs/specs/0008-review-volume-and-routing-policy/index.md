@@ -1,7 +1,7 @@
 # 0008. Review volume and routing policy
 
 **Date**: 2026-10-17
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

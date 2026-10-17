@@ -3,8 +3,8 @@
 `committed_units()` re-identifies every run file, about 35 s over the real corpus, and
 dozens of tests asked for the same answer from the same bytes. The memo is keyed by the
 bytes of the run files it reads, the snapshot's files (path, size, modified time) and the
-`code_pass` flag, so a test that edits a run file or builds another root gets its own
-build. A call that raises is never stored. A test that checks the rebuild itself is
+`code_pass` and `narrow_hold` flags, so a test that edits a run file or builds another root
+gets its own build. A call that raises is never stored. A test that checks the rebuild itself is
 repeatable asks for the real one with `@pytest.mark.uncached_rebuild` or
 `uncached_rebuild()`.
 """
@@ -23,7 +23,7 @@ from tracepath.pipeline import UnitResult
 CommittedUnits = Callable[..., tuple[UnitResult, ...]]
 
 
-def fingerprint(root: Path, snapshot: Path, code_pass: bool) -> str:
+def fingerprint(root: Path, snapshot: Path, code_pass: bool, narrow_hold: bool = False) -> str:
     """What `committed_units()` reads, as one hash: the settled run files and the snapshot."""
     digest = hashlib.sha256()
     runs = root / RUNS_DIR
@@ -37,6 +37,7 @@ def fingerprint(root: Path, snapshot: Path, code_pass: bool) -> str:
         name = path.name if path == snapshot else path.relative_to(snapshot).as_posix()
         digest.update(f"{name}\0{stat.st_size}\0{stat.st_mtime_ns}\0".encode())
     digest.update(b"code_pass\0" if code_pass else b"plain\0")
+    digest.update(b"narrow_hold\0" if narrow_hold else b"held\0")
     return digest.hexdigest()
 
 
@@ -50,15 +51,17 @@ class RebuildMemo:
     calls: int = 0
 
     def __call__(
-        self, root: Path, snapshot: Path, *, code_pass: bool = False
+        self, root: Path, snapshot: Path, *, code_pass: bool = False, narrow_hold: bool = False
     ) -> tuple[UnitResult, ...]:
         """The memoised `committed_units()`; the real one when bypassed."""
         if self.bypass:
-            return self.original(root, snapshot, code_pass=code_pass)
-        key = fingerprint(root, snapshot, code_pass)
+            return self.original(root, snapshot, code_pass=code_pass, narrow_hold=narrow_hold)
+        key = fingerprint(root, snapshot, code_pass, narrow_hold)
         if key not in self.entries:
             self.calls += 1
-            self.entries[key] = self.original(root, snapshot, code_pass=code_pass)
+            self.entries[key] = self.original(
+                root, snapshot, code_pass=code_pass, narrow_hold=narrow_hold
+            )
         return self.entries[key]
 
 

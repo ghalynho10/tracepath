@@ -256,10 +256,10 @@ How much the routing rules should hold back, decided on logged evidence rather t
 Before the held out questions are run (eval --eval-file eval/held-out.json --release-held-out, once features 13 and 11 have locked their choices), the engineer reads both questions and checks each expected chain step against the corpus at 2e40bcf, the way extracted items are ruled; any correction is committed before the first run, so the result cannot shape it. Until then the tests verify only their form (AC-22, AC-24 to AC-26, AC-30), not whether their expected chains are right.
 
 **Done when:** the accept to review ratio is measured per unit kind, the five eval questions have been run under both policies with the broken chains recorded, both framings are weighed on that evidence, a policy is decided and recorded in a spec, and feature 9 is unblocked or explicitly allowed to run at the current ratio.
-spec [0008](../specs/0008-review-volume-and-routing-policy/index.md)
+spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) · code in `src/tracepath/extract/compare.py`, `src/tracepath/rebuild.py`, `src/tracepath/hold_ratio.py`, `src/tracepath/cli.py`
 - [x] Design it (spec): `/architect review volume and routing policy` · the decision rule and both candidates' exact conditions are committed; which, if either, is adopted is recorded in a later amendment once `/develop` measures them
 - [ ] Build it: `/develop review volume and routing policy`
-  - [ ] The per unit kind ratio script and the narrow hold release mechanism, wired through `load`, `eval`, `trace --eval`, and `review-queue` (AC-1 to AC-7)
+  - [x] The per unit kind ratio script and the narrow hold release mechanism, wired through `load`, `eval`, `trace --eval`, and `review-queue` (AC-1 to AC-7)
   - [ ] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
   - [ ] The gated blind ruling, only if the comparison table triggers it (AC-9, AC-10 to AC-10e)
   - [ ] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
