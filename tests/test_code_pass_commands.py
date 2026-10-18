@@ -229,7 +229,10 @@ def driver(neo4j_settings: Neo4jSettings) -> Iterator[Driver]:
 
 
 def run_load(root: Path, *extra: str) -> tuple[int, str, str]:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *extra])
+    """A load with the held view off (on by default since spec 0008 AC-11b): stamps only."""
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), "--no-with-held", *extra]
+    )
     return result.exit_code, result.stdout, result.stderr
 
 

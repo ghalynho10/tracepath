@@ -146,7 +146,7 @@ NARROW_HOLD_DEFAULT = True
 
 #: Whether held items are written and shown when a command is given neither
 #: `--with-held` nor `--no-with-held` (spec 0008 AC-11b, spec 0005 as amended 2026-10-18).
-WITH_HELD_DEFAULT = False
+WITH_HELD_DEFAULT = True
 
 #: Why `trace --with-held` refuses a graph a default load wrote (spec 0005 AC-26b).
 NO_HELD_ITEMS = (
@@ -272,7 +272,8 @@ def load_graph(
     with_held: bool | None = typer.Option(
         None,
         "--with-held/--no-with-held",
-        help="Also write the items review holds back, each marked held (spec 0005).",
+        help="Also write the items review holds back, each marked held (spec 0005). "
+        "On by default; --no-with-held writes accepted items only.",
     ),
     code_pass: bool = typer.Option(False, "--code-pass", help=CODE_PASS_HELP),
     narrow_hold: bool | None = typer.Option(
@@ -604,8 +605,9 @@ def trace(
     with_held: bool | None = typer.Option(
         None,
         "--with-held/--no-with-held",
-        help="Walk through held items too, each printed as held (spec 0005). "
-        "Needs a graph from `load --with-held`.",
+        help="Walk through held items too, each printed as held (spec 0005). On by default; "
+        "--no-with-held walks accepted items only. Given by name, needs a graph holding "
+        "held items.",
     ),
     release_held_out: bool = typer.Option(
         False,
@@ -715,8 +717,8 @@ def eval_set_command(
     with_held: bool | None = typer.Option(
         None,
         "--with-held/--no-with-held",
-        help="Score under the held item view too (spec 0005). "
-        "Needs a graph from `load --with-held`.",
+        help="Score under the held item view too (spec 0005). On by default; --no-with-held "
+        "scores accepted items only. Given by name, needs a graph holding held items.",
     ),
     release_held_out: bool = typer.Option(
         False,

@@ -112,10 +112,15 @@ def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
 #: default since spec 0008 AC-9b, is turned off for every load and every scoring.
 NO_NARROW = "--no-narrow-hold"
 
+#: The held view, on by default since spec 0008 AC-11b, is off unless a test asks for it:
+#: a test's own `--with-held` comes later on the command line, and the last one wins.
+NO_HELD = "--no-with-held"
+
 
 def load(root: Path, *flags: str) -> None:
     result = runner.invoke(
-        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, *flags]
+        app,
+        ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, NO_HELD, *flags],
     )
     assert result.exit_code == 0, result.stderr
 
@@ -157,7 +162,9 @@ def run(root: Path, *args: str, eval_file: str = "eval/questions.json") -> tuple
     result = runner.invoke(
         app,
         [
-            *args,
+            args[0],
+            NO_HELD,
+            *args[1:],
             NO_NARROW,
             "--eval-file",
             eval_file,

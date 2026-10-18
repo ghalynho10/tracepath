@@ -201,7 +201,10 @@ def driver(neo4j_settings: Neo4jSettings) -> Iterator[Driver]:
 
 
 def run_load(root: Path, *extra: str) -> tuple[int, str, str]:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *extra])
+    """A load with the held view off (on by default since spec 0008 AC-11b): stamps only."""
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), "--no-with-held", *extra]
+    )
     return result.exit_code, result.stdout, result.stderr
 
 
@@ -297,3 +300,24 @@ def test_load_with_both_rules_stamps_each_release_once(
     assert stamped["code_pass"] == code_pass
     assert set(stamped["narrow_hold"]) == narrow_alone - set(code_pass)
     assert set(stamped) == {"auto", "code_pass", "narrow_hold"}
+
+
+@pytest.mark.integration
+def test_a_load_given_no_flag_applies_both_defaults(
+    tmp_path: Path, driver: Driver, neo4j_settings: Neo4jSettings
+) -> None:
+    """covers: AC-9b and AC-11b (the narrow hold rule and the held view are both on)."""
+    root = runs_root(tmp_path, *UNITS)
+
+    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT)])
+
+    assert result.exit_code == 0, result.stderr
+    manifest = json.loads((root / GRAPH_BUILD).read_text())
+    assert manifest["narrow_hold"] is True
+    assert manifest["held_view"]["entities"] > 0
+    assert "narrow_hold" in entity_stamps(driver, neo4j_settings.database)
+    held, _, _ = driver.execute_query(
+        "MATCH (n) WHERE n.held = true RETURN count(n) AS n", database_=neo4j_settings.database
+    )
+    assert held[0]["n"] > 0
+    assert "Held item view (spec 0005)" in result.stdout

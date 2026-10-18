@@ -45,8 +45,12 @@ def root_with(tmp_path: Path, *units: str) -> Path:
 def run_load(
     root: Path, env: dict[str, str | None] | None = None, *flags: str
 ) -> tuple[int, str, str]:
+    # These are spec 0004's tests of the accepted graph, so the held view, on by default
+    # since spec 0008 AC-11b, is off unless a test asks for it.
     result = runner.invoke(
-        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *flags], env=env
+        app,
+        ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), "--no-with-held", *flags],
+        env=env,
     )
     return result.exit_code, result.stdout, result.stderr
 
