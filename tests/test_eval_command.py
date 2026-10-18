@@ -449,6 +449,32 @@ def test_ac_9b_a_held_block_is_the_held_trace_report_without_its_label(held_grap
     assert lines[2 : 2 + len(report)] == report
 
 
+@pytest.mark.parametrize("command", [("eval",), ("trace", "--eval", "1")])
+def test_given_no_held_flag_eval_and_trace_eval_show_the_held_view(
+    held_graph: Path, command: tuple[str, ...]
+) -> None:
+    """covers: spec 0008 AC-11 (the held view is on by default in trace and eval, not just load)."""
+    bare = runner.invoke(
+        app,
+        [
+            *command,
+            NO_NARROW,
+            "--eval-file",
+            "eval/scorable.json",
+            "--root",
+            str(held_graph),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
+    )
+    _, held, _ = run(held_graph, *command, "--with-held", eval_file="eval/scorable.json")
+    _, plain, _ = run(held_graph, *command, eval_file="eval/scorable.json")
+
+    assert bare.exit_code == 0, bare.stderr
+    assert bare.stdout == held
+    assert HELD_LABEL in held.splitlines() and held != plain
+
+
 # AC-29 and AC-9c: the held out label, and the order above the first block.
 
 

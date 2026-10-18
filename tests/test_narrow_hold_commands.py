@@ -95,6 +95,27 @@ def test_ac_5e_a_queue_off_the_default_leaves_the_default_queue_alone(queues: Qu
     assert WITHOUT_NARROW.name == "review-queue-without-narrow-hold.json"
 
 
+@pytest.mark.parametrize(
+    ("code_pass", "narrow_hold", "name"),
+    [
+        (False, True, "review-queue.json"),
+        (False, False, "review-queue-without-narrow-hold.json"),
+        (True, True, "review-queue-code-pass.json"),
+        (True, False, "review-queue-code-pass-without-narrow-hold.json"),
+    ],
+)
+def test_ac_5e_each_routing_names_its_own_queue_file(
+    code_pass: bool, narrow_hold: bool, name: str
+) -> None:
+    """covers: AC-5e, as the 2026-10-18 corrections note (item 3) names the four files."""
+    found = review_queue_file(
+        code_pass=code_pass, narrow_hold=narrow_hold, narrow_default=NARROW_HOLD_DEFAULT
+    )
+
+    assert found.name == name
+    assert found.parent == REVIEW_QUEUE.parent
+
+
 @pytest.mark.slow
 def test_ac_5e_the_code_pass_writes_its_own_file_with_the_rule_on(queues: Queues) -> None:
     """covers: AC-5e, spec 0007 AC-8 (`--code-pass` still writes review-queue-code-pass.json)."""

@@ -265,7 +265,7 @@ spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) · code in 
   - [x] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
   - [ ] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
 - [x] Verify it: `/check verify review volume and routing policy`
-- [ ] Test it: `/test review volume and routing policy`
+- [x] Test it: `/test review volume and routing policy`
 
 ## Slice 6: Rationale and alternatives
 
