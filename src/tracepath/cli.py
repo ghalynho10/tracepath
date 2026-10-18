@@ -410,7 +410,8 @@ def _narrow_hold_lines(tally: NarrowHoldTally) -> tuple[str, ...]:
         "released, each stamped accepted_by narrow_hold.",
         f"  By hold reason, an item counted under each reason that held it: {reasons} "
         f"({tally.held_for_both} held for both).",
-        f"  known_trap_flag releases by flag, an item counted under each flag it carries: {flags}.",
+        "  known_trap_flag releases by flag, an item counted under each flag any of its runs "
+        f"raised: {flags}.",
     )
 
 

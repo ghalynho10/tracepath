@@ -21,7 +21,13 @@ from typing import Any
 from tracepath.artifacts import RUNS_DIR, RunArtifact, read_run
 from tracepath.config import RUNS_PER_UNIT
 from tracepath.extract.codepass import code_decided_ids, parse_bullets
-from tracepath.extract.compare import ReviewReasonName, route_runs
+from tracepath.extract.compare import (
+    ReviewReasonName,
+    identities_of,
+    link_flags,
+    relationship_signature,
+    route_runs,
+)
 from tracepath.extract.ids import assign_ids, label_binding_rules, locate_output
 from tracepath.extract.records import Record, records_for
 from tracepath.extract.schema import ExtractedRelationship, RelationshipType
@@ -254,7 +260,7 @@ class NarrowHoldTally:
     `by_reason` counts each released item once under every reason that held it, so an
     item held for both counts under both and `held_for_both` says how many did.
     `by_flag` counts, among items held for `known_trap_flag`, each flag once per item
-    whose written copy carries it.
+    any of its unit's three runs raised it on (spec 0008 AC-5, the union across runs).
     """
 
     entities: int
@@ -285,6 +291,7 @@ def narrow_hold_tally(
     released for `endpoint_not_accepted`.
     """
     released: list[tuple[frozenset[str], tuple[str, ...], bool]] = []
+    by_place = {(r.unit.record_id, r.unit.section): r for r in narrowed}
     for result in narrowed:
         place = (result.unit.record_id, result.unit.section)
         still_held = Counter(h.relationship for h in after.held if (h.record, h.section) == place)
@@ -303,9 +310,13 @@ def narrow_hold_tally(
         if remaining[key] > 0:
             remaining[key] -= 1
             continue
+        unit = by_place.get((held.record, held.section))
         flags = (
-            tuple(str(f) for f in held.relationship.known_trap_flags)
-            if held.relationship is not None
+            link_flags(
+                unit.identified,
+                relationship_signature(held.relationship, identities_of(unit.identified[0])),
+            )
+            if held.relationship is not None and unit is not None and unit.identified
             else ()
         )
         released.append((frozenset({str(ReviewReasonName.ENDPOINT_NOT_ACCEPTED)}), flags, False))

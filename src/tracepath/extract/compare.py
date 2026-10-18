@@ -123,9 +123,10 @@ class NarrowRelease:
     """One item `--narrow-hold` accepted inside its unit, with what held it before.
 
     `item` is the review item routing would have queued, its reasons intact, so the
-    load can count releases by reason (spec 0008 AC-5). `flags` are the written copy's
-    known trap flags, the first run's. `relationship` is set for a link, so the corpus
-    step can tell a link released here from one another unit still holds.
+    load can count releases by reason (spec 0008 AC-5). `flags` are the known trap flags
+    any of the unit's runs raised on the item's signature, their union. `relationship` is
+    set for a link, so the corpus step can tell a link released here from one another
+    unit still holds.
     """
 
     item: ReviewItem
@@ -376,6 +377,40 @@ def _flag_alone_releasable(canonical_id: str, outputs: Sequence[IdentifiedOutput
     )
 
 
+def entity_flags(
+    outputs: Sequence[IdentifiedOutput], signature: EntitySignature
+) -> tuple[str, ...]:
+    """Every known trap flag any run raised on an entity with this signature, sorted (AC-5).
+
+    Matched on the signature the runs were compared on, so a run that gave the entity
+    another derived ordinal still counts.
+    """
+    return tuple(
+        sorted(
+            {
+                str(flag)
+                for output in outputs
+                for entity in output.entities
+                if entity_signature(entity) == signature
+                for flag in entity.entity.known_trap_flags
+            }
+        )
+    )
+
+
+def link_flags(
+    outputs: Sequence[IdentifiedOutput], signature: EntitySignature | RelationshipSignature
+) -> tuple[str, ...]:
+    """Every known trap flag any run raised on a link with this signature, sorted (AC-5)."""
+    found: set[str] = set()
+    for output in outputs:
+        identities = identities_of(output)
+        for relationship in output.relationships:
+            if relationship_signature(relationship, identities) == signature:
+                found.update(str(flag) for flag in relationship.known_trap_flags)
+    return tuple(sorted(found))
+
+
 def narrow_releasable(reasons: Sequence[ReviewReason]) -> bool:
     """Whether a held item's deduplicated reason names are a non empty subset of the two.
 
@@ -437,7 +472,7 @@ def route_runs(
             released.add(entity.canonical_id)
             reasons = ()
         elif narrow_hold and narrow_releasable(reasons):
-            flags = tuple(str(flag) for flag in entity.entity.known_trap_flags)
+            flags = entity_flags(outputs, entity_signature(entity))
             narrow.append(NarrowRelease(_item_for(entity, reasons), flags))
             narrow_ids.add(entity.canonical_id)
             reasons = ()
@@ -468,7 +503,7 @@ def route_runs(
             item = ReviewItem(
                 signature=relationship_signature(relationship, identities), reasons=reasons
             )
-            flags = tuple(str(flag) for flag in relationship.known_trap_flags)
+            flags = link_flags(outputs, item.signature)
             narrow.append(NarrowRelease(item, flags, relationship))
             reasons = ()
         elif narrow_ids:

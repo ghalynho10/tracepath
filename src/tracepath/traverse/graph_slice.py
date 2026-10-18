@@ -33,7 +33,11 @@ class SliceError(Exception):
 
 @dataclass(frozen=True)
 class Node:
-    """One node and the properties a chain step prints. Absent properties are `None`."""
+    """One node and the properties a chain step prints. Absent properties are `None`.
+
+    `accepted_by` is read so a step the narrow hold rule released can say so (spec 0008
+    AC-5f); the walk itself never reads it.
+    """
 
     canonical_id: str
     kind: NodeKind
@@ -53,11 +57,15 @@ class Node:
     record: str | None = None
     held: bool = False
     held_reasons: tuple[str, ...] = ()
+    accepted_by: str | None = None
 
 
 @dataclass(frozen=True)
 class Link:
-    """One typed relationship, `source` to `target` as stored, with its own citation."""
+    """One typed relationship, `source` to `target` as stored, with its own citation.
+
+    `accepted_by` is stored only on a link the narrow hold rule released (spec 0008).
+    """
 
     type: str
     source: str
@@ -71,6 +79,7 @@ class Link:
     model: str | None = None
     held: bool = False
     held_reasons: tuple[str, ...] = ()
+    accepted_by: str | None = None
 
 
 @dataclass(frozen=True)
@@ -140,6 +149,7 @@ def node_from_properties(labels: Iterable[str], properties: Mapping[str, object]
         record=_text(properties, "record"),
         held=_held(properties),
         held_reasons=_reasons(properties),
+        accepted_by=_text(properties, "accepted_by"),
     )
 
 
@@ -160,6 +170,7 @@ def link_from_properties(
         model=_text(properties, "model"),
         held=_held(properties),
         held_reasons=_reasons(properties),
+        accepted_by=_text(properties, "accepted_by"),
     )
 
 

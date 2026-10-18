@@ -25,13 +25,14 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 
-from tracepath.extract.compare import ReviewItem
+from tracepath.extract.compare import NARROW_HOLD, ReviewItem
 from tracepath.extract.ids import IdentifiedEntity, section_slugs
 from tracepath.extract.schema import normalize_label
 from tracepath.extract.units import Unit, split_units
 from tracepath.pipeline import CorpusResolution, UnitResult
 from tracepath.resolve.endpoints import ResolvedLink, Target
 from tracepath.traverse.graph_slice import GraphSlice, NodeKind
+from tracepath.traverse.render import released
 from tracepath.traverse.walk import Chain, Step
 
 #: The eval set, relative to the repository root.
@@ -160,6 +161,8 @@ class Finding:
     `reached_by` is the clean walk's step. `held_by` is the held walk's step for an item
     only the held walk reached (spec 0005 AC-12b), with `held_parts` the held nodes and
     links on its path from the start; such an item has no reason and is not reached.
+    `released_parts` names the nodes and links on the reaching walk's path that the
+    narrow hold rule released (spec 0008 AC-5f).
     `accepted_here` says an accepted entity sits at the item's file and line (spec
     0006 AC-17).
     """
@@ -171,6 +174,7 @@ class Finding:
     held_by: Step | None = None
     held_parts: tuple[str, ...] = ()
     accepted_here: bool = False
+    released_parts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -743,6 +747,31 @@ def held_parts(chain: Chain, step: Step) -> tuple[str, ...]:
     return tuple(parts)
 
 
+def released_parts(chain: Chain, step: Step) -> tuple[str, ...]:
+    """The released nodes and links on the walk's path to `step`, from the start (AC-5f).
+
+    Named the way `held_parts()` names held ones, in path order. A chain holding no
+    released item has none on any path, so the path is not walked.
+    """
+    if not any(
+        released(s.node.accepted_by) or (s.via is not None and released(s.via.accepted_by))
+        for s in chain.steps
+    ):
+        return ()
+    by_id = {s.node.canonical_id: s for s in chain.steps}
+    path: list[Step] = [step]
+    while path[-1].parent is not None:
+        path.append(by_id[path[-1].parent])
+    parts: list[str] = []
+    for on_path in reversed(path):
+        via = on_path.via
+        if via is not None and released(via.accepted_by):
+            parts.append(f"{via.source} -[{via.type}]-> {via.target}")
+        if released(on_path.node.accepted_by):
+            parts.append(on_path.node.canonical_id)
+    return tuple(parts)
+
+
 def score(
     question: Question,
     chain: Chain | None,
@@ -799,6 +828,13 @@ def score(
                 held_by=held_step,
                 held_parts=(held_parts(held, held_step) if held is not None and held_step else ()),
                 accepted_here=_accepted_here(item, holding, result, settled),
+                released_parts=(
+                    released_parts(chain, step)
+                    if chain is not None and step is not None
+                    else released_parts(held, held_step)
+                    if held is not None and held_step is not None
+                    else ()
+                ),
             )
         )
 
@@ -889,16 +925,22 @@ def report_lines(report: Report) -> tuple[str, ...]:
     for finding in report.findings:
         item = finding.item
         where = f"{item.file}:{item.line}"
+        marker = (
+            f" · RELEASED: {NARROW_HOLD} via {', '.join(finding.released_parts)}"
+            if finding.released_parts
+            else ""
+        )
         if finding.reached_by is not None:
             step = finding.reached_by
             lines.append(
                 f"  reached      {item.label} · {where} · {_hop(step)} · {step.node.canonical_id}"
+                + marker
             )
         elif finding.held_by is not None:
             step = finding.held_by
             lines.append(
                 f"  held only    {item.label} · {where} · {_hop(step)} · "
-                f"{step.node.canonical_id} · via {', '.join(finding.held_parts)}"
+                f"{step.node.canonical_id} · via {', '.join(finding.held_parts)}" + marker
             )
         else:
             lines.append(f"  not reached  {item.label} · {where} · {finding.reason}")

@@ -229,7 +229,9 @@ def test_load_with_and_without_the_rule(
     ) in flat(stdout)
     assert f"{reasons} ({tally.held_for_both} held for both)" in flat(stdout)
     flags = ", ".join(f"{flag} {n}" for flag, n in tally.by_flag)
-    by_flag = "known_trap_flag releases by flag, an item counted under each flag it carries"
+    by_flag = (
+        "known_trap_flag releases by flag, an item counted under each flag any of its runs raised"
+    )
     assert f"{by_flag}: {flags}." in flat(stdout)
 
     code, stdout, stderr = run_load(root)

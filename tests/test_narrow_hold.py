@@ -125,6 +125,61 @@ def test_ac_1b_a_flagged_link_waiting_on_a_released_entity_is_released() -> None
     assert link.flags == ("relationship_type_ambiguous",)
 
 
+ONLY_RUN_2 = "embedded_second_claim"
+
+
+def test_ac_5_a_flag_only_run_2_raised_is_counted_for_a_released_entity() -> None:
+    """covers: AC-5 (the union of flags across all three runs, not the written copy's)."""
+    outputs = [
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2, (SPLIT,))),
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2, (SPLIT, ONLY_RUN_2))),
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2, (SPLIT,))),
+    ]
+
+    _, on = narrowed(outputs)
+
+    [release] = on.narrow_released
+    assert release.flags == (ONLY_RUN_2, SPLIT)
+    [written] = [e for e in on.accepted_entities if e.canonical_id == "0099/AC-2"]
+    assert [str(f) for f in written.entity.known_trap_flags] == [SPLIT], "run 1's copy"
+    tally = narrow_hold_tally(
+        CorpusResolution(Resolution((), ()), ()),
+        [UnitResult(unit_of(), "requirements", (), tuple(outputs), on, 0, 0)],
+        CorpusResolution(Resolution((), ()), ()),
+    )
+    assert dict(tally.by_flag) == {ONLY_RUN_2: 1, SPLIT: 1}
+
+
+def test_ac_5_a_flag_only_run_2_raised_is_counted_for_a_released_link() -> None:
+    """covers: AC-5 (the union, for a link matched on its signature in each run)."""
+    entities = (criterion("AC-1", AC1), criterion("AC-2", AC2))
+    flagged = ("relationship_type_ambiguous",)
+    outputs = [
+        run(*entities, links=(satisfies("AC-2", "AC-1", flagged),)),
+        run(*entities, links=(satisfies("AC-2", "AC-1", (*flagged, ONLY_RUN_2)),)),
+        run(*entities, links=(satisfies("AC-2", "AC-1", flagged),)),
+    ]
+
+    _, on = narrowed(outputs)
+
+    [link] = on.narrow_released
+    assert link.flags == (ONLY_RUN_2, "relationship_type_ambiguous")
+
+
+def test_ac_5_a_flag_in_run_2_alone_holds_nothing_so_counts_nothing() -> None:
+    """covers: AC-5 (routing reads run 1's flags for the hold; such an item is accepted)."""
+    outputs = [
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2)),
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2, (ONLY_RUN_2,))),
+        run(criterion("AC-1", AC1), criterion("AC-2", AC2)),
+    ]
+
+    off, on = narrowed(outputs)
+
+    assert accepted(off) == {"0099/AC-1", "0099/AC-2"}
+    assert on.narrow_released == ()
+
+
 def test_ac_1b_runs_disagree_beside_a_flag_keeps_the_entity_held() -> None:
     """covers: AC-1b (runs_disagree absent is part of the condition)."""
     labelled = criterion("AC-2", AC2, (SPLIT,))
