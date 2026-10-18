@@ -9,7 +9,9 @@ in process from the very graph that load wrote, through the same `_score_questio
 expected item. It never opens the held out file.
 
 After the four runs, whatever happened, it runs a plain `tracepath load`, so the graph
-and `artifacts/graph-build.json` are left as a default load leaves them (AC-8e). If any
+and `artifacts/graph-build.json` are left as a default load leaves them (AC-8e). Each
+configuration states both flags, so it never rests on a project default, which spec
+0008 AC-9b and AC-11b later changed. If any
 step is worse with both flags than with the better single flag, it says so and reads no
 AC-9 or AC-11 fact (AC-8f), and exits 1.
 
@@ -26,7 +28,13 @@ from collections.abc import Callable
 from pathlib import Path
 
 from tracepath.artifacts import GRAPH_BUILD
-from tracepath.cli import _committed, _question, _score_question
+from tracepath.cli import (
+    NARROW_HOLD_DEFAULT,
+    WITH_HELD_DEFAULT,
+    _committed,
+    _question,
+    _score_question,
+)
 from tracepath.config import load_neo4j_settings
 from tracepath.four_way import (
     CONFIGS,
@@ -135,7 +143,7 @@ def compare(
         (raw / "restore-load.txt").write_text(restored.stdout + restored.stderr)
         if restored.returncode != 0:
             raise ComparisonRefused(f"the plain load after failed: {restored.stderr.strip()}")
-        check_manifest(root, CONFIGS[0])
+        check_manifest(root, Config("default", WITH_HELD_DEFAULT, NARROW_HOLD_DEFAULT))
 
     rows: list[StepRow] = []
     baseline = found[CONFIGS[0].name]

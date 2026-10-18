@@ -137,12 +137,12 @@ CODE_PASS_HELP = (
 NARROW_HOLD_HELP = (
     "Route with the narrow hold rule of spec 0008: an item held only for known_trap_flag "
     "or endpoint_not_accepted, its runs agreeing, is released once every entity it waits "
-    "on is accepted. Off by default."
+    "on is accepted. On by default; --no-narrow-hold turns it off."
 )
 
 #: Whether the narrow hold rule applies to a command given neither `--narrow-hold` nor
 #: `--no-narrow-hold` (spec 0008 AC-9b, spec 0002 AC-11 as amended 2026-10-18).
-NARROW_HOLD_DEFAULT = False
+NARROW_HOLD_DEFAULT = True
 
 #: Whether held items are written and shown when a command is given neither
 #: `--with-held` nor `--no-with-held` (spec 0008 AC-11b, spec 0005 as amended 2026-10-18).
@@ -442,13 +442,14 @@ def _refuse_narrow_hold_mismatch(base: Path, narrow_hold: bool) -> None:
         return
     if narrow_hold:
         _fail(
-            f"--narrow-hold scores the narrow hold routing, but {GRAPH_BUILD.as_posix()} says "
-            "the graph was loaded without it. Run `tracepath load --narrow-hold` first, or "
-            "drop --narrow-hold."
+            f"the narrow hold rule is on for this command, but {GRAPH_BUILD.as_posix()} says "
+            "the graph was loaded without it. Run `tracepath load` first, or add "
+            "--no-narrow-hold."
         )
     _fail(
-        f"{GRAPH_BUILD.as_posix()} says the graph was loaded with --narrow-hold, but this "
-        "command scores routing without it. Add --narrow-hold, or run `tracepath load` first."
+        f"{GRAPH_BUILD.as_posix()} says the graph was loaded with the narrow hold rule, but "
+        "it is off for this command. Run `tracepath load --no-narrow-hold` first, or drop "
+        "--no-narrow-hold."
     )
 
 

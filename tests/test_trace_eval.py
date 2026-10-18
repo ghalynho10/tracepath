@@ -74,8 +74,15 @@ def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return root
 
 
+#: Fixed questions over known routing: the narrow hold rule, on by default since spec
+#: 0008 AC-9b, is off for every command here.
+NO_NARROW = "--no-narrow-hold"
+
+
 def load(root: Path) -> None:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT)])
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW]
+    )
     assert result.exit_code == 0, result.stderr
 
 
@@ -102,6 +109,7 @@ def trace_eval(root: Path, number: int) -> tuple[int, str, str]:
             "trace",
             "--eval",
             str(number),
+            NO_NARROW,
             "--eval-file",
             "eval/questions.json",
             "--root",

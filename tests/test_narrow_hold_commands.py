@@ -46,59 +46,61 @@ from tracepath.rebuild import (
 
 runner = CliRunner()
 
-#: The queue files a narrow hold run, and one with the code pass too, write.
-REVIEW_QUEUE_NARROW_HOLD = review_queue_file(
-    code_pass=False, narrow_hold=True, narrow_default=NARROW_HOLD_DEFAULT
+#: The queue files a run without the rule, and one with the code pass, write, now the
+#: narrow hold rule is the default (spec 0008 AC-9b).
+WITHOUT_NARROW = review_queue_file(
+    code_pass=False, narrow_hold=False, narrow_default=NARROW_HOLD_DEFAULT
 )
-REVIEW_QUEUE_CODE_PASS_NARROW_HOLD = review_queue_file(
-    code_pass=True, narrow_hold=True, narrow_default=NARROW_HOLD_DEFAULT
-)
+CODE_PASS = review_queue_file(code_pass=True, narrow_hold=True, narrow_default=NARROW_HOLD_DEFAULT)
 
 
-# AC-5b, AC-5e: the queues.
+# AC-5b, AC-5e, AC-9b: the queues.
 
 
 @dataclass(frozen=True)
 class Queues:
     root: Path
-    plain: bytes
+    default: bytes
+    after: bytes
     codes: tuple[int, ...]
 
 
 @pytest.fixture(scope="module")
 def queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
-    """`review-queue`, then with `--narrow-hold`, then with both flags, over every run file."""
+    """`review-queue`, then `--no-narrow-hold`, then `--code-pass`, over every run file."""
     root = runs_root(tmp_path_factory.mktemp("queues"))
     args = ["review-queue", "--root", str(root), "--snapshot", str(SNAPSHOT)]
     first = runner.invoke(app, args)
-    plain = (root / REVIEW_QUEUE).read_bytes()
-    second = runner.invoke(app, [*args, "--narrow-hold"])
-    third = runner.invoke(app, [*args, "--narrow-hold", "--code-pass"])
-    return Queues(root, plain, (first.exit_code, second.exit_code, third.exit_code))
+    default = (root / REVIEW_QUEUE).read_bytes()
+    second = runner.invoke(app, [*args, "--no-narrow-hold"])
+    third = runner.invoke(app, [*args, "--code-pass"])
+    after = (root / REVIEW_QUEUE).read_bytes()
+    return Queues(root, default, after, (first.exit_code, second.exit_code, third.exit_code))
 
 
 @pytest.mark.slow
-def test_ac_5e_review_queue_with_the_rule_writes_its_own_file(queues: Queues) -> None:
-    """covers: AC-5b (review-queue takes the option), AC-5e (its own file, fewer rows)."""
+def test_ac_9b_the_default_queue_is_the_narrow_hold_queue(queues: Queues) -> None:
+    """covers: AC-9b (the default flipped: the default file holds fewer rows than without it)."""
     assert queues.codes == (0, 0, 0)
-    rows = json.loads((queues.root / REVIEW_QUEUE_NARROW_HOLD).read_text())
-    assert 0 < len(rows) < len(json.loads(queues.plain))
+    assert NARROW_HOLD_DEFAULT is True
+    without = json.loads((queues.root / WITHOUT_NARROW).read_text())
+    assert 0 < len(json.loads(queues.default)) < len(without)
+    assert queues.default == (ROOT / REVIEW_QUEUE).read_bytes(), "the committed queue"
 
 
 @pytest.mark.slow
-def test_ac_5e_review_queue_with_the_rule_leaves_the_default_queue_alone(queues: Queues) -> None:
-    """covers: AC-5e (the default file is the plain queue, byte for byte, after both runs)."""
-    assert (queues.root / REVIEW_QUEUE).read_bytes() == queues.plain
-    assert queues.plain == (ROOT / REVIEW_QUEUE).read_bytes()
+def test_ac_5e_a_queue_off_the_default_leaves_the_default_queue_alone(queues: Queues) -> None:
+    """covers: AC-5e (each other routing writes its own file, never over the default one)."""
+    assert queues.after == queues.default
+    assert WITHOUT_NARROW.name == "review-queue-without-narrow-hold.json"
 
 
 @pytest.mark.slow
-def test_ac_5e_both_flags_write_a_third_file_over_neither_single_one(queues: Queues) -> None:
-    """covers: AC-5e (with --code-pass too, never over the default or a single flag's file)."""
-    assert not (queues.root / REVIEW_QUEUE_CODE_PASS).exists()
-    narrow = json.loads((queues.root / REVIEW_QUEUE_NARROW_HOLD).read_text())
-    both = json.loads((queues.root / REVIEW_QUEUE_CODE_PASS_NARROW_HOLD).read_text())
-    assert len(both) <= len(narrow)
+def test_ac_5e_the_code_pass_writes_its_own_file_with_the_rule_on(queues: Queues) -> None:
+    """covers: AC-5e, spec 0007 AC-8 (`--code-pass` still writes review-queue-code-pass.json)."""
+    assert CODE_PASS == REVIEW_QUEUE_CODE_PASS
+    both = json.loads((queues.root / CODE_PASS).read_text())
+    assert len(both) <= len(json.loads(queues.default))
 
 
 # AC-5b, AC-5d: the refusal before any connection.
@@ -107,9 +109,11 @@ def test_ac_5e_both_flags_write_a_third_file_over_neither_single_one(queues: Que
 def narrow_root(root: Path, narrow_hold: bool | None) -> Path:
     """A root holding the eval file and a manifest; `None` writes no `narrow_hold` key."""
     eval_root(root, None)
+    manifest = json.loads((root / GRAPH_BUILD).read_text())
+    manifest.pop("narrow_hold", None)
     if narrow_hold is not None:
-        manifest = json.loads((root / GRAPH_BUILD).read_text())
-        (root / GRAPH_BUILD).write_text(json.dumps({**manifest, "narrow_hold": narrow_hold}))
+        manifest["narrow_hold"] = narrow_hold
+    (root / GRAPH_BUILD).write_text(json.dumps(manifest))
     return root
 
 
@@ -123,8 +127,22 @@ def test_ac_5d_the_rule_on_against_a_graph_loaded_without_it_is_refused(
     code, stderr = invoke_unreachable(*command, "--narrow-hold", "--root", str(root))
 
     assert code == 1
-    assert "--narrow-hold scores the narrow hold routing, but artifacts/graph-build.json" in stderr
+    assert "the narrow hold rule is on for this command, but artifacts/graph-build.json" in stderr
     assert "localhost:1" not in stderr, "refused before any connection was tried"
+
+
+@pytest.mark.parametrize("command", [("trace", "--eval", "3"), ("eval",)])
+def test_ac_9b_the_rule_is_on_by_default_so_a_graph_without_it_is_refused(
+    tmp_path: Path, command: tuple[str, ...]
+) -> None:
+    """covers: AC-9b (no flag given means the rule is on), AC-5d."""
+    root = narrow_root(tmp_path, None)
+
+    code, stderr = invoke_unreachable(*command, "--root", str(root))
+
+    assert code == 1
+    assert "the narrow hold rule is on for this command" in stderr
+    assert "localhost:1" not in stderr
 
 
 @pytest.mark.parametrize("command", [("trace", "--eval", "3"), ("eval",)])
@@ -134,10 +152,12 @@ def test_ac_5d_the_rule_off_against_a_graph_loaded_with_it_is_refused(
     """covers: AC-5d (the other direction)."""
     root = narrow_root(tmp_path, True)
 
-    code, stderr = invoke_unreachable(*command, "--root", str(root))
+    code, stderr = invoke_unreachable(*command, "--no-narrow-hold", "--root", str(root))
 
     assert code == 1
-    assert "artifacts/graph-build.json says the graph was loaded with --narrow-hold" in stderr
+    assert "artifacts/graph-build.json says the graph was loaded with the narrow hold rule" in (
+        stderr
+    )
     assert "localhost:1" not in stderr
 
 
@@ -208,7 +228,7 @@ UNITS = ("0002", "0007")
 def test_load_with_and_without_the_rule(
     tmp_path: Path, driver: Driver, neo4j_settings: Neo4jSettings
 ) -> None:
-    """covers: AC-1, AC-3, AC-3b, AC-5, AC-5c, then spec 0002 AC-11 as amended 2026-10-18.
+    """covers: AC-9b, AC-3, AC-3b, AC-5, AC-5c, then spec 0002 AC-11 as amended 2026-10-18.
 
     The second load is the amended criterion's opt out: `--no-narrow-hold` holds every
     flag only item again, so no stamp and no manifest key is left.
@@ -224,7 +244,7 @@ def test_load_with_and_without_the_rule(
     keys = narrow_link_keys(before, after)
     assert released and keys, "these two records hold flag only items the rule releases"
 
-    code, stdout, stderr = run_load(root, "--narrow-hold")
+    code, stdout, stderr = run_load(root)  # the default: the rule is on (AC-9b)
 
     assert code == 0, stderr
     manifest = json.loads((root / GRAPH_BUILD).read_text())

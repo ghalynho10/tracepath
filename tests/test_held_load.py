@@ -70,13 +70,18 @@ def invoke(*args: str) -> tuple[int, str, str]:
     return result.exit_code, result.stdout, result.stderr
 
 
+#: The held view is measured over the routing it was built against, so the narrow hold
+#: rule, on by default since spec 0008 AC-9b, is off for every command here.
+NO_NARROW = "--no-narrow-hold"
+
+
 def load(root: Path, *flags: str) -> tuple[int, str, str]:
-    return invoke("load", "--root", str(root), "--snapshot", str(SNAPSHOT), *flags)
+    return invoke("load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, *flags)
 
 
 def trace(root: Path, *args: str) -> tuple[int, str, str]:
     return invoke(
-        "trace", *args, "--eval-file", "eval/questions.json", "--root", str(root),
+        "trace", *args, NO_NARROW, "--eval-file", "eval/questions.json", "--root", str(root),
         "--snapshot", str(SNAPSHOT),
     )  # fmt: skip
 
@@ -201,8 +206,8 @@ def loads(
         # Question 3's result is recorded (experiment 0010), so running it is no longer
         # a held out run; every other real question stays untouched here.
         question_3 = (
-            invoke(*QUESTION_3, "--root", str(root), "--snapshot", str(SNAPSHOT)),
-            invoke(*QUESTION_3, "--root", str(root), "--snapshot", str(SNAPSHOT)),
+            invoke(*QUESTION_3, NO_NARROW, "--root", str(root), "--snapshot", str(SNAPSHOT)),
+            invoke(*QUESTION_3, NO_NARROW, "--root", str(root), "--snapshot", str(SNAPSHOT)),
         )
         missing_start = trace(root, "9999/AC-1", "--with-held")
 

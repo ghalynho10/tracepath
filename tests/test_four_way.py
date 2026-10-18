@@ -17,6 +17,7 @@ from tests.test_code_pass_commands import ROOT, SNAPSHOT, runs_root
 from tests.test_eval_runner import held_slice
 from tests.test_experiment_scripts import load_script
 from tracepath.artifacts import GRAPH_BUILD
+from tracepath.cli import NARROW_HOLD_DEFAULT, WITH_HELD_DEFAULT
 from tracepath.config import Neo4jSettings
 from tracepath.four_way import (
     BASELINE,
@@ -57,11 +58,11 @@ def row(*states: State, question: int = 1, label: str = "step") -> StepRow:
 def test_ac_8_four_configurations_with_the_code_pass_never_among_their_flags() -> None:
     """covers: AC-8."""
     assert [c.flags for c in CONFIGS] == [
-        (),
-        ("--with-held",),
-        ("--narrow-hold",),
+        ("--no-with-held", "--no-narrow-hold"),
+        ("--with-held", "--no-narrow-hold"),
+        ("--no-with-held", "--narrow-hold"),
         ("--with-held", "--narrow-hold"),
-    ]
+    ], "each flag stated both ways, so no configuration rests on a project default"
     assert not any("--code-pass" in c.flags for c in CONFIGS)
 
 
@@ -218,9 +219,6 @@ def test_the_script_runs_four_ways_and_restores_a_plain_load(
         assert (out / "four-way" / f"{slug}-load.txt").exists()
         assert (out / "four-way" / f"{slug}-eval.txt").exists()
     manifest = json.loads((root / GRAPH_BUILD).read_text())
-    assert not {"narrow_hold", "held_view", "code_pass"} & set(manifest)
-    held, _, _ = driver.execute_query(
-        "MATCH (n) WHERE n.held = true OR n.accepted_by = 'narrow_hold' RETURN count(n) AS n",
-        database_=neo4j_settings.database,
-    )
-    assert held[0]["n"] == 0, "the plain load after leaves no held or released item"
+    assert "code_pass" not in manifest
+    assert ("narrow_hold" in manifest) is NARROW_HOLD_DEFAULT, "a default load after"
+    assert ("held_view" in manifest) is WITH_HELD_DEFAULT, "a default load after"

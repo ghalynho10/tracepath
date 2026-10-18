@@ -108,8 +108,15 @@ def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return write_root(tmp_path_factory.mktemp("corpus"))
 
 
+#: These tests score fixed questions over known routing, so the narrow hold rule, on by
+#: default since spec 0008 AC-9b, is turned off for every load and every scoring.
+NO_NARROW = "--no-narrow-hold"
+
+
 def load(root: Path, *flags: str) -> None:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *flags])
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, *flags]
+    )
     assert result.exit_code == 0, result.stderr
 
 
@@ -149,7 +156,16 @@ def held_graph(corpus_root: Path, neo4j_settings: Neo4jSettings) -> Iterator[Pat
 def run(root: Path, *args: str, eval_file: str = "eval/questions.json") -> tuple[int, str, str]:
     result = runner.invoke(
         app,
-        [*args, "--eval-file", eval_file, "--root", str(root), "--snapshot", str(SNAPSHOT)],
+        [
+            *args,
+            NO_NARROW,
+            "--eval-file",
+            eval_file,
+            "--root",
+            str(root),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
     )
     return result.exit_code, result.stdout, result.stderr
 
@@ -322,6 +338,7 @@ def run_undecodable(root: Path, snapshot: Path, *args: str) -> tuple[int, str, s
         app,
         [
             *args,
+            NO_NARROW,
             *("--eval-file", "eval/undecodable.json"),
             *("--root", str(root), "--snapshot", str(snapshot)),
         ],

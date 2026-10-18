@@ -5,7 +5,6 @@ The counts are checked against two other sources: the committed review queue, wh
 with no accepted entity.
 """
 
-import json
 from collections import Counter
 from dataclasses import replace
 
@@ -13,7 +12,6 @@ import pytest
 
 from tests.test_code_pass import AC2, SPLIT, criterion, run, unit_of
 from tests.test_code_pass_commands import COMMIT, ROOT, SNAPSHOT
-from tracepath.artifacts import REVIEW_QUEUE
 from tracepath.extract.compare import route_runs
 from tracepath.extract.units import UnitKind
 from tracepath.hold_ratio import (
@@ -27,7 +25,7 @@ from tracepath.hold_ratio import (
     unit_holds,
     unit_kind,
 )
-from tracepath.pipeline import CorpusResolution, UnitResult, resolve_accepted
+from tracepath.pipeline import CorpusResolution, UnitResult, resolve_accepted, review_rows
 from tracepath.rebuild import committed_units, records_for_units
 from tracepath.resolve.endpoints import Resolution
 
@@ -40,14 +38,22 @@ def holds() -> tuple[UnitHold, ...]:
 
 
 def queue_counts() -> Counter[tuple[str, str, int]]:
-    """The committed queue's rows by record, section and signature length (2 entity, 3 link)."""
-    rows = json.loads((ROOT / REVIEW_QUEUE).read_text())
+    """The queue's rows without the narrow hold rule, by record, section and signature length.
+
+    The ratio measures routing without the rule (AC-7), so it is checked against the
+    queue `review_rows()` derives from that same routing, its rows counted here, not by
+    `hold_ratio`. The committed queue is the default routing's, the rule on, since spec
+    0008 AC-9b.
+    """
+    results = committed_units(ROOT, SNAPSHOT)
+    corpus = resolve_accepted(results, records_for_units(results, SNAPSHOT, COMMIT))
+    rows = review_rows(results, corpus.held, "m", "t")
     return Counter((r["record"], r["section"], len(r["signature"])) for r in rows)
 
 
 @pytest.mark.slow
 def test_ac_7_one_named_unit_matches_a_hand_count(holds: tuple[UnitHold, ...]) -> None:
-    """covers: AC-7 (0009 Requirements, counted off the committed queue's own rows)."""
+    """covers: AC-7 (0009 Requirements, counted off the queue's own rows)."""
     [hold] = [h for h in holds if (h.record, h.section) == ("0009", "Requirements")]
     counted = queue_counts()
 
@@ -58,7 +64,7 @@ def test_ac_7_one_named_unit_matches_a_hand_count(holds: tuple[UnitHold, ...]) -
 
 
 @pytest.mark.slow
-def test_ac_7_every_unit_matches_the_committed_queue(holds: tuple[UnitHold, ...]) -> None:
+def test_ac_7_every_unit_matches_the_queue(holds: tuple[UnitHold, ...]) -> None:
     """covers: AC-7 (rebuilt from the runs, every unit's held rows equal the queue's rows)."""
     counted = queue_counts()
 

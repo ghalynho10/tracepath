@@ -38,9 +38,14 @@ class Config:
 
     @property
     def flags(self) -> tuple[str, ...]:
-        """The flags `load` and `eval` both take for this configuration."""
-        given = (("--with-held", self.with_held), ("--narrow-hold", self.narrow_hold))
-        return tuple(flag for flag, on in given if on)
+        """The flags `load` and `eval` both take for this configuration, each one stated.
+
+        Both are given either way, so a configuration never rests on a project default.
+        """
+        return (
+            "--with-held" if self.with_held else "--no-with-held",
+            "--narrow-hold" if self.narrow_hold else "--no-narrow-hold",
+        )
 
 
 BASELINE = Config("baseline", with_held=False, narrow_hold=False)

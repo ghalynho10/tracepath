@@ -42,8 +42,12 @@ def root_with(tmp_path: Path, *units: str) -> Path:
     return tmp_path
 
 
-def run_load(root: Path, env: dict[str, str | None] | None = None) -> tuple[int, str, str]:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT)], env=env)
+def run_load(
+    root: Path, env: dict[str, str | None] | None = None, *flags: str
+) -> tuple[int, str, str]:
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *flags], env=env
+    )
     return result.exit_code, result.stdout, result.stderr
 
 
@@ -339,7 +343,8 @@ def test_ac_51_load_prints_how_many_links_collapsed(tmp_path: Path) -> None:
     triples = {(k.type, k.source.canonical_id, k.target.canonical_id) for k in links}
     collapsed = len(links) - len(triples)
 
-    code, stdout, stderr = run_load(root)
+    # Counted over the routing without the narrow hold rule, so the load turns it off.
+    code, stdout, stderr = run_load(root, None, "--no-narrow-hold")
 
     assert code == 0, stderr
     assert collapsed > 0, "the unit chosen must hold a collapse for this to prove anything"
