@@ -23,15 +23,16 @@ uv run pre-commit install        # once per clone: enables the commit hook
 docker compose up -d             # start Neo4j (Browser: http://localhost:7474)
 uv run tracepath status          # run the CLI, from the repo root (see below)
 uv run tracepath extract RECORD:SECTION ... --ceiling USD   # paid model calls; --dry-run only counts (free), --resume completes a unit cut short
-uv run tracepath load            # rebuild the graph from artifacts/runs/, no API call
+uv run tracepath load            # rebuild the graph from artifacts/runs/, no API call; by default writes held items, marked held (spec 0005), and applies the narrow hold rule (spec 0008)
 uv run tracepath trace START     # walk a chain; trace --eval N scores eval question N
-uv run tracepath load --with-held # also write held items, marked held (spec 0005); rewrites graph-build.json with held_view, so a plain load after restores the default
-uv run tracepath trace START --with-held   # walk through held items, each printed HELD:; refuses a graph not loaded --with-held
+uv run tracepath load --no-with-held --no-narrow-hold   # opt out of either default; graph-build.json records each setting (held_view, narrow_hold), so a plain load after restores both defaults
+uv run tracepath trace START --no-with-held   # held items show by default, each printed HELD:; --no-with-held walks accepted items only; --with-held given by name refuses a graph with no held item
 uv run tracepath eval            # score every question of eval/linked-records-research.json: pass, fail or inconclusive, no API call (spec 0006); eval/runner.json is its sidecar (evidence flags and the examples digest)
-uv run tracepath eval --with-held   # score under the held item view too; needs a graph from load --with-held
+uv run tracepath eval --no-with-held   # score accepted items only; with neither held flag, eval and trace --eval follow how the graph was loaded (graph-build.json's held_view)
+uv run tracepath eval --no-narrow-hold   # eval and trace --eval refuse a graph loaded with the other narrow hold setting, so a graph loaded before spec 0008's flip is refused until `tracepath load` runs again
 uv run tracepath eval --eval-file F --release-held-out   # run a held out file; refused without the flag, and only once features 13 and 11 have committed
 uv run tracepath load --code-pass   # spec 0007: route with the code pass; load, review-queue, eval and trace --eval each take --code-pass, off by default; eval and trace --eval refuse a graph loaded the other way
-uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code-pass.json, never over the default review-queue.json
+uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code-pass.json, never over the default review-queue.json; --no-narrow-hold adds -without-narrow-hold to the name, so four queue files in all
 uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # refuses (exit 1) before any call when the settings model differs from M
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict

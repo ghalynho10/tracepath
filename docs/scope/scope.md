@@ -184,7 +184,7 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 ### 9. Whole corpus
 Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run.
 **Done when:** the full snapshot is ingested in one rebuild, all five eval questions pass, and relationships that fit no named type appear as unclassified, not dropped.
-- [ ] Build it: `/develop whole corpus` · blocked until feature 11 decides the routing policy, because a whole corpus run at the current accept to review ratio would queue thousands of rows for one reviewer
+- [ ] Build it: `/develop whole corpus` · unblocked 2026-10-18 by spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) AC-13: feature 11 adopted the narrow hold rule and the held view, and the queue holds 526 rows at 29 units, against 990 before
 
 ### 13. Extraction accuracy · in progress · from spec 0003
 **Step one closed, later steps paused (2026-10-15).** Step one (spec 0007) is merged and accepted. The later steps wait until after v1, so this feature stays in progress, per the v1 finish line.
@@ -263,7 +263,7 @@ spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) · code in 
   - [x] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
   - [ ] The gated blind ruling, only if the comparison table triggers it (AC-9, AC-10 to AC-10e)
   - [x] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
-  - [ ] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
+  - [x] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
 - [x] Verify it: `/check verify review volume and routing policy`
 - [x] Test it: `/test review volume and routing policy`
 
