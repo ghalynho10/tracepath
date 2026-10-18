@@ -59,10 +59,9 @@ CONFIGS = (BASELINE, WITH_HELD, NARROW_HOLD, BOTH)
 
 @dataclass(frozen=True)
 class Cell:
-    """One step under one configuration: its state, and whether its path ran through a release."""
+    """One step under one configuration: its state."""
 
     state: State
-    released: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,14 +89,14 @@ class Noise:
 
 
 def cell_of(finding: Finding) -> Cell:
-    """A finding's state, and whether a release lies on the path that reached it."""
+    """A finding's state."""
     if finding.reached_by is not None:
         state = State.ACCEPTED
     elif finding.held_by is not None:
         state = State.HELD_ONLY
     else:
         state = State.NOT_REACHED
-    return Cell(state, released=bool(finding.released_parts))
+    return Cell(state)
 
 
 def _matches(step: Step, question: Question) -> bool:
@@ -177,7 +176,7 @@ def newly_held_only(rows: Sequence[StepRow]) -> tuple[StepRow, ...]:
 
 
 def _cell(cell: Cell) -> str:
-    return f"{cell.state} (via release)" if cell.released else str(cell.state)
+    return str(cell.state)
 
 
 def _named(rows: Sequence[StepRow]) -> str:

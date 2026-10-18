@@ -2,14 +2,11 @@
 
 Pure: the same chain always renders the same lines, with no timestamp or other value
 that changes between runs (key invariant 6). The struck flag is printed as stored, with
-no current or history label. A held step or link always prints `HELD:` (spec 0005), and
-a step or link the narrow hold rule released prints `RELEASED: narrow_hold` (spec 0008
-AC-5f), read from what the graph stored, never from a flag.
+no current or history label. A held step or link always prints `HELD:` (spec 0005).
 """
 
 from collections import Counter
 
-from tracepath.extract.compare import NARROW_HOLD
 from tracepath.traverse.graph_slice import Link, Node, NodeKind
 from tracepath.traverse.walk import Chain, Direction, Step, Stop
 
@@ -30,16 +27,6 @@ HELD_UNRESOLVED = "reached only by held links"
 def _held(reasons: tuple[str, ...]) -> str:
     """The marker a held step heading or link line ends with (spec 0005 AC-9, AC-10)."""
     return f"  HELD: {', '.join(reasons)}"
-
-
-def released(accepted_by: str | None) -> bool:
-    """Whether a node or link was released by the narrow hold rule (spec 0008 AC-5f)."""
-    return accepted_by == NARROW_HOLD
-
-
-def _released(accepted_by: str | None) -> str:
-    """The marker a released step heading or link line ends with, else nothing."""
-    return f"  RELEASED: {NARROW_HOLD}" if released(accepted_by) else ""
 
 
 def _shown(text: str | None) -> str:
@@ -67,7 +54,7 @@ def _link_lines(step: Step, via: Link) -> list[str]:
     )
     if via.phrase:
         citation += f' · "{" ".join(via.phrase.split())}"'
-    marker = _held(via.held_reasons) if via.held else _released(via.accepted_by)
+    marker = _held(via.held_reasons) if via.held else ""
     return [
         f"{INDENT}link  {via.source} -[{via.type}]-> {via.target} ({seen_from} {step.parent})"
         + marker,
@@ -104,7 +91,7 @@ def _heading(step: Step) -> str:
         kind = str(node.kind)
     heading = f"hop {step.hop}  {node.canonical_id}  {kind}"
     if not node.held:
-        return heading + _released(node.accepted_by)
+        return heading
     if node.kind is NodeKind.UNRESOLVED:
         return heading + _held((HELD_UNRESOLVED,))
     return heading + _held(node.held_reasons)
@@ -154,17 +141,6 @@ def _held_line(chain: Chain) -> list[str]:
     return [f"Held: {steps} steps, {links} links"]
 
 
-def _released_line(chain: Chain) -> list[str]:
-    """How many steps and links the narrow hold rule released, or nothing when none."""
-    steps = sum(1 for step in chain.steps if released(step.node.accepted_by))
-    links = sum(
-        1 for step in chain.steps if step.via is not None and released(step.via.accepted_by)
-    )
-    if not steps and not links:
-        return []
-    return [f"Released by the narrow hold rule: {steps} steps, {links} links"]
-
-
 def render_chain(chain: Chain) -> tuple[str, ...]:
     """Every line `trace` prints for one chain, in order."""
     count = len(chain.steps)
@@ -181,6 +157,5 @@ def render_chain(chain: Chain) -> tuple[str, ...]:
         lines.extend(_stop_line(step))
     lines.append("")
     lines.extend(_held_line(chain))
-    lines.extend(_released_line(chain))
     lines.append(_versions_line(chain))
     return tuple(lines)

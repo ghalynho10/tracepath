@@ -4,6 +4,13 @@
 **Feeds**: feature 11, spec [0008](../../docs/specs/0008-review-volume-and-routing-policy/index.md) (build plan steps 1 to 8)
 **Status**: run 2026-10-17; both defaults flipped 2026-10-18 under the rule committed before the run
 
+**Note, 2026-10-18, after this record**: spec 0008 AC-5f is withdrawn, so `trace`, `eval`
+and `trace --eval` no longer print `RELEASED: narrow_hold` or the "Released by the narrow
+hold rule" line; `accepted_by: narrow_hold` still records every release. The record
+below is left as written, including where it names the marker. The "via release"
+annotations in `data/four-way.md` come from the run at `9110147`; a rerun of the script
+no longer prints them.
+
 ## Question
 
 The review queue held 990 rows against 237 accepted entities across 29 units. Spec 0008

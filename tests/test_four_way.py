@@ -80,7 +80,6 @@ def test_ac_8c_a_finding_reads_as_one_of_three_states() -> None:
     assert cell_of(Finding(ITEM, "9003", step, None)).state is ACCEPTED
     assert cell_of(Finding(ITEM, "9003", None, None, held_by=step)).state is HELD
     assert cell_of(Finding(ITEM, "9003", None, None)).state is NOT
-    assert cell_of(Finding(ITEM, "9003", step, None, released_parts=("9003/AC-1",))).released
 
 
 # AC-8d: the noise count and its split.
