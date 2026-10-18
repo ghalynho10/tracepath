@@ -262,7 +262,7 @@ spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) · code in 
   - [x] The per unit kind ratio script and the narrow hold release mechanism, wired through `load`, `eval`, `trace --eval`, and `review-queue` (AC-1 to AC-7)
   - [x] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
   - [ ] The gated blind ruling, only if the comparison table triggers it (AC-9, AC-10 to AC-10e)
-  - [ ] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
+  - [x] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
   - [ ] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
 - [ ] Verify it: `/check verify review volume and routing policy`
 - [ ] Test it: `/test review volume and routing policy`
