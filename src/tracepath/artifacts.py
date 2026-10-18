@@ -30,10 +30,6 @@ REVIEW_LOG = ARTIFACTS_DIR / "review-log.json"
 #: it, until a measured result turns the pass on (spec 0007 AC-8, AC-8b).
 REVIEW_QUEUE_CODE_PASS = ARTIFACTS_DIR / "review-queue-code-pass.json"
 
-#: The queue `review-queue --narrow-hold` writes, never over the default one (spec 0008
-#: AC-5e), and the one it writes with `--code-pass` too, never over either single file.
-REVIEW_QUEUE_NARROW_HOLD = ARTIFACTS_DIR / "review-queue-narrow-hold.json"
-REVIEW_QUEUE_CODE_PASS_NARROW_HOLD = ARTIFACTS_DIR / "review-queue-code-pass-narrow-hold.json"
 
 #: The build manifest every `load` rewrites (spec 0004 AC-17). Derived, like the graph,
 #: so it is replaced rather than appended to; it is not a run artifact.
@@ -354,6 +350,20 @@ def review_entry(
 
 class ManifestUnreadable(Exception):
     """The build manifest exists but cannot be read as a JSON object."""
+
+
+def review_queue_file(*, code_pass: bool, narrow_hold: bool, narrow_default: bool) -> Path:
+    """The queue file one `review-queue` routing writes, never over another routing's.
+
+    The default routing writes `review-queue.json`; each departure from it is named in
+    the file name, so `--code-pass` writes `review-queue-code-pass.json` (spec 0007
+    AC-8) and the narrow hold rule, when it is not the default, `-narrow-hold` (spec
+    0008 AC-5e), or `-without-narrow-hold` when it is and was turned off.
+    """
+    parts = ["code-pass"] if code_pass else []
+    if narrow_hold != narrow_default:
+        parts.append("narrow-hold" if narrow_hold else "without-narrow-hold")
+    return ARTIFACTS_DIR / ("-".join(["review-queue", *parts]) + ".json")
 
 
 def write_review_queue(

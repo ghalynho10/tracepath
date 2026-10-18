@@ -28,10 +28,9 @@ from tracepath.artifacts import (
     GRAPH_BUILD,
     REVIEW_QUEUE,
     REVIEW_QUEUE_CODE_PASS,
-    REVIEW_QUEUE_CODE_PASS_NARROW_HOLD,
-    REVIEW_QUEUE_NARROW_HOLD,
+    review_queue_file,
 )
-from tracepath.cli import _committed, app
+from tracepath.cli import NARROW_HOLD_DEFAULT, _committed, app
 from tracepath.config import Neo4jSettings
 from tracepath.graph import connect
 from tracepath.graph.schema import clear
@@ -46,6 +45,14 @@ from tracepath.rebuild import (
 )
 
 runner = CliRunner()
+
+#: The queue files a narrow hold run, and one with the code pass too, write.
+REVIEW_QUEUE_NARROW_HOLD = review_queue_file(
+    code_pass=False, narrow_hold=True, narrow_default=NARROW_HOLD_DEFAULT
+)
+REVIEW_QUEUE_CODE_PASS_NARROW_HOLD = review_queue_file(
+    code_pass=True, narrow_hold=True, narrow_default=NARROW_HOLD_DEFAULT
+)
 
 
 # AC-5b, AC-5e: the queues.
@@ -201,7 +208,11 @@ UNITS = ("0002", "0007")
 def test_load_with_and_without_the_rule(
     tmp_path: Path, driver: Driver, neo4j_settings: Neo4jSettings
 ) -> None:
-    """covers: AC-1, AC-3, AC-3b, AC-5, AC-5c, then a plain load after drops every stamp."""
+    """covers: AC-1, AC-3, AC-3b, AC-5, AC-5c, then spec 0002 AC-11 as amended 2026-10-18.
+
+    The second load is the amended criterion's opt out: `--no-narrow-hold` holds every
+    flag only item again, so no stamp and no manifest key is left.
+    """
     root = runs_root(tmp_path, *UNITS)
     results = committed_units(root, SNAPSHOT)
     records = records_for_units(results, SNAPSHOT, COMMIT)
@@ -234,7 +245,7 @@ def test_load_with_and_without_the_rule(
     )
     assert f"{by_flag}: {flags}." in flat(stdout)
 
-    code, stdout, stderr = run_load(root)
+    code, stdout, stderr = run_load(root, "--no-narrow-hold")
 
     assert code == 0, stderr
     manifest = json.loads((root / GRAPH_BUILD).read_text())

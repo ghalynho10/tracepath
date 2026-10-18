@@ -716,9 +716,11 @@ ONE_LINE = "- **AC-9**: alpha claim about caching, and beta claim about retries.
 def test_flag_churn_alone_no_longer_breaks_agreement() -> None:
     """AC-11a: runs agreeing on identity and type agree, however the flags move.
 
-    The flagged item still routes to review on its own trigger, which is the point:
-    the flag was being counted twice, and the second count marked *neighbours* as
-    disagreements.
+    Without the narrow hold rule the flagged item still routes to review on its own
+    trigger, which is the point: the flag was being counted twice, and the second
+    count marked *neighbours* as disagreements. AC-11 as amended 2026-10-18 (spec 0008
+    AC-9b): with the rule, the same item is accepted, keeps its flags, and is listed as
+    the rule's release, since its only reason is its flag and the runs agree.
     """
     unit = unit_of(ONE_LINE)
     outputs = [
@@ -735,6 +737,11 @@ def test_flag_churn_alone_no_longer_breaks_agreement() -> None:
     assert routed.review[0].reasons == (ReviewReason(ReviewReasonName.KNOWN_TRAP_FLAG),)
     assert routed.review[0].canonical_id == "0012#requirements:1"
     assert routed.review[0].line == 1
+    narrowed = route_runs(outputs, narrow_hold=True)
+    assert narrowed.review == ()
+    [released] = narrowed.accepted_entities
+    assert [str(f) for f in released.entity.known_trap_flags] == ["rationale_boundary_call"]
+    assert narrowed.narrow_entities == {"0012#requirements:1"}
 
 
 def test_a_count_that_differs_holds_every_copy_not_just_the_surplus() -> None:
