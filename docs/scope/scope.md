@@ -260,7 +260,7 @@ spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) · code in 
 - [x] Design it (spec): `/architect review volume and routing policy` · the decision rule and both candidates' exact conditions are committed; which, if either, is adopted is recorded in a later amendment once `/develop` measures them
 - [ ] Build it: `/develop review volume and routing policy`
   - [x] The per unit kind ratio script and the narrow hold release mechanism, wired through `load`, `eval`, `trace --eval`, and `review-queue` (AC-1 to AC-7)
-  - [ ] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
+  - [x] The four way comparison script, run with `--code-pass` off throughout, producing the per step table and noise counts (AC-8 to AC-8f)
   - [ ] The gated blind ruling, only if the comparison table triggers it (AC-9, AC-10 to AC-10e)
   - [ ] Whichever default flips, each preceded by its own spec amendment commit, or the explicit fallback statement (AC-10f, AC-11, AC-11b, AC-12, AC-13)
   - [ ] The result recorded in `experiments/`, and this spec amended with the outcome (AC-14)
