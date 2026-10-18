@@ -1,7 +1,7 @@
 """Measure the accept to review ratio per unit and per unit kind (spec 0008 AC-7), no API call.
 
-Routing is rebuilt fresh from `artifacts/runs/` with default routing (no code pass, no
-narrow hold rule), never read from `artifacts/review-queue.json`. Prints both tables
+Routing is rebuilt fresh from `artifacts/runs/` without the narrow hold rule and with no
+code pass, never read from `artifacts/review-queue.json`. Prints both tables
 and writes them to `data/hold-ratio.md`, headed by the commit that last touched
 `artifacts/runs/`.
 
@@ -39,8 +39,8 @@ def main() -> None:
     lines = (
         "# Accept to review ratio (spec 0008 AC-7)",
         "",
-        f"Routing rebuilt from `artifacts/runs/` at {runs_commit()}, default routing, "
-        f"{len(results)} units.",
+        f"Routing rebuilt from `artifacts/runs/` at {runs_commit()}, without the narrow hold "
+        f"rule, no code pass, {len(results)} units.",
         "",
         *ratio_lines(unit_holds(results, corpus)),
     )

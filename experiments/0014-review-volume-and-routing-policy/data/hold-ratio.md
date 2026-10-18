@@ -1,6 +1,8 @@
 # Accept to review ratio (spec 0008 AC-7)
 
-Routing rebuilt from `artifacts/runs/` at 8c778e960d74667f9749355619b12f8f5ef372dc, default routing, 29 units.
+Routing rebuilt from `artifacts/runs/` at 8c778e960d74667f9749355619b12f8f5ef372dc, without the narrow hold rule, no code pass, 29 units.
+
+Note (2026-10-18): this line said "default routing"; the default has had the narrow hold rule on since cb28c68 (526 rows), and these tables measure routing without it (990 rows).
 
 Per unit kind:
 
