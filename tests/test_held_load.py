@@ -74,6 +74,10 @@ def invoke(*args: str) -> tuple[int, str, str]:
 #: rule, on by default since spec 0008 AC-9b, is off for every command here.
 NO_NARROW = "--no-narrow-hold"
 
+#: Spec 0005 AC-1 to AC-5's "without `--with-held`", stated as the opt out it became when
+#: the held view was made the default (spec 0008 AC-11b).
+NO_HELD = "--no-with-held"
+
 
 def load(root: Path, *flags: str) -> tuple[int, str, str]:
     return invoke("load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, *flags)
@@ -187,18 +191,21 @@ def loads(
     (root / "eval" / "questions.json").write_text(json.dumps(QUESTIONS))
     database = neo4j_settings.database
     with connect(neo4j_settings) as driver:
-        code, stdout, stderr = load(root)
+        # The opt out of spec 0005 AC-1 to AC-5 as amended 2026-10-18 (spec 0008 AC-11b):
+        # `--no-with-held` is what "without the flag" meant before the held view became
+        # the default, so these runs state it.
+        code, stdout, stderr = load(root, NO_HELD)
         assert code == 0, stderr
         default = read_back(driver, database, stdout, (root / GRAPH_BUILD).read_bytes())
-        default_trace = trace(root, "0012/AC-7")
-        default_eval = trace(root, "--eval", "1")
+        default_trace = trace(root, "0012/AC-7", NO_HELD)
+        default_eval = trace(root, "--eval", "1", NO_HELD)
         refused = trace(root, "0012/AC-7", "--with-held")
 
         code, stdout, stderr = load(root, "--with-held")
         assert code == 0, stderr
         held = read_back(driver, database, stdout, (root / GRAPH_BUILD).read_bytes())
-        held_graph_trace = trace(root, "0012/AC-7")
-        held_graph_eval = trace(root, "--eval", "1")
+        held_graph_trace = trace(root, "0012/AC-7", NO_HELD)
+        held_graph_eval = trace(root, "--eval", "1", NO_HELD)
         held_eval = (
             trace(root, "--eval", "1", "--with-held"),
             trace(root, "--eval", "1", "--with-held"),
@@ -229,7 +236,8 @@ def view_counts() -> dict[str, int]:
     return build_held_view(results, resolve_accepted(results, records), records).counts()
 
 
-# AC-1, AC-5: a default load writes nothing held and says nothing about it.
+# AC-1, AC-5 as amended 2026-10-18: a load with the opt out writes nothing held and
+# says nothing about it.
 
 
 def test_ac_1_a_default_load_writes_no_node_with_a_held_property(loads: Loads) -> None:
@@ -365,7 +373,8 @@ def test_ac_25_two_held_loads_write_byte_identical_manifests(loads: Loads) -> No
     assert loads.second_manifest == loads.held.manifest
 
 
-# AC-3, AC-4: without the flag, a graph holding held items reads as if it held none.
+# AC-3, AC-4 as amended 2026-10-18: with the opt out, a graph holding held items reads as
+# if it held none.
 
 
 def test_ac_3_a_trace_without_the_flag_prints_the_same_chain_over_a_held_graph(
