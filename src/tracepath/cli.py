@@ -19,6 +19,7 @@ from tracepath.artifacts import (
     ArtifactCollisionError,
     ManifestUnreadable,
     built_with_code_pass,
+    built_with_held_view,
     built_with_narrow_hold,
     ensure_review_log,
     now_utc,
@@ -478,6 +479,21 @@ def _refuse_code_pass_mismatch(base: Path, code_pass: bool) -> None:
     )
 
 
+def _scored_held_view(base: Path, given: bool | None) -> bool:
+    """The held view a score uses: the flag given, else how the graph was loaded.
+
+    With neither `--with-held` nor `--no-with-held`, `eval` and `trace --eval` follow
+    `artifacts/graph-build.json` (its `held_view` key), so a graph loaded with
+    `--no-with-held` is never scored under the held view's label.
+    """
+    if given is not None:
+        return given
+    try:
+        return built_with_held_view(base)
+    except ManifestUnreadable as exc:
+        _fail(str(exc))
+
+
 def _holds_held(graph: GraphSlice) -> bool:
     """Whether a load wrote held items: any held entity or `:Unresolved` node (AC-26)."""
     return any(
@@ -606,8 +622,8 @@ def trace(
         None,
         "--with-held/--no-with-held",
         help="Walk through held items too, each printed as held (spec 0005). On by default; "
-        "--no-with-held walks accepted items only. Given by name, needs a graph holding "
-        "held items.",
+        "with --eval N and neither flag, follows how the graph was loaded. --no-with-held "
+        "walks accepted items only. Given by name, needs a graph holding held items.",
     ),
     release_held_out: bool = typer.Option(
         False,
@@ -657,6 +673,7 @@ def trace(
             )
             _refuse_code_pass_mismatch(base, code_pass)
             _refuse_narrow_hold_mismatch(base, narrow)
+            show_held = _scored_held_view(base, with_held)
         settings = load_neo4j_settings()
         with connect(settings) as driver:
             graph = read_graph(driver, settings.database, with_held=show_held)
@@ -717,8 +734,9 @@ def eval_set_command(
     with_held: bool | None = typer.Option(
         None,
         "--with-held/--no-with-held",
-        help="Score under the held item view too (spec 0005). On by default; --no-with-held "
-        "scores accepted items only. Given by name, needs a graph holding held items.",
+        help="Score under the held item view too (spec 0005). With neither flag, follows how "
+        "the graph was loaded; --no-with-held scores accepted items only. Given by name, "
+        "needs a graph holding held items.",
     ),
     release_held_out: bool = typer.Option(
         False,
@@ -743,7 +761,7 @@ def eval_set_command(
     base = Path(root)
     path = base / eval_file
     narrow = _setting(narrow_hold, NARROW_HOLD_DEFAULT)
-    show_held = _setting(with_held, WITH_HELD_DEFAULT)
+    show_held = _scored_held_view(base, with_held)
     try:
         eval_set = read_eval_set(path, release_held_out=release_held_out)
         sidecar = read_sidecar(base, path)

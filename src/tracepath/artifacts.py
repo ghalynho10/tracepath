@@ -433,18 +433,34 @@ def built_with_narrow_hold(root: Path) -> bool:
     return _built_with(root, "narrow_hold")
 
 
+def built_with_held_view(root: Path) -> bool:
+    """Whether the last `load` wrote held items: its manifest has a `held_view` key.
+
+    A missing manifest, or one with no `held_view` key, means it did not.
+
+    Raises:
+        ManifestUnreadable: the manifest exists but is not a JSON object.
+    """
+    return "held_view" in _manifest(root)
+
+
 def _built_with(root: Path, key: str) -> bool:
     """Whether the manifest holds `key` set to `true`; absent means false."""
+    return _manifest(root).get(key, False) is True
+
+
+def _manifest(root: Path) -> dict[str, Any]:
+    """The build manifest as a JSON object; a missing manifest reads as empty."""
     path = root / GRAPH_BUILD
     if not path.exists():
-        return False
+        return {}
     try:
         manifest = json.loads(path.read_text())
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ManifestUnreadable(f"{GRAPH_BUILD} cannot be read ({exc})") from exc
     if not isinstance(manifest, dict):
         raise ManifestUnreadable(f"{GRAPH_BUILD} is not a JSON object")
-    return manifest.get(key, False) is True
+    return manifest
 
 
 def write_graph_build(root: Path, manifest: dict[str, Any]) -> Path:

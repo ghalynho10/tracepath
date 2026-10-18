@@ -475,6 +475,31 @@ def test_given_no_held_flag_eval_and_trace_eval_show_the_held_view(
     assert HELD_LABEL in held.splitlines() and held != plain
 
 
+@pytest.mark.parametrize("command", [("eval",), ("trace", "--eval", "1")])
+def test_given_no_held_flag_over_a_graph_loaded_without_held_items_no_held_label_prints(
+    default_graph: Path, command: tuple[str, ...]
+) -> None:
+    """covers: the 2026-10-18 review's first finding (no flag follows `held_view`)."""
+    bare = runner.invoke(
+        app,
+        [
+            *command,
+            NO_NARROW,
+            "--eval-file",
+            "eval/scorable.json",
+            "--root",
+            str(default_graph),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
+    )
+    _, plain, _ = run(default_graph, *command, eval_file="eval/scorable.json")
+
+    assert bare.exit_code == 0, bare.stderr
+    assert HELD_LABEL not in bare.stdout.splitlines()
+    assert bare.stdout == plain
+
+
 # AC-29 and AC-9c: the held out label, and the order above the first block.
 
 
