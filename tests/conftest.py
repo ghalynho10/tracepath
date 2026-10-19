@@ -22,6 +22,28 @@ UNREACHABLE_URI = "bolt://localhost:1"
 FAKE_API_KEY = "sk-ant-test"
 UNREACHABLE_API = "http://localhost:1"
 
+#: Feature 9 moved 26 units' runs here. With the three units it left in place, they are
+#: `artifacts/runs/` as it stood before (`b65819f^`), byte for byte: the 29 unit corpus
+#: that tests pinned to earlier experiments read, as frozen data.
+SUPERSEDED_BY_FEATURE_9 = ROOT / "artifacts" / "superseded" / "2026-10-18-claude-sonnet-5"
+KEPT_BY_FEATURE_9 = ("0009/requirements", "0013/requirements", "0015/requirements")
+
+
+def pre_feature_9_runs(root: Path, *units: str) -> Path:
+    """`root` holding the named units' runs as they stood before feature 9, or all 29.
+
+    A unit is a record (`0002`) or a record and section slug (`0001/binding-rules`).
+    """
+    for unit in units or ("",):
+        source = SUPERSEDED_BY_FEATURE_9 / unit
+        if source.exists():
+            skip = shutil.ignore_patterns("NOTE.md", "*-before-fix")
+            shutil.copytree(source, root / RUNS_DIR / unit, ignore=skip, dirs_exist_ok=True)
+        for kept in KEPT_BY_FEATURE_9:
+            if not unit or kept == unit or kept.startswith(f"{unit}/"):
+                shutil.copytree(ROOT / RUNS_DIR / kept, root / RUNS_DIR / kept)
+    return root
+
 
 @pytest.fixture(autouse=True)
 def no_real_anthropic_key(monkeypatch: pytest.MonkeyPatch) -> None:

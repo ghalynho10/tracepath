@@ -6,11 +6,11 @@ question here is the synthetic spec 0012 one of `test_trace_eval.py`, not an eva
 question, so nothing here says anything about question 3.
 
 One module fixture loads the corpus three times, once without the flag and twice with
-it, and keeps what each load wrote, so each test reads one fact.
+it, and keeps what each load wrote, so each test reads one fact. The corpus is the 29
+units before feature 9, where experiment 0010 recorded question 3 (frozen data).
 """
 
 import json
-import shutil
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,9 +21,10 @@ from neo4j import Driver
 from typer.testing import CliRunner
 
 from tests.committed_cache import uncached_rebuild
+from tests.conftest import pre_feature_9_runs
 from tests.test_trace_eval import QUESTIONS
 from tracepath import cli
-from tracepath.artifacts import GRAPH_BUILD, RUNS_DIR
+from tracepath.artifacts import GRAPH_BUILD
 from tracepath.cli import app
 from tracepath.config import Neo4jSettings
 from tracepath.graph import connect
@@ -185,8 +186,7 @@ class Loads:
 def loads(
     tmp_path_factory: pytest.TempPathFactory, neo4j_settings: Neo4jSettings
 ) -> Iterator[Loads]:
-    root = tmp_path_factory.mktemp("held")
-    shutil.copytree(ROOT / RUNS_DIR, root / RUNS_DIR)
+    root = pre_feature_9_runs(tmp_path_factory.mktemp("held"))
     (root / "eval").mkdir()
     (root / "eval" / "questions.json").write_text(json.dumps(QUESTIONS))
     database = neo4j_settings.database
@@ -230,8 +230,8 @@ def loads(
 
 
 @pytest.fixture(scope="module")
-def view_counts() -> dict[str, int]:
-    results = committed_units(ROOT, SNAPSHOT)
+def view_counts(loads: Loads) -> dict[str, int]:
+    results = committed_units(loads.root, SNAPSHOT)
     records = records_for_units(results, SNAPSHOT, "2e40bcf")
     return build_held_view(results, resolve_accepted(results, records), records).counts()
 

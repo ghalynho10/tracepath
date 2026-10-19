@@ -7,7 +7,6 @@ fake client of `tests/test_extract_command.py`.
 
 import inspect
 import json
-import shutil
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,6 +14,7 @@ from types import SimpleNamespace
 import pytest
 from typer.testing import CliRunner
 
+from tests.conftest import pre_feature_9_runs
 from tests.test_extract_command import (
     BOUND,
     SNAPSHOT,
@@ -234,8 +234,7 @@ def test_ac_5b_the_model_option_defaults_to_the_default_model() -> None:
 @pytest.mark.integration
 def test_ac_4_load_prints_the_units_per_model(tmp_path: Path) -> None:
     """covers: AC-4 (read from each unit's artifacts, beside the prompt version line)."""
-    for unit in ("0002", "0021"):
-        shutil.copytree(ROOT / RUNS_DIR / unit, tmp_path / RUNS_DIR / unit)
+    pre_feature_9_runs(tmp_path, "0002", "0021")  # both on claude-sonnet-5 then
     for path in (tmp_path / RUNS_DIR / "0021").glob("*/*.json"):
         payload = json.loads(path.read_text())
         payload["model"] = "claude-sonnet-5-5"

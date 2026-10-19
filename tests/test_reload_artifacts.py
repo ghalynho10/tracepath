@@ -17,6 +17,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.conftest import pre_feature_9_runs
 from tracepath.config import load_neo4j_settings
 from tracepath.extract.records import Record
 from tracepath.graph.connection import connect
@@ -107,14 +108,14 @@ def test_the_full_load_completes_and_every_counter_matches() -> None:
     assert phantom[0]["n"] == 0, "AC-13: a phantom node means a write matched nothing"
 
 
-def test_every_loaded_entity_carries_its_own_units_provenance() -> None:
+def test_every_loaded_entity_carries_its_own_units_provenance(tmp_path: Path) -> None:
     """A graph built from units extracted under different prompts says which is which.
 
-    The committed units span more than one prompt version, so one provenance for the
-    whole load would mislabel most of them. The expected values are read straight off
-    each unit's first run artifact, not through the function under test.
+    The 29 units before feature 9 span more than one prompt version, so one provenance
+    for the whole load would mislabel most of them. The expected values are read straight
+    off each unit's first run artifact, not through the function under test.
     """
-    results = committed_units()
+    results = list(rebuild_units(pre_feature_9_runs(tmp_path), SNAPSHOT))
     records = records_for_all(results)
     corpus = resolve_accepted(results, records)
     settings = load_neo4j_settings()
@@ -125,7 +126,7 @@ def test_every_loaded_entity_carries_its_own_units_provenance() -> None:
         for entity in result.routed.accepted_entities:
             expected[entity.canonical_id] = (first.model, first.prompt_version, first.extracted_at)
     assert len({version for _, version, _ in expected.values()}) > 1, (
-        "the committed units should span more than one prompt version"
+        "the units before feature 9 should span more than one prompt version"
     )
 
     with connect(settings) as driver:

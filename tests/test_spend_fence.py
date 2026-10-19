@@ -12,7 +12,7 @@ from pathlib import Path
 import dotenv
 import pytest
 
-from tests.conftest import FAKE_API_KEY, UNREACHABLE_API
+from tests.conftest import FAKE_API_KEY, UNREACHABLE_API, pre_feature_9_runs
 from tracepath import config
 from tracepath.config import RUNS_PER_UNIT, load_anthropic_settings
 from tracepath.extract.address import resolve_address
@@ -71,13 +71,20 @@ def test_ac_72_no_file_outside_the_allowlist_can_reach_the_model() -> None:
 
 
 # 0021 Requirements: resumed in experiment 0008, before the run policy of 2026-10-06.
+# Feature 9 superseded those runs, so these pins read them as they stood before it.
 
 
 @pytest.fixture(scope="module")
-def requirements_0021_runs() -> tuple[object, ...]:
+def frozen_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """A root whose only runs are `0021 ## Requirements`'s before feature 9."""
+    return pre_feature_9_runs(tmp_path_factory.mktemp("frozen"), "0021/requirements")
+
+
+@pytest.fixture(scope="module")
+def requirements_0021_runs(frozen_root: Path) -> tuple[object, ...]:
     [result] = [
         r
-        for r in committed_units(ROOT, SNAPSHOT)
+        for r in committed_units(frozen_root, SNAPSHOT)
         if (r.unit.record_id, r.unit.section) == ("0021", "Requirements")
     ]
     return result.artifacts
@@ -90,23 +97,23 @@ def test_ac_73_0021_requirements_loads_with_three_settled_runs(
     assert len(requirements_0021_runs) == RUNS_PER_UNIT
 
 
-def test_ac_73c_its_run_2_settled_at_attempt_3() -> None:
+def test_ac_73c_its_run_2_settled_at_attempt_3(frozen_root: Path) -> None:
     """covers: AC-73c (a pin: run 2 was resumed after two schema failures)."""
     [result] = [
         r
-        for r in committed_units(ROOT, SNAPSHOT)
+        for r in committed_units(frozen_root, SNAPSHOT)
         if (r.unit.record_id, r.unit.section) == ("0021", "Requirements")
     ]
 
     assert {a.run: a.attempt for a in result.artifacts}[2] == 3
 
 
-def test_ac_73b_a_resume_reads_it_as_owing_nothing_not_as_blocked() -> None:
+def test_ac_73b_a_resume_reads_it_as_owing_nothing_not_as_blocked(frozen_root: Path) -> None:
     """covers: AC-73b (a pin: settled wins, whatever model failures sit beside it)."""
     target = resolve_address(SNAPSHOT, "0021:Requirements")
 
     with pytest.raises(ResumeRefused, match="owes nothing"):
-        resume_runs(ROOT, target, RUNS_PER_UNIT)
+        resume_runs(frozen_root, target, RUNS_PER_UNIT)
 
 
 # The fixture that keeps every test away from the real API.

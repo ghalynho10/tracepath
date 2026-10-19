@@ -170,8 +170,20 @@ def test_a_connection_dropped_mid_stream_is_recorded_as_a_failed_attempt() -> No
 FAILED_ATTEMPT = (
     Path(__file__).resolve().parents[1]
     / "artifacts"
-    / "runs"
+    / "superseded"
+    / "2026-10-18-claude-sonnet-5"
     / "0021"
+    / "requirements"
+    / "failed-run-2-attempt-1.json"
+)
+
+#: A committed response that still fails the schema. `FAILED_ATTEMPT`'s no longer does,
+#: since `5b45113` keeps the flag it was rejected for. The unit only shapes the request.
+SCHEMA_FAILURE = (
+    Path(__file__).resolve().parents[1]
+    / "artifacts"
+    / "runs"
+    / "0010"
     / "requirements"
     / "failed-run-2-attempt-1.json"
 )
@@ -256,7 +268,7 @@ def requirements_0021() -> Unit:
 
 
 def test_a_schema_failure_records_the_whole_responses_output_tokens() -> None:
-    recorded = json.loads(FAILED_ATTEMPT.read_text())
+    recorded = json.loads(SCHEMA_FAILURE.read_text())
     client = replaying_client(recorded_stream(recorded["raw_response"], 8123), [])
     settings = AnthropicSettings(
         api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"
@@ -275,7 +287,7 @@ def test_a_schema_failure_records_the_whole_responses_output_tokens() -> None:
 
 
 def test_the_request_is_the_one_the_sdk_builds_from_output_format() -> None:
-    recorded = json.loads(FAILED_ATTEMPT.read_text())
+    recorded = json.loads(SCHEMA_FAILURE.read_text())
     body = recorded_stream(recorded["raw_response"], 8123)
     settings = AnthropicSettings(
         api_key="sk-ant-test", model="claude-sonnet-5", runs_per_unit=3, effort="medium"

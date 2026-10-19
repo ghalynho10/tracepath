@@ -18,7 +18,7 @@ import json
 import re
 import subprocess
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 from pathlib import Path
 from typing import Any, Literal
@@ -544,6 +544,19 @@ def _holding(split: Mapping[str, tuple[Holding, ...]], item: ExpectedItem) -> Ho
     return before[-1]
 
 
+def _quoted(item: ExpectedItem, holding: Holding) -> ExpectedItem:
+    """The item at the line its quote starts on: one line below when the cited line is blank.
+
+    The same one line tolerance `tests/test_corpus.py` gives a citation of the blank line
+    just above a paragraph.
+    """
+    lines = holding.unit.text.split("\n")
+    at = item.line - holding.unit.start_line
+    if 0 <= at < len(lines) - 1 and not lines[at].strip():
+        return replace(item, line=item.line + 1)
+    return item
+
+
 def _file_line(entity: IdentifiedEntity, unit: Unit) -> int | None:
     return unit.start_line + entity.location.line - 1 if entity.location else None
 
@@ -781,12 +794,13 @@ def score(
     findings: list[Finding] = []
     for item in question.items:
         holding = _holding(split, item)
+        quoted = _quoted(item, holding)
         key = (holding.unit.record_id, holding.section_slug)
         result, settled = by_unit.get(key), settled_runs.get(key, 0)
-        step = _reached(steps, item)
-        held_step = _reached(held_steps, item) if step is None and with_held else None
+        step = _reached(steps, quoted)
+        held_step = _reached(held_steps, quoted) if step is None and with_held else None
         reason = (
-            _reason(item, holding, steps, result, settled, held_links, absence_index=index)
+            _reason(quoted, holding, steps, result, settled, held_links, absence_index=index)
             if step is None and held_step is None
             else None
         )
@@ -798,17 +812,18 @@ def score(
                 reason=reason,
                 held_by=held_step,
                 held_parts=(held_parts(held, held_step) if held is not None and held_step else ()),
-                accepted_here=_accepted_here(item, holding, result, settled),
+                accepted_here=_accepted_here(quoted, holding, result, settled),
             )
         )
 
     visited = held_steps if with_held else steps
+    quoted_items = [_quoted(i, _holding(split, i)) for i in question.items]
     unmatched = sum(
         1
         for s in visited
         if not any(
             s.node.kind is NodeKind.ENTITY and s.node.file == i.file and s.node.file_line == i.line
-            for i in question.items
+            for i in quoted_items
         )
     )
 
