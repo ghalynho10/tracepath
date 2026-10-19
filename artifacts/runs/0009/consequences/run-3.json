@@ -1,0 +1,192 @@
+{
+  "record": "0009",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1183,
+  "output_tokens": 1848,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "93514d967095415fb08e146a6d161f56",
+  "artifact_format_version": 3,
+  "unit_sha256": "4be29249cc00b71ece3ac795322d72d68051de4db84b6f76f054f48e63dce073",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The 100 user meter stops running. Every sign in after this costs nothing permanent\",\"rejected_spans\":[\", which is the\\n  reason the feature moved into Foundation.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The consent screen can finally name JobHunt, closing the finding spec 0007 recorded on 2026-08-30.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Both halves of the notice become something the suite holds rather than something a person must\\n  remember: the recipient list at features 11, 13 and 14, and the stored field list at every future\\n  migration.\",\"rejected_spans\":[\"The field guard exists because a cross check found the notice protected on one side\\n  only, which is the same asymmetry that produced the drift bug this pattern was borrowed from.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The notice is accurate in the way templates never are: the field list comes from the applied\\n  schema, and the Sentry claim from the running configuration.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**No EU or UK representative is appointed, and this is an accepted risk, not an exemption.**\",\"rejected_spans\":[\"Article 27 requires one for a controller outside the Union offering services to people in it. The\\n  exception in Article 27(2) needs processing that is occasional, and the EDPB reads occasional as\\n  not carried out regularly and outside the regular course of business. Storing a profile and work\\n  history for every signed in person is the regular course of this business, so the exception does\\n  not hold. The conditions are cumulative, so failing one is enough. This is recorded as a knowing\\n  choice given the project's realistic exposure, and it is a real exposure.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**No lawyer reviews this.** It does not remove legal risk, and nothing here\\n  should be read as saying it does.\",\"rejected_spans\":[\"Drafting from verified facts removes factual error, which is the most\\n  common defect in a small product's privacy notice.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Acceptance is not recorded.** Nobody knows who agreed to which version. If the terms change materially before feature 9 ships, there will be no record of\\n  what anyone accepted.\",\"rejected_spans\":[\"Recording it needs a\\n  `profile` row that does not exist until feature 9, and a checkbox needs client state the marketing\\n  tree forbids.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Deletion is manual.** A request is fulfilled by a person removing the account record by hand. It\\n  works and it cascades correctly, and it depends on the operator reading an inbox. Self serve\\n  deletion is feature 27.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The enforcement test cannot cover Google and GitHub.** It is well aimed at Adzuna and the model providers, which is the staleness this\\n  feature actually fears, and the two OAuth entries stay correct by review alone.\",\"rejected_spans\":[\"Their credentials live in\\n  `supabase/config.toml` and the Supabase dashboard, never in `src/env.ts`, so the AC-5 test is\\n  blind to them.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Two routes become indexable while the rest of the site stays hidden.**\",\"rejected_spans\":[\"A deliberate asymmetry\\n  that a later reader could mistake for drift.\"],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No migration, no new environment variable, no new dependency.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The third party list is knowingly incomplete on the day it ships. Adzuna arrives at feature 11 and\\n  the model providers at 13 and 14, and each must add its own entry as part of its own build.\",\"rejected_spans\":[\"The\\n  AC-5 test is what makes that fail loudly rather than pass quietly.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The claim that data is not used to train models is true today and needs care at features 13 and\\n  14. Sending data to a model to get an answer is not training it, but whether a provider retains or\\n  trains on what it is sent is that provider's terms, and those must be read before the claim is\\n  extended to cover them.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The 100 user meter stops running. Every sign in after this costs nothing permanent",
+        "rejected_spans": [
+          ", which is the\n  reason the feature moved into Foundation."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The consent screen can finally name JobHunt, closing the finding spec 0007 recorded on 2026-08-30.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Both halves of the notice become something the suite holds rather than something a person must\n  remember: the recipient list at features 11, 13 and 14, and the stored field list at every future\n  migration.",
+        "rejected_spans": [
+          "The field guard exists because a cross check found the notice protected on one side\n  only, which is the same asymmetry that produced the drift bug this pattern was borrowed from."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The notice is accurate in the way templates never are: the field list comes from the applied\n  schema, and the Sentry claim from the running configuration.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**No EU or UK representative is appointed, and this is an accepted risk, not an exemption.**",
+        "rejected_spans": [
+          "Article 27 requires one for a controller outside the Union offering services to people in it. The\n  exception in Article 27(2) needs processing that is occasional, and the EDPB reads occasional as\n  not carried out regularly and outside the regular course of business. Storing a profile and work\n  history for every signed in person is the regular course of this business, so the exception does\n  not hold. The conditions are cumulative, so failing one is enough. This is recorded as a knowing\n  choice given the project's realistic exposure, and it is a real exposure."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**No lawyer reviews this.** It does not remove legal risk, and nothing here\n  should be read as saying it does.",
+        "rejected_spans": [
+          "Drafting from verified facts removes factual error, which is the most\n  common defect in a small product's privacy notice."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Acceptance is not recorded.** Nobody knows who agreed to which version. If the terms change materially before feature 9 ships, there will be no record of\n  what anyone accepted.",
+        "rejected_spans": [
+          "Recording it needs a\n  `profile` row that does not exist until feature 9, and a checkbox needs client state the marketing\n  tree forbids."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Deletion is manual.** A request is fulfilled by a person removing the account record by hand. It\n  works and it cascades correctly, and it depends on the operator reading an inbox. Self serve\n  deletion is feature 27.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The enforcement test cannot cover Google and GitHub.** It is well aimed at Adzuna and the model providers, which is the staleness this\n  feature actually fears, and the two OAuth entries stay correct by review alone.",
+        "rejected_spans": [
+          "Their credentials live in\n  `supabase/config.toml` and the Supabase dashboard, never in `src/env.ts`, so the AC-5 test is\n  blind to them."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Two routes become indexable while the rest of the site stays hidden.**",
+        "rejected_spans": [
+          "A deliberate asymmetry\n  that a later reader could mistake for drift."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No migration, no new environment variable, no new dependency.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The third party list is knowingly incomplete on the day it ships. Adzuna arrives at feature 11 and\n  the model providers at 13 and 14, and each must add its own entry as part of its own build.",
+        "rejected_spans": [
+          "The\n  AC-5 test is what makes that fail loudly rather than pass quietly."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The claim that data is not used to train models is true today and needs care at features 13 and\n  14. Sending data to a model to get an answer is not training it, but whether a provider retains or\n  trains on what it is sent is that provider's terms, and those must be read before the claim is\n  extended to cover them.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

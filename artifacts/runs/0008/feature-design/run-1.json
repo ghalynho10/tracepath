@@ -1,0 +1,219 @@
+{
+  "record": "0008",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2457,
+  "output_tokens": 3406,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "fc7c93645f354466966759067df7983a",
+  "artifact_format_version": 3,
+  "unit_sha256": "61023e47af4145af0a6c6262812e06bd6aea247aee9a17a3c4c634230377a9cb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Data model sketch**: none. No entity, column, migration or row level security change. The feature's only persistence is one cookie holding a path string.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Profile row existence is read from the existing `public.profile` table created by spec 0003.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`/` never reads the session, never mounts a Supabase client, and stays statically prerendered.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The proxy writes no cookie **of its own** and holds no route knowledge. It cannot tell a protected path from a public one, which is what `src/proxy.test.ts` lines 49 to 70 assert and AC-9 keeps true. It has always passed the Supabase session cookie through on a refresh, which is its one job; AC-10b withholds even that from a Server Action response, keyed on request kind and never on route, so this invariant is untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The pathname header is set, never appended\",\"rejected_spans\":[\"so a value a client sent is always overwritten before anything reads it\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Exactly one function decides where a signed in visitor lands. No caller may inline its own copy of the rule.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The return value carries a path and nothing else. No user identifier, no email, no token.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`redirectTo` toward a provider never carries the return path, so spec 0007's safeguard 3 stands unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The landing rule reads only profile row existence, never profile sufficiency. Feature 14's scoring gate layers on top of this rule's callers later and replaces nothing here.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`src/components/ui/` gains no dependency on `src/features/`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The door route and the callback sit outside `src/app/api/`. Binding rule 6 restricts handlers **under** `src/app/api/` and is silent about handlers elsewhere. Both may read the session, and the landing rule reads profile row existence. These are the first route handlers in this project to read a user data table, which is a deliberate extension: each checks its own caller independently, and row level security from spec 0003 remains the guarantee behind the read.\",\"rejected_spans\":[\"so this is placement that respects the rule rather than a carve out the rule grants\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The return path's threat surface changed with the mechanism.** It is now user visible and user supplied: anyone can send a victim `/sign-in?next=<anything>`. The validator is therefore doing more work than it was, and it runs at all three boundaries the value crosses (AC-12), following the parse at every boundary rule rather than trusting an earlier parse.\",\"rejected_spans\":[\"Its job is to stop an open redirect; the hostile strings in its unit test are the threat model made concrete.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The cookie is `httpOnly`, `SameSite=Lax`, 10 minute max age, and `Path` scoped to the callback so it is not carried on ordinary navigation.\",\"rejected_spans\":[\"(unreadable from any client script)\",\"(`Strict` is not sent on the cross site top level GET return from a provider and would silently disable the whole feature)\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`/go` returns a different destination per visitor, so `Cache-Control: no-store` is a security requirement rather than a performance note (AC-17).\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing in this feature widens who may read or write data.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none. No new environment variable, secret or third party credential. The header name and cookie name are source constants.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Data model sketch**: none. No entity, column, migration or row level security change. The feature's only persistence is one cookie holding a path string.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Profile row existence is read from the existing `public.profile` table created by spec 0003.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`/` never reads the session, never mounts a Supabase client, and stays statically prerendered.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The proxy writes no cookie **of its own** and holds no route knowledge. It cannot tell a protected path from a public one, which is what `src/proxy.test.ts` lines 49 to 70 assert and AC-9 keeps true. It has always passed the Supabase session cookie through on a refresh, which is its one job; AC-10b withholds even that from a Server Action response, keyed on request kind and never on route, so this invariant is untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The pathname header is set, never appended",
+        "rejected_spans": [
+          "so a value a client sent is always overwritten before anything reads it"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Exactly one function decides where a signed in visitor lands. No caller may inline its own copy of the rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The return value carries a path and nothing else. No user identifier, no email, no token.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`redirectTo` toward a provider never carries the return path, so spec 0007's safeguard 3 stands unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The landing rule reads only profile row existence, never profile sufficiency. Feature 14's scoring gate layers on top of this rule's callers later and replaces nothing here.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`src/components/ui/` gains no dependency on `src/features/`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The door route and the callback sit outside `src/app/api/`. Binding rule 6 restricts handlers **under** `src/app/api/` and is silent about handlers elsewhere. Both may read the session, and the landing rule reads profile row existence. These are the first route handlers in this project to read a user data table, which is a deliberate extension: each checks its own caller independently, and row level security from spec 0003 remains the guarantee behind the read.",
+        "rejected_spans": [
+          "so this is placement that respects the rule rather than a carve out the rule grants"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The return path's threat surface changed with the mechanism.** It is now user visible and user supplied: anyone can send a victim `/sign-in?next=<anything>`. The validator is therefore doing more work than it was, and it runs at all three boundaries the value crosses (AC-12), following the parse at every boundary rule rather than trusting an earlier parse.",
+        "rejected_spans": [
+          "Its job is to stop an open redirect; the hostile strings in its unit test are the threat model made concrete."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The cookie is `httpOnly`, `SameSite=Lax`, 10 minute max age, and `Path` scoped to the callback so it is not carried on ordinary navigation.",
+        "rejected_spans": [
+          "(unreadable from any client script)",
+          "(`Strict` is not sent on the cross site top level GET return from a provider and would silently disable the whole feature)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`/go` returns a different destination per visitor, so `Cache-Control: no-store` is a security requirement rather than a performance note (AC-17).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing in this feature widens who may read or write data.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none. No new environment variable, secret or third party credential. The header name and cookie name are source constants.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

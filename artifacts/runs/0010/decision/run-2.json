@@ -1,0 +1,107 @@
+{
+  "record": "0010",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0010-profile-entry/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 398,
+  "output_tokens": 769,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "aeebb2b8d8eb44d6926c016f6cbe3c27",
+  "artifact_format_version": 3,
+  "unit_sha256": "0e4685bc9077ef71d950ce3e1c84c45c96b5e358670b3ba7daf954ef9cfdbd06",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"**Chosen option**: Option 2, independent per section saves with a URL driven edit state.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"],\"label\":null},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Each of the four sections (identity, skills, experience, preferences) is its own Server Action, its own edit state, and its own save.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The section a visitor is editing is named by a search parameter on `/profile` (`?edit=identity`, `?add=experience`, `?edit=experience&entry=<id>`, `?delete=experience&entry=<id>`), read and rendered by the server component, never by client side toggle state.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) are added to `src/components/ui/`, extending spec 0005's Accepted component inventory the same way spec 0006 added `Logo`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"mention\":\"spec 0005's Accepted component inventory\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"extending spec 0005's Accepted component inventory\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "**Chosen option**: Option 2, independent per section saves with a URL driven edit state.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Each of the four sections (identity, skills, experience, preferences) is its own Server Action, its own edit state, and its own save.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The section a visitor is editing is named by a search parameter on `/profile` (`?edit=identity`, `?add=experience`, `?edit=experience&entry=<id>`, `?delete=experience&entry=<id>`), read and rendered by the server component, never by client side toggle state.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) are added to `src/components/ui/`, extending spec 0005's Accepted component inventory the same way spec 0006 added `Logo`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": null,
+          "mention": "spec 0005's Accepted component inventory"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "phrase": "extending spec 0005's Accepted component inventory",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
