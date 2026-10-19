@@ -1,7 +1,8 @@
-"""The file every paid ask call is written to as it settles (spec 0009 AC-27 to AC-28).
+"""The file every paid ask call is written to as it settles (spec 0009 AC-27 to AC-29).
 
 Append only, like the run artifacts: a write never replaces an existing file. Nothing
-reads a record back except the held out guard of build plan step 5.
+reads a record back except the held out guard (AC-32), and only its name and its
+`settled` field.
 """
 
 import json
@@ -25,8 +26,63 @@ SLUG_WORDS = 5
 def record_name(asked_at: datetime, question: str) -> str:
     """`<UTC time>-<slug>.json` for a typed question (AC-28)."""
     words = re.findall(r"[a-z0-9]+", question.lower())[:SLUG_WORDS]
-    stamp = asked_at.astimezone(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
-    return f"{stamp}-{'-'.join(words) or 'question'}.json"
+    return f"{_stamp(asked_at)}-{'-'.join(words) or 'question'}.json"
+
+
+@dataclass(frozen=True)
+class EvalSource:
+    """The eval file and entry number an `--eval` ask took its question from."""
+
+    file: str
+    number: int
+
+    @property
+    def stem(self) -> str:
+        """The eval file's name without its extension, as record names carry it."""
+        return Path(self.file).stem
+
+
+class RecordUnreadable(Exception):
+    """A record the held out guard must read cannot be read as a JSON object."""
+
+
+def _stamp(asked_at: datetime) -> str:
+    return asked_at.astimezone(UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
+
+
+def eval_record_name(asked_at: datetime, source: EvalSource) -> str:
+    """`<UTC time>-eval-<stem>-q<N>.json` for an `--eval` ask (AC-28)."""
+    return f"{_stamp(asked_at)}-eval-{source.stem}-q{source.number}.json"
+
+
+def settled_eval_record(root: Path, source: EvalSource) -> Path | None:
+    """The first record of a settled call for this eval file and entry, if any (AC-32).
+
+    Matched by the exact name pattern of AC-28, so `-q1` never matches `-q10`. A record
+    of a failed call, or of no call, does not count.
+
+    Raises:
+        RecordUnreadable: a matching record is not a readable JSON object, so whether
+            the question was already answered cannot be told.
+    """
+    pattern = re.compile(
+        r"\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z-eval-"
+        + re.escape(source.stem)
+        + rf"-q{source.number}\.json"
+    )
+    directory = root / ASKS_DIR
+    for path in sorted(directory.glob("*.json")) if directory.is_dir() else ():
+        if not pattern.fullmatch(path.name):
+            continue
+        try:
+            payload = json.loads(path.read_text())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RecordUnreadable(f"the ask record {path} cannot be read ({exc})") from exc
+        if not isinstance(payload, dict):
+            raise RecordUnreadable(f"the ask record {path} is not a JSON object")
+        if payload.get("settled") is True:
+            return path
+    return None
 
 
 def record_path(root: Path, name: str) -> Path:
@@ -57,13 +113,18 @@ class Usage:
 
 @dataclass(frozen=True)
 class AskRecord:
-    """One paid ask call, everything AC-27 names, as it settled."""
+    """One ask, everything AC-27 names, as it settled.
+
+    `called` is false only for an `--eval` ask that matched no item (AC-29), which
+    has no count, bound, reply or usage.
+    """
 
     asked_at: str
     question: str
     pack: Pack
-    counted_input_tokens: int
-    bound_usd: float
+    called: bool
+    counted_input_tokens: int | None
+    bound_usd: float | None
     ceiling_usd: float
     model: str
     effort: str
@@ -78,12 +139,16 @@ class AskRecord:
     usage: Usage
     cost_usd: float
     recorded_usd: float
+    source: EvalSource | None = None
 
     def payload(self) -> dict[str, Any]:
         """The record as the JSON it is written as."""
         return {
             "asked_at": self.asked_at,
             "question": self.question,
+            "eval_file": self.source.file if self.source else None,
+            "eval_question": self.source.number if self.source else None,
+            "called": self.called,
             "search_words": list(self.pack.words),
             "items": [_item(item) for item in self.pack.items],
             "links": [
@@ -160,3 +225,40 @@ def write_record(root: Path, name: str, record: AskRecord) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(record.payload(), indent=2, ensure_ascii=False) + "\n")
     return path
+
+
+def no_call_record(
+    *,
+    asked_at: datetime,
+    pack: Pack,
+    ceiling: float,
+    model: str,
+    effort: str,
+    prompt_version: str,
+    commit: str,
+    source: EvalSource,
+) -> AskRecord:
+    """The record of an `--eval` ask that matched no item, so made no call (AC-29)."""
+    return AskRecord(
+        asked_at=asked_at.isoformat(timespec="seconds"),
+        question=pack.question,
+        pack=pack,
+        called=False,
+        counted_input_tokens=None,
+        bound_usd=None,
+        ceiling_usd=ceiling,
+        model=model,
+        effort=effort,
+        prompt_version=prompt_version,
+        corpus_commit=commit,
+        settled=False,
+        answer=None,
+        checked=(),
+        raw_response=None,
+        stop_reason=None,
+        error="no item matched the search words, so no call was made",
+        usage=Usage(None, None, 0, 0),
+        cost_usd=0.0,
+        recorded_usd=0.0,
+        source=source,
+    )

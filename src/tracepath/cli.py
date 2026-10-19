@@ -32,10 +32,20 @@ from tracepath.artifacts import (
     write_review_queue,
 )
 from tracepath.ask.answer import ASK_MAX_TOKENS, answer_lines
-from tracepath.ask.record import record_name
-from tracepath.ask.retrieve import build_pack, pack_lines
+from tracepath.ask.answer import PROMPT_VERSION as ASK_PROMPT_VERSION
+from tracepath.ask.record import (
+    EvalSource,
+    RecordUnreadable,
+    eval_record_name,
+    no_call_record,
+    record_name,
+    settled_eval_record,
+    write_record,
+)
+from tracepath.ask.retrieve import Pack, build_pack, pack_lines
 from tracepath.config import (
     DEFAULT_MODEL,
+    AnthropicSettings,
     SettingsInvalid,
     load_anthropic_settings,
     load_neo4j_settings,
@@ -1034,6 +1044,15 @@ def ask(
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Find the items and price the call only: no call, no record."
     ),
+    eval_file: str = typer.Option(
+        str(EVAL_FILE), "--eval-file", help="The eval set --eval reads, relative to --root."
+    ),
+    release_held_out: bool = typer.Option(
+        False,
+        "--release-held-out",
+        help="Ask a question of a held out eval file. A question already answered once by a "
+        "settled call is refused.",
+    ),
     root: str = typer.Option(".", "--root", help="The repository root to read and write."),
 ) -> None:
     """Answer a why question from the graph, every claim citing the item it rests on.
@@ -1044,14 +1063,28 @@ def ask(
     """
     if (question is None) == (eval_question is None):
         _fail("give one QUESTION or --eval N, not both and not neither.")
-    if eval_question is not None:
-        _fail("ask --eval is not built yet (spec 0009 build plan step 5); type the question.")
+    if release_held_out and eval_question is None:
+        _fail("--release-held-out reads an eval file, so it needs --eval N.")
     if ceiling is None:
         _fail("--ceiling USD is required: the most this command may spend.")
     if not (math.isfinite(ceiling) and ceiling > 0):
         _fail(f"--ceiling USD must be a finite number above 0, not {ceiling}.")
     base = Path(root)
+    source: EvalSource | None = None
     asked = str(question)
+    if eval_question is not None:
+        source = EvalSource(eval_file, eval_question)
+        try:
+            eval_set = read_eval_set(base / eval_file, release_held_out=release_held_out)
+            asked = _eval_question_text(eval_set.entries, eval_question, eval_file)
+            answered = settled_eval_record(base, source) if eval_set.held_out else None
+        except (EvalEntryUnusable, HeldOutRefused, RecordUnreadable) as exc:
+            _fail(str(exc))
+        if answered is not None:
+            _fail(
+                f"{eval_file} question {eval_question} is held out and was already answered "
+                f"by a settled call ({_shown_path(answered, base)}), so it is not asked again."
+            )
     try:
         settings = load_anthropic_settings()
         built = graph_build_summary(base)
@@ -1062,11 +1095,16 @@ def ask(
         _fail(ASK_NEEDS_HELD)
 
     pack = build_pack(graph, asked)
+    asked_at = datetime.now(UTC)
     _say(f"Question: {asked}")
+    if source is not None:
+        _say(f"Eval: {source.file} question {source.number}.")
     _say(_graph_line(built))
     for line in pack_lines(pack):
         _say(line)
     if not pack.items:
+        if source is not None and not dry_run:
+            _write_no_call_record(base, asked_at, pack, ceiling, settings, built, source)
         return
 
     # AC-23: an unpriced model stops before the count, and the count is the free endpoint.
@@ -1091,19 +1129,20 @@ def ask(
         _say("Dry run: no call made, no record written.")
         return
 
-    asked_at = datetime.now(UTC)
+    name = eval_record_name(asked_at, source) if source else record_name(asked_at, asked)
     try:
         outcome = ask_metered(
             pack,
             ask_calls_through(client, settings),
             settings,
             root=base,
-            name=record_name(asked_at, asked),
+            name=name,
             asked_at=asked_at,
             commit=built.corpus_commit,
             counted=counted,
             bound=bound,
             ceiling=ceiling,
+            source=source,
         )
     except ArtifactCollisionError as exc:
         _fail(str(exc))
@@ -1123,6 +1162,50 @@ def ask(
         _say(f"Record: {_shown_path(outcome.path, base)}")
     if not outcome.settled:
         _fail("the call failed and is saved; it is not retried. Run the question again by hand.")
+
+
+def _eval_question_text(entries: Sequence[Mapping[str, Any]], number: int, eval_file: str) -> str:
+    """The `question` text of eval entry `number`, counting from 1, and nothing else (AC-30).
+
+    Raises:
+        EvalEntryUnusable: `number` is out of range, or the entry has no question text.
+    """
+    if not 1 <= number <= len(entries):
+        raise EvalEntryUnusable(
+            f"--eval {number}: {eval_file} has {len(entries)} entries, numbered from 1."
+        )
+    entry = entries[number - 1]
+    text = entry.get("question") if isinstance(entry, Mapping) else None
+    if not isinstance(text, str) or not text.strip():
+        raise EvalEntryUnusable(f"--eval {number}: entry {number} of {eval_file} has no question.")
+    return text
+
+
+def _write_no_call_record(
+    base: Path,
+    asked_at: datetime,
+    pack: Pack,
+    ceiling: float,
+    settings: AnthropicSettings,
+    built: GraphBuildSummary,
+    source: EvalSource,
+) -> None:
+    """Write the record of an `--eval` ask that matched no item (AC-29)."""
+    record = no_call_record(
+        asked_at=asked_at,
+        pack=pack,
+        ceiling=ceiling,
+        model=settings.model,
+        effort=settings.effort or "default",
+        prompt_version=ASK_PROMPT_VERSION,
+        commit=built.corpus_commit,
+        source=source,
+    )
+    try:
+        path = write_record(base, eval_record_name(asked_at, source), record)
+    except (OSError, ArtifactCollisionError) as exc:
+        _fail(f"the record of this no call ask could not be written ({exc}).")
+    _say(f"Record: {_shown_path(path, base)}")
 
 
 def _shown_path(path: Path, base: Path) -> str:

@@ -453,3 +453,229 @@ def test_ac_6_no_api_key_exits_1_before_the_graph_is_read(
 
 def _no_key() -> object:
     raise SettingsInvalid("ANTHROPIC_API_KEY is not set. Add it to `.env`.")
+
+
+# Build plan step 5: `--eval`, the held out refusals and the one run guard. Every eval
+# file here is written under `tmp_path`; no test reads a real eval file.
+
+EVAL_ENTRIES = [
+    {"question": QUESTION, "expected_answer": "HIDDEN EXPECTED ANSWER", "chain": ["HIDDEN-ID"]},
+    {"question": "Why is the moon round?", "answer": "HIDDEN TOO"},
+    {"question": "   "},
+]
+
+
+def write_eval(root: Path, name: str, *, held_out: bool = False) -> str:
+    payload: dict[str, object] = {"entries": EVAL_ENTRIES}
+    if held_out:
+        payload["held_out"] = True
+    (root / name).write_text(json.dumps(payload))
+    return name
+
+
+def write_record_named(root: Path, name: str, settled: bool) -> None:
+    directory = root / ASKS_DIR
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / name).write_text(json.dumps({"settled": settled}))
+
+
+def test_ac_30_eval_n_asks_entry_ns_question_and_prints_nothing_of_its_expectation(
+    repo: Path, api: FakeApi
+) -> None:
+    """covers: AC-30, AC-33 (no pass, fail, total or rate)."""
+    name = write_eval(repo, "tuning.json")
+
+    code, out, err = ask(repo, "--eval", "1", "--eval-file", name, "--ceiling", "1")
+
+    assert code == 0, err
+    assert api.packs[0].question == QUESTION
+    assert "Eval: tuning.json question 1." in out
+    assert "HIDDEN" not in out + err
+    assert not any(word in out for word in ("PASS", "FAIL", "Total", "total", "rate"))
+
+
+@pytest.mark.parametrize(
+    ("number", "said"), [("0", "numbered from 1"), ("4", "has 3 entries"), ("3", "has no question")]
+)
+def test_ac_30_an_out_of_range_n_or_an_empty_question_exits_1_before_the_graph_is_read(
+    repo: Path, monkeypatch: pytest.MonkeyPatch, number: str, said: str
+) -> None:
+    """covers: AC-30."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+    name = write_eval(repo, "tuning.json")
+
+    code, _, err = ask(repo, "--eval", number, "--eval-file", name, "--ceiling", "1")
+
+    assert code == 1
+    assert said in flat(err)
+
+
+def test_ac_30_eval_reads_the_linked_records_research_file_by_default(repo: Path) -> None:
+    """covers: AC-30 (the default `--eval-file`)."""
+    code, _, err = ask(repo, "--eval", "1", "--ceiling", "1")
+
+    assert code == 1
+    assert "eval/linked-records-research.json" in flat(err)
+
+
+def test_ac_28_and_ac_29_an_eval_asks_record_is_named_by_stem_and_n_and_carries_both(
+    repo: Path,
+) -> None:
+    """covers: AC-28, AC-29."""
+    ask(repo, "--eval", "1", "--eval-file", write_eval(repo, "tuning.json"), "--ceiling", "1")
+
+    (path,) = records(repo)
+    assert path.name.endswith("Z-eval-tuning-q1.json")
+    saved = json.loads(path.read_text())
+    assert (saved["eval_file"], saved["eval_question"], saved["called"]) == ("tuning.json", 1, True)
+
+
+def test_ac_29_an_eval_ask_matching_no_item_still_writes_a_record_of_no_call(
+    repo: Path, api: FakeApi
+) -> None:
+    """covers: AC-29, AC-12."""
+    name = write_eval(repo, "tuning.json")
+
+    code, out, _ = ask(repo, "--eval", "2", "--eval-file", name, "--ceiling", "1")
+
+    assert code == 0
+    assert "No item matches" in out
+    assert api.counts == [] and api.packs == []
+    (path,) = records(repo)
+    assert path.name.endswith("Z-eval-tuning-q2.json")
+    saved = json.loads(path.read_text())
+    assert (saved["called"], saved["settled"], saved["counted_input_tokens"]) == (
+        False,
+        False,
+        None,
+    )
+    assert saved["eval_question"] == 2
+
+
+def test_ac_4_an_eval_dry_run_writes_no_record_even_with_no_match(repo: Path) -> None:
+    """covers: AC-4 (a dry run writes no record, whatever AC-29 asks of a real ask)."""
+    name = write_eval(repo, "tuning.json")
+
+    ask(repo, "--eval", "2", "--eval-file", name, "--ceiling", "1", "--dry-run")
+
+    assert records(repo) == []
+
+
+def test_ac_31_a_held_out_file_is_refused_without_the_flag_before_the_graph_is_read(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-31."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+    name = write_eval(repo, "sealed.json", held_out=True)
+
+    code, _, err = ask(repo, "--eval", "1", "--eval-file", name, "--ceiling", "1")
+
+    assert code == 1
+    assert "is held out" in flat(err)
+    assert "--release-held-out" in flat(err)
+
+
+def test_ac_31_the_flag_on_a_file_that_is_not_held_out_is_refused(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-31."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+    name = write_eval(repo, "tuning.json")
+
+    code, _, err = ask(
+        repo, "--eval", "1", "--eval-file", name, "--release-held-out", "--ceiling", "1"
+    )
+
+    assert code == 1
+    assert "is not a held out file" in flat(err)
+
+
+def test_ac_31_the_flag_without_eval_is_refused(repo: Path) -> None:
+    """covers: AC-31."""
+    code, _, err = ask(repo, QUESTION, "--release-held-out", "--ceiling", "1")
+
+    assert code == 1
+    assert "needs --eval N" in flat(err)
+
+
+def test_ac_31_a_released_held_out_question_is_asked(repo: Path, api: FakeApi) -> None:
+    """covers: AC-31, AC-28 (its record is named by the held out file's stem)."""
+    name = write_eval(repo, "sealed.json", held_out=True)
+
+    code, _, err = ask(
+        repo, "--eval", "1", "--eval-file", name, "--release-held-out", "--ceiling", "1"
+    )
+
+    assert code == 0, err
+    assert len(api.packs) == 1
+    (path,) = records(repo)
+    assert path.name.endswith("Z-eval-sealed-q1.json")
+
+
+def test_ac_32_a_settled_held_out_question_is_refused_before_any_call(
+    repo: Path, api: FakeApi, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-32."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+    name = write_eval(repo, "sealed.json", held_out=True)
+    write_record_named(repo, "2026-10-20T09-12-31Z-eval-sealed-q1.json", settled=True)
+
+    code, _, err = ask(
+        repo, "--eval", "1", "--eval-file", name, "--release-held-out", "--ceiling", "1"
+    )
+
+    assert code == 1
+    assert "already answered by a settled call" in flat(err)
+    assert api.counts == [] and api.packs == []
+
+
+@pytest.mark.parametrize(
+    "record",
+    [
+        ("2026-10-20T09-12-31Z-eval-sealed-q1.json", False),
+        ("2026-10-20T09-12-31Z-eval-sealed-q10.json", True),
+        ("2026-10-20T09-12-31Z-eval-other-q1.json", True),
+        ("2026-10-20T09-12-31Z-eval-sealed-q1.json.bak", True),
+        ("old-eval-sealed-q1.json", True),
+    ],
+)
+def test_ac_32_a_failed_or_other_record_does_not_use_the_question_up(
+    repo: Path, api: FakeApi, record: tuple[str, bool]
+) -> None:
+    """covers: AC-32 (a failed call, `-q10`, another stem, a name off the pattern)."""
+    name = write_eval(repo, "sealed.json", held_out=True)
+    write_record_named(repo, record[0], settled=record[1])
+
+    code, _, err = ask(
+        repo, "--eval", "1", "--eval-file", name, "--release-held-out", "--ceiling", "1"
+    )
+
+    assert code == 0, err
+    assert len(api.packs) == 1
+
+
+def test_ac_32_a_tuning_question_already_answered_can_be_asked_again(
+    repo: Path, api: FakeApi
+) -> None:
+    """covers: AC-32 (the guard is for held out files only; questions 1 to 5 rerun)."""
+    name = write_eval(repo, "tuning.json")
+    write_record_named(repo, "2026-10-20T09-12-31Z-eval-tuning-q1.json", settled=True)
+
+    code, _, _ = ask(repo, "--eval", "1", "--eval-file", name, "--ceiling", "1")
+
+    assert code == 0
+    assert len(api.packs) == 1
+
+
+def test_ac_32_an_unreadable_matching_record_refuses_rather_than_guesses(repo: Path) -> None:
+    """covers: AC-32 (whether the question was answered cannot be told, so no call)."""
+    name = write_eval(repo, "sealed.json", held_out=True)
+    (repo / ASKS_DIR).mkdir(parents=True)
+    (repo / ASKS_DIR / "2026-10-20T09-12-31Z-eval-sealed-q1.json").write_text("{not json")
+
+    code, _, err = ask(
+        repo, "--eval", "1", "--eval-file", name, "--release-held-out", "--ceiling", "1"
+    )
+
+    assert code == 1
+    assert "cannot be read" in flat(err)

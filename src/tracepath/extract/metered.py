@@ -49,7 +49,13 @@ from tracepath.artifacts import (
 )
 from tracepath.ask import answer as asking
 from tracepath.ask.answer import ASK_MAX_TOKENS, Answer, CheckedClaim, check_claims, pack_message
-from tracepath.ask.record import AskRecord, Usage, ensure_record_unwritten, write_record
+from tracepath.ask.record import (
+    AskRecord,
+    EvalSource,
+    Usage,
+    ensure_record_unwritten,
+    write_record,
+)
 from tracepath.ask.retrieve import Pack
 from tracepath.config import AnthropicSettings
 from tracepath.extract import client as extraction
@@ -664,6 +670,7 @@ def ask_metered(
     counted: int,
     bound: float,
     ceiling: float,
+    source: EvalSource | None = None,
 ) -> AskOutcome:
     """Make one ask call if its bound fits the ceiling, and write its record as it settles.
 
@@ -690,6 +697,7 @@ def ask_metered(
         asked_at=asked_at.isoformat(timespec="seconds"),
         question=pack.question,
         pack=pack,
+        called=True,
         counted_input_tokens=counted,
         bound_usd=bound,
         ceiling_usd=ceiling,
@@ -711,6 +719,7 @@ def ask_metered(
         ),
         cost_usd=cost,
         recorded_usd=recorded,
+        source=source,
     )
     try:
         path: Path | None = write_record(root, name, record)
