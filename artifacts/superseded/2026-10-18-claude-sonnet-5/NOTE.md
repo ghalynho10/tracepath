@@ -22,3 +22,9 @@ attempt 2, run 2 blocked after two schema failures, run 3 never ran). Run 2 bloc
 `5b45113`, which keeps an `entity_type_ambiguous` flag on a typed entity instead of rejecting
 the output. They sit in their own folder because `0014/decision/run-1.json` above is the
 `claude-sonnet-5` run.
+
+**Added 2026-10-19.** `0001/directory-layout-claude-sonnet-5-5-before-fix/` holds `0001 ## Directory layout`'s
+2 failed attempt files of run 3, on `claude-sonnet-5-5` with `0003.1` (runs 1 and 2 settled and stay in
+`artifacts/runs/`). Run 3 blocked after two schema failures before `6e47eee`, which keeps an
+`unclassified_note` on a typed entity instead of rejecting the output. The folder name follows the
+`0014` one above.
