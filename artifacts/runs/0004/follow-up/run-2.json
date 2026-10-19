@@ -1,0 +1,290 @@
+{
+  "record": "0004",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2570,
+  "output_tokens": 7643,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f9e7693ffbc84514b2ac95c45ca4ecd2",
+  "artifact_format_version": 3,
+  "unit_sha256": "bfbcde224eb4de96fa0957b90bf8df656caad31f0d8d36f9a6bfe64565d49c11",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Verify the exact Supabase admin auth API surface (`generateLink`, `verifyOtp`, or the current equivalent) against current Supabase docs at build time. Do not trust training data for the session mint call shape.\",\"rejected_spans\":[\"per the supabase skill's core principle that Supabase changes frequently.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The old non RFC fixture ids (`1111\u2026`, `2222\u2026`) remain on the hosted development project. Plan a one time, idempotent removal in the seed rewrite so the new pool can own the fixture emails\",\"rejected_spans\":[\"(the email unique constraint forbids a second row with the same address)\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The constraint and Zod drift test from spec 0003 (check constraint value lists agree with their Zod counterparts) was deliberately not a feature 8 target; revisit it when the first constraint carrying feature lands.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Playwright is installed, configured and given its first real end to end test together, by the first feature that needs a browser (feature 9 onward). Two things are waiting on it: the missing profile path in this spec's verify list, which stays a manual browser check until then, and any later claim that only a real browser can prove.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Adzuna (feature 11) and the model client router (feature 13) record their own fixtures when built, using the recorder and store this feature provides.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Decide whether the pre commit hook (husky and lint-staged) should also run unit tests now that a test command exists; the hook currently runs lint, format, and type check only.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Driving a Server Action without a browser is deferred to feature 9, deliberately.** Spec 0001 names it as one of three must satisfy constraints on the test runner; this feature meets the other two (the local stack with the real policies, and the development only session mint).\",\"rejected_spans\":[\"It is deferred rather than met because there is nothing honest to drive yet: the only Server Action in the repository is `signInWithDevPassword`, which feature 7 deletes, and the first real write path is feature 9's profile form. The runner choice does not rest on it either, because the technique is a plain HTTP exchange against a running server and would work identically under any candidate runner.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"spec 0001's third runner constraint is met, by `test/integration/profile-form.test.ts` (spec 0010, AC-14).\",\"rejected_spans\":[\"**Done on 2026 09 02**\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"fetch the page, read the hidden fields React renders on the form (`$ACTION_REF_<n>`, `$ACTION_<n>:0` carrying the action id, `$ACTION_<n>:1` carrying the previous `useActionState` state, `$ACTION_KEY`), then post those plus the real form fields as multipart to the same route; a `303` carrying the session cookie means it ran. **`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside. See `test/integration/profile-form.test.ts`. The `Next-Action` header path is fiddlier and silently loses the form fields. Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel. Feature 9 owns proving it, and its done when clause in the scope now says so.\",\"rejected_spans\":[\"Recorded here so it is not rediscovered a third time:\",\"This wording said `1` until then, which is wrong on any page carrying more than one form: `/profile` renders the identity form as `$ACTION_REF_2`, because the signed in header's sign out form is numbered first.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Add `test/fixtures/` to `.prettierignore` when the store is built (build step 6 above).\",\"rejected_spans\":[\"`.lintstagedrc.json` runs `prettier --write` on every staged `*.json` and `pnpm format:check` runs in CI, so a recording committed as the service sent it would be rewritten on commit and would fail the check until it was. A reformatted recording is no longer byte for byte what the service sent, which is the one property the store exists to hold.\"],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Layer a hard refusal on `NEXT_PUBLIC_VERCEL_ENV === \\\"production\\\"` on top of the `DEV_SESSION_ENABLED` guard, **in the mint only**. This is not the `NODE_ENV` check spec 0002 rejected for good reason: `VERCEL_ENV` separates a preview from production accurately, so the preview thread keeps working while production gains a guard in code rather than in configuration.\",\"rejected_spans\":[\"Shrunk 2026-08-29 by spec 0007, which deletes the development sign in outright, so the second half of this item has no subject left.\",\"Today the whole claim that the secret key path can never mint a session on a deployed site rests on one variable never being set, and the verify step for AC-3 is a human confirming it.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The seed re-mint has an ordering constraint and a blast radius, both easy to miss. `db-migrate.yml` runs `supabase/seed.sql` against the hosted development project on every pull request with `ON_ERROR_STOP=1`, and `auth.users.email` is unique, so the old rows must be deleted earlier in the file than the new rows are inserted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Second effect: while this branch is open, any other open pull request still carrying the old seed will fail that workflow, because its old ids now collide on the emails the new pool owns.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Land it when few branches are open, or expect to rebase them.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The cookie jar's delete on empty value branch has no test. `setAll()` in `test/helpers/cookie-jar.ts` treats an empty cookie value as a deletion rather than storing an empty string, and nothing exercises that path. Six lines to close: set a cookie, `setAll` it to `\\\"\\\"`, assert `names()` no longer lists it.\",\"rejected_spans\":[\"because no test signs out or clears a cookie\",\"It is correct today by reading, not by a test that would fail if it regressed, and getting it backwards would leave a signed out jar still reading as though it held a session.\",\"Found by the fresh model `/check review` on pull request #18 and deliberately left unfixed in that round, since it is a different module from the recorder being repaired there.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The named span is not assertable, so binding rule 4 has no test anywhere. `test/setup/sentry-transport.ts` collects only envelope items whose type is `event`, and `installInMemorySentry()` sets `tracesSampleRate: 0`, so a `Sentry.startSpan` call produces nothing a test can read. The route to try, unverified: sample traces above zero and collect `transaction` items alongside `event` ones, then assert that a FAILING read still emits `profile.read`\",\"rejected_spans\":[\"The rule requires the span to open as the FIRST statement of any operation whose failure rate matters, because a span opened after a guard leaves the failure ratio alert with no denominator during exactly the outage it exists to catch. That ordering is correct today by reading, in `readOwnProfile()` and `readKillSwitch()` alike, not by a test that would fail if either regressed.\",\"Found during `/test data model` on 2026-08-27, on branch `test/data-model`, and recorded there as not covered. NOT found by a `/check review`: that round's findings were the constraint tests and a missing doc comment.\",\"Deliberately left unfixed in that round, since the gap is in this feature's own test helper rather than in anything feature 4 ships, and widening a feature's test run into feature 8's infrastructure is how a scoped change stops being reviewable.\",\"since a span that only appears on success is precisely the broken case the rule describes.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"phrase\":\"**Done on 2026 09 02**\",\"date\":\"2026-09-02\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":null,\"label\":\"build step 6\",\"mention\":\"build step 6 above\"},\"phrase\":\"when the store is built (build step 6 above)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"mention\":\"spec 0007\"},\"phrase\":\"Shrunk 2026-08-29 by spec 0007, which deletes the development sign in outright, so the second half of this item has no subject left.\",\"date\":\"2026-08-29\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Verify the exact Supabase admin auth API surface (`generateLink`, `verifyOtp`, or the current equivalent) against current Supabase docs at build time. Do not trust training data for the session mint call shape.",
+        "rejected_spans": [
+          "per the supabase skill's core principle that Supabase changes frequently."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The old non RFC fixture ids (`1111\u2026`, `2222\u2026`) remain on the hosted development project. Plan a one time, idempotent removal in the seed rewrite so the new pool can own the fixture emails",
+        "rejected_spans": [
+          "(the email unique constraint forbids a second row with the same address)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The constraint and Zod drift test from spec 0003 (check constraint value lists agree with their Zod counterparts) was deliberately not a feature 8 target; revisit it when the first constraint carrying feature lands.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Playwright is installed, configured and given its first real end to end test together, by the first feature that needs a browser (feature 9 onward). Two things are waiting on it: the missing profile path in this spec's verify list, which stays a manual browser check until then, and any later claim that only a real browser can prove.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Adzuna (feature 11) and the model client router (feature 13) record their own fixtures when built, using the recorder and store this feature provides.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Decide whether the pre commit hook (husky and lint-staged) should also run unit tests now that a test command exists; the hook currently runs lint, format, and type check only.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Driving a Server Action without a browser is deferred to feature 9, deliberately.** Spec 0001 names it as one of three must satisfy constraints on the test runner; this feature meets the other two (the local stack with the real policies, and the development only session mint).",
+        "rejected_spans": [
+          "It is deferred rather than met because there is nothing honest to drive yet: the only Server Action in the repository is `signInWithDevPassword`, which feature 7 deletes, and the first real write path is feature 9's profile form. The runner choice does not rest on it either, because the technique is a plain HTTP exchange against a running server and would work identically under any candidate runner."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "spec 0001's third runner constraint is met, by `test/integration/profile-form.test.ts` (spec 0010, AC-14).",
+        "rejected_spans": [
+          "**Done on 2026 09 02**"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "fetch the page, read the hidden fields React renders on the form (`$ACTION_REF_<n>`, `$ACTION_<n>:0` carrying the action id, `$ACTION_<n>:1` carrying the previous `useActionState` state, `$ACTION_KEY`), then post those plus the real form fields as multipart to the same route; a `303` carrying the session cookie means it ran. **`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside. See `test/integration/profile-form.test.ts`. The `Next-Action` header path is fiddlier and silently loses the form fields. Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel. Feature 9 owns proving it, and its done when clause in the scope now says so.",
+        "rejected_spans": [
+          "Recorded here so it is not rediscovered a third time:",
+          "This wording said `1` until then, which is wrong on any page carrying more than one form: `/profile` renders the identity form as `$ACTION_REF_2`, because the signed in header's sign out form is numbered first."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Add `test/fixtures/` to `.prettierignore` when the store is built (build step 6 above).",
+        "rejected_spans": [
+          "`.lintstagedrc.json` runs `prettier --write` on every staged `*.json` and `pnpm format:check` runs in CI, so a recording committed as the service sent it would be rewritten on commit and would fail the check until it was. A reformatted recording is no longer byte for byte what the service sent, which is the one property the store exists to hold."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Layer a hard refusal on `NEXT_PUBLIC_VERCEL_ENV === \"production\"` on top of the `DEV_SESSION_ENABLED` guard, **in the mint only**. This is not the `NODE_ENV` check spec 0002 rejected for good reason: `VERCEL_ENV` separates a preview from production accurately, so the preview thread keeps working while production gains a guard in code rather than in configuration.",
+        "rejected_spans": [
+          "Shrunk 2026-08-29 by spec 0007, which deletes the development sign in outright, so the second half of this item has no subject left.",
+          "Today the whole claim that the secret key path can never mint a session on a deployed site rests on one variable never being set, and the verify step for AC-3 is a human confirming it."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The seed re-mint has an ordering constraint and a blast radius, both easy to miss. `db-migrate.yml` runs `supabase/seed.sql` against the hosted development project on every pull request with `ON_ERROR_STOP=1`, and `auth.users.email` is unique, so the old rows must be deleted earlier in the file than the new rows are inserted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Second effect: while this branch is open, any other open pull request still carrying the old seed will fail that workflow, because its old ids now collide on the emails the new pool owns.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Land it when few branches are open, or expect to rebase them.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The cookie jar's delete on empty value branch has no test. `setAll()` in `test/helpers/cookie-jar.ts` treats an empty cookie value as a deletion rather than storing an empty string, and nothing exercises that path. Six lines to close: set a cookie, `setAll` it to `\"\"`, assert `names()` no longer lists it.",
+        "rejected_spans": [
+          "because no test signs out or clears a cookie",
+          "It is correct today by reading, not by a test that would fail if it regressed, and getting it backwards would leave a signed out jar still reading as though it held a session.",
+          "Found by the fresh model `/check review` on pull request #18 and deliberately left unfixed in that round, since it is a different module from the recorder being repaired there."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The named span is not assertable, so binding rule 4 has no test anywhere. `test/setup/sentry-transport.ts` collects only envelope items whose type is `event`, and `installInMemorySentry()` sets `tracesSampleRate: 0`, so a `Sentry.startSpan` call produces nothing a test can read. The route to try, unverified: sample traces above zero and collect `transaction` items alongside `event` ones, then assert that a FAILING read still emits `profile.read`",
+        "rejected_spans": [
+          "The rule requires the span to open as the FIRST statement of any operation whose failure rate matters, because a span opened after a guard leaves the failure ratio alert with no denominator during exactly the outage it exists to catch. That ordering is correct today by reading, in `readOwnProfile()` and `readKillSwitch()` alike, not by a test that would fail if either regressed.",
+          "Found during `/test data model` on 2026-08-27, on branch `test/data-model`, and recorded there as not covered. NOT found by a `/check review`: that round's findings were the constraint tests and a missing doc comment.",
+          "Deliberately left unfixed in that round, since the gap is in this feature's own test helper rather than in anything feature 4 ships, and widening a feature's test run into feature 8's infrastructure is how a scoped change stops being reviewable.",
+          "since a span that only appears on success is precisely the broken case the rule describes."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "phrase": "**Done on 2026 09 02**",
+        "date": "2026-09-02",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": null,
+          "label": "build step 6",
+          "mention": "build step 6 above"
+        },
+        "phrase": "when the store is built (build step 6 above)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": null,
+          "mention": "spec 0007"
+        },
+        "phrase": "Shrunk 2026-08-29 by spec 0007, which deletes the development sign in outright, so the second half of this item has no subject left.",
+        "date": "2026-08-29",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "record": "0002",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 377,
+  "output_tokens": 516,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "0958971294d7463791f0c12878682af5",
+  "artifact_format_version": 3,
+  "unit_sha256": "8ee2b3030eda8d5bbca5d3e3d26245c76cdc5bdab45079443a1f13cc24d4a9d5",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1: Vercel git integration, three environments, a separate development database.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Deploy from git through Vercel with `main` as production and every other branch as a protected preview, backed by two hosted Supabase projects (development and production) plus local Docker, with schema delivered by GitHub Actions and the global kill switch stored as a single row in Postgres.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`) \u00b7 `sentry-sdk-setup` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-sdk-setup/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1: Vercel git integration, three environments, a separate development database.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Deploy from git through Vercel with `main` as production and every other branch as a protected preview, backed by two hosted Supabase projects (development and production) plus local Docker, with schema delivered by GitHub Actions and the global kill switch stored as a single row in Postgres.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`) \u00b7 `sentry-sdk-setup` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-sdk-setup/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

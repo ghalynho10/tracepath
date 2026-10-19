@@ -1,0 +1,609 @@
+{
+  "record": "0003",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0003-data-model/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 5521,
+  "output_tokens": 4930,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "27806d01149b45f98c70705babc1e6d4",
+  "artifact_format_version": 3,
+  "unit_sha256": "1582d622854ac41e19fbb1cd9dfb5f662c89d77232c80bb6af08cd98abda24da",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One profile row per auth user, guaranteed by the primary key rather than by a constraint that could be dropped.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No row in any of the six is reachable by a user other than its owner. Enforced by policy, with `force row level security` so it applies to the table owner too.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`anon` holds no privilege on any of the six,\",\"rejected_spans\":[\"so a request with no session is refused before policies are even consulted.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One application per user per source listing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A pay amount never exists without its currency, in either table,\",\"rejected_spans\":[\"so nothing can render a bare number as money.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A pay range never has its top below its bottom, and a single figure stays a single figure.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A work history period never ends before it starts, and every stored date is the first of a month.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"An answer always belongs to the same user as its application, guaranteed by the composite foreign key.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every value is stored raw. No column holds a formatted or derived string.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`updated_at` is never written by application code.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Reads and writes are confined to the caller's own rows, with the predicate `(select auth.uid()) = profile_id`, or `= id` on `profile` itself.\",\"rejected_spans\":[\"The `select` wrapper makes Postgres evaluate the call once rather than once per row.\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The clause differs by action, and Postgres refuses the wrong one.** `select` and `delete` policies carry `using` only; an `insert` policy carries `with check` only; an `update` policy carries both, and it needs both,\",\"rejected_spans\":[\"since `using` decides which rows may be changed and `with check` decides what they may be changed into. Omitting `with check` on `update` would let a user move their own row under another user's profile.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Twenty three policies in total, not twenty four: `profile_skill` gets `select`, `insert` and `delete` only.\",\"rejected_spans\":[\"It has no update path by design (a renamed skill is a delete plus an insert), and a policy for an action nothing performs is dead code that still has to be read and trusted.\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Every table carries its own explicit grant**, per spec 0002's invariant 6 and its follow-up naming this feature: `grant select, insert, update, delete on <table> to authenticated`, and `grant select, insert, delete` on `profile_skill`. Nothing is granted to `anon`. Nothing is granted to `service_role` either, which is deliberate and load bearing.\",\"rejected_spans\":[\"spec 0002's task 10 proved on the hosted project that the Data API exposure setting withholds privileges from `service_role` too, contradicting the installed `supabase` skill, so a role that is not named here genuinely holds nothing. A missing grant produces a hard permission denial rather than an empty result, which is the failure shape this project wants.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No table here is reachable by the secret key client, and nothing in this feature belongs in `src/lib/supabase/secret.ts`. Binding rule 1 is untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Personal data lives in five of the six tables: a real name, a location and a written summary in `profile`; a list of skills in `profile_skill`; an employment history in `work_experience`; stated pay expectations and desired locations in `job_preference`; the jobs applied to in `application`; and the user's own typed answers in `application_answer`. Only the fixed value lists are impersonal. All of it is the field list feature 21's privacy notice must describe, and feature 8's fixtures must never populate any of it with anything real.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Deletion is a real capability, not a policy exception: a user may delete their own profile, and the cascade does the rest.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: None. No new environment variable, secret or third party credential.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every edge is `on delete cascade`, so one delete at either of the top two levels removes everything below it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: None. `application` deliberately carries no status column in v1, so there is no state machine to define.\",\"rejected_spans\":[\"Feature 23 introduces one when the dashboard needs it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This feature ships no new route and no Server Action.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a seeded development user signs in on a real preview and the health page shows their own profile row, verifies **AC-14**, **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Isolation: the second seeded user signs in and sees a different row, and never the first user's, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Isolation\"},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth and permission: a request with no session is refused with a permission denial rather than an empty result, and `has_table_privilege` confirms `anon` and `service_role` hold nothing on any of the six, verifies **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth and permission\"},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Write refusal: an insert placing a row under another user's profile is refused by the insert policy's `with check`, and an update moving an owned row under another profile is refused by the update policy's `with check`, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Write refusal\"},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Missing profile: a signed in user with no profile row sees a visible expected failure, not a blank page, verifies **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Missing profile\"},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Duplicate application: inserting the same `(profile_id, source, source_job_id)` twice is refused by the database, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Duplicate application\"},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Orphan application: inserting an application for a profile that does not exist is refused by the foreign key, verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Orphan application\"},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Constraint sweep: pay without currency, a top below a bottom, a duplicate skill differing only in case, a date not on the first, and an end before a start are each refused, verifies **AC-9**, **AC-10**, **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Constraint sweep\"},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Cascade: deleting the auth user leaves no row in any of the six, verifies **AC-5**. Deleting only the profile does the same while the auth account remains, verifies **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"Cascade\"},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Dashboard edit: changing a row by hand in Supabase updates `updated_at`, verifies **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Dashboard edit\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-14**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**, **AC-10**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-9**, **AC-10**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-9**, **AC-10**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-12**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One profile row per auth user, guaranteed by the primary key rather than by a constraint that could be dropped.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No row in any of the six is reachable by a user other than its owner. Enforced by policy, with `force row level security` so it applies to the table owner too.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`anon` holds no privilege on any of the six,",
+        "rejected_spans": [
+          "so a request with no session is refused before policies are even consulted."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One application per user per source listing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A pay amount never exists without its currency, in either table,",
+        "rejected_spans": [
+          "so nothing can render a bare number as money."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A pay range never has its top below its bottom, and a single figure stays a single figure.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A work history period never ends before it starts, and every stored date is the first of a month.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "An answer always belongs to the same user as its application, guaranteed by the composite foreign key.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every value is stored raw. No column holds a formatted or derived string.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`updated_at` is never written by application code.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Reads and writes are confined to the caller's own rows, with the predicate `(select auth.uid()) = profile_id`, or `= id` on `profile` itself.",
+        "rejected_spans": [
+          "The `select` wrapper makes Postgres evaluate the call once rather than once per row."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The clause differs by action, and Postgres refuses the wrong one.** `select` and `delete` policies carry `using` only; an `insert` policy carries `with check` only; an `update` policy carries both, and it needs both,",
+        "rejected_spans": [
+          "since `using` decides which rows may be changed and `with check` decides what they may be changed into. Omitting `with check` on `update` would let a user move their own row under another user's profile."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Twenty three policies in total, not twenty four: `profile_skill` gets `select`, `insert` and `delete` only.",
+        "rejected_spans": [
+          "It has no update path by design (a renamed skill is a delete plus an insert), and a policy for an action nothing performs is dead code that still has to be read and trusted."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Every table carries its own explicit grant**, per spec 0002's invariant 6 and its follow-up naming this feature: `grant select, insert, update, delete on <table> to authenticated`, and `grant select, insert, delete` on `profile_skill`. Nothing is granted to `anon`. Nothing is granted to `service_role` either, which is deliberate and load bearing.",
+        "rejected_spans": [
+          "spec 0002's task 10 proved on the hosted project that the Data API exposure setting withholds privileges from `service_role` too, contradicting the installed `supabase` skill, so a role that is not named here genuinely holds nothing. A missing grant produces a hard permission denial rather than an empty result, which is the failure shape this project wants."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No table here is reachable by the secret key client, and nothing in this feature belongs in `src/lib/supabase/secret.ts`. Binding rule 1 is untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Personal data lives in five of the six tables: a real name, a location and a written summary in `profile`; a list of skills in `profile_skill`; an employment history in `work_experience`; stated pay expectations and desired locations in `job_preference`; the jobs applied to in `application`; and the user's own typed answers in `application_answer`. Only the fixed value lists are impersonal. All of it is the field list feature 21's privacy notice must describe, and feature 8's fixtures must never populate any of it with anything real.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Deletion is a real capability, not a policy exception: a user may delete their own profile, and the cascade does the rest.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: None. No new environment variable, secret or third party credential.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every edge is `on delete cascade`, so one delete at either of the top two levels removes everything below it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: None. `application` deliberately carries no status column in v1, so there is no state machine to define.",
+        "rejected_spans": [
+          "Feature 23 introduces one when the dashboard needs it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This feature ships no new route and no Server Action.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a seeded development user signs in on a real preview and the health page shows their own profile row, verifies **AC-14**, **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Isolation: the second seeded user signs in and sees a different row, and never the first user's, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Isolation"
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth and permission: a request with no session is refused with a permission denial rather than an empty result, and `has_table_privilege` confirms `anon` and `service_role` hold nothing on any of the six, verifies **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth and permission"
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Write refusal: an insert placing a row under another user's profile is refused by the insert policy's `with check`, and an update moving an owned row under another profile is refused by the update policy's `with check`, verifies **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Write refusal"
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Missing profile: a signed in user with no profile row sees a visible expected failure, not a blank page, verifies **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Missing profile"
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Duplicate application: inserting the same `(profile_id, source, source_job_id)` twice is refused by the database, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Duplicate application"
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Orphan application: inserting an application for a profile that does not exist is refused by the foreign key, verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Orphan application"
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Constraint sweep: pay without currency, a top below a bottom, a duplicate skill differing only in case, a date not on the first, and an end before a start are each refused, verifies **AC-9**, **AC-10**, **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Constraint sweep"
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Cascade: deleting the auth user leaves no row in any of the six, verifies **AC-5**. Deleting only the profile does the same while the auth account remains, verifies **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Cascade"
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Dashboard edit: changing a row by hand in Supabase updates `updated_at`, verifies **AC-12**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Dashboard edit"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**, **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-14**, **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:23"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**, **AC-10**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-9**, **AC-10**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-9**, **AC-10**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "verifies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

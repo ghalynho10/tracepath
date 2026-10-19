@@ -1,0 +1,253 @@
+{
+  "record": "0004",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2196,
+  "output_tokens": 3163,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d40f29b7955347e6bbb98ea15427a9c8",
+  "artifact_format_version": 3,
+  "unit_sha256": "0f0fa5fdf65e26d2e5a49485d4931c846c68cee21a69b792edd2fb060eff0f9f",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 2 in rationale.md (Vitest integration against the real local stack), with Playwright named as the eventual end to end runner but not installed here.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One sentence: Test foundation uses Vitest for unit and integration, a development only session mint through the admin magiclink exchange, a bespoke recorder that replays real recorded responses from files, a re-minted fixture pool with valid ids, fresh on demand users for write tests, an in memory Sentry transport the test can read rather than a disabled one, and a CI job that runs integration against the local Supabase stack.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Runners**: Vitest for unit and integration. Playwright is the recorded choice for end to end and is **not installed by this feature**. The choice is binding whether or not the file exists, so the first feature that genuinely needs a browser stands the tool up alongside its first real test.\",\"rejected_spans\":[\"A config with no test proves nothing today, has to be kept current across several features before anything runs it, and forces CI to decide what to do with an empty suite.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Fixture pool**: the three fixture users stay in `supabase/seed.sql`, re-minted with valid version 4 UUIDs, idempotent, applied locally and to the hosted development project only. The third user keeps no profile row. A development only helper mints additional users on demand for tests that write.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Session mint**: a development only helper under `test/helpers/` that uses the secret client (binding rule 1, caller 1) to generate an admin magiclink for a fixture user and exchanges it with `verifyOtp` through the request scoped client into an in memory cookie jar. Guarded by `DEV_SESSION_ENABLED` (default false, fails closed). Programmatic only, no HTTP route. It does not depend on the development password sign in that feature 7 deletes.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Record and replay**: a bespoke recorder at the fetch boundary. Record mode (explicit opt in, warns) saves a real response to `test/fixtures/<service>/`. Replay mode returns recorded responses and never touches the network. A missing fixture fails loudly, naming the file and the record command. Proven now against GitHub's public REST API (`https://api.github.com/repos/vercel/next.js`). Record mode reaches it exactly once. Adzuna and the model router record their own fixtures later.\",\"rejected_spans\":[\"chosen as the stand in because it is genuinely external, free, needs no credential, is about as stable as anything on the internet, and answers with a real header set including rate limit and caching headers, so the redaction in AC-13 is exercised against real headers rather than invented ones\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Test isolation**: tests that write data use a fresh on demand user per test; the fixed pool serves the read only isolation proof.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Sentry**: the test setup replaces the transport with an in memory one rather than leaving the SDK uninitialised. Nothing reaches Sentry, and the test can read what `failure()` produced, so the reporting contract (fingerprint, tags, level) is asserted rather than assumed.\",\"rejected_spans\":[\"A transport that never existed would make every such assertion pass while proving nothing.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Commands**: `pnpm test` (unit, no stack) and `pnpm test:integration` (needs `pnpm db:start`, clear error if the stack is down). Both are `vitest run`, never bare `vitest`\",\"rejected_spans\":[\"which watches by default and would hang the pre commit hook the follow-up below considers\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**CI**: a test job runs `supabase start` in Docker (image caching) then the unit and integration suites.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Where test files live**: unit tests are colocated beside the code they prove (`src/features/profile/queries.test.ts`), following the folder by feature rule. Everything else lives in a top level `test/` tree: `test/integration/` for tests that span features and belong to no single one, `test/helpers/` for the mint and the on demand user helper, and `test/fixtures/` for the replay store. Putting the helpers there rather than under `src/lib/testing` is the load bearing half, see the Security model below.\",\"rejected_spans\":[\"since a feature's tests are that feature's code\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Module resolution under Vitest**: the Vitest config aliases `server-only` to an empty module. The alias is chosen over adding `react-server` to `resolve.conditions`\",\"rejected_spans\":[\"`server-only@0.0.1` maps the `react-server` condition to an empty file and every other condition to a module whose whole body is a `throw`, and Vitest resolves the default condition, so `import \\\"server-only\\\"` fails at import time. That line is the first statement of `src/lib/supabase/secret.ts`, `src/lib/supabase/server.ts` and `src/features/profile/queries.ts`, which is every module the integration thread needs.\",\"which is not scoped to one package and would pull React's own server build into every test\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The request scoped client takes an injected cookie adapter**: `createClient()` in `src/lib/supabase/server.ts` gains an optional cookie adapter, defaulting to the `next/headers` store it reads today. Tests pass an in memory jar.\",\"rejected_spans\":[\"The isolation proof therefore drives the same module every page and Server Action drives, rather than a second Supabase client hand built in test code, which would be exactly the mock encoding the same assumption as the code under test that this feature exists to make impossible.\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Test environments**: two Vitest projects. The integration project runs the `node` environment and may not run jsdom. The unit project runs jsdom only where a test renders a component.\",\"rejected_spans\":[\"because `@t3-oss/env-nextjs` refuses to hand out a server variable when it believes it is on the client, so `env.SUPABASE_SECRET_KEY` would be unreachable inside the mint\",\"Next.js's own Vitest guide suggests jsdom throughout; it is written for component tests and does not fit the integration half.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Driving a Server Action without a browser**: deferred to feature 9, deliberately and named rather than dropped.\",\"rejected_spans\":[\"Spec 0001 makes it one of three must satisfy constraints on the runner and this feature meets the other two. See the Follow-up, which records both the reasoning and the technique.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Implementation skills**: `supabase` (supabase/agent-skills, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (supabase/agent-skills, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (getsentry/sentry-for-ai, `.agents/skills/sentry-nextjs-sdk/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A list of skill packages to consult while implementing; it states no requirement, outcome, build step or test.\"}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"id\":null,\"mention\":\"feature 9\"},\"phrase\":\"deferred to feature 9\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 2 in rationale.md (Vitest integration against the real local stack), with Playwright named as the eventual end to end runner but not installed here.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One sentence: Test foundation uses Vitest for unit and integration, a development only session mint through the admin magiclink exchange, a bespoke recorder that replays real recorded responses from files, a re-minted fixture pool with valid ids, fresh on demand users for write tests, an in memory Sentry transport the test can read rather than a disabled one, and a CI job that runs integration against the local Supabase stack.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Runners**: Vitest for unit and integration. Playwright is the recorded choice for end to end and is **not installed by this feature**. The choice is binding whether or not the file exists, so the first feature that genuinely needs a browser stands the tool up alongside its first real test.",
+        "rejected_spans": [
+          "A config with no test proves nothing today, has to be kept current across several features before anything runs it, and forces CI to decide what to do with an empty suite."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Fixture pool**: the three fixture users stay in `supabase/seed.sql`, re-minted with valid version 4 UUIDs, idempotent, applied locally and to the hosted development project only. The third user keeps no profile row. A development only helper mints additional users on demand for tests that write.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Session mint**: a development only helper under `test/helpers/` that uses the secret client (binding rule 1, caller 1) to generate an admin magiclink for a fixture user and exchanges it with `verifyOtp` through the request scoped client into an in memory cookie jar. Guarded by `DEV_SESSION_ENABLED` (default false, fails closed). Programmatic only, no HTTP route. It does not depend on the development password sign in that feature 7 deletes.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Record and replay**: a bespoke recorder at the fetch boundary. Record mode (explicit opt in, warns) saves a real response to `test/fixtures/<service>/`. Replay mode returns recorded responses and never touches the network. A missing fixture fails loudly, naming the file and the record command. Proven now against GitHub's public REST API (`https://api.github.com/repos/vercel/next.js`). Record mode reaches it exactly once. Adzuna and the model router record their own fixtures later.",
+        "rejected_spans": [
+          "chosen as the stand in because it is genuinely external, free, needs no credential, is about as stable as anything on the internet, and answers with a real header set including rate limit and caching headers, so the redaction in AC-13 is exercised against real headers rather than invented ones"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Test isolation**: tests that write data use a fresh on demand user per test; the fixed pool serves the read only isolation proof.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Sentry**: the test setup replaces the transport with an in memory one rather than leaving the SDK uninitialised. Nothing reaches Sentry, and the test can read what `failure()` produced, so the reporting contract (fingerprint, tags, level) is asserted rather than assumed.",
+        "rejected_spans": [
+          "A transport that never existed would make every such assertion pass while proving nothing."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Commands**: `pnpm test` (unit, no stack) and `pnpm test:integration` (needs `pnpm db:start`, clear error if the stack is down). Both are `vitest run`, never bare `vitest`",
+        "rejected_spans": [
+          "which watches by default and would hang the pre commit hook the follow-up below considers"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**CI**: a test job runs `supabase start` in Docker (image caching) then the unit and integration suites.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Where test files live**: unit tests are colocated beside the code they prove (`src/features/profile/queries.test.ts`), following the folder by feature rule. Everything else lives in a top level `test/` tree: `test/integration/` for tests that span features and belong to no single one, `test/helpers/` for the mint and the on demand user helper, and `test/fixtures/` for the replay store. Putting the helpers there rather than under `src/lib/testing` is the load bearing half, see the Security model below.",
+        "rejected_spans": [
+          "since a feature's tests are that feature's code"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Module resolution under Vitest**: the Vitest config aliases `server-only` to an empty module. The alias is chosen over adding `react-server` to `resolve.conditions`",
+        "rejected_spans": [
+          "`server-only@0.0.1` maps the `react-server` condition to an empty file and every other condition to a module whose whole body is a `throw`, and Vitest resolves the default condition, so `import \"server-only\"` fails at import time. That line is the first statement of `src/lib/supabase/secret.ts`, `src/lib/supabase/server.ts` and `src/features/profile/queries.ts`, which is every module the integration thread needs.",
+          "which is not scoped to one package and would pull React's own server build into every test"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The request scoped client takes an injected cookie adapter**: `createClient()` in `src/lib/supabase/server.ts` gains an optional cookie adapter, defaulting to the `next/headers` store it reads today. Tests pass an in memory jar.",
+        "rejected_spans": [
+          "The isolation proof therefore drives the same module every page and Server Action drives, rather than a second Supabase client hand built in test code, which would be exactly the mock encoding the same assumption as the code under test that this feature exists to make impossible."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Test environments**: two Vitest projects. The integration project runs the `node` environment and may not run jsdom. The unit project runs jsdom only where a test renders a component.",
+        "rejected_spans": [
+          "because `@t3-oss/env-nextjs` refuses to hand out a server variable when it believes it is on the client, so `env.SUPABASE_SECRET_KEY` would be unreachable inside the mint",
+          "Next.js's own Vitest guide suggests jsdom throughout; it is written for component tests and does not fit the integration half."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Driving a Server Action without a browser**: deferred to feature 9, deliberately and named rather than dropped.",
+        "rejected_spans": [
+          "Spec 0001 makes it one of three must satisfy constraints on the runner and this feature meets the other two. See the Follow-up, which records both the reasoning and the technique."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**Implementation skills**: `supabase` (supabase/agent-skills, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (supabase/agent-skills, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (getsentry/sentry-for-ai, `.agents/skills/sentry-nextjs-sdk/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A list of skill packages to consult while implementing; it states no requirement, outcome, build step or test.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "feature 9"
+        },
+        "phrase": "deferred to feature 9",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

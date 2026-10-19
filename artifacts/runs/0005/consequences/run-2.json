@@ -1,0 +1,161 @@
+{
+  "record": "0005",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 625,
+  "output_tokens": 1187,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "7f16b5b1c38c4cbdb8628c463804ea73",
+  "artifact_format_version": 3,
+  "unit_sha256": "6f49c18fe8aa5a66f3cd1a86c7b45799e571f5504d9464bc369cc9179db4fcaf",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every later screen (feature 6's landing page, feature 11's results card) builds against a real, consistent component set\",\"rejected_spans\":[\"instead of copying the prototype's patterns forward\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The mono register regains the meaning the review found it had lost; the \\\"SOON\\\" badge and the `MatchBar` duplicate stop drifting because there is only one definition of each.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The accessibility floor (focus, forced colors, contrast, reduced motion) is codified once in CSS rather than reimplemented per page.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`tailwind-variants` is a new runtime dependency; it requires `@source` directives instead of the removed JavaScript `content` config, a Tailwind v4 specific setup detail.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Building twelve components up front is more initial work than directly porting the prototype's JSX;\",\"rejected_spans\":[\"feature 6 pays this cost back by not having to fix the same tells twice.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The elevated/flat split is now a real constraint: a flat `Card` can never grow a shadow without breaking the two idiom rule the review's findings depend on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The 60/40 grid ratio is a project wide default; a future page that genuinely needs a different weighting has to consciously deviate from it, not just reach for a new fraction.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`docs/design/JobHuntLanding.tsx` remains an unbuilt reference until feature 6 ports it onto this system.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The reasoning section's existing background inversion becomes the template for the alternation convention rather than staying a one off exception.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`--surface-sunken` is a deliberate, narrow addition to the settled seven token palette; it is not open for reinterpretation the way the rest of the palette is.\",\"rejected_spans\":[\"justified by the composition review's own page background exception\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 6\",\"id\":null,\"mention\":\"until feature 6 ports it onto this system\"},\"phrase\":\"remains an unbuilt reference until feature 6 ports it onto this system\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every later screen (feature 6's landing page, feature 11's results card) builds against a real, consistent component set",
+        "rejected_spans": [
+          "instead of copying the prototype's patterns forward"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The mono register regains the meaning the review found it had lost; the \"SOON\" badge and the `MatchBar` duplicate stop drifting because there is only one definition of each.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The accessibility floor (focus, forced colors, contrast, reduced motion) is codified once in CSS rather than reimplemented per page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`tailwind-variants` is a new runtime dependency; it requires `@source` directives instead of the removed JavaScript `content` config, a Tailwind v4 specific setup detail.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Building twelve components up front is more initial work than directly porting the prototype's JSX;",
+        "rejected_spans": [
+          "feature 6 pays this cost back by not having to fix the same tells twice."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The elevated/flat split is now a real constraint: a flat `Card` can never grow a shadow without breaking the two idiom rule the review's findings depend on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The 60/40 grid ratio is a project wide default; a future page that genuinely needs a different weighting has to consciously deviate from it, not just reach for a new fraction.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`docs/design/JobHuntLanding.tsx` remains an unbuilt reference until feature 6 ports it onto this system.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The reasoning section's existing background inversion becomes the template for the alternation convention rather than staying a one off exception.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`--surface-sunken` is a deliberate, narrow addition to the settled seven token palette; it is not open for reinterpretation the way the rest of the palette is.",
+        "rejected_spans": [
+          "justified by the composition review's own page background exception"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 6",
+          "id": null,
+          "label": null,
+          "mention": "until feature 6 ports it onto this system"
+        },
+        "phrase": "remains an unbuilt reference until feature 6 ports it onto this system",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

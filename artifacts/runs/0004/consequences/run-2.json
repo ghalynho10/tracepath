@@ -1,0 +1,221 @@
+{
+  "record": "0004",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 730,
+  "output_tokens": 1558,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "fa49c5d00ffa431ab27fc02f9d75eeda",
+  "artifact_format_version": 3,
+  "unit_sha256": "75138e24a8c0af12fff70d9d1c6fcbe55dca42056dc6738957e9139d946fb68d",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Tests prove real isolation against real policies with real sessions\",\"rejected_spans\":[\", closing the class of bug the reference project suffered (six passing tests that all mocked the same wrong assumption)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Recorded responses are real and reviewable in git, so a wrong assumption in a hand written mock cannot pass.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The secret key session path is provably blocked outside development.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The fixture pool becomes parser correct, so the profile read can tighten to `z.uuid()`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The bespoke recorder is custom code to build and maintain; there is no off the shelf tool doing exactly this.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The CI integration job needs Docker and pulls Supabase images, so it is slower and more setup than a unit only job.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The session mint needs cookie jar plumbing in tests, which is real test infrastructure to keep working as the framework moves.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Integration tests are slower than unit tests, and the two command split is a new convention to learn.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`createClient()` gains a parameter that exists for the test layer's benefit. It is optional and no existing caller changes, but it is production code shaped by testability\",\"rejected_spans\":[\", which is worth naming rather than hiding\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The recorder now owns redaction as well as record and replay, so the custom code is larger than record and replay alone, and a service whose credential travels somewhere unusual needs its own declaration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No end to end runner exists yet. Playwright is chosen on paper and installed by the first feature that needs a browser\",\"rejected_spans\":[\", so nothing inert sits in the tree in the meantime\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The development password sign in stays until feature 7 deletes it; the mint does not depend on it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The `server-only` alias is a test only concession. The marker still does its real job in the application build, where the `react-server` condition genuinely applies\",\"rejected_spans\":[\"; the alias only stops it throwing in a runner that never resolves that condition\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`pnpm db:start` remains the way the local stack runs.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The dev only helpers open no named spans; `docs/observability/spans.md` is unchanged.\",\"rejected_spans\":[\"they are not failure alerted operations, so\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 7\",\"id\":null,\"mention\":\"until feature 7 deletes it\"},\"phrase\":\"stays until feature 7 deletes it\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Tests prove real isolation against real policies with real sessions",
+        "rejected_spans": [
+          ", closing the class of bug the reference project suffered (six passing tests that all mocked the same wrong assumption)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Recorded responses are real and reviewable in git, so a wrong assumption in a hand written mock cannot pass.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The secret key session path is provably blocked outside development.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The fixture pool becomes parser correct, so the profile read can tighten to `z.uuid()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The bespoke recorder is custom code to build and maintain; there is no off the shelf tool doing exactly this.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The CI integration job needs Docker and pulls Supabase images, so it is slower and more setup than a unit only job.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The session mint needs cookie jar plumbing in tests, which is real test infrastructure to keep working as the framework moves.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Integration tests are slower than unit tests, and the two command split is a new convention to learn.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`createClient()` gains a parameter that exists for the test layer's benefit. It is optional and no existing caller changes, but it is production code shaped by testability",
+        "rejected_spans": [
+          ", which is worth naming rather than hiding"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The recorder now owns redaction as well as record and replay, so the custom code is larger than record and replay alone, and a service whose credential travels somewhere unusual needs its own declaration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No end to end runner exists yet. Playwright is chosen on paper and installed by the first feature that needs a browser",
+        "rejected_spans": [
+          ", so nothing inert sits in the tree in the meantime"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The development password sign in stays until feature 7 deletes it; the mint does not depend on it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The `server-only` alias is a test only concession. The marker still does its real job in the application build, where the `react-server` condition genuinely applies",
+        "rejected_spans": [
+          "; the alias only stops it throwing in a runner that never resolves that condition"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`pnpm db:start` remains the way the local stack runs.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The dev only helpers open no named spans; `docs/observability/spans.md` is unchanged.",
+        "rejected_spans": [
+          "they are not failure alerted operations, so"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 7",
+          "id": null,
+          "label": null,
+          "mention": "until feature 7 deletes it"
+        },
+        "phrase": "stays until feature 7 deletes it",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

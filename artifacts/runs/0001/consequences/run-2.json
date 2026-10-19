@@ -1,0 +1,209 @@
+{
+  "record": "0001",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1008,
+  "output_tokens": 1796,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "a47b5ec4d6ad4fb1b9fb8d8b65c1d8af",
+  "artifact_format_version": 3,
+  "unit_sha256": "343a546996d52fab5233772c4d9d50ec6f42e1cef00e4d4a61cc0c5eb79fd79b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Isolation between users is enforced in Postgres, so it holds for every query including ones nobody remembered to guard. This is what makes the GA level claim in features 4 and 7 provable rather than asserted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two of the reference project's three named failure modes are answered mechanically rather than by intention: a swallowed failure becomes a compile error, and the array read as an object is caught by parsing the response at the boundary rather than asserting a type onto it. Note that the second is a runtime guarantee from Zod plus generated types, not a compile time one; a wrong declared type cannot be caught by the compiler that was given it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The third, a correctly classified failure that was wrong only in aggregate, is answered by the ratio alert.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A model swap is a reviewable commit, and the eval harness runs against a named configuration rather than whatever happened to be deployed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No credential and no query shape reaches the browser\",\"rejected_spans\":[\", because there is no client side data path.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No object relational mapper means complex joins are written by hand and typed from generated types rather than inferred. Feature 4's schema work carries more weight as a result.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The `Result` union is more ceremony than throwing. Every boundary call has a narrowing step, and it will feel like overhead in the first week.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Reporting from inside `failure()` means Sentry sees failures constructed during tests unless the test environment disables the transport. That has to be handled at scaffold time or the first test run will produce noise and burn quota.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Binding rule 4's span placement is a convention, not something the compiler enforces. It is the one rule in this spec that a later feature can break silently by adding an early return above the span. The gated attempt counter exists precisely because of that weakness, but it covers only gated operations; every other operation's denominator still rests on the convention holding.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Sampling at 1.0 on gated operations costs more Sentry quota than a sampled configuration. Acceptable at this traffic volume, and it needs revisiting if volume ever grows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Server Actions are harder to exercise with a plain HTTP client than route handlers, so feature 8's fixtures carry more of the testing burden.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Vercel's free tier prohibits commercial use. Fine today because the project is explicitly non commercial, and it becomes a real constraint if that ever changes.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Three tooling decisions are open, so `/develop` cannot scaffold the test setup or the linter from this spec alone.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Tailwind v4 configuration lives in CSS, not JavaScript. Any Tailwind guidance written for v3 needs translating.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Next.js 16 builds with Turbopack by default.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Docker is required locally for the Supabase stack.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The legacy Supabase key names appear in most existing tutorials. This project uses the current publishable and secret keys throughout, so tutorial code will need adjusting.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Isolation between users is enforced in Postgres, so it holds for every query including ones nobody remembered to guard. This is what makes the GA level claim in features 4 and 7 provable rather than asserted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two of the reference project's three named failure modes are answered mechanically rather than by intention: a swallowed failure becomes a compile error, and the array read as an object is caught by parsing the response at the boundary rather than asserting a type onto it. Note that the second is a runtime guarantee from Zod plus generated types, not a compile time one; a wrong declared type cannot be caught by the compiler that was given it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The third, a correctly classified failure that was wrong only in aggregate, is answered by the ratio alert.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A model swap is a reviewable commit, and the eval harness runs against a named configuration rather than whatever happened to be deployed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No credential and no query shape reaches the browser",
+        "rejected_spans": [
+          ", because there is no client side data path."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No object relational mapper means complex joins are written by hand and typed from generated types rather than inferred. Feature 4's schema work carries more weight as a result.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The `Result` union is more ceremony than throwing. Every boundary call has a narrowing step, and it will feel like overhead in the first week.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reporting from inside `failure()` means Sentry sees failures constructed during tests unless the test environment disables the transport. That has to be handled at scaffold time or the first test run will produce noise and burn quota.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Binding rule 4's span placement is a convention, not something the compiler enforces. It is the one rule in this spec that a later feature can break silently by adding an early return above the span. The gated attempt counter exists precisely because of that weakness, but it covers only gated operations; every other operation's denominator still rests on the convention holding.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Sampling at 1.0 on gated operations costs more Sentry quota than a sampled configuration. Acceptable at this traffic volume, and it needs revisiting if volume ever grows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Server Actions are harder to exercise with a plain HTTP client than route handlers, so feature 8's fixtures carry more of the testing burden.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Vercel's free tier prohibits commercial use. Fine today because the project is explicitly non commercial, and it becomes a real constraint if that ever changes.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Three tooling decisions are open, so `/develop` cannot scaffold the test setup or the linter from this spec alone.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Tailwind v4 configuration lives in CSS, not JavaScript. Any Tailwind guidance written for v3 needs translating.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Next.js 16 builds with Turbopack by default.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Docker is required locally for the Supabase stack.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The legacy Supabase key names appear in most existing tutorials. This project uses the current publishable and secret keys throughout, so tutorial code will need adjusting.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

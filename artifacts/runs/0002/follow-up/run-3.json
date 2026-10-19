@@ -1,0 +1,446 @@
+{
+  "record": "0002",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3129,
+  "output_tokens": 5168,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "47d9aafa51604a50b02061fb365ad76e",
+  "artifact_format_version": 3,
+  "unit_sha256": "d4bc53f4cf0017b85efc5a574e36121f304382362965ea20ffcbffc6955fcfee",
+  "raw_response": "{\"entities\":[{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"FollowUp\",\"span\":\"**AC-12 needed a platform fact this spec did not check: branch protection is not offered on a private repository on the free GitHub plan.** Found during the build on 2026-08-21: both the rulesets and the classic branch protection endpoints returned 403, \\\"upgrade to GitHub Pro or make this repository public\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Resolved 2026-08-22**: the full commit history was scanned first and carried no secret (no `.env` file was ever committed, and every `sb_secret_` match was the literal placeholder in documentation), the engineer made the repository public, and protection was applied. `main` now requires a pull request, requires the `Lint, type check, build` check to pass, includes administrators, and refuses force pushes and deletion.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Add `Apply migrations (development)` to the required checks**, once the GitHub Actions secrets are set and the seed's write path has been proved by hand. It is deliberately not required yet. Spec consequences already assume it becomes required.\",\"rejected_spans\":[\"a required check that cannot pass would block every pull request, which is a worse failure than the one it guards\",\"since that is what turns a paused development project into a red pull request\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 4 must carry invariant 1 in its own spec.** The expand then contract rule is written here, but feature 4 owns the real schema and is where a destructive migration will actually be written.\",\"rejected_spans\":[\"A rule that lives only in the deployment spec is a rule the data model spec will not read.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Confirm the exact framework prefixed system variable names on Vercel at build time** (`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`) rather than trusting this spec.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done, 2026-08-21**, against Vercel's framework environment variables reference: all three exist for the Next.js preset, at both build time and runtime. No fallback variable is needed. Still worth one glance at a real deployed page, since a documented name and a populated one are not the same claim.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Confirm Sentry's current surface for quota notifications** when wiring AC-15. Spec 0001 already carries the same caution about the failure rate alert surface; both are worth doing in one sitting with the `sentry-sdk-setup` skill open. **Surface found, 2026-08-21**: it is called spend notifications, at Settings \u2192 Subscription \u2192 Manage spend notifications, defaulting to owners and billing members at 80% of reserved volume. Recorded in `docs/observability/README.md`. The box stays open until the setting is actually confirmed on in the Sentry organisation.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Check whether `@sentry/nextjs` already infers the release on Vercel** before setting it explicitly,\",\"rejected_spans\":[\"so the release is not configured twice with two different values\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done, 2026-08-21**: it does, in the installed packages rather than in documentation. `@sentry/node-core` 10.70.0 (`getSentryRelease`) and `@sentry/bundler-plugin-core` 5.3.0 both fall back to `VERCEL_GIT_COMMIT_SHA`, which Vercel populates at build and at runtime. The release is therefore left unset in both Sentry config files, with the check recorded there.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**A custom domain is deferred, not declined.** Moving from the `vercel.app` subdomain later means updating three redirect lists (Google, GitHub, Supabase) plus one Vercel setting. Cheapest to do before feature 7 wires OAuth, not after.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Supabase Branching is the better isolation answer and was rejected on cost alone.** Revisit if this project ever has a budget, or if the development project's pausing becomes a real drag.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The Vercel MCP server is present in the environment and unauthorised.** Binding rule 7 says Supabase MCP only, so connecting it is a deliberate decision that would amend that rule, not a default.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Agent Skills and MCP discovery for Vercel and GitHub Actions was offered and declined, on the grounds that this environment already exposes Vercel skills. Record the decline in root `AGENTS.md` so it is not offered again.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Once the production URL is claimed, write the real origin into this spec's configuration table so `NEXT_PUBLIC_SITE_URL` has one recorded correct value rather than a description of one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done, 2026-08-21**: `https://usejobhunt.vercel.app`, in the configuration table and under What is actually provisioned.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 4 inherits the explicit grant rule as well as invariant 1.** With the Data API not exposing new tables, every table feature 4 creates needs its own `grant`, to a role that matches the client meant to read it.\",\"rejected_spans\":[\"Both rules bite only in a hosted project, which is exactly why a spec written against a local Docker database will not think of them.\"],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**What task 10's privilege check found**, on the hosted development project on 2026-08-22, in the dashboard query editor:\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`service_role` holds `select` on `public.app_settings` and `usage` on schema `public`. `anon` and `authenticated` hold nothing on the table. So the design holds as written.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The seed's write path (task 5) **succeeded**, twice, with no duplication. So the hosted `postgres` role does bypass row level security for that insert, and the risk task 5 was written to catch did not materialise. The migration's deliberate insert before `force row level security` is therefore belt and braces rather than the load bearing ordering it was written as. Leave it\",\"rejected_spans\":[\"it costs nothing and the next hosted project is not guaranteed to answer the same way\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The half that decides feature 4, answered.** `has_table_privilege('service_role', 'public.scaffold_check', 'select')` returns **false** on the hosted development project, and false locally. **The setting withholds privileges from `service_role` too**, contradicting the installed `supabase` skill, which describes it as affecting `anon` and `authenticated` only. The grant in the `app_settings` migration was necessary, invariant 6 is load bearing, and every table feature 4 creates needs its own grant to the role that actually reads it.\",\"rejected_spans\":[\"`service_role` holding `select` on `app_settings` proved nothing about the Data API setting, because that grant is explicit in the migration. The isolating test is `public.scaffold_check`, granted to `authenticated` only and never to `service_role`.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Migrations reached the hosted development project outside the workflow.** Both `20260820041006` and `20260821120000` are recorded in `supabase_migrations.schema_migrations` there with versions and names, so they were applied by `supabase db push` rather than pasted, and the first workflow run will skip them as already applied. Nothing is broken and no pull request will go red. Production has had neither migration applied and gets both on the first merge to `main`.\",\"rejected_spans\":[\"It is recorded because invariant 5 names the workflow as the only sanctioned path, and a second hand application that happened to be harmless is still worth one line.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The Data API exposure setting stops being a choice on 30 October 2026**, when Supabase applies it to every project. Nothing here needs changing on that date, since both projects are already set that way\",\"rejected_spans\":[\"and that is the point of doing it now rather than being moved by a platform change later\"],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**An already-pushed migration edited in place leaves every hosted project it already reached silently stale, and `db-migrate.yml` cannot detect it, because invariant 5 names the workflow as the only sanctioned path but says nothing about a file changing after that path has already run once.** Found on feature 10 (spec 0011), 2026-09-04, a third fresh model review: `20260902120000_usage_gating.sql` was pushed to the development project on 2026-09-03, then edited in place twice more, once for that round's own fixes and once for the round after. Every push since silently skipped the file, the workflow reported \\\"Remote database is up to date\\\", and the pull request stayed green throughout. Remediated by hand this once with `supabase db reset --linked`, and confirmed afterward by a schema dump against the hosted project rather than by trusting the reset succeeded. Two things worth deciding, not yet decided: whether a CI step could catch this class of drift going forward, and whether the convention should simply be \\\"never edit a migration file once any hosted project has applied it, write a follow-up migration instead\\\". Production has never had this specific file's content diverge from what was pushed, since it is not on `main` yet, but the same shape can recur on any future migration edited after its first hosted push.\",\"rejected_spans\":[\"`supabase db push` compares the migrations directory against the migration history table by version and applies only what is missing (this spec's own rationale.md, line 104), so\",\"the exact \\\"two projects running different schemas\\\" failure this spec's workflow header names, just not caught by anything that runs automatically\",\"(safe only because the development project holds synthetic data by construction, this spec's own Environment topology section)\",\"a content hash of each already-applied migration file, compared against what the history table recorded when it was first pushed, would catch an in-place edit that a version number cannot\",\"which needs no new tooling but only holds if every session remembers it\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-12\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"phrase\":\"**Resolved 2026-08-22**\",\"date\":\"2026-08-22\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"**Done, 2026-08-21**\",\"date\":\"2026-08-21\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"phrase\":\"**Done, 2026-08-21**\",\"date\":\"2026-08-21\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"phrase\":\"**Done, 2026-08-21**\",\"date\":\"2026-08-21\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"mention\":\"once the GitHub Actions secrets are set and the seed's write path has been proved by hand\"},\"phrase\":\"once the GitHub Actions secrets are set and the seed's write path has been proved by hand\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"when wiring AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"mention\":\"Spec 0001 already carries the same caution about the failure rate alert surface\"},\"phrase\":\"Spec 0001 already carries the same caution about the failure rate alert surface\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"mention\":\"feature 10 (spec 0011)\"},\"phrase\":\"Found on feature 10 (spec 0011)\",\"date\":\"2026-09-04\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "FollowUp",
+        "span": "**AC-12 needed a platform fact this spec did not check: branch protection is not offered on a private repository on the free GitHub plan.** Found during the build on 2026-08-21: both the rulesets and the classic branch protection endpoints returned 403, \"upgrade to GitHub Pro or make this repository public\".",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Resolved 2026-08-22**: the full commit history was scanned first and carried no secret (no `.env` file was ever committed, and every `sb_secret_` match was the literal placeholder in documentation), the engineer made the repository public, and protection was applied. `main` now requires a pull request, requires the `Lint, type check, build` check to pass, includes administrators, and refuses force pushes and deletion.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Add `Apply migrations (development)` to the required checks**, once the GitHub Actions secrets are set and the seed's write path has been proved by hand. It is deliberately not required yet. Spec consequences already assume it becomes required.",
+        "rejected_spans": [
+          "a required check that cannot pass would block every pull request, which is a worse failure than the one it guards",
+          "since that is what turns a paused development project into a red pull request"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 4 must carry invariant 1 in its own spec.** The expand then contract rule is written here, but feature 4 owns the real schema and is where a destructive migration will actually be written.",
+        "rejected_spans": [
+          "A rule that lives only in the deployment spec is a rule the data model spec will not read."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Confirm the exact framework prefixed system variable names on Vercel at build time** (`NEXT_PUBLIC_VERCEL_ENV`, `NEXT_PUBLIC_VERCEL_BRANCH_URL`, `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`) rather than trusting this spec.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done, 2026-08-21**, against Vercel's framework environment variables reference: all three exist for the Next.js preset, at both build time and runtime. No fallback variable is needed. Still worth one glance at a real deployed page, since a documented name and a populated one are not the same claim.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Confirm Sentry's current surface for quota notifications** when wiring AC-15. Spec 0001 already carries the same caution about the failure rate alert surface; both are worth doing in one sitting with the `sentry-sdk-setup` skill open. **Surface found, 2026-08-21**: it is called spend notifications, at Settings \u2192 Subscription \u2192 Manage spend notifications, defaulting to owners and billing members at 80% of reserved volume. Recorded in `docs/observability/README.md`. The box stays open until the setting is actually confirmed on in the Sentry organisation.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Check whether `@sentry/nextjs` already infers the release on Vercel** before setting it explicitly,",
+        "rejected_spans": [
+          "so the release is not configured twice with two different values"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done, 2026-08-21**: it does, in the installed packages rather than in documentation. `@sentry/node-core` 10.70.0 (`getSentryRelease`) and `@sentry/bundler-plugin-core` 5.3.0 both fall back to `VERCEL_GIT_COMMIT_SHA`, which Vercel populates at build and at runtime. The release is therefore left unset in both Sentry config files, with the check recorded there.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**A custom domain is deferred, not declined.** Moving from the `vercel.app` subdomain later means updating three redirect lists (Google, GitHub, Supabase) plus one Vercel setting. Cheapest to do before feature 7 wires OAuth, not after.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Supabase Branching is the better isolation answer and was rejected on cost alone.** Revisit if this project ever has a budget, or if the development project's pausing becomes a real drag.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The Vercel MCP server is present in the environment and unauthorised.** Binding rule 7 says Supabase MCP only, so connecting it is a deliberate decision that would amend that rule, not a default.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Agent Skills and MCP discovery for Vercel and GitHub Actions was offered and declined, on the grounds that this environment already exposes Vercel skills. Record the decline in root `AGENTS.md` so it is not offered again.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Once the production URL is claimed, write the real origin into this spec's configuration table so `NEXT_PUBLIC_SITE_URL` has one recorded correct value rather than a description of one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done, 2026-08-21**: `https://usejobhunt.vercel.app`, in the configuration table and under What is actually provisioned.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 4 inherits the explicit grant rule as well as invariant 1.** With the Data API not exposing new tables, every table feature 4 creates needs its own `grant`, to a role that matches the client meant to read it.",
+        "rejected_spans": [
+          "Both rules bite only in a hosted project, which is exactly why a spec written against a local Docker database will not think of them."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**What task 10's privilege check found**, on the hosted development project on 2026-08-22, in the dashboard query editor:",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`service_role` holds `select` on `public.app_settings` and `usage` on schema `public`. `anon` and `authenticated` hold nothing on the table. So the design holds as written.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The seed's write path (task 5) **succeeded**, twice, with no duplication. So the hosted `postgres` role does bypass row level security for that insert, and the risk task 5 was written to catch did not materialise. The migration's deliberate insert before `force row level security` is therefore belt and braces rather than the load bearing ordering it was written as. Leave it",
+        "rejected_spans": [
+          "it costs nothing and the next hosted project is not guaranteed to answer the same way"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The half that decides feature 4, answered.** `has_table_privilege('service_role', 'public.scaffold_check', 'select')` returns **false** on the hosted development project, and false locally. **The setting withholds privileges from `service_role` too**, contradicting the installed `supabase` skill, which describes it as affecting `anon` and `authenticated` only. The grant in the `app_settings` migration was necessary, invariant 6 is load bearing, and every table feature 4 creates needs its own grant to the role that actually reads it.",
+        "rejected_spans": [
+          "`service_role` holding `select` on `app_settings` proved nothing about the Data API setting, because that grant is explicit in the migration. The isolating test is `public.scaffold_check`, granted to `authenticated` only and never to `service_role`."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Migrations reached the hosted development project outside the workflow.** Both `20260820041006` and `20260821120000` are recorded in `supabase_migrations.schema_migrations` there with versions and names, so they were applied by `supabase db push` rather than pasted, and the first workflow run will skip them as already applied. Nothing is broken and no pull request will go red. Production has had neither migration applied and gets both on the first merge to `main`.",
+        "rejected_spans": [
+          "It is recorded because invariant 5 names the workflow as the only sanctioned path, and a second hand application that happened to be harmless is still worth one line."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The Data API exposure setting stops being a choice on 30 October 2026**, when Supabase applies it to every project. Nothing here needs changing on that date, since both projects are already set that way",
+        "rejected_spans": [
+          "and that is the point of doing it now rather than being moved by a platform change later"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**An already-pushed migration edited in place leaves every hosted project it already reached silently stale, and `db-migrate.yml` cannot detect it, because invariant 5 names the workflow as the only sanctioned path but says nothing about a file changing after that path has already run once.** Found on feature 10 (spec 0011), 2026-09-04, a third fresh model review: `20260902120000_usage_gating.sql` was pushed to the development project on 2026-09-03, then edited in place twice more, once for that round's own fixes and once for the round after. Every push since silently skipped the file, the workflow reported \"Remote database is up to date\", and the pull request stayed green throughout. Remediated by hand this once with `supabase db reset --linked`, and confirmed afterward by a schema dump against the hosted project rather than by trusting the reset succeeded. Two things worth deciding, not yet decided: whether a CI step could catch this class of drift going forward, and whether the convention should simply be \"never edit a migration file once any hosted project has applied it, write a follow-up migration instead\". Production has never had this specific file's content diverge from what was pushed, since it is not on `main` yet, but the same shape can recur on any future migration edited after its first hosted push.",
+        "rejected_spans": [
+          "`supabase db push` compares the migrations directory against the migration history table by version and applies only what is missing (this spec's own rationale.md, line 104), so",
+          "the exact \"two projects running different schemas\" failure this spec's workflow header names, just not caught by anything that runs automatically",
+          "(safe only because the development project holds synthetic data by construction, this spec's own Environment topology section)",
+          "a content hash of each already-applied migration file, compared against what the history table recorded when it was first pushed, would catch an in-place edit that a version number cannot",
+          "which needs no new tooling but only holds if every session remembers it"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "phrase": "**Resolved 2026-08-22**",
+        "date": "2026-08-22",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "**Done, 2026-08-21**",
+        "date": "2026-08-21",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "phrase": "**Done, 2026-08-21**",
+        "date": "2026-08-21",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "phrase": "**Done, 2026-08-21**",
+        "date": "2026-08-21",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": null,
+          "mention": "once the GitHub Actions secrets are set and the seed's write path has been proved by hand"
+        },
+        "phrase": "once the GitHub Actions secrets are set and the seed's write path has been proved by hand",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "when wiring AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0001 already carries the same caution about the failure rate alert surface"
+        },
+        "phrase": "Spec 0001 already carries the same caution about the failure rate alert surface",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "feature 10 (spec 0011)"
+        },
+        "phrase": "Found on feature 10 (spec 0011)",
+        "date": "2026-09-04",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "record": "0005",
+  "section": "Component design",
+  "section_slug": "component-design",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3707,
+  "output_tokens": 2813,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f2c9f450c36644d9bea30b95c89f6359",
+  "artifact_format_version": 3,
+  "unit_sha256": "fe768bd26315843e416adf9128942cb537d6e79ebe3ddbfc31ed2ca0c0abbe7e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every component below lives at `src/components/ui/<kebab-case-name>.tsx`, one file per component, named exports only, per `AGENTS.md`'s folder by feature rule (anything shared across features moves to `src/components/ui`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`Button` props are a union, not one flat object, and `disabled` is forbidden on the link shape.** So `disabled` beside `href` is a COMPILE ERROR, not a prop that gets dropped. A caller who wants a link the reader cannot follow does not want a disabled link; they want no link, so render the label with `Text` and say why it is unavailable. `external` is likewise forbidden without an `href`, and `type` is forbidden with one.\",\"rejected_spans\":[\"HTML has no disabled anchor: no attribute, `disabled:` styling never matches, and the link stays clickable and in the tab order.\",\"(This rule was added after the 2026 08 28 review found the earlier flat prop type accepted `disabled` beside `href` and silently discarded it.)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`Card` takes an `as` prop** (`div` \\\\| `article` \\\\| `section` \\\\| `li`, default `div`)\",\"rejected_spans\":[\"so a card that is a real landmark, such as one job result in a list, says so in the markup rather than being a styled `div`.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Accessible name overrides.** `Button` and `MatchBar` each take an optional `label`, and `Section` takes an optional `label` plus an `id`. `Section`'s `id` is the anchor target for an in page link.\",\"rejected_spans\":[\"These exist for AC-13: twenty result cards all reading \\\"Apply\\\" need distinct names, a bar beside text that already states the score should not read it twice, and a section whose heading does not identify it needs one in the landmark list.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A `Card` is one idiom or the other, never a blend: the flat idiom's full strength `border-line` never appears together with a shadow. The elevated card's low opacity edge hint (`border-line/25`) IS part of the elevated idiom, and is what **AC-3** permits as \\\"minimal or no border\\\" (the component inventory table below records the shipped form of that, \\\"minimal border\\\", since the elevated card always carries the hint and never zero border); it is not a border led treatment and does not breach this rule.\",\"rejected_spans\":[\"The shape being ruled out is the one Tell #8 named, a full hairline box that has also been given a shadow.\"],\"known_trap_flags\":[\"embedded_second_claim\",\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two adjacent `Section`s with the same `background` render a `hairline` divider; two adjacent sections with different backgrounds render `none`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`MatchBar` never renders with a hand written cell count; `matched` and `total` are always the only inputs.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No component ships a default entrance animation.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: Not applicable. This feature ships no data access, no authentication, and no Server Actions; every component here is presentational.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: One variable, `UI_PREVIEW_ENABLED`, declared in `src/env.ts` and defaulting to false. It gates the component preview route at `/ui-preview` (see the `## Build plan` step 12), which renders every base component at every variant. The route calls `notFound()` when the variable is not explicitly true, so production, which never sets it, is blocked by absence rather than by a label a build tool chooses. It is deliberately NOT tied to `DEV_SESSION_ENABLED`, nor to `NODE_ENV`. No credentials.\",\"rejected_spans\":[\"so the keyboard, focus, contrast and responsive passes have a real surface to run against, now and on every later re-check\",\"which feature 7 deletes along with the development only sign in,\",\"which a Vercel Preview build labels `production` and where the page is genuinely wanted\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Set in **Vercel**, per environment, in the same shape spec 0002 uses: `UI_PREVIEW_ENABLED` is **not set** in Production, `true` in Preview and `true` in Local `.env.local`. The Local column is committed as an example in `.env.example`.\",\"rejected_spans\":[\"The Preview value was confirmed set in the Vercel dashboard by the engineer on 2026 08 28, which is how it is known: no automated check reads that dashboard, so this line is the record.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Keyboard only pass over every base component (`Button`, `Card`'s interactive regions, `Chip`, `Section` anchors) confirms focus order and visible focus, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`MatchBar` rendered with `matched={6} total={8}` and `matched={8} total={11}` in the same page confirms both proportions render correctly from the same component, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`forced-colors: active` and `prefers-contrast: more` emulation confirms borders and text remain visible without relying on shadow or fill alone, verifies **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"`Card.Footer` rendered with a 116 by 23 pixel placeholder block at 320px width confirms the row wraps to a stacked layout rather than compressing it, verifies **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every component below lives at `src/components/ui/<kebab-case-name>.tsx`, one file per component, named exports only, per `AGENTS.md`'s folder by feature rule (anything shared across features moves to `src/components/ui`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`Button` props are a union, not one flat object, and `disabled` is forbidden on the link shape.** So `disabled` beside `href` is a COMPILE ERROR, not a prop that gets dropped. A caller who wants a link the reader cannot follow does not want a disabled link; they want no link, so render the label with `Text` and say why it is unavailable. `external` is likewise forbidden without an `href`, and `type` is forbidden with one.",
+        "rejected_spans": [
+          "HTML has no disabled anchor: no attribute, `disabled:` styling never matches, and the link stays clickable and in the tab order.",
+          "(This rule was added after the 2026 08 28 review found the earlier flat prop type accepted `disabled` beside `href` and silently discarded it.)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`Card` takes an `as` prop** (`div` \\| `article` \\| `section` \\| `li`, default `div`)",
+        "rejected_spans": [
+          "so a card that is a real landmark, such as one job result in a list, says so in the markup rather than being a styled `div`."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Accessible name overrides.** `Button` and `MatchBar` each take an optional `label`, and `Section` takes an optional `label` plus an `id`. `Section`'s `id` is the anchor target for an in page link.",
+        "rejected_spans": [
+          "These exist for AC-13: twenty result cards all reading \"Apply\" need distinct names, a bar beside text that already states the score should not read it twice, and a section whose heading does not identify it needs one in the landmark list."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A `Card` is one idiom or the other, never a blend: the flat idiom's full strength `border-line` never appears together with a shadow. The elevated card's low opacity edge hint (`border-line/25`) IS part of the elevated idiom, and is what **AC-3** permits as \"minimal or no border\" (the component inventory table below records the shipped form of that, \"minimal border\", since the elevated card always carries the hint and never zero border); it is not a border led treatment and does not breach this rule.",
+        "rejected_spans": [
+          "The shape being ruled out is the one Tell #8 named, a full hairline box that has also been given a shadow."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two adjacent `Section`s with the same `background` render a `hairline` divider; two adjacent sections with different backgrounds render `none`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`MatchBar` never renders with a hand written cell count; `matched` and `total` are always the only inputs.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No component ships a default entrance animation.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: Not applicable. This feature ships no data access, no authentication, and no Server Actions; every component here is presentational.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: One variable, `UI_PREVIEW_ENABLED`, declared in `src/env.ts` and defaulting to false. It gates the component preview route at `/ui-preview` (see the `## Build plan` step 12), which renders every base component at every variant. The route calls `notFound()` when the variable is not explicitly true, so production, which never sets it, is blocked by absence rather than by a label a build tool chooses. It is deliberately NOT tied to `DEV_SESSION_ENABLED`, nor to `NODE_ENV`. No credentials.",
+        "rejected_spans": [
+          "so the keyboard, focus, contrast and responsive passes have a real surface to run against, now and on every later re-check",
+          "which feature 7 deletes along with the development only sign in,",
+          "which a Vercel Preview build labels `production` and where the page is genuinely wanted"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Set in **Vercel**, per environment, in the same shape spec 0002 uses: `UI_PREVIEW_ENABLED` is **not set** in Production, `true` in Preview and `true` in Local `.env.local`. The Local column is committed as an example in `.env.example`.",
+        "rejected_spans": [
+          "The Preview value was confirmed set in the Vercel dashboard by the engineer on 2026 08 28, which is how it is known: no automated check reads that dashboard, so this line is the record."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Keyboard only pass over every base component (`Button`, `Card`'s interactive regions, `Chip`, `Section` anchors) confirms focus order and visible focus, verifies **AC-13**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "`MatchBar` rendered with `matched={6} total={8}` and `matched={8} total={11}` in the same page confirms both proportions render correctly from the same component, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "`forced-colors: active` and `prefers-contrast: more` emulation confirms borders and text remain visible without relying on shadow or fill alone, verifies **AC-12**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "`Card.Footer` rendered with a 116 by 23 pixel placeholder block at 320px width confirms the row wraps to a stacked layout rather than compressing it, verifies **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "verifies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

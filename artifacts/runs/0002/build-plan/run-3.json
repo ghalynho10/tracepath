@@ -1,0 +1,763 @@
+{
+  "record": "0002",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3603,
+  "output_tokens": 8522,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "124915ba9d0749d5b12ef314618392af",
+  "artifact_format_version": 3,
+  "unit_sha256": "4ff631cef23c5d94079b994c01b2ad66836fb8f5d5c676ea0aac160ba41e4963",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Already created, so record and confirm rather than create.** Both Supabase projects exist, development and production, each with the Data API set not to expose new tables. Confirm both are in `us-east-1`, then record, for each: project URL, publishable key, secret key, project ref, database password and connection string. Satisfies **AC-2**.\",\"rejected_spans\":[\"Task 3 and task 5 both need these, not just the refs.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add `NEXT_PUBLIC_SITE_URL`, `DEV_SESSION_ENABLED`, `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` and the three optional Vercel system values to `src/env.ts` and `.env.example`, and make the two Sentry DSN values conditionally required as described above. Satisfies **AC-4**, **AC-13**.\",\"rejected_spans\":[\"so a missing variable fails the build by name before any deploy exists to be confused by it\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Already created, so verify rather than create.** The Vercel project `jobhunt` exists from the GitHub repository, with production branch `main`, Node 24, system environment variables enabled, functions in `iad1`, and the variable matrix set per environment. Check each of those against the configuration table above, check that `SKIP_ENV_VALIDATION` is set nowhere, and correct whatever does not match rather than assuming it does. While in the dashboard, settle the open question about variable names: confirm the three `NEXT_PUBLIC_VERCEL_*` names actually reach the client bundle, and if any does not, set an explicit variable per environment in its place and say so here. Satisfies **AC-1**, **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Already on, so verify rather than turn on.** Vercel Authentication is set to standard protection. Confirm both halves of what that means here: a preview URL in a private window asks for a login, and `https://usejobhunt.vercel.app` in a private window does not. Satisfies **AC-3**.\",\"rejected_spans\":[\"since the whole environment split rests on it\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Prove the seed's write path by hand against the real development project, before any of it goes into CI.** Run the seed manually once the project exists. If it is refused, the fix is small (insert the rows through the secret key client, or add a narrowly scoped insert policy). Satisfies **AC-5**, **AC-11**.\",\"rejected_spans\":[\"The migration creates `scaffold_check` as `postgres`, so `postgres` owns it, and it forces row level security with no insert policy. A table owner under `force row level security` does not bypass policies unless its role carries superuser or `BYPASSRLS`. The local Docker `postgres` is a superuser, so this can never surface locally; whether the hosted `postgres` role carries `BYPASSRLS` is unconfirmed.\",\"but finding out through a red required check on an unrelated pull request is the expensive path\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add `.github/workflows/db-migrate.yml`: `supabase db push` to the development project on `pull_request` (`opened`, `synchronize`, `reopened`), to production on a push to `main`, failing the run visibly on a failed migration. Make `supabase/seed.sql` idempotent and apply it to the development project only, in the same workflow, with `psql \\\"$SUPABASE_DB_URL_DEV\\\" -f supabase/seed.sql`. Correct that file's header comment while you are in it. A failing seed step fails the workflow, the same as a failing migration. Satisfies **AC-11**.\",\"rejected_spans\":[\"it currently reads \\\"Local development seed. Runs on `pnpm db:reset`, never against a real project\\\", which this workflow makes untrue.\",\"That is deliberate, and it is the second way this workflow can turn an unrelated pull request red, alongside a paused development project. Accepted for the same reason: a seed that silently stopped applying would leave the development project without the two users AC-5 is proved with, and the next person to run task 9 would debug the wrong thing.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Replace the `NODE_ENV` guard with the validated `DEV_SESSION_ENABLED` check, failing closed, in **both** places it lives: `src/features/dev-session/actions.ts` and the page guard in `src/app/(marketing)/sign-in/page.tsx`. Satisfies **AC-10**.\",\"rejected_spans\":[\"Fixing only the action leaves the sign in page returning a not found on every preview, so the thread stays unreachable and AC-5 cannot be run.\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the current origin resolver beside the canonical site URL. Satisfies **AC-5**.\",\"rejected_spans\":[\"so features 6 and 7 have both values named and neither has to be invented later\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Re run the whole feature 1 thread against a real preview URL as two different users, and record the steps in `verify.md`. Satisfies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the `app_settings` migration, **in this statement order**: the table, the single row check, the `updated_at` trigger, then the `insert` of the single row, then `enable row level security`, then `force row level security` with no policies, then no grant to `anon` and none to `authenticated` and one explicit `grant select on public.app_settings to service_role` for the reason given in the data model sketch. The insert comes **before** `force row level security`. Then, in the same sitting and before task 11 trusts anything: check what privileges `service_role` actually holds on the new table (`select has_table_privilege('service_role', 'public.app_settings', 'select')`). Also run AC-9's proof here: query `app_settings` with a signed in user's token and confirm a permission denial rather than an empty result, and record the result in `verify.md` the way task 9 records its run. Satisfies **AC-6**, **AC-9**.\",\"rejected_spans\":[\"because the order is the correctness\",\"deliberately. Forced row level security applies to the table owner too, and a table with policies forced and zero policies denies an insert to any role that respects them. Whether the hosted `postgres` role carries `BYPASSRLS` is the same unconfirmed thing task 5 exists to settle, so a migration that forces first and inserts second could be denied on its first application to both hosted projects while passing locally, where `postgres` is a superuser. Ordering it this way removes the question instead of betting on the answer.\",\"This settles whether the Data API setting withholds privileges from `service_role` at all, which decides what a denial in task 11 means.\",\"rather than leaving it to a test scenario with no owner\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add `src/lib/kill-switch.ts` reading the flag through the secret key client, opening the `kill_switch.read` span as its first statement, parsing the row with Zod, and returning a failure that means switched on. Register the span in `docs/observability/spans.md`. **The module must check the returned `error` field itself.** The right shape is: `attempt()` for a genuine transport throw, an explicit check of `error` mapped to `database_unavailable`, an explicit check for no row mapped to `record_not_found`, and Zod for a row that parses wrong. **Then prove the read by hand against the real development project before anything trusts it**, the same way task 5 proves the seed's write path. A successful read of `false` means the privileges are right. Satisfies **AC-6**, **AC-8**.\",\"rejected_spans\":[\"`attempt()` converts a thrown exception, and only a thrown exception, per its own doc comment in src/lib/result.ts. The Supabase client does not throw on a permission denial or a missing row; it returns `{ data: null, error }`. So wrapping the call in `attempt()` and reading only what comes back would let a denial arrive as a success carrying `null`, which Zod would then reject as `response_malformed`.\",\"Three named kinds, three real causes, rather than one misleading one.\",\"A denial means one of three things, which is why task 10 checks the privilege first: the table grant is missing, `service_role` lacks `usage` on schema `public` (a `select` grant without schema `usage` still denies), or the key in the environment is not what it is believed to be. Without task 10's check, a denial here looks the same in all three cases, and the switch would read as permanently engaged while every visible signal looked exactly as designed.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Render the flag's value and `updated_at` on the deployed scaffold check page, then prove a dashboard flip changes it with no deploy. Satisfies **AC-6**, **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Wire Sentry per environment: environment tag, release from the commit sha, sampling from the validated variable, source map upload in the Vercel build. Satisfies **AC-13**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Turn on Sentry's quota notifications and record the threshold in `docs/observability/README.md`, alongside a note that a silent rate alert is the failure mode this protects. Satisfies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Monitor already created, so confirm and record rather than set up.** The UptimeRobot monitor watches the production origin, which is public. Confirm that against a real check result rather than the settings page, then record it in `docs/observability/README.md` together with the two things it does not cover: it watches Vercel, so a paused database leaves it reporting the site up, and it would report a protection login page as up too if protection were ever raised to cover production. Satisfies **AC-16**.\",\"rejected_spans\":[\"so it measures the application and not a protection login page\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Confirm Supabase's pause warning emails reach an address that is actually read, for **both** projects, and record in `docs/observability/README.md` that this, not the uptime monitor, is the pause detection mechanism. Satisfies **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Protect `main`: pull request required, CI check required. Satisfies **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**A human step, not a `/develop` step.** Connect the Supabase MCP server scoped to the development project with `read_only=true` and per call confirmation, and confirm no production ref exists in any configuration. Satisfies **AC-17**.\",\"rejected_spans\":[\"MCP authorisation needs an interactive session (`claude mcp` or `/mcp`) and cannot be completed inside an ordinary build pass, the same constraint spec 0001 already records for the Vercel MCP server.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct spec 0001's binding rule 1 allow list and the matching comment in `src/lib/supabase/secret.ts`, so both say the kill switch read is built in feature 3 and lives in `src/lib/kill-switch.ts`. Satisfies **AC-6**.\",\"rejected_spans\":[\"Binding rule 1 says its allow list is closed and changing it means editing the spec, so this is an edit the rule itself requires, not a tidy up to defer.\"],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write the rollback procedure into `docs/observability/README.md`: promote the previous deployment first, revert in git after, and note plainly that promoting does not undo a migration. Satisfies **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-4**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-4**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-5**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-5**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-6**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies **AC-6**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"binding rule 1\",\"mention\":\"spec 0001's binding rule 1 allow list\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"phrase\":\"Correct spec 0001's binding rule 1 allow list\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Satisfies **AC-18**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Already created, so record and confirm rather than create.** Both Supabase projects exist, development and production, each with the Data API set not to expose new tables. Confirm both are in `us-east-1`, then record, for each: project URL, publishable key, secret key, project ref, database password and connection string. Satisfies **AC-2**.",
+        "rejected_spans": [
+          "Task 3 and task 5 both need these, not just the refs."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `NEXT_PUBLIC_SITE_URL`, `DEV_SESSION_ENABLED`, `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` and the three optional Vercel system values to `src/env.ts` and `.env.example`, and make the two Sentry DSN values conditionally required as described above. Satisfies **AC-4**, **AC-13**.",
+        "rejected_spans": [
+          "so a missing variable fails the build by name before any deploy exists to be confused by it"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Already created, so verify rather than create.** The Vercel project `jobhunt` exists from the GitHub repository, with production branch `main`, Node 24, system environment variables enabled, functions in `iad1`, and the variable matrix set per environment. Check each of those against the configuration table above, check that `SKIP_ENV_VALIDATION` is set nowhere, and correct whatever does not match rather than assuming it does. While in the dashboard, settle the open question about variable names: confirm the three `NEXT_PUBLIC_VERCEL_*` names actually reach the client bundle, and if any does not, set an explicit variable per environment in its place and say so here. Satisfies **AC-1**, **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Already on, so verify rather than turn on.** Vercel Authentication is set to standard protection. Confirm both halves of what that means here: a preview URL in a private window asks for a login, and `https://usejobhunt.vercel.app` in a private window does not. Satisfies **AC-3**.",
+        "rejected_spans": [
+          "since the whole environment split rests on it"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Prove the seed's write path by hand against the real development project, before any of it goes into CI.** Run the seed manually once the project exists. If it is refused, the fix is small (insert the rows through the secret key client, or add a narrowly scoped insert policy). Satisfies **AC-5**, **AC-11**.",
+        "rejected_spans": [
+          "The migration creates `scaffold_check` as `postgres`, so `postgres` owns it, and it forces row level security with no insert policy. A table owner under `force row level security` does not bypass policies unless its role carries superuser or `BYPASSRLS`. The local Docker `postgres` is a superuser, so this can never surface locally; whether the hosted `postgres` role carries `BYPASSRLS` is unconfirmed.",
+          "but finding out through a red required check on an unrelated pull request is the expensive path"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `.github/workflows/db-migrate.yml`: `supabase db push` to the development project on `pull_request` (`opened`, `synchronize`, `reopened`), to production on a push to `main`, failing the run visibly on a failed migration. Make `supabase/seed.sql` idempotent and apply it to the development project only, in the same workflow, with `psql \"$SUPABASE_DB_URL_DEV\" -f supabase/seed.sql`. Correct that file's header comment while you are in it. A failing seed step fails the workflow, the same as a failing migration. Satisfies **AC-11**.",
+        "rejected_spans": [
+          "it currently reads \"Local development seed. Runs on `pnpm db:reset`, never against a real project\", which this workflow makes untrue.",
+          "That is deliberate, and it is the second way this workflow can turn an unrelated pull request red, alongside a paused development project. Accepted for the same reason: a seed that silently stopped applying would leave the development project without the two users AC-5 is proved with, and the next person to run task 9 would debug the wrong thing."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Replace the `NODE_ENV` guard with the validated `DEV_SESSION_ENABLED` check, failing closed, in **both** places it lives: `src/features/dev-session/actions.ts` and the page guard in `src/app/(marketing)/sign-in/page.tsx`. Satisfies **AC-10**.",
+        "rejected_spans": [
+          "Fixing only the action leaves the sign in page returning a not found on every preview, so the thread stays unreachable and AC-5 cannot be run."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the current origin resolver beside the canonical site URL. Satisfies **AC-5**.",
+        "rejected_spans": [
+          "so features 6 and 7 have both values named and neither has to be invented later"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Re run the whole feature 1 thread against a real preview URL as two different users, and record the steps in `verify.md`. Satisfies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the `app_settings` migration, **in this statement order**: the table, the single row check, the `updated_at` trigger, then the `insert` of the single row, then `enable row level security`, then `force row level security` with no policies, then no grant to `anon` and none to `authenticated` and one explicit `grant select on public.app_settings to service_role` for the reason given in the data model sketch. The insert comes **before** `force row level security`. Then, in the same sitting and before task 11 trusts anything: check what privileges `service_role` actually holds on the new table (`select has_table_privilege('service_role', 'public.app_settings', 'select')`). Also run AC-9's proof here: query `app_settings` with a signed in user's token and confirm a permission denial rather than an empty result, and record the result in `verify.md` the way task 9 records its run. Satisfies **AC-6**, **AC-9**.",
+        "rejected_spans": [
+          "because the order is the correctness",
+          "deliberately. Forced row level security applies to the table owner too, and a table with policies forced and zero policies denies an insert to any role that respects them. Whether the hosted `postgres` role carries `BYPASSRLS` is the same unconfirmed thing task 5 exists to settle, so a migration that forces first and inserts second could be denied on its first application to both hosted projects while passing locally, where `postgres` is a superuser. Ordering it this way removes the question instead of betting on the answer.",
+          "This settles whether the Data API setting withholds privileges from `service_role` at all, which decides what a denial in task 11 means.",
+          "rather than leaving it to a test scenario with no owner"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `src/lib/kill-switch.ts` reading the flag through the secret key client, opening the `kill_switch.read` span as its first statement, parsing the row with Zod, and returning a failure that means switched on. Register the span in `docs/observability/spans.md`. **The module must check the returned `error` field itself.** The right shape is: `attempt()` for a genuine transport throw, an explicit check of `error` mapped to `database_unavailable`, an explicit check for no row mapped to `record_not_found`, and Zod for a row that parses wrong. **Then prove the read by hand against the real development project before anything trusts it**, the same way task 5 proves the seed's write path. A successful read of `false` means the privileges are right. Satisfies **AC-6**, **AC-8**.",
+        "rejected_spans": [
+          "`attempt()` converts a thrown exception, and only a thrown exception, per its own doc comment in src/lib/result.ts. The Supabase client does not throw on a permission denial or a missing row; it returns `{ data: null, error }`. So wrapping the call in `attempt()` and reading only what comes back would let a denial arrive as a success carrying `null`, which Zod would then reject as `response_malformed`.",
+          "Three named kinds, three real causes, rather than one misleading one.",
+          "A denial means one of three things, which is why task 10 checks the privilege first: the table grant is missing, `service_role` lacks `usage` on schema `public` (a `select` grant without schema `usage` still denies), or the key in the environment is not what it is believed to be. Without task 10's check, a denial here looks the same in all three cases, and the switch would read as permanently engaged while every visible signal looked exactly as designed."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Render the flag's value and `updated_at` on the deployed scaffold check page, then prove a dashboard flip changes it with no deploy. Satisfies **AC-6**, **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Wire Sentry per environment: environment tag, release from the commit sha, sampling from the validated variable, source map upload in the Vercel build. Satisfies **AC-13**, **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Turn on Sentry's quota notifications and record the threshold in `docs/observability/README.md`, alongside a note that a silent rate alert is the failure mode this protects. Satisfies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Monitor already created, so confirm and record rather than set up.** The UptimeRobot monitor watches the production origin, which is public. Confirm that against a real check result rather than the settings page, then record it in `docs/observability/README.md` together with the two things it does not cover: it watches Vercel, so a paused database leaves it reporting the site up, and it would report a protection login page as up too if protection were ever raised to cover production. Satisfies **AC-16**.",
+        "rejected_spans": [
+          "so it measures the application and not a protection login page"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Confirm Supabase's pause warning emails reach an address that is actually read, for **both** projects, and record in `docs/observability/README.md` that this, not the uptime monitor, is the pause detection mechanism. Satisfies **AC-16**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Protect `main`: pull request required, CI check required. Satisfies **AC-12**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**A human step, not a `/develop` step.** Connect the Supabase MCP server scoped to the development project with `read_only=true` and per call confirmation, and confirm no production ref exists in any configuration. Satisfies **AC-17**.",
+        "rejected_spans": [
+          "MCP authorisation needs an interactive session (`claude mcp` or `/mcp`) and cannot be completed inside an ordinary build pass, the same constraint spec 0001 already records for the Vercel MCP server."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct spec 0001's binding rule 1 allow list and the matching comment in `src/lib/supabase/secret.ts`, so both say the kill switch read is built in feature 3 and lives in `src/lib/kill-switch.ts`. Satisfies **AC-6**.",
+        "rejected_spans": [
+          "Binding rule 1 says its allow list is closed and changing it means editing the spec, so this is an edit the rule itself requires, not a tidy up to defer."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write the rollback procedure into `docs/observability/README.md`: promote the previous deployment first, revert in git after, and note plainly that promoting does not undo a migration. Satisfies **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-4**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-4**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-5**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-5**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 1",
+          "mention": "spec 0001's binding rule 1 allow list"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "phrase": "Correct spec 0001's binding rule 1 allow list",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Satisfies **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

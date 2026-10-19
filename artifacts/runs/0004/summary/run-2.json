@@ -1,0 +1,100 @@
+{
+  "record": "0004",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 268,
+  "output_tokens": 575,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d347f1014986475faabbc893cbfc228b",
+  "artifact_format_version": 3,
+  "unit_sha256": "3bcb0d543642e424c5e86ebad8da3561ac96dacf3099ca3256d9cc0c6ba85b6a",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This feature stands up the project's whole test layer: the runner, the fixtures, a development only way to mint a real signed in session without a browser, and a way to replay real external responses.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It decides the test runner (Vitest) that spec 0001 deliberately left open, and replaces the seeded fixture users with valid identifiers.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The goal is tests that prove real behaviour against the real database\",\"rejected_spans\":[\"so a passing test can never hide the same wrong assumption twice\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It also settles three details the first test run would otherwise walk straight into: how `server-only` resolves under Vitest, how a test drives the application's own request scoped client rather than a second one built in test code, and which environment each test project runs in.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"granularity_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"mention\":\"spec 0001\"},\"phrase\":\"that spec 0001 deliberately left open\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This feature stands up the project's whole test layer: the runner, the fixtures, a development only way to mint a real signed in session without a browser, and a way to replay real external responses.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It decides the test runner (Vitest) that spec 0001 deliberately left open, and replaces the seeded fixture users with valid identifiers.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The goal is tests that prove real behaviour against the real database",
+        "rejected_spans": [
+          "so a passing test can never hide the same wrong assumption twice"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It also settles three details the first test run would otherwise walk straight into: how `server-only` resolves under Vitest, how a test drives the application's own request scoped client rather than a second one built in test code, and which environment each test project runs in.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001"
+        },
+        "phrase": "that spec 0001 deliberately left open",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
