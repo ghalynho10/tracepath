@@ -7,7 +7,7 @@ A terminal tool that answers "why was this built this way?" by walking a chain a
 - **Language / Runtime**: Python 3.12+, managed by uv
 - **CLI**: Typer (commands) + Rich (terminal output)
 - **Graph store**: Neo4j 5 Community in one Docker container, official `neo4j` driver v6, raw hand written Cypher. The graph is derived and disposable: JSON run artifacts are the source of truth.
-- **Extraction**: Claude Sonnet 5.5 (`claude-sonnet-5-5`, spec 0007; earlier units ran on `claude-sonnet-5`) via the Anthropic SDK, native structured outputs, Pydantic models as the single schema
+- **Extraction**: Claude Sonnet 5.5 (`claude-sonnet-5-5`, spec 0007; since feature 9 every committed unit is on it, at prompt `0003.1`) via the Anthropic SDK, native structured outputs, Pydantic models as the single schema
 - **Config**: `.env` loaded with `python-dotenv` (see `.env.example`)
 - Full decision: [spec 0001](docs/specs/0001-stack-and-architecture/index.md)
 
@@ -36,7 +36,7 @@ uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code
 uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # refuses (exit 1) before any call when the settings model differs from M
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
-uv run pytest                    # tests, needs Neo4j up for integration
+uv run pytest                    # tests, needs Neo4j up for integration; about 20 minutes locally over the whole corpus
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 ```
 
@@ -59,6 +59,8 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title/index.md` (plus `rationa
 
 - `corpus/jobhunt/docs/`: JobHunt's `docs/` at `2e40bcf`, a read only snapshot. Never edit or regenerate it. It is tracked in git, so CI checks against it; `corpus/jobhunt/SNAPSHOT.md` records the commit and the command that made it.
 - `eval/linked-records-research.json` (plus its `.md` twin): the five eval questions with expected chains, read at the same commit. Bring in as is, never regenerate. `tests/test_corpus.py` checks every cited passage exists in the snapshot; a missing snapshot fails the test.
+- `eval` matches an expected item on its cited line, or on the next line when the cited line is blank and the quote starts below it: the same one line tolerance `tests/test_corpus.py` uses (spec 0004 AC-36, note of 2026-10-19).
+- `artifacts/runs/` holds the whole corpus, 240 units, all on `claude-sonnet-5-5` with prompt `0003.1` (feature 9). The 12 units `tracepath extract` cannot address are left out (scope, feature 9). The 29 units before it sit in `artifacts/superseded/2026-10-18-claude-sonnet-5/` plus the three it kept; a test pinned to that older corpus reads it through `pre_feature_9_runs()` in `tests/conftest.py`, never through `artifacts/runs/`.
 
 ## Rules
 
