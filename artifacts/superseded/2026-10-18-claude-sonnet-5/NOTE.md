@@ -15,3 +15,10 @@ These 26 units are the first group of that run. The three units already on
 Before this move the 29 units held 526 review queue rows under the narrow hold default
 (`artifacts/review-queue.json` at `ceafd9f`). Kept as evidence, never deleted
 (`experiments/README.md`).
+
+**Added later on 2026-10-18.** `0014/decision-claude-sonnet-5-5-before-fix/` holds `0014 ## Decision`'s
+4 files from feature 9's first group, on `claude-sonnet-5-5` with `0003.1` (run 1 settled on
+attempt 2, run 2 blocked after two schema failures, run 3 never ran). Run 2 blocked before
+`5b45113`, which keeps an `entity_type_ambiguous` flag on a typed entity instead of rejecting
+the output. They sit in their own folder because `0014/decision/run-1.json` above is the
+`claude-sonnet-5` run.
