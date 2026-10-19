@@ -228,7 +228,7 @@ _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to
   - [x] The guarded call and the record in `metered.py` (AC-21 to AC-28) · built 2026-10-19, code in `src/tracepath/extract/metered.py` (`ask_metered()`), `ask_bound()` in `src/tracepath/extract/cost.py`, `src/tracepath/ask/record.py`; tested with a fake call, no paid call made
   - [x] Gate: dry run over the five eval questions, the engineer's go and ceiling, then question 1 alone to measure one call's cost · done 2026-10-19: dry run bounds $0.1741 to $0.2086 (inputs 7,045 to 24,315 tokens); question 1 run once at ceiling $0.25, 22,681 in, 402 out, $0.0494 against its $0.2054 bound, record `artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json` (`f7dbc7c`)
   - [x] Eval wiring (`--eval`, the held out refusals, the one run guard; AC-29 to AC-33) · built 2026-10-19 (`946705e`), records named `<UTC time>-eval-<stem>-q<N>.json`; tested on temporary eval files only, no paid call
-  - [ ] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt
+  - [x] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt · done 2026-10-19: each run once on prompt `ask-1` with no tuning, $0.2110 for the five calls, records in `artifacts/asks/` (`f7dbc7c`, `8977f29`); engineer's marks: all five right; **prompt `ask-1` frozen by the engineer on 2026-10-19**, this commit being the freeze commit the held out run follows
   - [ ] Held out questions, once each, after the freeze; result reported against the bar
 - [ ] Verify it: `/check verify answer at question time`
 - [ ] Test it: `/test answer at question time`
