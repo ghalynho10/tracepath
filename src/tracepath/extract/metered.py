@@ -17,15 +17,25 @@ Every attempt is checked before it is made and written the moment it settles:
   `--resume` picks it up later (AC-56).
 
 Each stop is a value the run returns, said plainly, never an error raised to halt it.
+
+`ask_metered()` guards the one call `tracepath ask` makes (spec 0009 AC-21 to AC-27):
+its bound is checked against the ceiling before it, and its record written as it
+settles. The `ask` package never imports `anthropic`, so the client, the token count
+and the call for an ask live here too.
 """
 
 import re
 import uuid
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 import anthropic
+import httpx2
+from anthropic.types import JSONOutputFormatParam, Message, OutputConfigParam
+from pydantic import TypeAdapter, ValidationError
 
 from tracepath.artifacts import (
     RUNS_DIR,
@@ -37,6 +47,10 @@ from tracepath.artifacts import (
     run_path,
     write_run,
 )
+from tracepath.ask import answer as asking
+from tracepath.ask.answer import ASK_MAX_TOKENS, Answer, CheckedClaim, check_claims, pack_message
+from tracepath.ask.record import AskRecord, Usage, ensure_record_unwritten, write_record
+from tracepath.ask.retrieve import Pack
 from tracepath.config import AnthropicSettings
 from tracepath.extract import client as extraction
 from tracepath.extract.address import Target
@@ -45,13 +59,14 @@ from tracepath.extract.client import (
     PROMPT_VERSION,
     RETRIES,
     Attempt,
+    Effort,
     ExtractionFailed,
     FailureKind,
     output_format,
     system_blocks,
     user_prompt,
 )
-from tracepath.extract.cost import attempt_cost, recorded_cost
+from tracepath.extract.cost import attempt_cost, recorded_cost, tokens_cost
 from tracepath.extract.units import Unit
 
 #: One extraction call for one unit and attempt number, failure returned as an attempt.
@@ -490,3 +505,232 @@ def summary_lines(result: RunOutcome) -> tuple[str, ...]:
     else:
         lines.append("Attempts with null usage: none.")
     return tuple(lines)
+
+
+# The one call `tracepath ask` makes (spec 0009).
+
+
+@dataclass(frozen=True)
+class AskAttempt:
+    """One ask call: its usage, its reply, and its answer when the reply validated.
+
+    `answer` is null when the call failed (AC-24); the usage is kept all the same, null
+    meaning unmeasured.
+    """
+
+    input_tokens: int | None
+    output_tokens: int | None
+    answer: Answer | None = None
+    raw_response: str | None = None
+    stop_reason: str | None = None
+    error: str | None = None
+    cache_creation_input_tokens: int = 0
+    cache_read_input_tokens: int = 0
+
+
+#: One ask call over one pack, failure returned as an attempt.
+AskCall = Callable[[Pack], AskAttempt]
+
+
+@dataclass(frozen=True)
+class AskOutcome:
+    """What one ask spent, what it answered, and where its record went.
+
+    `stop` is set when the ceiling stopped it before the call, and nothing else is.
+    `lost` says why a paid call's record could not be written (AC-27c).
+    """
+
+    attempt: AskAttempt | None
+    checked: tuple[CheckedClaim, ...]
+    cost_usd: float
+    recorded_usd: float
+    path: Path | None
+    lost: str | None
+    stop: str | None
+
+    @property
+    def settled(self) -> bool:
+        """Whether the call returned an answer that validated."""
+        return self.attempt is not None and self.attempt.answer is not None
+
+
+def ask_output_format() -> JSONOutputFormatParam:
+    """The `Answer` schema exactly as the SDK builds it for structured output (AC-15)."""
+    schema = anthropic.transform_schema(TypeAdapter(Answer).json_schema())
+    return {"type": "json_schema", "schema": schema}
+
+
+def count_ask_input(client: anthropic.Anthropic, settings: AnthropicSettings, pack: Pack) -> int:
+    """An ask call's whole input as the free token count endpoint counts it (AC-23).
+
+    The same system prompt, message and output schema the call sends.
+
+    Raises:
+        CountUnreadable: the endpoint answered with a body the SDK could not parse.
+    """
+    try:
+        return client.messages.count_tokens(
+            model=settings.model,
+            system=asking.system_prompt(),
+            messages=[{"role": "user", "content": pack_message(pack)}],
+            output_config={"format": ask_output_format()},
+        ).input_tokens
+    except ValueError as exc:
+        raise CountUnreadable(f"its answer for the ask call could not be read ({exc!r})") from exc
+
+
+def _ask_text(message: Message) -> str | None:
+    blocks = [block.text for block in message.content if block.type == "text"]
+    return "\n".join(blocks) if blocks else None
+
+
+def _ask_failed(error: str, snapshot: Message | None) -> AskAttempt:
+    """A failed ask call, with whatever usage had arrived."""
+    if snapshot is None:
+        return AskAttempt(input_tokens=None, output_tokens=None, error=error)
+    usage = snapshot.usage
+    return AskAttempt(
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens if snapshot.stop_reason is not None else None,
+        raw_response=_ask_text(snapshot),
+        stop_reason=snapshot.stop_reason,
+        error=error,
+        cache_creation_input_tokens=usage.cache_creation_input_tokens or 0,
+        cache_read_input_tokens=usage.cache_read_input_tokens or 0,
+    )
+
+
+def ask_calls_through(client: anthropic.Anthropic, settings: AnthropicSettings) -> AskCall:
+    """The real ask call: one streamed request, no cache, no retry (AC-24, AC-26).
+
+    A transport or API error, a stop on `max_tokens` or a refusal, and a reply that does
+    not validate as `Answer` each come back as a failed attempt, usage included.
+    """
+
+    def call(pack: Pack) -> AskAttempt:
+        config: OutputConfigParam = {"format": ask_output_format()}
+        if settings.effort is not None:
+            config["effort"] = cast("Effort", settings.effort)
+        try:
+            with client.messages.stream(
+                model=settings.model,
+                max_tokens=ASK_MAX_TOKENS,
+                system=asking.system_prompt(),
+                messages=[{"role": "user", "content": pack_message(pack)}],
+                output_config=config,
+            ) as stream:
+                try:
+                    response = stream.get_final_message()
+                except (httpx2.TransportError, anthropic.APIError) as exc:
+                    try:
+                        snapshot: Message | None = stream.current_message_snapshot
+                    except AssertionError:  # the SDK holds none before `message_start`
+                        snapshot = None
+                    return _ask_failed(f"the call failed mid stream ({exc})", snapshot)
+        except anthropic.APIError as exc:
+            return _ask_failed(f"the call failed ({exc})", None)
+
+        if response.stop_reason in ("max_tokens", "refusal"):
+            return _ask_failed(f"the call stopped on {response.stop_reason}", response)
+        text = _ask_text(response)
+        try:
+            answer = None if text is None else Answer.model_validate_json(text)
+        except ValidationError as exc:
+            return _ask_failed(f"the reply did not validate as an Answer ({exc})", response)
+        if answer is None:
+            return _ask_failed("the reply held no text", response)
+        return AskAttempt(
+            input_tokens=response.usage.input_tokens,
+            output_tokens=response.usage.output_tokens,
+            answer=answer,
+            raw_response=text,
+            stop_reason=response.stop_reason,
+            cache_creation_input_tokens=response.usage.cache_creation_input_tokens or 0,
+            cache_read_input_tokens=response.usage.cache_read_input_tokens or 0,
+        )
+
+    return call
+
+
+def ask_metered(
+    pack: Pack,
+    call: AskCall,
+    settings: AnthropicSettings,
+    *,
+    root: Path,
+    name: str,
+    asked_at: datetime,
+    commit: str,
+    counted: int,
+    bound: float,
+    ceiling: float,
+) -> AskOutcome:
+    """Make one ask call if its bound fits the ceiling, and write its record as it settles.
+
+    A failed call counts at its bound (AC-24); a settled one at its recorded usage.
+
+    Raises:
+        ArtifactCollisionError: a record already sits where this one would land,
+            checked before the call is paid for.
+    """
+    if bound > ceiling:
+        return AskOutcome(None, (), 0.0, 0.0, None, None, "stopping here before the call: ceiling")
+    ensure_record_unwritten(root, name)
+    attempt = call(pack)
+    checked = check_claims(attempt.answer, pack) if attempt.answer is not None else ()
+    recorded = tokens_cost(
+        settings.model,
+        attempt.input_tokens or 0,
+        attempt.output_tokens or 0,
+        attempt.cache_creation_input_tokens,
+        attempt.cache_read_input_tokens,
+    )
+    cost = recorded if attempt.answer is not None else bound
+    record = AskRecord(
+        asked_at=asked_at.isoformat(timespec="seconds"),
+        question=pack.question,
+        pack=pack,
+        counted_input_tokens=counted,
+        bound_usd=bound,
+        ceiling_usd=ceiling,
+        model=settings.model,
+        effort=settings.effort or "default",
+        prompt_version=asking.PROMPT_VERSION,
+        corpus_commit=commit,
+        settled=attempt.answer is not None,
+        answer=attempt.answer,
+        checked=checked,
+        raw_response=attempt.raw_response,
+        stop_reason=attempt.stop_reason,
+        error=attempt.error,
+        usage=Usage(
+            input_tokens=attempt.input_tokens,
+            output_tokens=attempt.output_tokens,
+            cache_creation_input_tokens=attempt.cache_creation_input_tokens,
+            cache_read_input_tokens=attempt.cache_read_input_tokens,
+        ),
+        cost_usd=cost,
+        recorded_usd=recorded,
+    )
+    try:
+        path: Path | None = write_record(root, name, record)
+    except (OSError, ArtifactCollisionError) as exc:
+        return AskOutcome(attempt, checked, cost, recorded, None, str(exc), None)
+    return AskOutcome(attempt, checked, cost, recorded, path, None, None)
+
+
+def _tokens(count: int | None) -> str:
+    return "unmeasured" if count is None else f"{count:,}"
+
+
+def ask_cost_line(outcome: AskOutcome, ceiling: float) -> str:
+    """The one cost line `ask` prints (AC-25): calls, tokens, both costs, the ceiling."""
+    attempt = outcome.attempt
+    calls = 0 if attempt is None else 1
+    tokens_in = _tokens(attempt.input_tokens) if attempt else "0"
+    tokens_out = _tokens(attempt.output_tokens) if attempt else "0"
+    return (
+        f"Cost: {calls} call{'' if calls == 1 else 's'}, {tokens_in} in, {tokens_out} out, "
+        f"${outcome.recorded_usd:.4f} by recorded usage, ${outcome.cost_usd:.4f} by the "
+        f"guard's rule, ceiling ${ceiling:.2f}."
+    )

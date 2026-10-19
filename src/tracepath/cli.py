@@ -5,6 +5,7 @@ import math
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
 
@@ -30,6 +31,8 @@ from tracepath.artifacts import (
     write_graph_build,
     write_review_queue,
 )
+from tracepath.ask.answer import ASK_MAX_TOKENS, answer_lines
+from tracepath.ask.record import record_name
 from tracepath.ask.retrieve import build_pack, pack_lines
 from tracepath.config import (
     DEFAULT_MODEL,
@@ -43,9 +46,11 @@ from tracepath.extract.cost import (
     CALIBRATION_ADDRESS,
     EstimateUnavailable,
     UnitCount,
+    ask_bound,
     check_calibration,
     estimate,
     estimate_lines,
+    rates_for,
 )
 from tracepath.extract.examples import ExampleError
 from tracepath.extract.metered import (
@@ -53,7 +58,11 @@ from tracepath.extract.metered import (
     Plan,
     ResumeRefused,
     RunPlan,
+    ask_calls_through,
+    ask_cost_line,
+    ask_metered,
     calls_through,
+    count_ask_input,
     count_input,
     first_collision,
     fresh_runs,
@@ -1044,6 +1053,7 @@ def ask(
     base = Path(root)
     asked = str(question)
     try:
+        settings = load_anthropic_settings()
         built = graph_build_summary(base)
         graph = _ask_graph()
     except (ManifestUnreadable, SettingsInvalid, GraphUnavailable, SliceError) as exc:
@@ -1058,7 +1068,63 @@ def ask(
         _say(line)
     if not pack.items:
         return
+
+    # AC-23: an unpriced model stops before the count, and the count is the free endpoint.
+    try:
+        rates = rates_for(settings.model)
+    except EstimateUnavailable as exc:
+        _fail(str(exc))
+    client = build_client(settings)
+    try:
+        counted = count_ask_input(client, settings, pack)
+    except (anthropic.APIError, CountUnreadable) as exc:
+        _fail(f"the token count endpoint failed, so nothing is priced ({exc})")
+    bound = ask_bound(counted, settings.model)
+    _say(
+        f"Input: {counted:,} tokens counted. Bound: ${bound:.4f} ({counted:,} in at "
+        f"${rates.input:.2f}, {ASK_MAX_TOKENS:,} out at ${rates.output:.2f}, per million "
+        f"tokens, model {settings.model}); ceiling ${ceiling:.2f}."
+    )
     if dry_run:
+        if bound > ceiling:
+            _say("The bound is above the ceiling, so a real run would stop before the call.")
         _say("Dry run: no call made, no record written.")
         return
-    _fail("the paid call is not built yet (spec 0009 build plan step 3), so no call is made.")
+
+    asked_at = datetime.now(UTC)
+    try:
+        outcome = ask_metered(
+            pack,
+            ask_calls_through(client, settings),
+            settings,
+            root=base,
+            name=record_name(asked_at, asked),
+            asked_at=asked_at,
+            commit=built.corpus_commit,
+            counted=counted,
+            bound=bound,
+            ceiling=ceiling,
+        )
+    except ArtifactCollisionError as exc:
+        _fail(str(exc))
+    if outcome.stop is not None:
+        _fail(outcome.stop)
+    attempt = outcome.attempt
+    if attempt is not None and attempt.answer is not None:
+        for line in answer_lines(attempt.answer, outcome.checked):
+            _say(line)
+    elif attempt is not None:
+        _say(f"Answer: none, {attempt.error}. The call counts at its bound.")
+    _say(ask_cost_line(outcome, ceiling))
+    if outcome.lost is not None:
+        _say("Record: lost.")
+        _fail(f"the call was paid for, but its record could not be written ({outcome.lost}).")
+    if outcome.path is not None:
+        _say(f"Record: {_shown_path(outcome.path, base)}")
+    if not outcome.settled:
+        _fail("the call failed and is saved; it is not retried. Run the question again by hand.")
+
+
+def _shown_path(path: Path, base: Path) -> str:
+    """A path relative to the root it was written under, when it is under it."""
+    return path.relative_to(base).as_posix() if path.is_relative_to(base) else str(path)
