@@ -125,10 +125,14 @@ def misplaced_quotes(held_out: dict[str, Any]) -> list[Citation]:
     return wrong
 
 
-def shape_problems(held_out: dict[str, Any]) -> list[str]:
-    """AC-22: two entries, each with a trace; problems name counts and positions only."""
+#: How many entries the real held out file holds (two until 2026-10-19, spec 0006 AC-22 note).
+HELD_OUT_ENTRIES = 4
+
+
+def shape_problems(held_out: dict[str, Any], expected: int = 2) -> list[str]:
+    """AC-22: `expected` entries, each with a trace; problems name counts and positions only."""
     entries = held_out["entries"]
-    problems = [f"{len(entries)} entries, expected 2"] if len(entries) != 2 else []
+    problems = [f"{len(entries)} entries, expected {expected}"] if len(entries) != expected else []
     problems += [
         f"entry {n} has an empty trace" for n, e in enumerate(entries, 1) if not e.get("trace")
     ]
@@ -200,9 +204,9 @@ def test_ac_22_a_third_entry_or_an_empty_trace_is_caught() -> None:
     assert shape_problems(empty) == ["entry 2 has an empty trace"]
 
 
-def test_ac_22_the_held_out_file_holds_two_entries_each_with_a_trace() -> None:
+def test_ac_22_the_held_out_file_holds_its_entries_each_with_a_trace() -> None:
     """covers: AC-22."""
-    problems = shape_problems(real_held_out())
+    problems = shape_problems(real_held_out(), HELD_OUT_ENTRIES)
 
     assert problems == []
 

@@ -66,6 +66,7 @@ This spec adds one command, `tracepath eval`, that runs every question of an eva
 
 *Held out questions*
 - **AC-22**: `eval/held-out.json` holds two entries in the eval file's shape, a top level `"held_out": true`, and an expected chain for each read from the corpus at `2e40bcf`.
+  - **Note, 2026-10-19**: the held out set grew to 4 entries, written by a second sealed session from records 0016 to 0018 and checked by the engineer against 2e40bcf; citations stay on index.md and scope.md only (AC-26). The criterion text above is unchanged.
 - **AC-23**: The two entries were written by a fresh session started in a scratch directory that held only `corpus/jobhunt/docs`, the eval file, and the brief below, with reads of the tracepath repository path denied in that session's settings, and the write record holds the directory listing and the session's tool log.
 - **AC-24**: A test fails when an entry of `eval/held-out.json` cites a line in a record on the brief's exclusion list.
 - **AC-25**: A test fails when an entry cites a record that a file in `examples/` draws from, read from that file's first heading by `^# Worked example: (?:`?(feature-\d+|\d{4}))`, where `feature-N` stands for the scope document. A heading that does not match fails the test.
