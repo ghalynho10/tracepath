@@ -1,6 +1,6 @@
 # Scope: tracepath
 
-A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. Today an item id goes in and the cited chain comes out; typing the question in plain English is feature 15, and prose answers stay deferred. The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
+A terminal tool that answers "why was this built this way?" from a project's own decision records. It walks a chain across records instead of retrieving passages. Today an item id goes in and the cited chain comes out. _Changed 2026-10-19:_ for the rest of v1, the question is typed in plain English and the tool prints an answer whose claims each cite a graph item (feature 16, see the v1 finish line). The corpus is JobHunt's specs, pinned at commit `2e40bcf`. There is one user: the author.
 
 **Build approach:** Tracer Bullet (one thin, fully real thread through extract, resolve, store, and traverse; each later slice thickens one strand of that same thread).
 **Workflow:** Beta (`/check verify`, then `/test`; `/test` may record a typecheck gate instead of a runner, on purpose). The project's default rigor tier; a feature's own tier tag (e.g. `· GA`) overrides it.
@@ -19,19 +19,42 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 2 | Coding standards & tooling | Foundation | done |
 | 3 | Corpus snapshot & eval set | Foundation | done |
 | 4 | Data model | Foundation | done |
-| 5 | First traced chain | Slice 1 | in-progress |
+| 5 | First traced chain | Slice 1, closes after v1 | in-progress |
 | 6 | Eval runner | Slice 2 | done |
-| 7 | Name resolution | Slice 3 | planned |
-| 8 | History aware traversal | Slice 4 | planned |
+| 7 | Name resolution | Slice 3, after v1 | planned |
+| 8 | History aware traversal | Slice 4, after v1 | planned |
 | 9 | Whole corpus | Slice 5 | done |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | done |
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
 | 13 | Extraction accuracy | after feature 6, before feature 11 | in-progress |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
-| 15 | Question to start item | step 1 after Slice 2, step 2 after Slice 5 | planned |
+| 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
+| 16 | Answer at question time | v1, replaces the remaining v1 needs | planned |
 
 ## v1 finish line
+
+### Change of direction, recorded 2026-10-19 (this replaces the line below for the rest of v1)
+
+**New v1 line:** "You ask tracepath a why question in plain English and it prints an answer whose every claim cites an item in the graph, with any link it inferred rather than read marked as inferred."
+
+**Evidence for the change:**
+1. All seven questions run so far (the five eval questions and two held out) fail on today's walk at a document boundary ([experiment 0015](../../experiments/0015-whole-corpus-run/README.md), PR #40).
+2. A hand prototype of answering at question time, 2026-10-19: the five eval questions, the session playing the model's part, no API call. The engineer's marks: question 1 right, question 2 right, question 3 partly right (retrieval missed 0007 AC-12), question 4 right, question 5 right. This is a hint from one hand run, not a measurement of the built feature.
+
+**Success bar, set now, before any design or build:**
+- At least 4 of the 5 eval questions and at least 3 of the 4 held out questions are answered right, each judged by the engineer against its expected answer.
+- Eval questions 1 to 5 may be used to adjust the prompt.
+- The four held out questions run once, at the end, and are never used to adjust anything.
+- If the bar is not met, v1 still finishes, reported as it is, with each failing question's cause.
+
+**Limit of the held out set:** all four of its questions sit in a small cluster of records (0004, 0010, 0016 to 0018). A pass there says little about the rest of the corpus.
+
+**What moves:** feature 15 folds into the new feature 16. Features 8 and 7 move to after v1 as retrieval improvements. Feature 5 (first traced chain) also moves to after v1: it closes only when the walk itself passes a question that spans two or more records, which is now the job of features 8 and 7.
+
+**History kept:** everything below this block is the earlier plan, left as recorded. Its 2026-10-19 fallback lines still stand as history, and its "v1 needs" list is superseded by feature 16.
+
+### Earlier v1 finish line (superseded 2026-10-19, kept as history)
 
 _Recorded 2026-10-13._ v1 is done when: "You ask tracepath a why question about JobHunt and it prints a chain of cited steps across documents for at least 3 of the 5 eval questions, over the whole corpus. Question 4 (an absence question) is expected to stay inconclusive and question 5 is expected to need feature 7."
 
@@ -45,7 +68,7 @@ _Recorded 2026-10-13._ v1 is done when: "You ask tracepath a why question about 
 
 _Order after feature 9 confirmed by the engineer 2026-10-18._ The held out run goes before features 5 and 15 so that no result of theirs can shape the check.
 
-**After v1:** feature 13's later steps, features 7, 8 and 10, and the cross model experiment (see Deferred).
+**After v1:** feature 13's later steps, features 7, 8 and 10, and the cross model experiment (see Deferred). _Added 2026-10-19: feature 5 also moves here, and features 7 and 8 are now retrieval improvements; the needs list above is superseded by feature 16._
 
 **How v1 counts the questions, decided 2026-10-18.** Two readings are reported, side by side, never as one rate:
 - **Strict reading (the one the finish line above is measured by):** a question counts when `eval` prints `PASS`, so every expected step is reached through accepted items only. A step reached only as held is not reached (spec [0006](../specs/0006-eval-runner/index.md) AC-6b, spec [0005](../specs/0005-held-item-view/index.md) condition 4).
@@ -111,7 +134,8 @@ spec [0002](../specs/0002-data-model/index.md) · code in `src/tracepath/extract
 
 ## Slice 1: First traced chain
 
-### 5. First traced chain · in progress
+### 5. First traced chain · in progress · after v1 (moved 2026-10-19)
+_Moved after v1 on 2026-10-19. It closes only when the walk itself passes a question that spans two or more records, which is now the job of features 8 and 7. Nothing else about this feature changes._
 The walking skeleton. Take a few hand picked records, match them by explicit identifiers only, store them, and walk a chain. The terminal prints the answer to one eval question, with each link citing its record. Every layer is real, and the scope is narrow.
 **Done when:** one eval question whose answer spans two or more Records returns that chain in the terminal, each link cites its source record, and running it again gives the same chain. _Reworded 2026-10-05 from "three records": "record" means a Record node (spec 0002), and question 3, the one chosen for held out reasons, spans two, spec 0002 and spec 0007. See spec [0004](../specs/0004-first-traced-chain/index.md) AC-2a and AC-2b._
 **Before it** (spec 0002's vocabulary revisit Follow up, `8bcd9df`, decided 2026-10-04): the only revisit owed before this feature is ruling the type of experiment 0008's one `0006 ## Feature design` sentence (typed `Consequence` in run 1 only; `0006` is on no eval chain), with the ruling added to feature 13's evidence. The types on the chosen question's chain are not checked beforehand, and no prompt, rule or type change is made for any eval question. This feature reports what it finds as it runs.
@@ -174,17 +198,32 @@ spec [0006](../specs/0006-eval-runner/index.md) · code in `src/tracepath/report
 - [x] Verify it: `/check verify eval runner`
 - [x] Test it: `/test eval runner`
 
-### 15. Question to start item · needs a decision
+### 15. Question to start item · dropped, folded into feature 16
+_Folded into feature 16 on 2026-10-19. Typing a question in plain English is now part of the v1 answer feature. The text below is kept as history, and its two steps are not planned separately._
 Let a person type a plain English question and get a start item for the walk, instead of typing an item id. Two steps, so the thin version ships before the whole corpus exists. Prose answers stay deferred, deliberately. Feature 6 and its spec 0006 are unchanged: the eval runner keeps the start each question gives, and the slices measured before feature 9 keep their given start.
 **Step 1, right after feature 6.** The user types a question, the tool shows its top 3 candidate start items from the current graph with their text, and the user picks one (or it takes the first) before the walk runs. Simple matching, not tuned on any eval question.
 **Done when (step 1):** typing a plain English question shows the top 3 candidate start items from the current graph with their text, the user picks one or takes the first, and the walk then prints the cited chain; when no candidate matches, the output says so plainly and offers no start; the command works without the eval set; the matching is simple, was not tuned on any eval question, and the same question gives the same candidates.
 **Step 2, after feature 9.** Revisit the matching against the whole corpus, then score it on the eval questions and the sealed held out questions.
 **Done when (step 2):** before revisiting the matching, a written success bar is committed (for example, the right start is in the top 3); the matching is then revisited against the whole corpus and scored on the five eval questions and, once features 13 and 11 have committed their choices, on the sealed held out questions released with `--release-held-out`; every matching change is committed before the held out run; each result is reported one by one, as a check, never a rate.
-- [ ] Design it (spec): `/architect question to start item` · step 1 now, step 2 after feature 9
+- [ ] ~~Design it (spec): `/architect question to start item`~~ · folded into feature 16
+
+## Answer at question time (v1)
+
+### 16. Answer at question time · needs a decision
+The engineer types a why question in plain English. The tool finds the graph items that bear on it, asks the model to answer using only those items, and prints the answer with every claim citing a graph item. A link the model inferred rather than read in the text is printed marked as inferred. This takes in feature 15 (question to start item). It does not need the walk to cross a document boundary, which is where all seven questions run so far fail.
+**Done when:** the new v1 line holds: a plain English question prints an answer whose every claim cites a graph item, and any inferred link is marked as inferred; and the success bar is met or reported as missed (see the v1 finish line): at least 4 of the 5 eval questions and at least 3 of the 4 held out questions answered right, each judged by the engineer against its expected answer.
+**Rules set 2026-10-19, before design:**
+1. Eval questions 1 to 5 may be used to adjust the prompt. The four held out questions run once, at the end, after every adjustment is committed, and are never used to adjust anything.
+2. If the bar is missed, v1 still finishes, reported as it is with each failing question's cause.
+3. The hand prototype's one partial result (question 3, retrieval missed 0007 AC-12) is a hint about retrieval, not a decision. How items are found is for `/architect`.
+4. No paid call without a measured estimate from a measured per call cost and the real number of calls, then the engineer's go. Every paid call goes through the existing guards.
+5. The held out set's limit stands: its four questions sit in records 0004, 0010 and 0016 to 0018, so a pass there is a narrow check.
+- [ ] Design it (spec): `/architect answer at question time` · decide how items are found, how the model is asked, how a claim cites an item, and how an inferred link is marked
 
 ## Slice 3: Name resolution
 
-### 7. Name resolution · needs a decision
+### 7. Name resolution · needs a decision · after v1 (moved 2026-10-19)
+_Moved after v1 on 2026-10-19 as a retrieval improvement._
 Match records that name the same thing by number, nickname, or file name, so a chain doesn't quietly break across names. When a match isn't confident, the name is marked unresolved and shown, never guessed.
 **Done when:** a chain whose links use different names for the same record resolves correctly, and an uncertain match shows up as unresolved in the output.
 **Eval count, 2026-10-08** (see feature 13): not measurable from eval output, which prints no chain (spec 0006 AC-9c); question 5's three `no_link` items are the likely cases, to confirm with `trace --eval 5 --with-held`. Spec [0006](../specs/0006-eval-runner/index.md) expects question 5's "feature 21" reference to need it once the held items are released.
@@ -192,7 +231,8 @@ Match records that name the same thing by number, nickname, or file name, so a c
 
 ## Slice 4: History aware traversal
 
-### 8. History aware traversal · needs a decision
+### 8. History aware traversal · needs a decision · after v1 (moved 2026-10-19)
+_Moved after v1 on 2026-10-19 as a retrieval improvement._
 Follow supersession, amendment, and correction correctly. A fact that was later replaced must never come back as current.
 **Done when:** a chain that crosses a superseded or corrected record shows the replacement as current and marks the older one as history.
 **Known risk, recorded 2026-09-23 from the first real extraction runs:** extraction can keep a struck claim and lose its replacement, storing both as one span marked struck, so the current fact arrives already labelled obsolete. Measured on bullet 3 of spec 0012's `## Consequences`, 1 of 3 runs at `medium` effort and 2 of 3 at `low`. Only run disagreement caught it, which is not a guarantee. This row's Done when must hold against that input, not just against a correctly split one. See spec [0002](../specs/0002-data-model/index.md) `## Consequences` and [experiment 0002](../../experiments/0002-effort-low-fidelity/README.md).
@@ -358,7 +398,7 @@ It is the single largest cost in the pipeline: 340 of the 403 queue rows were `r
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
-- **Prose answers**: generated prose written over the chain · needs a decision
+- **Prose answers**: generated prose written over the chain · needs a decision · _2026-10-19: no longer deferred; feature 16 prints a cited answer for v1_
 - **Visual UI**: a graphical view of chains · needs a decision
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
