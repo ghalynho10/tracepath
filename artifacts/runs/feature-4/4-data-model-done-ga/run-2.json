@@ -1,0 +1,681 @@
+{
+  "record": "feature-4",
+  "section": "4. Data model \u00b7 done \u00b7 GA",
+  "section_slug": "4-data-model-done-ga",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2675,
+  "output_tokens": 7787,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "a673a7d62eda4a5f81014962e7688fd5",
+  "artifact_format_version": 3,
+  "unit_sha256": "d5d774449ecf48513210673dc365ba938118a17ae6435c68cc6090a4dd007898",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The core entities every later feature reads and writes: users, profile with skills and flat work history, stated job preferences, application records and their captured answers.\",\"rejected_spans\":[\"A wrong data model is the most expensive thing to redo, so it is decided once, explicitly, before any feature depends on it.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Search results deliberately do not persist.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the schema, keys, constraints and per user row level policies are applied and live,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a query as one user cannot return another user's rows,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and every value is stored raw with formatting left to render time.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect data model`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop data model` \u00b7 landed in two pull requests, #9 the create and #10 the drop, both merged 2026-08-25. All sixteen acceptance criteria proved\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The schema migration: the shared timestamp trigger, six tables with their checks and unique constraints, an explicit grant per table, and the twenty three policies (AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Fixtures and types: the seed grows a profile for each of the two synthetic users plus a third carrying none, then `database.types.ts` is regenerated from the applied schema (AC-3, AC-14, AC-15)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The replacement read: `readOwnProfile()` with its named span and Zod parse, the span registered, the health page repointed off `scaffold_check` (AC-14, AC-15)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Proved against the real project: isolation both ways, the `with check` refusals, every constraint, the privilege check, and the preview confirmed as all three seeded users (AC-2 to AC-11, AC-14) \u00b7 done 2026-08-25 on pull request #9. The sweep in verify.sql ran against the hosted development project with zero failures, and all three seeded users were driven through the preview page: dev-one and dev-two each saw only their own profile, dev-three saw the named `record_not_found` failure rather than an empty page\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Expand then contract: merge, confirm production is serving the new read, and only then drop `scaffold_check` in a second pull request (AC-13, AC-16) \u00b7 pull request #9 merged 2026-08-25, its production migration run succeeded and the production deployment built from that merge went live on `usejobhunt.vercel.app`. Only then was the drop written, in a second pull request. Pull request #10 then dropped it, merged 2026-08-25 as `3a56243`, its own production migration run succeeded, and `scaffold_check` now reads `gone` on local, development and production alike. AC-13 closed\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify data model` \u00b7 all sixteen acceptance criteria proved fresh on 2026-08-25: local (`verify.sql`, 83/83 pass), the browser driven sign in states, and production (`verify-production.sql`, run directly by the engineer, all lines pass, `scaffold_check` confirmed gone)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test data model` \u00b7 done 2026-08-27.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review data model` \u00b7 run 2026-08-27 on Sonnet 5 (author was Opus), over the implementation as merged at `3a56243`, 13 files. Verdict **Changes requested**: no blockers, one major, one minor, two nits.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a review result rather than delivering a build step, requirement or test.\"},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document data model`\",\"rejected_spans\":[\"**left unticked because the normal route is closed, not because the work was skipped.**\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"What would close it, if it is ever worth doing retroactively: `/document changelog` or `/document release-note`, neither of which needs an open pull request, run over the merged range `9f55797..3a56243`.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-9\",\"mention\":\"AC-9 to AC-12\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-10\",\"mention\":\"AC-9 to AC-12\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-11\",\"mention\":\"AC-9 to AC-12\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-12\",\"mention\":\"AC-9 to AC-12\"},\"phrase\":\"AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"AC-3, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"AC-3, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"AC-3, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-2\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-3\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-4\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-5\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-6\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-7\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-8\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-9\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-10\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-11\",\"mention\":\"AC-2 to AC-11\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"AC-2 to AC-11, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"AC-13, AC-16\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":\"AC-16\",\"mention\":\"AC-16\"},\"phrase\":\"AC-13, AC-16\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The core entities every later feature reads and writes: users, profile with skills and flat work history, stated job preferences, application records and their captured answers.",
+        "rejected_spans": [
+          "A wrong data model is the most expensive thing to redo, so it is decided once, explicitly, before any feature depends on it."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Search results deliberately do not persist.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the schema, keys, constraints and per user row level policies are applied and live,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a query as one user cannot return another user's rows,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and every value is stored raw with formatting left to render time.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect data model`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop data model` \u00b7 landed in two pull requests, #9 the create and #10 the drop, both merged 2026-08-25. All sixteen acceptance criteria proved",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The schema migration: the shared timestamp trigger, six tables with their checks and unique constraints, an explicit grant per table, and the twenty three policies (AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Fixtures and types: the seed grows a profile for each of the two synthetic users plus a third carrying none, then `database.types.ts` is regenerated from the applied schema (AC-3, AC-14, AC-15)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The replacement read: `readOwnProfile()` with its named span and Zod parse, the span registered, the health page repointed off `scaffold_check` (AC-14, AC-15)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Proved against the real project: isolation both ways, the `with check` refusals, every constraint, the privilege check, and the preview confirmed as all three seeded users (AC-2 to AC-11, AC-14) \u00b7 done 2026-08-25 on pull request #9. The sweep in verify.sql ran against the hosted development project with zero failures, and all three seeded users were driven through the preview page: dev-one and dev-two each saw only their own profile, dev-three saw the named `record_not_found` failure rather than an empty page",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Expand then contract: merge, confirm production is serving the new read, and only then drop `scaffold_check` in a second pull request (AC-13, AC-16) \u00b7 pull request #9 merged 2026-08-25, its production migration run succeeded and the production deployment built from that merge went live on `usejobhunt.vercel.app`. Only then was the drop written, in a second pull request. Pull request #10 then dropped it, merged 2026-08-25 as `3a56243`, its own production migration run succeeded, and `scaffold_check` now reads `gone` on local, development and production alike. AC-13 closed",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify data model` \u00b7 all sixteen acceptance criteria proved fresh on 2026-08-25: local (`verify.sql`, 83/83 pass), the browser driven sign in states, and production (`verify-production.sql`, run directly by the engineer, all lines pass, `scaffold_check` confirmed gone)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test data model` \u00b7 done 2026-08-27.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review data model` \u00b7 run 2026-08-27 on Sonnet 5 (author was Opus), over the implementation as merged at `3a56243`, 13 files. Verdict **Changes requested**: no blockers, one major, one minor, two nits.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a review result rather than delivering a build step, requirement or test.",
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document data model`",
+        "rejected_spans": [
+          "**left unticked because the normal route is closed, not because the work was skipped.**"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "What would close it, if it is ever worth doing retroactively: `/document changelog` or `/document release-note`, neither of which needs an open pull request, run over the merged range `9f55797..3a56243`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9 to AC-12"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-9 to AC-12"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-9 to AC-12"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-9 to AC-12"
+        },
+        "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "AC-3, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "AC-3, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "AC-3, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-2 to AC-11"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "AC-2 to AC-11, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "AC-13, AC-16",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16"
+        },
+        "phrase": "AC-13, AC-16",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

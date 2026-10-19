@@ -1,0 +1,436 @@
+{
+  "record": "feature-8",
+  "section": "8. Test foundation \u00b7 done",
+  "section_slug": "8-test-foundation-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1690,
+  "output_tokens": 3803,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "563b71cec38d417196e8abd4f27f43ed",
+  "artifact_format_version": 3,
+  "unit_sha256": "0f76a1703890ee2624f4f36ab951889617054d8f8674f171caa8c0b7a7e81a6f",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The fixtures every later test depends on, built once rather than improvised per feature: a development only path that mints a real session without driving a browser, a fixed pool of obviously fake users for proving isolation, and a way to record and replay real responses from external services.\",\"rejected_spans\":[\"This exists because the reference project's worst bug survived six passing tests that all mocked the same wrong assumption.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a test can sign in as user A, write data, switch to user B and prove B cannot see it;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"an external service can be exercised against a real recorded response rather than a hand written mock;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the session path is hard blocked outside development;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"no fixture contains a real personal identifier;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and no recorded fixture carries a credential.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect test foundation` \u00b7 accepted 2026-08-26, after a fresh model review whose findings were folded back into the spec\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop test foundation` \u00b7 built 2026-08-26 on branch `feat/test-foundation`; all 13 acceptance criteria covered by 30 unit and 9 integration tests, green against the real local stack (count as of 2026-08-27; it moves with the suite)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Vitest scaffolded as two projects (unit, and integration on `node`), the `server-only` alias, `.env.test`, the in memory Sentry transport, and `pnpm test` (AC-5, AC-10)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The fixture pool re-minted with valid version 4 UUIDs, the old rows deleted before the new ones are inserted, and the profile parser tightened from `z.guid()` to `z.uuid()` (AC-4, AC-6)\",\"rejected_spans\":[\"the delete then insert ordering was proved by staging the old pool locally and replaying the seed with `ON_ERROR_STOP=1`, the way db-migrate runs it. Then proved for real: the `Database migrations` workflow applied this seed to the hosted development project on pull request [#18](https://github.com/ghalynho10/JobHunt/pull/18) and passed, so the re-mint landed against the shared project that still held the old pool and was never wiped\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The session thread: an optional cookie adapter on `createClient()`, the development only mint behind `DEV_SESSION_ENABLED`, and the isolation test proving it against the real local stack (AC-1, AC-3)\",\"rejected_spans\":[\"the isolation test was checked for vacuousness by disabling row level security on `public.profile`, which failed all four of its assertions, then restored\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Record and replay with redaction at write time, plus the on demand fixture user mint (AC-2, AC-8, AC-9, AC-11, AC-13)\",\"rejected_spans\":[\"the GitHub stand in was recorded once from the live API and survives the pre commit hook byte for byte; redaction is proved through a real capture rather than by calling the redactor directly\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The command split and the CI job running the stack in Docker (AC-7, AC-12)\",\"rejected_spans\":[\"CI runs the unit suite before the stack starts, so a unit test that grows a database dependency fails there rather than passing on a warm stack. Green on pull request [#18](https://github.com/ghalynho10/JobHunt/pull/18): the `Test (unit, then integration)` job started the stack in Docker and ran both suites in 1m50s. AC-7 was the one criterion that could not be proved locally\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify test foundation` \u00b7 PASS on 2026-08-27, all 13 acceptance criteria met, see verify.md for the evidenced checklist.\",\"rejected_spans\":[\"The first run found AC-8 failing (the record mode warning was emitted and then swallowed by Vitest's console interception, so it never reached a human); fixed by writing it to `process.stderr`, and a regression test now fails if it moves back to `console.warn`. Both proofs were checked for vacuousness: disabling row level security fails five tests, and deleting the committed recording fails four with a message naming the file and the record command\"],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check already run rather than delivering one.\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test test foundation` \u00b7 **skipped** 2026-08-27, by decision, not by omission.\",\"rejected_spans\":[\"This feature IS the test layer: it ships 34 tests (25 unit, 9 integration), and `/test` here would mostly mean writing tests for test helpers. What would normally justify the box is already covered another way: the two claims that matter are checked for vacuousness rather than trusted (disabling row level security fails five tests, deleting the committed recording fails four), and the one bug this feature's own verify run found, the record mode warning being swallowed, now has a regression test that fails if it returns to `console.warn`. The durable steps a later `/test` would lock are in [verify.md](../specs/0004-test-foundation/verify.md), all 18 ticked.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"rationale_boundary_call\"],\"unclassified_note\":\"A stage line recording that a check was skipped; it only reports a check rather than delivering one.\"}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"(AC-5, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"(AC-5, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"(AC-4, AC-6)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"(AC-4, AC-6)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"(AC-1, AC-3)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"(AC-1, AC-3)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"(AC-2, AC-8, AC-9, AC-11, AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"(AC-2, AC-8, AC-9, AC-11, AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"(AC-2, AC-8, AC-9, AC-11, AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"(AC-2, AC-8, AC-9, AC-11, AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"(AC-2, AC-8, AC-9, AC-11, AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"(AC-7, AC-12)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"(AC-7, AC-12)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The fixtures every later test depends on, built once rather than improvised per feature: a development only path that mints a real session without driving a browser, a fixed pool of obviously fake users for proving isolation, and a way to record and replay real responses from external services.",
+        "rejected_spans": [
+          "This exists because the reference project's worst bug survived six passing tests that all mocked the same wrong assumption."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a test can sign in as user A, write data, switch to user B and prove B cannot see it;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "an external service can be exercised against a real recorded response rather than a hand written mock;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the session path is hard blocked outside development;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "no fixture contains a real personal identifier;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and no recorded fixture carries a credential.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect test foundation` \u00b7 accepted 2026-08-26, after a fresh model review whose findings were folded back into the spec",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop test foundation` \u00b7 built 2026-08-26 on branch `feat/test-foundation`; all 13 acceptance criteria covered by 30 unit and 9 integration tests, green against the real local stack (count as of 2026-08-27; it moves with the suite)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Vitest scaffolded as two projects (unit, and integration on `node`), the `server-only` alias, `.env.test`, the in memory Sentry transport, and `pnpm test` (AC-5, AC-10)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The fixture pool re-minted with valid version 4 UUIDs, the old rows deleted before the new ones are inserted, and the profile parser tightened from `z.guid()` to `z.uuid()` (AC-4, AC-6)",
+        "rejected_spans": [
+          "the delete then insert ordering was proved by staging the old pool locally and replaying the seed with `ON_ERROR_STOP=1`, the way db-migrate runs it. Then proved for real: the `Database migrations` workflow applied this seed to the hosted development project on pull request [#18](https://github.com/ghalynho10/JobHunt/pull/18) and passed, so the re-mint landed against the shared project that still held the old pool and was never wiped"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The session thread: an optional cookie adapter on `createClient()`, the development only mint behind `DEV_SESSION_ENABLED`, and the isolation test proving it against the real local stack (AC-1, AC-3)",
+        "rejected_spans": [
+          "the isolation test was checked for vacuousness by disabling row level security on `public.profile`, which failed all four of its assertions, then restored"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Record and replay with redaction at write time, plus the on demand fixture user mint (AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "rejected_spans": [
+          "the GitHub stand in was recorded once from the live API and survives the pre commit hook byte for byte; redaction is proved through a real capture rather than by calling the redactor directly"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The command split and the CI job running the stack in Docker (AC-7, AC-12)",
+        "rejected_spans": [
+          "CI runs the unit suite before the stack starts, so a unit test that grows a database dependency fails there rather than passing on a warm stack. Green on pull request [#18](https://github.com/ghalynho10/JobHunt/pull/18): the `Test (unit, then integration)` job started the stack in Docker and ran both suites in 1m50s. AC-7 was the one criterion that could not be proved locally"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify test foundation` \u00b7 PASS on 2026-08-27, all 13 acceptance criteria met, see verify.md for the evidenced checklist.",
+        "rejected_spans": [
+          "The first run found AC-8 failing (the record mode warning was emitted and then swallowed by Vitest's console interception, so it never reached a human); fixed by writing it to `process.stderr`, and a regression test now fails if it moves back to `console.warn`. Both proofs were checked for vacuousness: disabling row level security fails five tests, and deleting the committed recording fails four with a message naming the file and the record command"
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check already run rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test test foundation` \u00b7 **skipped** 2026-08-27, by decision, not by omission.",
+        "rejected_spans": [
+          "This feature IS the test layer: it ships 34 tests (25 unit, 9 integration), and `/test` here would mostly mean writing tests for test helpers. What would normally justify the box is already covered another way: the two claims that matter are checked for vacuousness rather than trusted (disabling row level security fails five tests, deleting the committed recording fails four), and the one bug this feature's own verify run found, the record mode warning being swallowed, now has a regression test that fails if it returns to `console.warn`. The durable steps a later `/test` would lock are in [verify.md](../specs/0004-test-foundation/verify.md), all 18 ticked."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": "A stage line recording that a check was skipped; it only reports a check rather than delivering one.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "(AC-5, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "(AC-5, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "(AC-4, AC-6)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "(AC-4, AC-6)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "(AC-1, AC-3)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "(AC-1, AC-3)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "(AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "(AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "(AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "(AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "(AC-2, AC-8, AC-9, AC-11, AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "(AC-7, AC-12)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "(AC-7, AC-12)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

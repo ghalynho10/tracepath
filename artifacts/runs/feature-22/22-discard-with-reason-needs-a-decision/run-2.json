@@ -1,0 +1,113 @@
+{
+  "record": "feature-22",
+  "section": "22. Discard with reason \u00b7 needs a decision",
+  "section_slug": "22-discard-with-reason-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 264,
+  "output_tokens": 617,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "5943b949d7994f54822cc3255058b293",
+  "artifact_format_version": 3,
+  "unit_sha256": "cde9aff48ccc07a5d74f7bea932b0213db8d4e0e7eb778111d97f2c131a73d39",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Discard a result with a reason from a fixed list, and let that softly adjust future ranking for that user only, with no learning across users. Deliberately soft: nothing is hidden by a score threshold\",\"rejected_spans\":[\"because a slightly miscalibrated model would then silently bury results worth seeing\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Needs scoring live to have anything to adjust.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a discard records a reason,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the adjustment is per user only,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"its effect on a later score is explainable to the user,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and nothing is ever filtered out of view without the user choosing it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect discard with reason`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Discard a result with a reason from a fixed list, and let that softly adjust future ranking for that user only, with no learning across users. Deliberately soft: nothing is hidden by a score threshold",
+        "rejected_spans": [
+          "because a slightly miscalibrated model would then silently bury results worth seeing"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Needs scoring live to have anything to adjust.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a discard records a reason,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the adjustment is per user only,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "its effect on a later score is explainable to the user,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and nothing is ever filtered out of view without the user choosing it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect discard with reason`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

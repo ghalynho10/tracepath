@@ -1,0 +1,618 @@
+{
+  "record": "feature-13",
+  "section": "13. Model client router \u00b7 done",
+  "section_slug": "13-model-client-router-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1913,
+  "output_tokens": 5299,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "fbe6ab92c4074274be1707d2ca20c35f",
+  "artifact_format_version": 3,
+  "unit_sha256": "480d485284f3cfc6f602c385e502b96bb2a163b1a85c1aa75908b1bb49f92719",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"One thin client every AI call routes through: tier in, response out, with model and provider read from configuration and never written into a feature. This is what makes the deliberately cross vendor design swappable later. Built here with its first real caller in hand rather than as an empty foundation\",\"rejected_spans\":[\"because that is what keeps it a router\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Watch this one: it is a named place where scope quietly expands into a framework.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** two tiers resolve from configuration to two different vendors,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a feature calling it names a tier and never a model,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"swapping a model is a configuration change with no feature code touched,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and a provider failure surfaces as a visible error rather than a default that reads as success.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Owes the privacy notice a recipient entry, recorded from spec 0009 on 2026-09-01. The router is where a model provider's credential lands, so each vendor it routes to is a company data reaches and belongs in `DATA_RECIPIENTS`. The AC-5 guard fails the unit suite as soon as the key is declared in `src/env.ts`, so this cannot ship silently. Because the design is deliberately cross vendor, the entry is per vendor rather than one line saying \\\"a model provider\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Was blocked on feature 10 merging to `main`, recorded from spec 0012 on 2026-09-03.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"feature 10 merged to `main` at `5b01b4c` (pull request 86) and spec 0011 is Accepted, so `checkUsageGate()` and the `usage_cap` table both exist on `main` today, at `src/lib/usage-gating/`, the path commit `d309e65` relocated it to before the merge. This feature's build, the migration included, is unblocked.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): 0012\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop model client router` \u2014 code in `src/lib/ai/`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Configuration: `@ai-sdk/openai`, `@ai-sdk/google` and `ai` added, the two vendor keys validated in `src/env.ts`, and the six `usage_cap` seed rows migrated for `ai_scoring` and `ai_check` (AC-8, AC-10)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Router core: `tiers.ts`, `failures.ts`, and `client.ts`'s `callTier()`, gated through `withUsageGate()` before every vendor call, classifying a caught error into `response_malformed` or `external_service_failed` (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Observability: the `ai.call_tier` span registered in `docs/observability/spans.md` (AC-7)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Privacy registry: `openai` and `google-ai` added to `DATA_RECIPIENTS`, the privacy page's stale watchlist and comment corrected (AC-9)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Tests: the source guard, the `classify()` unit tests, and the gated real vendor integration tests (AC-1 through AC-8)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify model client router`\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test model client router`\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review model client router` \u00b7 two rounds, both reviewed on Claude Opus 5 against author Sonnet 5. **Round 1**, 2026-09-06, 21 files: verdict **Blocked**, one blocker (CI missing both new required env keys, `OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY`, which would have failed every check the moment a pull request opened), three majors and three minors. **Round 2**, 2026-09-06, a different Opus 5 instance, 24 files: independently re-verified all six round 1 findings rather than trusting the account (five resolved, one, the `withUsageGate` test mock, deliberately accepted), then found two new problems introduced by round 1's own fixes. Verdict **Changes requested**. Both new majors were fixed the same day, and one minor was taken (`truncated` registered as a queryable `ai.call_tier` span attribute in `spans.md`). **One round 2 minor was rejected on a false premise**: it claimed the three AI packages were the only floating runtime versions in `package.json`; counted directly, 19 of the repo's 30 dependencies use `^`, including `eslint`, `typescript`, `prettier` and every `@types/*`, and spec 0012's own Build plan step 1 says none pinned.\",\"rejected_spans\":[\"An ESLint rule banned importing the router it tells you to import: `no-restricted-imports`'s `patterns.group` matches with gitignore style path semantics, where a slash free entry like `\\\"ai\\\"` matches a path segment at any depth rather than an exact module name, so it also fired on `@/lib/ai/client` and `@/lib/ai/tiers`, and `pnpm lint` stayed green only because nothing outside `src/lib/ai/` imported the router yet. And `/privacy` claimed \\\"five\\\" companies while rendering eight, an off by one already present before this branch that this branch widened to three.\",\"The rejection and its evidence are recorded in the round 2 findings file so it is not re-raised.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"rationale_boundary_call\"],\"unclassified_note\":\"A review stage line that only reports a check already performed (rounds, findings, verdicts) rather than delivering one.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"phrase\":\"**Resolved 2026-09-04**\",\"date\":\"2026-09-04\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"id\":null,\"mention\":\"feature 10\"},\"phrase\":\"Was blocked on feature 10 merging to `main`\",\"date\":\"2026-09-03\",\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"(AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"(AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"(AC-7)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"(AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-1\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[\"entity_type_ambiguous\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-2\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-3\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-4\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-5\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-6\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-7\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-8\",\"mention\":\"AC-1 through AC-8\"},\"phrase\":\"(AC-1 through AC-8)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "One thin client every AI call routes through: tier in, response out, with model and provider read from configuration and never written into a feature. This is what makes the deliberately cross vendor design swappable later. Built here with its first real caller in hand rather than as an empty foundation",
+        "rejected_spans": [
+          "because that is what keeps it a router"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Watch this one: it is a named place where scope quietly expands into a framework.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** two tiers resolve from configuration to two different vendors,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a feature calling it names a tier and never a model,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "swapping a model is a configuration change with no feature code touched,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and a provider failure surfaces as a visible error rather than a default that reads as success.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Owes the privacy notice a recipient entry, recorded from spec 0009 on 2026-09-01. The router is where a model provider's credential lands, so each vendor it routes to is a company data reaches and belongs in `DATA_RECIPIENTS`. The AC-5 guard fails the unit suite as soon as the key is declared in `src/env.ts`, so this cannot ship silently. Because the design is deliberately cross vendor, the entry is per vendor rather than one line saying \"a model provider\".",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Was blocked on feature 10 merging to `main`, recorded from spec 0012 on 2026-09-03.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "feature 10 merged to `main` at `5b01b4c` (pull request 86) and spec 0011 is Accepted, so `checkUsageGate()` and the `usage_cap` table both exist on `main` today, at `src/lib/usage-gating/`, the path commit `d309e65` relocated it to before the merge. This feature's build, the migration included, is unblocked.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): 0012",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop model client router` \u2014 code in `src/lib/ai/`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Configuration: `@ai-sdk/openai`, `@ai-sdk/google` and `ai` added, the two vendor keys validated in `src/env.ts`, and the six `usage_cap` seed rows migrated for `ai_scoring` and `ai_check` (AC-8, AC-10)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Router core: `tiers.ts`, `failures.ts`, and `client.ts`'s `callTier()`, gated through `withUsageGate()` before every vendor call, classifying a caught error into `response_malformed` or `external_service_failed` (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Observability: the `ai.call_tier` span registered in `docs/observability/spans.md` (AC-7)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Privacy registry: `openai` and `google-ai` added to `DATA_RECIPIENTS`, the privacy page's stale watchlist and comment corrected (AC-9)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Tests: the source guard, the `classify()` unit tests, and the gated real vendor integration tests (AC-1 through AC-8)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify model client router`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test model client router`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review model client router` \u00b7 two rounds, both reviewed on Claude Opus 5 against author Sonnet 5. **Round 1**, 2026-09-06, 21 files: verdict **Blocked**, one blocker (CI missing both new required env keys, `OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY`, which would have failed every check the moment a pull request opened), three majors and three minors. **Round 2**, 2026-09-06, a different Opus 5 instance, 24 files: independently re-verified all six round 1 findings rather than trusting the account (five resolved, one, the `withUsageGate` test mock, deliberately accepted), then found two new problems introduced by round 1's own fixes. Verdict **Changes requested**. Both new majors were fixed the same day, and one minor was taken (`truncated` registered as a queryable `ai.call_tier` span attribute in `spans.md`). **One round 2 minor was rejected on a false premise**: it claimed the three AI packages were the only floating runtime versions in `package.json`; counted directly, 19 of the repo's 30 dependencies use `^`, including `eslint`, `typescript`, `prettier` and every `@types/*`, and spec 0012's own Build plan step 1 says none pinned.",
+        "rejected_spans": [
+          "An ESLint rule banned importing the router it tells you to import: `no-restricted-imports`'s `patterns.group` matches with gitignore style path semantics, where a slash free entry like `\"ai\"` matches a path segment at any depth rather than an exact module name, so it also fired on `@/lib/ai/client` and `@/lib/ai/tiers`, and `pnpm lint` stayed green only because nothing outside `src/lib/ai/` imported the router yet. And `/privacy` claimed \"five\" companies while rendering eight, an off by one already present before this branch that this branch widened to three.",
+          "The rejection and its evidence are recorded in the round 2 findings file so it is not re-raised."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": "A review stage line that only reports a check already performed (rounds, findings, verdicts) rather than delivering one.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "phrase": "**Resolved 2026-09-04**",
+        "date": "2026-09-04",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10"
+        },
+        "phrase": "Was blocked on feature 10 merging to `main`",
+        "date": "2026-09-03",
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "(AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "(AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "(AC-7)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "(AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-1 through AC-8"
+        },
+        "phrase": "(AC-1 through AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

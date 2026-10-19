@@ -1,0 +1,91 @@
+{
+  "record": "feature-29",
+  "section": "29. Product analytics \u00b7 needs a decision",
+  "section_slug": "29-product-analytics-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 207,
+  "output_tokens": 449,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "72a188a0df6848ca837e363c4b2f75d7",
+  "artifact_format_version": 3,
+  "unit_sha256": "e9df828108f09b233bbdd0bf0443d53467e6410751c73cbf039461921711af78",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Product usage analytics, kept conceptually and technically separate from the dashboard's own computed application statistics.\",\"rejected_spans\":[\"The reference project's own documentation was caught conflating the two.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the events that matter are instrumented,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"nothing personally identifying leaves the app without a decision recorded about it,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the analytics surface is never presented as application statistics.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect product analytics`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Product usage analytics, kept conceptually and technically separate from the dashboard's own computed application statistics.",
+        "rejected_spans": [
+          "The reference project's own documentation was caught conflating the two."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the events that matter are instrumented,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "nothing personally identifying leaves the app without a decision recorded about it,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the analytics surface is never presented as application statistics.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect product analytics`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

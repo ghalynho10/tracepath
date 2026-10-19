@@ -1,0 +1,815 @@
+{
+  "record": "feature-12",
+  "section": "12. Apply redirect & application record \u00b7 done",
+  "section_slug": "12-apply-redirect-application-record-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3699,
+  "output_tokens": 9996,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "1dcf3e823e4548af831388995b7e331d",
+  "artifact_format_version": 3,
+  "unit_sha256": "dd72a91f3545de36535aa0bf454bf255cc7d4e51b6e57da9e9b37ff7ea56bb21",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Click a result through to the real posting on the source site, and record that you applied.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No auto fill and nothing submitted on the user's behalf.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Minimal here: the guided capture questions arrive later, in v2.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This closes the thread and makes the application record the only place a job persists.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a result links out to the real posting in a new tab,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"marking it applied writes a record tied to that user,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the record survives a reload,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the same job applied to twice does not silently create a duplicate.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"An apply by a user with no profile row fails visibly as an expected failure rather than as a raw database error\",\"rejected_spans\":[\"(spec 0003's Follow-up asked for this criterion and it was missing until spec 0014 added it)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"Marking a job applied spends no Adzuna call, on a fresh session and on an expired one alike.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"Also, this feature moves its own claim (`application tracking`) from planned to working in the entry page's \\\"What's real today\\\" card (spec 0006, **AC-8**).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Owed a decision on the predicted salary flag, recorded from spec 0013 on 2026-09-04.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`application` gains a nullable `salary_is_predicted` column paired to the salary by a check constraint, written `null` rather than `false` when Adzuna stated no pay at all.\",\"rejected_spans\":[\"This closes the matching Follow-up items in specs 0003 and 0013, both of which named this feature as the one that had to decide, and both now ticked.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): 0014\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop apply redirect & application record` \u00b7 all five milestones done 2026-09-05, code in `src/features/applications/`, `src/lib/adzuna.ts`, `src/lib/listing-format.ts`, `src/components/adzuna-attribution.tsx`, `src/lib/supabase/read-only-cookies.ts`, `src/proxy.ts` and `supabase/migrations/20260905120000_application_salary_is_predicted.sql`.\",\"rejected_spans\":[\"The last milestone closed only after `/check verify` found AC-10 genuinely failing on an expired session and `/debug` traced it to the proxy rather than to this feature's own code; see Close out\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Schema and shared code \u00b7 done 2026-09-05. Migration applied to local and the schema confirmed live, not just generated; the pairing check was **proved with real inserts** (three valid states accepted, a flag with no salary and a salary with no flag both refused, all rolled back). The relocation landed at `src/components/`, not `src/components/ui/` as the spec's table says (AC-6, AC-7, AC-8, AC-13, AC-15)\",\"rejected_spans\":[\"that directory's own AGENTS.md defines it as spec 0005's design system, and a vendor licence attribution is not a design system primitive\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The thin thread \u00b7 done 2026-09-05, proved end to end against the real stack by 14 integration tests: one apply writes one row carrying all eleven snapshot fields, `profile_id` comes from verified claims, and the three timestamps come from the database. (AC-1, AC-2, AC-3, AC-19, AC-20)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Failure surface and removal \u00b7 done 2026-09-05. Duplicate and missing profile both refused by the database and both turned into their own visible expected failure, driven for real. The catch now lives in `ApplyControl` around the call, which is the only place left, and the client side recovery is **not browser verified** (AC-4, AC-5, AC-11, AC-21)\",\"rejected_spans\":[\"**AC-21 was found unimplementable where the spec put it**: a production server answering a stale request logs `Failed to find Server Action` and rejects the dispatch *before* any of this feature's code runs, so `recordApplication` can never catch it.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The full applications screen and the applied marker \u00b7 done 2026-09-05, with 20 new component and page tests. `/applications` finally does what its own copy has promised on production since feature 32. Both attributions render per row and none at all on an empty page; a failed marker read says so (`COPY-8`) (AC-7, AC-8, AC-9, AC-17, AC-18)\",\"rejected_spans\":[\"rather than rendering twenty unmarked cards, which would have claimed the reader had applied to none of them\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Close out \u00b7 **done 2026-09-05**. Done earlier that day: the four spans registered in `spans.md`, and the entry page claim moved from `planned` to `working`. Fixed by `/debug`, locked by proxy-action-refresh.test.ts which was proved to fail without the fix, recorded by `/architect` as spec 0014 **AC-20a**, spec 0008 **AC-10b** and a third item on spec 0001's binding rule 6, then re-measured end to end: counter flat across an expired session apply, row landed, no `x-action-revalidated`. The stale build case (AC-21) was measured the same way and passes (AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"rejected_spans\":[\"its guard test failed first, which is what feature 7's equivalent lacked when it went unmet for two days\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify apply redirect & application record` \u00b7 done 2026-09-05, run twice.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check already performed rather than delivering one.\"},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test apply redirect & application record` \u00b7 done 2026-09-05.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0003\",\"id\":null,\"mention\":\"spec 0003's Follow-up\"},\"phrase\":\"spec 0003's Follow-up asked for this criterion\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, **AC-8**\"},\"phrase\":\"(spec 0006, **AC-8**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":null,\"mention\":\"spec 0013\"},\"phrase\":\"recorded from spec 0013 on 2026-09-04\",\"date\":\"2026-09-04\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"phrase\":\"**Resolved 2026-09-05**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-6\",\"mention\":\"spec 0014, AC-6\"},\"phrase\":\"**Resolved 2026-09-05** by spec 0014, AC-6\",\"date\":\"2026-09-05\",\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-6\",\"mention\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\"},\"phrase\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-7\",\"mention\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\"},\"phrase\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-8\",\"mention\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\"},\"phrase\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-13\",\"mention\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\"},\"phrase\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-15\",\"mention\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\"},\"phrase\":\"(AC-6, AC-7, AC-8, AC-13, AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-1\",\"mention\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-2\",\"mention\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-3\",\"mention\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-19\",\"mention\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20\",\"mention\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\"},\"phrase\":\"(AC-1, AC-2, AC-3, AC-19, AC-20)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-4\",\"mention\":\"(AC-4, AC-5, AC-11, AC-21)\"},\"phrase\":\"(AC-4, AC-5, AC-11, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-5\",\"mention\":\"(AC-4, AC-5, AC-11, AC-21)\"},\"phrase\":\"(AC-4, AC-5, AC-11, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-11\",\"mention\":\"(AC-4, AC-5, AC-11, AC-21)\"},\"phrase\":\"(AC-4, AC-5, AC-11, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-21\",\"mention\":\"(AC-4, AC-5, AC-11, AC-21)\"},\"phrase\":\"(AC-4, AC-5, AC-11, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-7\",\"mention\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\"},\"phrase\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-8\",\"mention\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\"},\"phrase\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-9\",\"mention\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\"},\"phrase\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-17\",\"mention\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\"},\"phrase\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-18\",\"mention\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\"},\"phrase\":\"(AC-7, AC-8, AC-9, AC-17, AC-18)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-10\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-12\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-14\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-16\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-21\",\"mention\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\"},\"phrase\":\"(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Click a result through to the real posting on the source site, and record that you applied.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No auto fill and nothing submitted on the user's behalf.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Minimal here: the guided capture questions arrive later, in v2.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This closes the thread and makes the application record the only place a job persists.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a result links out to the real posting in a new tab,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "marking it applied writes a record tied to that user,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the record survives a reload,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the same job applied to twice does not silently create a duplicate.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "An apply by a user with no profile row fails visibly as an expected failure rather than as a raw database error",
+        "rejected_spans": [
+          "(spec 0003's Follow-up asked for this criterion and it was missing until spec 0014 added it)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "Marking a job applied spends no Adzuna call, on a fresh session and on an expired one alike.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "Also, this feature moves its own claim (`application tracking`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Owed a decision on the predicted salary flag, recorded from spec 0013 on 2026-09-04.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`application` gains a nullable `salary_is_predicted` column paired to the salary by a check constraint, written `null` rather than `false` when Adzuna stated no pay at all.",
+        "rejected_spans": [
+          "This closes the matching Follow-up items in specs 0003 and 0013, both of which named this feature as the one that had to decide, and both now ticked."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): 0014",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop apply redirect & application record` \u00b7 all five milestones done 2026-09-05, code in `src/features/applications/`, `src/lib/adzuna.ts`, `src/lib/listing-format.ts`, `src/components/adzuna-attribution.tsx`, `src/lib/supabase/read-only-cookies.ts`, `src/proxy.ts` and `supabase/migrations/20260905120000_application_salary_is_predicted.sql`.",
+        "rejected_spans": [
+          "The last milestone closed only after `/check verify` found AC-10 genuinely failing on an expired session and `/debug` traced it to the proxy rather than to this feature's own code; see Close out"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Schema and shared code \u00b7 done 2026-09-05. Migration applied to local and the schema confirmed live, not just generated; the pairing check was **proved with real inserts** (three valid states accepted, a flag with no salary and a salary with no flag both refused, all rolled back). The relocation landed at `src/components/`, not `src/components/ui/` as the spec's table says (AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "rejected_spans": [
+          "that directory's own AGENTS.md defines it as spec 0005's design system, and a vendor licence attribution is not a design system primitive"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The thin thread \u00b7 done 2026-09-05, proved end to end against the real stack by 14 integration tests: one apply writes one row carrying all eleven snapshot fields, `profile_id` comes from verified claims, and the three timestamps come from the database. (AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Failure surface and removal \u00b7 done 2026-09-05. Duplicate and missing profile both refused by the database and both turned into their own visible expected failure, driven for real. The catch now lives in `ApplyControl` around the call, which is the only place left, and the client side recovery is **not browser verified** (AC-4, AC-5, AC-11, AC-21)",
+        "rejected_spans": [
+          "**AC-21 was found unimplementable where the spec put it**: a production server answering a stale request logs `Failed to find Server Action` and rejects the dispatch *before* any of this feature's code runs, so `recordApplication` can never catch it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The full applications screen and the applied marker \u00b7 done 2026-09-05, with 20 new component and page tests. `/applications` finally does what its own copy has promised on production since feature 32. Both attributions render per row and none at all on an empty page; a failed marker read says so (`COPY-8`) (AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "rejected_spans": [
+          "rather than rendering twenty unmarked cards, which would have claimed the reader had applied to none of them"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Close out \u00b7 **done 2026-09-05**. Done earlier that day: the four spans registered in `spans.md`, and the entry page claim moved from `planned` to `working`. Fixed by `/debug`, locked by proxy-action-refresh.test.ts which was proved to fail without the fix, recorded by `/architect` as spec 0014 **AC-20a**, spec 0008 **AC-10b** and a third item on spec 0001's binding rule 6, then re-measured end to end: counter flat across an expired session apply, row landed, no `x-action-revalidated`. The stale build case (AC-21) was measured the same way and passes (AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "rejected_spans": [
+          "its guard test failed first, which is what feature 7's equivalent lacked when it went unmet for two days"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify apply redirect & application record` \u00b7 done 2026-09-05, run twice.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check already performed rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test apply redirect & application record` \u00b7 done 2026-09-05.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0003",
+          "id": null,
+          "label": null,
+          "mention": "spec 0003's Follow-up"
+        },
+        "phrase": "spec 0003's Follow-up asked for this criterion",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, **AC-8**"
+        },
+        "phrase": "(spec 0006, **AC-8**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": null,
+          "mention": "spec 0013"
+        },
+        "phrase": "recorded from spec 0013 on 2026-09-04",
+        "date": "2026-09-04",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "phrase": "**Resolved 2026-09-05**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-6",
+          "label": null,
+          "mention": "spec 0014, AC-6"
+        },
+        "phrase": "**Resolved 2026-09-05** by spec 0014, AC-6",
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-6",
+          "label": null,
+          "mention": "(AC-6, AC-7, AC-8, AC-13, AC-15)"
+        },
+        "phrase": "(AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-7",
+          "label": null,
+          "mention": "(AC-6, AC-7, AC-8, AC-13, AC-15)"
+        },
+        "phrase": "(AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-8",
+          "label": null,
+          "mention": "(AC-6, AC-7, AC-8, AC-13, AC-15)"
+        },
+        "phrase": "(AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-13",
+          "label": null,
+          "mention": "(AC-6, AC-7, AC-8, AC-13, AC-15)"
+        },
+        "phrase": "(AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-15",
+          "label": null,
+          "mention": "(AC-6, AC-7, AC-8, AC-13, AC-15)"
+        },
+        "phrase": "(AC-6, AC-7, AC-8, AC-13, AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-1",
+          "label": null,
+          "mention": "(AC-1, AC-2, AC-3, AC-19, AC-20)"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-2",
+          "label": null,
+          "mention": "(AC-1, AC-2, AC-3, AC-19, AC-20)"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-3",
+          "label": null,
+          "mention": "(AC-1, AC-2, AC-3, AC-19, AC-20)"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-19",
+          "label": null,
+          "mention": "(AC-1, AC-2, AC-3, AC-19, AC-20)"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20",
+          "label": null,
+          "mention": "(AC-1, AC-2, AC-3, AC-19, AC-20)"
+        },
+        "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-4",
+          "label": null,
+          "mention": "(AC-4, AC-5, AC-11, AC-21)"
+        },
+        "phrase": "(AC-4, AC-5, AC-11, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-5",
+          "label": null,
+          "mention": "(AC-4, AC-5, AC-11, AC-21)"
+        },
+        "phrase": "(AC-4, AC-5, AC-11, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-11",
+          "label": null,
+          "mention": "(AC-4, AC-5, AC-11, AC-21)"
+        },
+        "phrase": "(AC-4, AC-5, AC-11, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-21",
+          "label": null,
+          "mention": "(AC-4, AC-5, AC-11, AC-21)"
+        },
+        "phrase": "(AC-4, AC-5, AC-11, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-7",
+          "label": null,
+          "mention": "(AC-7, AC-8, AC-9, AC-17, AC-18)"
+        },
+        "phrase": "(AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-8",
+          "label": null,
+          "mention": "(AC-7, AC-8, AC-9, AC-17, AC-18)"
+        },
+        "phrase": "(AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-9",
+          "label": null,
+          "mention": "(AC-7, AC-8, AC-9, AC-17, AC-18)"
+        },
+        "phrase": "(AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-17",
+          "label": null,
+          "mention": "(AC-7, AC-8, AC-9, AC-17, AC-18)"
+        },
+        "phrase": "(AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-18",
+          "label": null,
+          "mention": "(AC-7, AC-8, AC-9, AC-17, AC-18)"
+        },
+        "phrase": "(AC-7, AC-8, AC-9, AC-17, AC-18)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-10",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-12",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-14",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-16",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-21",
+          "label": null,
+          "mention": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+        },
+        "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

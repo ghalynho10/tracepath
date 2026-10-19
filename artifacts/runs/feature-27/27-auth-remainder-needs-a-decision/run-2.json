@@ -1,0 +1,195 @@
+{
+  "record": "feature-27",
+  "section": "27. Auth remainder \u00b7 needs a decision",
+  "section_slug": "27-auth-remainder-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 540,
+  "output_tokens": 1249,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "43567c0ba6374408b895a2a55f669405",
+  "artifact_format_version": 3,
+  "unit_sha256": "cf731db4f8693473f60b413852bf5462e5ab1f1576f4333a32f177b90252e5a7",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Email and password sign up as an alternative for people without a Google or GitHub account, password reset, session expiry handling, and an account settings screen.\",\"rejected_spans\":[\"Deferred out of v1 because it pulls in a transactional email service and a verification flow that OAuth alone does not need.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a user can sign up and reset a password by email,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"an expired session is handled visibly rather than as a silent failure,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"account settings covers deletion,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the isolation guarantees hold identically for both sign in paths.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Owes the privacy notice a rewrite of its deletion section\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The day this feature ships a real control, that prose becomes false in the opposite direction, understating what a reader can do.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Changing it is part of this build (spec 0009 **AC-8** and **AC-10**), and no test guards it,\",\"rejected_spans\":[\"because the wording is prose\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect auth remainder`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":null,\"mention\":\"spec 0009\"},\"phrase\":\"Owes the privacy notice a rewrite of its deletion section, recorded from spec 0009 on 2026-09-01\",\"date\":\"2026-09-01\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-8\",\"mention\":\"spec 0009 **AC-8** and **AC-10**\"},\"phrase\":\"Changing it is part of this build (spec 0009 **AC-8** and **AC-10**)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-10\",\"mention\":\"spec 0009 **AC-8** and **AC-10**\"},\"phrase\":\"Changing it is part of this build (spec 0009 **AC-8** and **AC-10**)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Email and password sign up as an alternative for people without a Google or GitHub account, password reset, session expiry handling, and an account settings screen.",
+        "rejected_spans": [
+          "Deferred out of v1 because it pulls in a transactional email service and a verification flow that OAuth alone does not need."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a user can sign up and reset a password by email,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "an expired session is handled visibly rather than as a silent failure,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "account settings covers deletion,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the isolation guarantees hold identically for both sign in paths.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Owes the privacy notice a rewrite of its deletion section",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The day this feature ships a real control, that prose becomes false in the opposite direction, understating what a reader can do.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Changing it is part of this build (spec 0009 **AC-8** and **AC-10**), and no test guards it,",
+        "rejected_spans": [
+          "because the wording is prose"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect auth remainder`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": null,
+          "label": null,
+          "mention": "spec 0009"
+        },
+        "phrase": "Owes the privacy notice a rewrite of its deletion section, recorded from spec 0009 on 2026-09-01",
+        "date": "2026-09-01",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0009 **AC-8** and **AC-10**"
+        },
+        "phrase": "Changing it is part of this build (spec 0009 **AC-8** and **AC-10**)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-10",
+          "label": null,
+          "mention": "spec 0009 **AC-8** and **AC-10**"
+        },
+        "phrase": "Changing it is part of this build (spec 0009 **AC-8** and **AC-10**)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

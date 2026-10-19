@@ -1,0 +1,671 @@
+{
+  "record": "feature-10",
+  "section": "10. Usage gating & kill switch \u00b7 done \u00b7 GA",
+  "section_slug": "10-usage-gating-kill-switch-done-ga",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3240,
+  "output_tokens": 5779,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "55b6d91c32804b288381f80a49919953",
+  "artifact_format_version": 3,
+  "unit_sha256": "2f200c3b8b9b4bffe1a55df198c296956212633361137ec8ca4ac557ca08bdb2",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Per account caps on the call types the app actually makes, checked atomically so a burst cannot slip past, failing closed by default, plus a single global kill switch operated from outside the app. Built before the first external call rather than after it.\",\"rejected_spans\":[\"This is here under the named risk rule: the risk is uncontrolled external API cost on a self-funded project, and it is only removed by deciding that risk is acceptable, never by trimming for time.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the jobs search call type is capped per account and the check is atomic under concurrent calls proven against a real database connection, not a mock;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a blocked call tells the user plainly why;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"flipping the external kill switch stops all gated calls without a deploy;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the atomic gate function increments an attempt counter alongside its decision;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"trace sampling is 1.0 on gated operations;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the expected-failure rate alert rule is defined in docs/observability/ and applied;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and a forced-failure smoke test proves the alert actually fires, in a non production project.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect usage gating & kill switch`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop usage gating & kill switch`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Schema and the atomic gate function: `usage_cap` and `usage_gate_counter` with their checks, partial unique indexes, row level security enabled and forced, the fixed lock order, UTC computed windows, and the `configured` output column, satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The TypeScript gate module: `src/lib/usage-gating/` (`checkUsageGate()`, the five member `UsageGateReason` union, the `readKillSwitch()` pre-check, `copy.ts`), plus the new `usage_gate_misconfigured` `FailureKind` member, satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"rejected_spans\":[\"relocated here from `src/features/usage-gating/` before PR #86 merged, once features 11, 13 and 14 all named it as a caller (`AGENTS.md`, folder by feature)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The thin end to end proof: the `usage_gate.check` span registered and opened first, and the integration test suite proving atomicity, every refusal reason, and the fail closed database error path, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The alert rules, defined and proven: both `usage_gate.check`'s and `kill_switch.read`'s failure rate rules in `docs/observability/`, configured in Sentry for development and production, and the forced failure smoke test run in development only, satisfies AC-10, AC-11\",\"rejected_spans\":[\"proven 2026-09-03: both rules configured as monitors in the development and production environments of the one Sentry project, each with a connected alert to `mghalynho@gmail.com`, and the forced failure smoke chain ran end to end \u2014 threshold crossed, new issue created, connected alert fired, email delivered\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify usage gating & kill switch` \u00b7 PASS 2026-09-03, all 15 acceptance criteria met, see verify.md for the full evidenced checklist\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test usage gating & kill switch` \u00b7 integration tests promoting scenarios `/check verify` had only observed by hand: all three windows move together on one allowed call, and concurrent bursts against the global day and global month windows (not only the account window the suite already covered), 15 calls from 15 distinct accounts against a cap of 5 landing exactly 5 allowed on both.\",\"rejected_spans\":[\"since `app_settings` is a single row every `checkUsageGate()` call reads\"],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review usage gating & kill switch` \u00b7 run twice.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a review check rather than delivering one.\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document usage gating & kill switch` \u00b7 PR #86 opened 2026-09-03, before `Build it`, `Verify it`, `Test it` and `Review it` are all ticked; this box records the PR text being written, not the feature being finished \u00b7 **merged 2026-09-04** to `main` (`5b01b4c`), all checks green, feature marked done below and spec 0011's Status advanced to Accepted\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"satisfies AC-3, AC-4, AC-5, AC-6, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"satisfies AC-10, AC-11\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"satisfies AC-10, AC-11\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Per account caps on the call types the app actually makes, checked atomically so a burst cannot slip past, failing closed by default, plus a single global kill switch operated from outside the app. Built before the first external call rather than after it.",
+        "rejected_spans": [
+          "This is here under the named risk rule: the risk is uncontrolled external API cost on a self-funded project, and it is only removed by deciding that risk is acceptable, never by trimming for time."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the jobs search call type is capped per account and the check is atomic under concurrent calls proven against a real database connection, not a mock;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a blocked call tells the user plainly why;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "flipping the external kill switch stops all gated calls without a deploy;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the atomic gate function increments an attempt counter alongside its decision;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "trace sampling is 1.0 on gated operations;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the expected-failure rate alert rule is defined in docs/observability/ and applied;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and a forced-failure smoke test proves the alert actually fires, in a non production project.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect usage gating & kill switch`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop usage gating & kill switch`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Schema and the atomic gate function: `usage_cap` and `usage_gate_counter` with their checks, partial unique indexes, row level security enabled and forced, the fixed lock order, UTC computed windows, and the `configured` output column, satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The TypeScript gate module: `src/lib/usage-gating/` (`checkUsageGate()`, the five member `UsageGateReason` union, the `readKillSwitch()` pre-check, `copy.ts`), plus the new `usage_gate_misconfigured` `FailureKind` member, satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "rejected_spans": [
+          "relocated here from `src/features/usage-gating/` before PR #86 merged, once features 11, 13 and 14 all named it as a caller (`AGENTS.md`, folder by feature)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The thin end to end proof: the `usage_gate.check` span registered and opened first, and the integration test suite proving atomicity, every refusal reason, and the fail closed database error path, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The alert rules, defined and proven: both `usage_gate.check`'s and `kill_switch.read`'s failure rate rules in `docs/observability/`, configured in Sentry for development and production, and the forced failure smoke test run in development only, satisfies AC-10, AC-11",
+        "rejected_spans": [
+          "proven 2026-09-03: both rules configured as monitors in the development and production environments of the one Sentry project, each with a connected alert to `mghalynho@gmail.com`, and the forced failure smoke chain ran end to end \u2014 threshold crossed, new issue created, connected alert fired, email delivered"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify usage gating & kill switch` \u00b7 PASS 2026-09-03, all 15 acceptance criteria met, see verify.md for the full evidenced checklist",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test usage gating & kill switch` \u00b7 integration tests promoting scenarios `/check verify` had only observed by hand: all three windows move together on one allowed call, and concurrent bursts against the global day and global month windows (not only the account window the suite already covered), 15 calls from 15 distinct accounts against a cap of 5 landing exactly 5 allowed on both.",
+        "rejected_spans": [
+          "since `app_settings` is a single row every `checkUsageGate()` call reads"
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review usage gating & kill switch` \u00b7 run twice.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a review check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document usage gating & kill switch` \u00b7 PR #86 opened 2026-09-03, before `Build it`, `Verify it`, `Test it` and `Review it` are all ticked; this box records the PR text being written, not the feature being finished \u00b7 **merged 2026-09-04** to `main` (`5b01b4c`), all checks green, feature marked done below and spec 0011's Status advanced to Accepted",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "satisfies AC-3, AC-4, AC-5, AC-6, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "satisfies AC-10, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "satisfies AC-10, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

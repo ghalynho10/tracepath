@@ -1,0 +1,193 @@
+{
+  "record": "feature-26",
+  "section": "26. Profile depth & completeness \u00b7 needs a decision",
+  "section_slug": "26-profile-depth-completeness-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 588,
+  "output_tokens": 1324,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "5907ca0cf3794fa5a8add6eb14fc49e1",
+  "artifact_format_version": 3,
+  "unit_sha256": "77edd40db2df1f994e7aebd954681fb606b0334ff02f173134950057f78fedda",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Replace the flat one row per job history with nested roles containing sub projects.\",\"rejected_spans\":[\"so a research assistant project stops having to masquerade as a standalone employer\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Adds honest completeness signalling: say what is actually missing, not a vague percentage.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Also brings resume upload with extraction, with its accuracy limits shown rather than assumed; that upload is what covers \\\"a resume should fill in a profile\\\", it is not a missing feature on top of it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"And replaces the one value per line textarea for skills, desired titles and desired locations with a chip input: type a value, press Enter, it becomes a chip with an x to remove it. All three fields change together\",\"rejected_spans\":[\"since they call the same `newlineList` parser in `src/features/profile/schemas.ts` and behave identically today; changing only skills would make the other two diverge for no reason\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a role can contain sub projects and renders correctly,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"completeness names the specific missing pieces,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"extraction results are shown for review before being saved,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the migration from the flat shape loses nothing,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and skills, desired titles and desired locations are entered as chips rather than a line per value.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Implementation constraint for the design pass: a value can contain commas, \\\"Chicago, IL\\\" is a real desired location, so the chip control must commit on Enter only and never split on commas\",\"rejected_spans\":[\"which is the usual default in chip components and would break that one value into two\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Resume upload here overwrites the master resume (feature 24) outright; there is no merge and no second version kept beside it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect profile depth & completeness`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 24\",\"id\":null,\"mention\":\"feature 24\"},\"phrase\":\"Resume upload here overwrites the master resume (feature 24) outright\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Replace the flat one row per job history with nested roles containing sub projects.",
+        "rejected_spans": [
+          "so a research assistant project stops having to masquerade as a standalone employer"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Adds honest completeness signalling: say what is actually missing, not a vague percentage.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Also brings resume upload with extraction, with its accuracy limits shown rather than assumed; that upload is what covers \"a resume should fill in a profile\", it is not a missing feature on top of it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "And replaces the one value per line textarea for skills, desired titles and desired locations with a chip input: type a value, press Enter, it becomes a chip with an x to remove it. All three fields change together",
+        "rejected_spans": [
+          "since they call the same `newlineList` parser in `src/features/profile/schemas.ts` and behave identically today; changing only skills would make the other two diverge for no reason"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a role can contain sub projects and renders correctly,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "completeness names the specific missing pieces,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "extraction results are shown for review before being saved,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the migration from the flat shape loses nothing,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and skills, desired titles and desired locations are entered as chips rather than a line per value.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Implementation constraint for the design pass: a value can contain commas, \"Chicago, IL\" is a real desired location, so the chip control must commit on Enter only and never split on commas",
+        "rejected_spans": [
+          "which is the usual default in chip components and would break that one value into two"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Resume upload here overwrites the master resume (feature 24) outright; there is no merge and no second version kept beside it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect profile depth & completeness`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 24",
+          "id": null,
+          "label": null,
+          "mention": "feature 24"
+        },
+        "phrase": "Resume upload here overwrites the master resume (feature 24) outright",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

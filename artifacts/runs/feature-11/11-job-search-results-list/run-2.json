@@ -1,0 +1,544 @@
+{
+  "record": "feature-11",
+  "section": "11. Job search & results list",
+  "section_slug": "11-job-search-results-list",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4365,
+  "output_tokens": 4602,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "ad55f382e90442c4928757ce47a510a1",
+  "artifact_format_version": 3,
+  "unit_sha256": "a2d7f979dd3e8074ff9767a951a5d755db5bd6ab332bfc829541538398503340",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Search real listings by title and location and render them. Deliberately narrow for this slice: the data quality fixes come in v1.5, the structured filters come later in v2, and ranking comes in Slice 2.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Results are fresh per search and never persist\",\"rejected_spans\":[\"which is what removes the need for any staleness or expiry state machine\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a signed in user runs a search and sees real listings;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the search call goes through the gate from feature 10;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a failed or empty search renders a visible state rather than a silent blank;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and every result carries the required attribution label at no less than 116 by 23 pixels with both the word and the logo linked as the source's terms require. **Corrected by spec 0013**: the requirement is per displayed result, not per screen, verified directly against Adzuna's own terms of service.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"Also, this feature moves its own claim (`filtered search`) from planned to working in the entry page's \\\"What's real today\\\" card (spec 0006, **AC-8**).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The asset landed. The engineer sourced the real Adzuna mark before this build, committed as `src/features/search/adzuna-logo.svg` (`1504a0b`). Its two paths are lifted into `adzuna-logo-geometry.ts` and rendered inline; `adzuna-logo.test.ts` fails if the copy drifts from the file, proved by breaking it on purpose.\",\"rejected_spans\":[\"because no SVG loader is configured and a licensed attribution must not depend on a second request succeeding\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This feature owns the real attribution asset. Getting the real mark and meeting the source's terms is part of this feature, not a detail inherited from the shell.\",\"rejected_spans\":[\"Spec 0008 deliberately pushed the asset out of feature 32's build so it lands with the first screen that actually shows listings, which is this one.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Still owed**: spec 0013 could not find a downloadable logo asset in its own research; the engineer sources the real file before `/develop` builds the attribution component.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This is the first feature to send anything to a job board, so the search source becomes a company data reaches and must be added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts` as part of this build, not after it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): 0013\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop job search & results list` \u00b7 done 2026-09-04 on `feat/job-search-and-results-list`.\",\"rejected_spans\":[\"All four gates green and the whole thread driven in a real browser against the local stack and the real Adzuna API\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Configuration and the gate helper: the two Adzuna env keys, the `DATA_RECIPIENTS` entry, and the `withUsageGate()` inversion of control helper spec 0011 flagged as owed here (AC-3, AC-10, AC-11) \u00b7 done 2026-09-04\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The Adzuna client and the thin end to end thread: the search form, `searchListings()`, and the repointed `/search` page proving one real query end to end, gate through render (AC-1, AC-2, AC-5, AC-8, AC-10) \u00b7 done 2026-09-04\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Full attribution and states: the real \\\"Jobs by Adzuna\\\" and Jobsworth attribution, the estimated salary label, the `job_preference` prefill, and the three distinct visible states (AC-4, AC-6, AC-7, AC-9) \u00b7 done 2026-09-04.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Retire the entry page's `filtered search` claim, prove and test (AC-12, every AC via the critical test scenarios) \u00b7 done 2026-09-04.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify job search & results list` \u00b7 **PASS** on 2026-09-04, all 12 acceptance criteria met and all 49 steps in verify.md ticked.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test job search & results list` \u00b7 done 2026-09-04, **114 new tests (92 unit, 22 integration) across 7 new files plus 2 extended**, all green.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review job search & results list with fable` \u00b7 run 2026-09-04 on **Fable 5**. Verdict **Changes requested**: no blockers, one major, five minors, three nits. **Every finding was addressed the same day.**\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a review check rather than delivering one.\"},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document pr job search & results list` \u00b7 PR #92 opened and **merged 2026-09-04** to `main` (`1d0b492`), 23 commits, 39 files, every check green.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"id\":null,\"mention\":\"feature 10\"},\"phrase\":\"the search call goes through the gate from feature 10\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, **AC-8**\"},\"phrase\":\"spec 0006, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-3\",\"mention\":\"AC-3, AC-10, AC-11\"},\"phrase\":\"(AC-3, AC-10, AC-11)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-10\",\"mention\":\"AC-3, AC-10, AC-11\"},\"phrase\":\"(AC-3, AC-10, AC-11)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-11\",\"mention\":\"AC-3, AC-10, AC-11\"},\"phrase\":\"(AC-3, AC-10, AC-11)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-1\",\"mention\":\"AC-1, AC-2, AC-5, AC-8, AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-5, AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-2\",\"mention\":\"AC-1, AC-2, AC-5, AC-8, AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-5, AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-5\",\"mention\":\"AC-1, AC-2, AC-5, AC-8, AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-5, AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-8\",\"mention\":\"AC-1, AC-2, AC-5, AC-8, AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-5, AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-10\",\"mention\":\"AC-1, AC-2, AC-5, AC-8, AC-10\"},\"phrase\":\"(AC-1, AC-2, AC-5, AC-8, AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-4\",\"mention\":\"AC-4, AC-6, AC-7, AC-9\"},\"phrase\":\"(AC-4, AC-6, AC-7, AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-6\",\"mention\":\"AC-4, AC-6, AC-7, AC-9\"},\"phrase\":\"(AC-4, AC-6, AC-7, AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-7\",\"mention\":\"AC-4, AC-6, AC-7, AC-9\"},\"phrase\":\"(AC-4, AC-6, AC-7, AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-9\",\"mention\":\"AC-4, AC-6, AC-7, AC-9\"},\"phrase\":\"(AC-4, AC-6, AC-7, AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"(AC-12, every AC via the critical test scenarios)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"phrase\":\"the engineer sources the real file before `/develop` builds the attribution component\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Search real listings by title and location and render them. Deliberately narrow for this slice: the data quality fixes come in v1.5, the structured filters come later in v2, and ranking comes in Slice 2.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Results are fresh per search and never persist",
+        "rejected_spans": [
+          "which is what removes the need for any staleness or expiry state machine"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a signed in user runs a search and sees real listings;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the search call goes through the gate from feature 10;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a failed or empty search renders a visible state rather than a silent blank;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and every result carries the required attribution label at no less than 116 by 23 pixels with both the word and the logo linked as the source's terms require. **Corrected by spec 0013**: the requirement is per displayed result, not per screen, verified directly against Adzuna's own terms of service.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "Also, this feature moves its own claim (`filtered search`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The asset landed. The engineer sourced the real Adzuna mark before this build, committed as `src/features/search/adzuna-logo.svg` (`1504a0b`). Its two paths are lifted into `adzuna-logo-geometry.ts` and rendered inline; `adzuna-logo.test.ts` fails if the copy drifts from the file, proved by breaking it on purpose.",
+        "rejected_spans": [
+          "because no SVG loader is configured and a licensed attribution must not depend on a second request succeeding"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This feature owns the real attribution asset. Getting the real mark and meeting the source's terms is part of this feature, not a detail inherited from the shell.",
+        "rejected_spans": [
+          "Spec 0008 deliberately pushed the asset out of feature 32's build so it lands with the first screen that actually shows listings, which is this one."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Still owed**: spec 0013 could not find a downloadable logo asset in its own research; the engineer sources the real file before `/develop` builds the attribution component.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This is the first feature to send anything to a job board, so the search source becomes a company data reaches and must be added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts` as part of this build, not after it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): 0013",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop job search & results list` \u00b7 done 2026-09-04 on `feat/job-search-and-results-list`.",
+        "rejected_spans": [
+          "All four gates green and the whole thread driven in a real browser against the local stack and the real Adzuna API"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Configuration and the gate helper: the two Adzuna env keys, the `DATA_RECIPIENTS` entry, and the `withUsageGate()` inversion of control helper spec 0011 flagged as owed here (AC-3, AC-10, AC-11) \u00b7 done 2026-09-04",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The Adzuna client and the thin end to end thread: the search form, `searchListings()`, and the repointed `/search` page proving one real query end to end, gate through render (AC-1, AC-2, AC-5, AC-8, AC-10) \u00b7 done 2026-09-04",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Full attribution and states: the real \"Jobs by Adzuna\" and Jobsworth attribution, the estimated salary label, the `job_preference` prefill, and the three distinct visible states (AC-4, AC-6, AC-7, AC-9) \u00b7 done 2026-09-04.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Retire the entry page's `filtered search` claim, prove and test (AC-12, every AC via the critical test scenarios) \u00b7 done 2026-09-04.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify job search & results list` \u00b7 **PASS** on 2026-09-04, all 12 acceptance criteria met and all 49 steps in verify.md ticked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test job search & results list` \u00b7 done 2026-09-04, **114 new tests (92 unit, 22 integration) across 7 new files plus 2 extended**, all green.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review job search & results list with fable` \u00b7 run 2026-09-04 on **Fable 5**. Verdict **Changes requested**: no blockers, one major, five minors, three nits. **Every finding was addressed the same day.**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a review check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document pr job search & results list` \u00b7 PR #92 opened and **merged 2026-09-04** to `main` (`1d0b492`), 23 commits, 39 files, every check green.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10"
+        },
+        "phrase": "the search call goes through the gate from feature 10",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, **AC-8**"
+        },
+        "phrase": "spec 0006, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3, AC-10, AC-11"
+        },
+        "phrase": "(AC-3, AC-10, AC-11)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-3, AC-10, AC-11"
+        },
+        "phrase": "(AC-3, AC-10, AC-11)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-3, AC-10, AC-11"
+        },
+        "phrase": "(AC-3, AC-10, AC-11)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1, AC-2, AC-5, AC-8, AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-1, AC-2, AC-5, AC-8, AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-1, AC-2, AC-5, AC-8, AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-1, AC-2, AC-5, AC-8, AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-1, AC-2, AC-5, AC-8, AC-10"
+        },
+        "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4, AC-6, AC-7, AC-9"
+        },
+        "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-4, AC-6, AC-7, AC-9"
+        },
+        "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-4, AC-6, AC-7, AC-9"
+        },
+        "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-4, AC-6, AC-7, AC-9"
+        },
+        "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "(AC-12, every AC via the critical test scenarios)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "phrase": "the engineer sources the real file before `/develop` builds the attribution component",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

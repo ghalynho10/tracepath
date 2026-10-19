@@ -1,0 +1,309 @@
+{
+  "record": "scope",
+  "section": "Deferred",
+  "section_slug": "deferred",
+  "file": "scope/scope.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2550,
+  "output_tokens": 5950,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "960335932a3f48aaae41ba0fdf1f62cd",
+  "artifact_format_version": 3,
+  "unit_sha256": "09b77fca89442d24e35e698ceea2e16a261d086254bcb211d7eabc535e1ecda7",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Richer seeded demo account**: a fuller version of feature 31 with applications across every status, discard history and a populated dashboard, instead of the no sign in read only demo. Needs feature 23 (applications dashboard) and likely feature 22 (discard with reason) to exist first,\",\"rejected_spans\":[\"since it seeds both.\"],\"known_trap_flags\":[],\"label\":\"Richer seeded demo account\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Tailoring and discard trends**: tailoring activity over time and discard reason patterns \u00b7 needs a decision\",\"rejected_spans\":[\"the most honest signal about what the ranking is getting wrong\"],\"known_trap_flags\":[],\"label\":\"Tailoring and discard trends\"},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Company research, full**: role specific synthesis tied to the listing being viewed, an adaptive extraction loop, a grounding check, and the browser automation choice made against pricing real at that time \u00b7 needs a decision\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Company research, full\"},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Fuller tailoring verification**: verification beyond the numeral only pattern \u00b7 needs a decision\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Fuller tailoring verification\"},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Scheduled push digest**: a genuinely different interaction model from the pull based app, worth real consideration once v1 is stable \u00b7 needs a decision\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Scheduled push digest\"},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Supplementary remote jobs source**: only if the text heuristic for remote proves too weak in practice \u00b7 needs a decision\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Supplementary remote jobs source\"},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Retrieval tool over job search history**: a separate later project; its relationship to this app's multi user database is explicitly unresolved \u00b7 needs a decision\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Retrieval tool over job search history\"},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Supabase Branching, a database per pull request**: the best isolation answer available, rejected in spec 0002 on cost alone since it needs a paid plan. Revisit if this project ever has a budget, or if the free projects pausing becomes a real drag.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Supabase Branching, a database per pull request\"},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**A lawyer's review of the terms and privacy notices**: the only thing that manages legal risk rather than reducing factual error. Deferred as a reasonable call for a free portfolio project,\",\"rejected_spans\":[\"recorded so the deferral is a decision rather than an oversight.\"],\"known_trap_flags\":[],\"label\":\"A lawyer's review of the terms and privacy notices\"},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Recording which version of the terms a person accepted**: blocked twice over today, by the marketing tree's no client JavaScript rule and by a `profile` row that feature 9 creates. Worth revisiting only if the terms change materially before feature 9 ships,\",\"rejected_spans\":[\"since until then there is nothing to compare against.\"],\"known_trap_flags\":[],\"label\":\"Recording which version of the terms a person accepted\"},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Model provider retention and training terms**: before features 13 and 14 send profile content to a model, read that provider's terms on whether it retains or trains on what it is sent, and update the privacy notice's claim to match.\",\"rejected_spans\":[\"Inference is not training, but that distinction is the provider's to honour, not ours to assert.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Model provider retention and training terms\"},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Alert rule drift detection**: a scheduled diff between Sentry's live alert rules and the definitions in `docs/observability/`. Blocks nothing in v1; the forced failure smoke test in feature 10 is the load bearing half.\",\"rejected_spans\":[\"so a rule that is edited or deleted in the Sentry interface is caught.\"],\"known_trap_flags\":[],\"label\":\"Alert rule drift detection\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25. The tool is undecided and belongs to feature 25's design pass. The entry already names `defuddle`, but nothing browser related is installed yet, no Playwright, Puppeteer, defuddle or Browserbase. Playwright is this repo's recorded end to end choice and is supported on Vercel Functions; a hosted service such as Browserbase is a separate vendor decision with its own terms and cost. The gate itself is unchanged and is not a tool question: fetching the destination page is a third party terms and robots question that Adzuna's own terms don't resolve either way.\",\"rejected_spans\":[\"since a resume tailored against 500 characters of company boilerplate is close to useless\"],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"Fetch the full job posting for scoring and tailoring\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one.\",\"rejected_spans\":[\"Until this date both this item and the JobsPipe alternative below were argued from the shape of the data rather than from a number.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"multi_condition_split\"],\"unclassified_note\":\"A recorded measurement result about a deferred item; it states no requirement, step, test or follow up of its own, so no named type fits.\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, since the full text arrives in the search response itself. Their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"granularity_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**An aggregate scoring deadline**: a cutoff shorter than the per call 30 second timeout, after which any listing still pending in a fit-scoring batch renders as a failure rather than waiting out its own call. Revisit if real usage shows the full worst case wait happens often enough to matter.\",\"rejected_spans\":[\"Not built in feature 14: trades completeness for responsiveness with no acceptance criterion requiring it, and an abandoned call still spends its `usage_cap` unit either way.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"An aggregate scoring deadline\"}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 23\",\"id\":null,\"mention\":\"feature 23 (applications dashboard)\"},\"phrase\":\"Needs feature 23 (applications dashboard)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 22\",\"id\":null,\"mention\":\"feature 22 (discard with reason)\"},\"phrase\":\"likely feature 22 (discard with reason) to exist first\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"id\":null,\"mention\":\"a `profile` row that feature 9 creates\"},\"phrase\":\"blocked twice over today, by the marketing tree's no client JavaScript rule and by a `profile` row that feature 9 creates\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"phrase\":\"This is the information gap both items are about, now measured on real postings and a real scorer.\",\"date\":\"2026-09-15\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"phrase\":\"as an alternative to the approach above, not an addition to it\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Richer seeded demo account**: a fuller version of feature 31 with applications across every status, discard history and a populated dashboard, instead of the no sign in read only demo. Needs feature 23 (applications dashboard) and likely feature 22 (discard with reason) to exist first,",
+        "rejected_spans": [
+          "since it seeds both."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Richer seeded demo account"
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Tailoring and discard trends**: tailoring activity over time and discard reason patterns \u00b7 needs a decision",
+        "rejected_spans": [
+          "the most honest signal about what the ranking is getting wrong"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Tailoring and discard trends"
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Company research, full**: role specific synthesis tied to the listing being viewed, an adaptive extraction loop, a grounding check, and the browser automation choice made against pricing real at that time \u00b7 needs a decision",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Company research, full"
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Fuller tailoring verification**: verification beyond the numeral only pattern \u00b7 needs a decision",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Fuller tailoring verification"
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Scheduled push digest**: a genuinely different interaction model from the pull based app, worth real consideration once v1 is stable \u00b7 needs a decision",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Scheduled push digest"
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Supplementary remote jobs source**: only if the text heuristic for remote proves too weak in practice \u00b7 needs a decision",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Supplementary remote jobs source"
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Retrieval tool over job search history**: a separate later project; its relationship to this app's multi user database is explicitly unresolved \u00b7 needs a decision",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Retrieval tool over job search history"
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Supabase Branching, a database per pull request**: the best isolation answer available, rejected in spec 0002 on cost alone since it needs a paid plan. Revisit if this project ever has a budget, or if the free projects pausing becomes a real drag.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Supabase Branching, a database per pull request"
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**A lawyer's review of the terms and privacy notices**: the only thing that manages legal risk rather than reducing factual error. Deferred as a reasonable call for a free portfolio project,",
+        "rejected_spans": [
+          "recorded so the deferral is a decision rather than an oversight."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "A lawyer's review of the terms and privacy notices"
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Recording which version of the terms a person accepted**: blocked twice over today, by the marketing tree's no client JavaScript rule and by a `profile` row that feature 9 creates. Worth revisiting only if the terms change materially before feature 9 ships,",
+        "rejected_spans": [
+          "since until then there is nothing to compare against."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Recording which version of the terms a person accepted"
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Model provider retention and training terms**: before features 13 and 14 send profile content to a model, read that provider's terms on whether it retains or trains on what it is sent, and update the privacy notice's claim to match.",
+        "rejected_spans": [
+          "Inference is not training, but that distinction is the provider's to honour, not ours to assert."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Model provider retention and training terms"
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Alert rule drift detection**: a scheduled diff between Sentry's live alert rules and the definitions in `docs/observability/`. Blocks nothing in v1; the forced failure smoke test in feature 10 is the load bearing half.",
+        "rejected_spans": [
+          "so a rule that is edited or deleted in the Sentry interface is caught."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Alert rule drift detection"
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25. The tool is undecided and belongs to feature 25's design pass. The entry already names `defuddle`, but nothing browser related is installed yet, no Playwright, Puppeteer, defuddle or Browserbase. Playwright is this repo's recorded end to end choice and is supported on Vercel Functions; a hosted service such as Browserbase is a separate vendor decision with its own terms and cost. The gate itself is unchanged and is not a tool question: fetching the destination page is a third party terms and robots question that Adzuna's own terms don't resolve either way.",
+        "rejected_spans": [
+          "since a resume tailored against 500 characters of company boilerplate is close to useless"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Fetch the full job posting for scoring and tailoring"
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one.",
+        "rejected_spans": [
+          "Until this date both this item and the JobsPipe alternative below were argued from the shape of the data rather than from a number."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous",
+          "multi_condition_split"
+        ],
+        "unclassified_note": "A recorded measurement result about a deferred item; it states no requirement, step, test or follow up of its own, so no named type fits.",
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, since the full text arrives in the search response itself. Their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**An aggregate scoring deadline**: a cutoff shorter than the per call 30 second timeout, after which any listing still pending in a fit-scoring batch renders as a failure rather than waiting out its own call. Revisit if real usage shows the full worst case wait happens often enough to matter.",
+        "rejected_spans": [
+          "Not built in feature 14: trades completeness for responsiveness with no acceptance criterion requiring it, and an abandoned call still spends its `usage_cap` unit either way."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "An aggregate scoring deadline"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 23",
+          "id": null,
+          "label": null,
+          "mention": "feature 23 (applications dashboard)"
+        },
+        "phrase": "Needs feature 23 (applications dashboard)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 22",
+          "id": null,
+          "label": null,
+          "mention": "feature 22 (discard with reason)"
+        },
+        "phrase": "likely feature 22 (discard with reason) to exist first",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "a `profile` row that feature 9 creates"
+        },
+        "phrase": "blocked twice over today, by the marketing tree's no client JavaScript rule and by a `profile` row that feature 9 creates",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+        "date": "2026-09-15",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "phrase": "as an alternative to the approach above, not an addition to it",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
