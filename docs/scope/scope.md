@@ -23,7 +23,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 6 | Eval runner | Slice 2 | done |
 | 7 | Name resolution | Slice 3 | planned |
 | 8 | History aware traversal | Slice 4 | planned |
-| 9 | Whole corpus | Slice 5 | in-progress |
+| 9 | Whole corpus | Slice 5 | done |
 | 10 | Rationale extraction and alternatives | Slice 6 | planned |
 | 11 | Review volume and routing policy | after Slice 2, before Slice 5 | done |
 | 12 | Extraction stability on heterogeneous units | before feature 11 | done |
@@ -57,6 +57,8 @@ _Order after feature 9 confirmed by the engineer 2026-10-18._ The held out run g
 **Question 4's count, 2026-10-19, written before feature 9's remaining units run.** Question 4's PASS (a proven absence) counts toward the 3 of 5, reported as "3 of 5, one of them a proven absence", strict reading first.
 
 **Fallback, 2026-10-19, decided before the full corpus run.** If fewer than 3 of 5 pass after feature 9 (counting question 4), v1 is still finished; the eval is reported as it is, with each failing question's cause from the 2026-10-19 diagnosis (a link the text does not state: questions 1 and 2; a link ending on a whole spec rather than an item: question 3; name resolution, feature 7: question 5), and those causes become the after v1 work.
+
+**Result after feature 9, 2026-10-19.** 1 of 5 under both readings, the one a proven absence (question 4); questions 1, 2, 3 and 5 fail, so the fallback above applies and v1 is finished, with the eval reported as it is and each failing question's cause as the fallback names it ([experiment 0015](../../experiments/0015-whole-corpus-run/README.md)).
 
 **Reconciled 2026-10-18:** feature 9's Done when used to say all five eval questions pass, which is stricter than this line. The engineer chose to match this line. Feature 9 no longer promises five of five, and the 3 of 5 bar lives here only.
 
@@ -196,14 +198,14 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 
 ## Slice 5: Whole corpus
 
-### 9. Whole corpus
+### 9. Whole corpus · done
 Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run. **Shape decided 2026-10-18: a full re extraction.** The whole corpus is extracted again, the 29 existing sections included, in one run on `claude-sonnet-5-5` with prompt `0003.1`. The old runs move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted. Why: today 26 sections are on `claude-sonnet-5` across three prompt versions, so the graph mixes models and prompts, and the three `claude-sonnet-5-5` Requirements sections show zero run disagreements against 1 to 29 on `claude-sonnet-5`. That is a hint from 3 sections, not proof. Extracting only the missing records was the other candidate.
 **Paid step:** no paid call is made until the build reports a measured estimate, from a measured per call cost and the real number of calls, and the engineer gives a go and a ceiling. Do not use a round number.
 **Done when:** the full snapshot, less the 12 listed units, is ingested in one rebuild on one model and one prompt version, relationships that fit no named type appear as unclassified, not dropped, and the five eval questions are run and each result reported one by one under both readings in the v1 finish line. _Reworded 2026-10-18 from "all five eval questions pass": that was stricter than the v1 line, which asks for at least 3 of 5._ _Reworded again 2026-10-18 from "the full snapshot": the engineer chose to leave out the 12 units with text that `tracepath extract` cannot address today (see Deferred, unit address fix)._
 **The 12 units left out, decided 2026-10-18.** The snapshot holds 254 units (spec 0002 AC-2); 240 are addressable, and 2 more are a heading only (`0007`'s first `## Build plan`, the scope's `## Foundation`). The 12 below hold text but cannot be addressed:
 - Seven sections whose name repeats inside one spec, refused as ambiguous by `resolve_address()`: `0007`'s second `## Build plan` (4,717 characters, the real build plan), `0011`'s first `## Rationale` (1,263 characters), `0011`'s second `## Rationale`, and both `## Rationale` sections of `0013` and of `0014` (each a one line pointer to `rationale.md`).
 - Five scope `Intro` units, which `resolve_address()` skips by design: the text above the first feature row in `Slice 1: Core loop thread`, `Slice 2: Ranking`, `v1 extras`, `v1.5` and `v2`.
-- [ ] Build it: `/develop whole corpus` · unblocked 2026-10-18 by spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) AC-13: feature 11 adopted the narrow hold rule and the held view, and the queue holds 526 rows at 29 units, against 990 before
+- [x] Build it: `/develop whole corpus` · unblocked 2026-10-18 by spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) AC-13: feature 11 adopted the narrow hold rule and the held view, and the queue holds 526 rows at 29 units, against 990 before
 
 ### 13. Extraction accuracy · in progress · from spec 0003
 **Step one closed, later steps paused (2026-10-15).** Step one (spec 0007) is merged and accepted. The later steps wait until after v1, so this feature stays in progress, per the v1 finish line.
