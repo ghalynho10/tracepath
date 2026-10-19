@@ -96,6 +96,108 @@
       "answer": "Spec 0017 made every verdict carry 'N of 5 succeeded' on purpose. N counts reruns that returned any band, as opposed to failing, so a reader can tell a verdict resting on the 3-success floor from one resting on all 5. It does not count how many reruns landed on the verdict band, which only needs a strict majority of successes. Spec 0018 found that reading the count as a band tally produced the claim that two pairs were stable at 5 of 5. The per pair distributions, which the report records separately, showed 1 to 4 and 3 to 2 splits on the first run. So 0018 tells readers to use `distribution`, corrected the recorded evidence to state distributions, and left open a follow up to make the distribution the prominent value in the report.",
       "confidence": "high",
       "confidence_note": "Every quote read directly from the two spec index files. The 'stable disagreement' claim that 0018 corrects lives in docs/scope/scope.md, which was out of bounds and not opened, so whether that correction landed is unconfirmed here. Did not open test/eval/report.ts or formatReportTable to see the summary field's current format."
+    },
+    {
+      "shape": "obvious_fix_blocked_by_coupled_rules_in_two_records",
+      "question": "control-one-gap passed its confirming run by only 3 to 2 (possible_match over good_match). Why can't it be given acceptableBands [good_match, possible_match] so it stops sitting one rerun away from having no majority?",
+      "why_multiple_records": "What acceptableBands is for, and what the control tag means, are both defined in spec 0016. The finding that the anchors settle this pair, the refusal to widen it, and the test that now ties the tag to the tolerance are in spec 0018. Why 3 to 2 is the narrowest possible pass is in spec 0017's verdict rule. No single record shows that both obvious ways out are closed.",
+      "trace": [
+        {
+          "record": "spec 0016 Key invariants, what acceptableBands is for",
+          "file": "docs/specs/0016-eval-ground-truth-set/index.md",
+          "line": 99,
+          "quote": "`acceptableBands`, when present, always includes its own `expectedBand` and holds at least two bands; it is used only where the anchor text itself cannot honestly narrow to one band (AC-3), never as a way to avoid reasoning a pair through carefully."
+        },
+        {
+          "record": "spec 0016 pair table, what the control tag means",
+          "file": "docs/specs/0016-eval-ground-truth-set/index.md",
+          "line": 149,
+          "quote": "`possible_match`'s own anchor names exactly this shape with no ambiguity, unlike `boundary-seniority-gap` above, which is why this pair carries no `acceptableBands` and the plain `control` tag rather than `boundary`."
+        },
+        {
+          "record": "spec 0018 Review findings, Finding 1",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 45,
+          "quote": "**Finding 1, `control-one-gap` is a wrong expectation, and the anchors already settle it.** [...] `possible_match`'s existing text is a better fit with no new rule needed"
+        },
+        {
+          "record": "spec 0018 Key invariants",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 63,
+          "quote": "`acceptableBands` widens a genuine ambiguity in the anchors. It is not a way to stop a pair failing, which is why `control-one-gap` is corrected outright rather than given a tolerance."
+        },
+        {
+          "record": "spec 0017 AC-3, the verdict rule",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 30,
+          "quote": "If one band holds a strict majority (more than half of the successes), that is the pair's verdict band, and the pair passes if that band equals `expectedBand`, or, when `acceptableBands` is present, if it is one of them."
+        },
+        {
+          "record": "spec 0018 verify, the confirming run",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 106,
+          "quote": "`possible_match` won it 4 to 1, then 5 to 0, then 3 to 2 on the confirming run"
+        },
+        {
+          "record": "spec 0018 Follow-up, control tag question",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 106,
+          "quote": "retagging it `boundary` would concede that the anchors do not settle it, which contradicts this spec's own finding that they do, and widening it with `acceptableBands` is refused outright by the Key invariants above. `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`, so the retag and the tolerance are not independent choices."
+        }
+      ],
+      "answer": "Spec 0016 allows acceptableBands only where the anchor text cannot narrow a pair to one band, and uses the control tag for pairs whose anchor text settles them with no ambiguity. Spec 0018 found the anchors do settle control-one-gap at possible_match, so a tolerance would cover up a mistake rather than record an ambiguity. Its invariant refuses that outright. ground-truth.test.ts now asserts that no control-tagged pair carries acceptableBands, so a tolerance would also force a retag to boundary, which would contradict 0018's own finding. That is why the pair stays exact and fragile. Under 0017's strict majority rule, 3 to 2 is the narrowest pass possible: one rerun landing on good_match instead makes good_match the majority and fails the pair, and one rerun failing at the vendor leaves a 2 to 2 split with no majority, which is inconclusive. Spec 0018 records whether the pair should keep its control tag as an open question, not a decided one.",
+      "confidence": "high",
+      "confidence_note": "Every quote was read directly. Did not open ground-truth.test.ts or pairs.ts, so the claim that the no-control-with-acceptableBands assertion exists rests on 0018 line 106. The fragility point is arithmetic from 0017 AC-3: 3 good_match to 2 possible_match is a good_match majority and fails the pair; 2 to 2 of 4 successes has no majority and is inconclusive. 0018 verify.md line 45 says one flipped rerun 'would leave no majority at all', which contradicts AC-3."
+    },
+    {
+      "shape": "one_value_pinned_twice_for_two_consumers",
+      "question": "Why does band-anchors.test.ts pin BAND_ANCHORS twice, once as five inline strings and once as bandAnchorsHash(BAND_ANCHORS), when either assertion alone fails on an anchor edit?",
+      "why_multiple_records": "Spec 0016 explains why drift matters (every expected band is derived from today's wording, and that wording 'is expected to change') and records how the two assertions were shown to be separate. Spec 0017 makes the hash a field in every eval report and requires the report writer and the test to share one function. Spec 0018 is the first record that relies on the hash staying put to compare reports before and after a change. Without 0017 the hash assertion looks redundant. Without 0016 the guard has no stated purpose.",
+      "trace": [
+        {
+          "record": "spec 0016 Follow-up, anchor drift (requested, then done)",
+          "file": "docs/specs/0016-eval-ground-truth-set/index.md",
+          "line": 180,
+          "quote": "`BAND_ANCHORS`'s own comment (`rubric.ts:63-67`) states its wording \"is expected to change\". Every `expectedBand` and `rationale` in this set is derived from today's wording.",
+          "also": {
+            "line": 180,
+            "quote": "A second assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report, so a change to the hash function alone is caught as well; the two were proved distinct by changing only the separator, which fails the hash assertion while the text one still passes."
+          }
+        },
+        {
+          "record": "spec 0017 user story",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 19,
+          "quote": "As the person reading a report later, I want it to record which model and which rubric wording it was measured against, so a report from three weeks ago can tell \"the scorer changed\" apart from \"the rubric changed\"."
+        },
+        {
+          "record": "spec 0017 AC-9, the hash in the report",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 39,
+          "quote": "a hash of `BAND_ANCHORS`'s current text (`bandAnchorsHash()`, defined once and shared with the AC-10 test, so \"the same way\" is true by construction rather than by two separate implementations agreeing)."
+        },
+        {
+          "record": "spec 0017 AC-10, the drift test",
+          "file": "docs/specs/0017-eval-harness-runner/index.md",
+          "line": 40,
+          "quote": "A committed test (no vendor call, runs under the ordinary free unit suite) asserts `BAND_ANCHORS` literally equals today's text (`toEqual` against the five strings written inline in the test, never a snapshot file, which a routine `vitest -u` could silently rewrite) and that `bandAnchorsHash(BAND_ANCHORS)` equals today's computed hash"
+        },
+        {
+          "record": "spec 0018 AC-2, the hash relied on",
+          "file": "docs/specs/0018-band-anchor-review/index.md",
+          "line": 22,
+          "quote": "`BAND_ANCHORS` in `src/features/scoring/rubric.ts` is unchanged, so `band-anchors.test.ts`'s pinned text and committed hash `1b45f524b356` are untouched and still pass, and reports written before and after this change remain comparable."
+        }
+      ],
+      "corroboration": {
+        "record": "spec 0018 verify, behavioural check",
+        "file": "docs/specs/0018-band-anchor-review/index.md",
+        "line": 56,
+        "quote": "`bandAnchorsHash(BAND_ANCHORS)`, unchanged at `1b45f524b356` because the anchors are untouched, which is what keeps this change's runs comparable with the two baseline runs."
+      },
+      "answer": "The two assertions protect two different things. The ground truth pairs were argued from today's anchor wording, and that wording is expected to change (0016). The inline text pin catches a wording edit at commit time, in the free unit suite. It uses inline strings rather than a snapshot because 'vitest -u' could silently rewrite a snapshot (0017 AC-10). The hash is also the value written into every eval report, so a reader can tell 'the rubric changed' apart from 'the scorer changed' (0017 user story, AC-9). The report writer and the test share one bandAnchorsHash() function, and pinning the hash catches a change to that function even when the text is unchanged. Changing only the separator showed the two assertions are separate: the hash assertion fails while the text assertion still passes (0016). Spec 0018 is where this pays off. It corrected a pair rather than the anchors, and the unchanged hash 1b45f524b356 is how it shows that reports from before and after the correction can still be compared.",
+      "confidence": "high",
+      "confidence_note": "Every quote was read directly. The 'routine vitest -u' risk and the separator experiment are as the records state them. Did not open band-anchors.test.ts, band-anchors-hash.ts or any report under test/eval/.output/. 0016 line 180 cites rubric.ts:63-67 for the 'expected to change' comment, and rubric.ts was not opened."
     }
   ],
   "method_notes": [
