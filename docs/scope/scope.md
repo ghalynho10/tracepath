@@ -60,6 +60,10 @@ _Order after feature 9 confirmed by the engineer 2026-10-18._ The held out run g
 
 **Result after feature 9, 2026-10-19.** 1 of 5 under both readings, the one a proven absence (question 4); questions 1, 2, 3 and 5 fail, so the fallback above applies and v1 is finished, with the eval reported as it is and each failing question's cause as the fallback names it ([experiment 0015](../../experiments/0015-whole-corpus-run/README.md)).
 
+**Held out run, 2026-10-19.** On `ddd6e51`, after `tracepath load` with both defaults, `tracepath eval --eval-file eval/held-out.json --release-held-out`: held out question 1 FAIL, 0 of 2 expected items reached besides the start (spec 0010 AC-14: `link_held`; spec 0010 Build plan step 2: `no_link`); held out question 2 FAIL, 3 of 7 expected items reached besides the start (spec 0018 Review findings, caution: `held_for_review`; spec 0018 Review findings, caution (also): `no_link`; spec 0018 AC-4: `link_held`; spec 0018 Follow-up: `no_link`).
+
+Held out check, 2026-10-19: both expected chains checked by the engineer against 2e40bcf, no corrections; a cross check from the JobHunt author confirmed all 13 quotes verbatim and found two answer prose claims slightly overstated (one causal link inferred, one claim about test code not checkable from docs), which the runner does not read.
+
 **Reconciled 2026-10-18:** feature 9's Done when used to say all five eval questions pass, which is stricter than this line. The engineer chose to match this line. Feature 9 no longer promises five of five, and the 3 of 5 bar lives here only.
 
 **Tripwire, before feature 9 starts:** look at how the released entity marks were ruled.
