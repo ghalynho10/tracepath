@@ -36,14 +36,25 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 _Recorded 2026-10-13._ v1 is done when: "You ask tracepath a why question about JobHunt and it prints a chain of cited steps across documents for at least 3 of the 5 eval questions, over the whole corpus. Question 4 (an absence question) is expected to stay inconclusive and question 5 is expected to need feature 7."
 
 **v1 needs, in this order:**
-1. Feature 13 step one closed after the engineer's stage one rulings, whatever their result. There is no fourth unit, and the code pass stays off.
-2. Feature 11.
-3. Feature 9.
-4. Feature 15 step one.
+1. Feature 13 step one closed after the engineer's stage one rulings, whatever their result. There is no fourth unit, and the code pass stays off. _Done._
+2. Feature 11. _Done 2026-10-18 (spec 0008 accepted, merged in `c4b9970`)._
+3. Feature 9, as a full re extraction of the whole corpus (see feature 9).
+4. The two held out questions: the engineer checks their expected chains against the corpus at `2e40bcf` and commits any correction, then they are run. The run is free once feature 9's extraction exists.
+5. Feature 5, which closes with the first passing question that spans two or more Records, then its `/check verify`.
+6. Feature 15 step one, which still needs `/architect`.
+
+_Order after feature 9 confirmed by the engineer 2026-10-18._ The held out run goes before features 5 and 15 so that no result of theirs can shape the check.
 
 **After v1:** feature 13's later steps, features 7, 8 and 10, and the cross model experiment (see Deferred).
 
-**To reconcile:** feature 9's Done when says all five eval questions pass. That is stricter than this line, which asks for at least 3 of 5 and expects questions 4 and 5 not to pass. Feature 9's Done when is left as written until the engineer decides which wording stands.
+**How v1 counts the questions, decided 2026-10-18.** Two readings are reported, side by side, never as one rate:
+- **Strict reading (the one the finish line above is measured by):** a question counts when `eval` prints `PASS`, so every expected step is reached through accepted items only. A step reached only as held is not reached (spec [0006](../specs/0006-eval-runner/index.md) AC-6b, spec [0005](../specs/0005-held-item-view/index.md) condition 4).
+- **Second reading, added 2026-10-18 after seeing [experiment 0014](../../experiments/0014-review-volume-and-routing-policy/README.md)'s four way table:** the same, but a step reached only as held also counts. This is read by hand from the `held only` lines `eval` already prints for each item. It needs no eval change and no spec amendment, because spec 0006 AC-7 forbids totals and the runner stays as it is. It was added after the data was seen, and it never replaces the strict reading.
+- Today, with both defaults on, no question with a trace list passes under either reading: questions 1, 3 and 5 each have at least one step no configuration reaches. Only question 4, the absence question, reads `PASS`.
+
+**Question 4, corrected 2026-10-18.** The finish line above expects question 4 to stay inconclusive. Under the narrow hold default it reads `PASS`, its two items staying not reached (experiment 0014). The 2026-10-13 wording is left as recorded.
+
+**Reconciled 2026-10-18:** feature 9's Done when used to say all five eval questions pass, which is stricter than this line. The engineer chose to match this line. Feature 9 no longer promises five of five, and the 3 of 5 bar lives here only.
 
 **Tripwire, before feature 9 starts:** look at how the released entity marks were ruled.
 - If most are ruled disagree (a wrong cut or type), the engineer revisits the order before feature 9 starts. A prompt change after the whole corpus run would force a re extraction.
@@ -182,8 +193,9 @@ Follow supersession, amendment, and correction correctly. A fact that was later 
 ## Slice 5: Whole corpus
 
 ### 9. Whole corpus
-Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run.
-**Done when:** the full snapshot is ingested in one rebuild, all five eval questions pass, and relationships that fit no named type appear as unclassified, not dropped.
+Extend extraction from the hand picked records to every record in the snapshot, rebuilt in one run. **Shape decided 2026-10-18: a full re extraction.** The whole corpus is extracted again, the 29 existing sections included, in one run on `claude-sonnet-5-5` with prompt `0003.1`. The old runs move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted. Why: today 26 sections are on `claude-sonnet-5` across three prompt versions, so the graph mixes models and prompts, and the three `claude-sonnet-5-5` Requirements sections show zero run disagreements against 1 to 29 on `claude-sonnet-5`. That is a hint from 3 sections, not proof. Extracting only the missing records was the other candidate.
+**Paid step:** no paid call is made until the build reports a measured estimate, from a measured per call cost and the real number of calls, and the engineer gives a go and a ceiling. Do not use a round number.
+**Done when:** the full snapshot is ingested in one rebuild on one model and one prompt version, relationships that fit no named type appear as unclassified, not dropped, and the five eval questions are run and each result reported one by one under both readings in the v1 finish line. _Reworded 2026-10-18 from "all five eval questions pass": that was stricter than the v1 line, which asks for at least 3 of 5._
 - [ ] Build it: `/develop whole corpus` · unblocked 2026-10-18 by spec [0008](../specs/0008-review-volume-and-routing-policy/index.md) AC-13: feature 11 adopted the narrow hold rule and the held view, and the queue holds 526 rows at 29 units, against 990 before
 
 ### 13. Extraction accuracy · in progress · from spec 0003
@@ -339,6 +351,8 @@ Out of scope for the current build pass, kept so the plan stays honest.
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
 - **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
 - **Cross model extraction experiment**: can another model (candidates named by the engineer: Luna 6 or 6.1, GLM 5.3 Flash) do the same extraction cheaper, at the accuracy feature 13 sets? Run zero shot with the same prompt and schema, scored against the engineer's rulings and the eval, never against Claude's output, and never trained on Claude's extractions (Commercial Terms D.4, see `docs/session-notes.md`). Measured as cost per accurate unit, not per token. Needs: every paid call goes through the same ceiling and per call bound as `tracepath extract`, and the vendor's own docs are checked for price, structured output support, and terms. After feature 13 · needs a decision
+- **Routing gap, after v1 (from the 2026-10-15 to 17 advisor notes):** a `known_trap_flag` hold comes only from the first run's flags (`compare.py`), so an item flagged only in run 2 or 3 is accepted outright. Mostly moot now that the narrow hold rule is the default. Fix it, or document it, after v1.
+- **Random audit of auto accepted items, after v1:** a small, periodic, random sample of items accepted by `narrow_hold` and by plain agreement, ruled by the engineer, to track accuracy over time (the pattern behind AWS A2I's random sampling). Feature 13's 20 item check is below the roughly 100 that error analysis guidance suggests. Not v1, and it must pass the filter for new checks before it is built · needs a decision
 
 ## Legend
 
