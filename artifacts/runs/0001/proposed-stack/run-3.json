@@ -1,0 +1,375 @@
+{
+  "record": "0001",
+  "section": "Proposed stack",
+  "section_slug": "proposed-stack",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:03:04+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2221,
+  "output_tokens": 3055,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "987fca5f1507468da0623c7ae6ea5b0f",
+  "artifact_format_version": 3,
+  "unit_sha256": "114ce6e13e6bd879cd9a9f0be204a713eb3a6e11be1f63877c77dbbea88817f4",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Noting that `noUncheckedIndexedAccess` does **not** answer the reference project's anchor bug: that shape (a value read as an object when it was an array) came from a wrong declared type, which no strictness flag disagrees with; it is answered by generated types plus Zod parsing at the boundary.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"TypeScript, `strict` plus `noUncheckedIndexedAccess` and `verbatimModuleSyntax`\",\"rejected_spans\":[\"`noUncheckedIndexedAccess` catches unchecked array and record access.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Single application, no services\",\"rejected_spans\":[\"One developer, expected users in the tens. A monolith is the only pattern that is cheap to build, debug and operate at this size.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Node, current Active LTS line, pinned in `.nvmrc` and `engines`. Confirm the exact LTS line at scaffold time.\",\"rejected_spans\":[\"One version across local, CI and Vercel, so a version difference is never a suspect during debugging.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"pnpm, enabled through corepack\",\"rejected_spans\":[\"Refuses to resolve a package that was never declared, so the dependency list stays honest.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Next.js 16.3, App Router\",\"rejected_spans\":[\"Current stable and LTS as of 3 August 2026. Turbopack is the default builder in 16.\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Server Components for reads, Server Actions for writes. Every Supabase call and every session check runs on the server. No database credential and no query shape reaches the browser.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Postgres, hosted by Supabase\",\"rejected_spans\":[\"Relational data with real relationships, and `pgvector` available if the deferred retrieval tool ever arrives.\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`@supabase/supabase-js` with `@supabase/ssr`, no object relational mapper\",\"rejected_spans\":[\"Every query carries the caller's token, so row level security applies by construction. There is no code path that can quietly bypass it.\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Postgres functions, hand written SQL. Anything that must be atomic (the feature 10 usage gate above all) is one statement in the database, not a read then write in application code.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Supabase CLI, hand written SQL files in git, local stack in Docker. Tests run against a real Postgres with the real policies applied.\",\"rejected_spans\":[\"The repository is the source of truth for schema and policy.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Supabase Auth, OAuth only, Google and GitHub. No transactional email service and no verification flow needed in v1.\",\"rejected_spans\":[\"Two providers cover the named audience.\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Row level security in Postgres, plus a session check in the protected layout and again in every Server Action. The database is the guarantee. The layout check makes the denial visible.\",\"rejected_spans\":[\"The per action check exists because a Server Action is a callable endpoint whatever page renders it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Publishable key (`sb_publishable_\u2026`) in the browser. Secret key (`sb_secret_\u2026`) only inside `src/lib/supabase/secret.ts`, see binding rule 1. The legacy `anon` and `service_role` JWT keys are deprecated by the end of 2026 and are not used at all.\",\"rejected_spans\":[\"The current Supabase key format.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Zod 4 at every boundary\",\"rejected_spans\":[\"Nothing untrusted enters the application unparsed: the Adzuna response, every model output, every form input, every environment variable.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"react-hook-form with the Zod resolver\",\"rejected_spans\":[\"The profile form is long, and per field errors without a server round trip matter there.\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"None. URL search params plus `useTransition`\",\"rejected_spans\":[\"Filter state in the URL is what feature 18 needs anyway, and `useTransition` keeps previous results on screen during a refetch, which is the direct fix for the repeat search wipes results bug.\"],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A `Result` discriminated union at every boundary\",\"rejected_spans\":[\"Under `strict`, the data cannot be read without first narrowing the union, so ignoring a failure is a compile error rather than a habit.\"],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"AI SDK 7 with direct provider packages, one key per vendor\",\"rejected_spans\":[\"Keeps personal data flowing only to the vendors the privacy notice names, and keeps the AI layer independent of the hosting choice.\"],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A checked in module, keys in environment variables\",\"rejected_spans\":[\"A model change is a reviewable commit that can trigger the eval harness. What is deployed always matches what is in git.\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna REST API\",\"rejected_spans\":[\"Already decided, terms already checked, and it supports the structured filters feature 18 needs.\"],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Tailwind CSS v4\",\"rejected_spans\":[\"Theming moved into CSS through the `@theme` directive, and colours to OKLCH.\"],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Vercel, Node runtime rather than Edge\",\"rejected_spans\":[\"First party Next.js support with no adapter to keep working, preview deployment per push, free tier for a non commercial project.\"],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Sentry\",\"rejected_spans\":[\"Errors and the expected failure rate signal both land somewhere a person actually sees.\"],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`@t3-oss/env-nextjs` with Zod, validated at build and at boot. A missing variable fails the build. Importing a server only secret into client code becomes a build error.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Single package, single application\",\"rejected_spans\":[\"The eval harness is a script importing the real scoring code, not a copy of it.\"],\"known_trap_flags\":[]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"git, initialised before the scaffold\",\"rejected_spans\":[\"The brief and the scope are real work that deserves history before generated code lands on top of them.\"],\"known_trap_flags\":[]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Deliberately left open**, owned by other features and not decided here:\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Noting that `noUncheckedIndexedAccess` does **not** answer the reference project's anchor bug: that shape (a value read as an object when it was an array) came from a wrong declared type, which no strictness flag disagrees with; it is answered by generated types plus Zod parsing at the boundary.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "TypeScript, `strict` plus `noUncheckedIndexedAccess` and `verbatimModuleSyntax`",
+        "rejected_spans": [
+          "`noUncheckedIndexedAccess` catches unchecked array and record access."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Single application, no services",
+        "rejected_spans": [
+          "One developer, expected users in the tens. A monolith is the only pattern that is cheap to build, debug and operate at this size."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Node, current Active LTS line, pinned in `.nvmrc` and `engines`. Confirm the exact LTS line at scaffold time.",
+        "rejected_spans": [
+          "One version across local, CI and Vercel, so a version difference is never a suspect during debugging."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "pnpm, enabled through corepack",
+        "rejected_spans": [
+          "Refuses to resolve a package that was never declared, so the dependency list stays honest."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Next.js 16.3, App Router",
+        "rejected_spans": [
+          "Current stable and LTS as of 3 August 2026. Turbopack is the default builder in 16."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Server Components for reads, Server Actions for writes. Every Supabase call and every session check runs on the server. No database credential and no query shape reaches the browser.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Postgres, hosted by Supabase",
+        "rejected_spans": [
+          "Relational data with real relationships, and `pgvector` available if the deferred retrieval tool ever arrives."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`@supabase/supabase-js` with `@supabase/ssr`, no object relational mapper",
+        "rejected_spans": [
+          "Every query carries the caller's token, so row level security applies by construction. There is no code path that can quietly bypass it."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Postgres functions, hand written SQL. Anything that must be atomic (the feature 10 usage gate above all) is one statement in the database, not a read then write in application code.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Supabase CLI, hand written SQL files in git, local stack in Docker. Tests run against a real Postgres with the real policies applied.",
+        "rejected_spans": [
+          "The repository is the source of truth for schema and policy."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Supabase Auth, OAuth only, Google and GitHub. No transactional email service and no verification flow needed in v1.",
+        "rejected_spans": [
+          "Two providers cover the named audience."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Row level security in Postgres, plus a session check in the protected layout and again in every Server Action. The database is the guarantee. The layout check makes the denial visible.",
+        "rejected_spans": [
+          "The per action check exists because a Server Action is a callable endpoint whatever page renders it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Publishable key (`sb_publishable_\u2026`) in the browser. Secret key (`sb_secret_\u2026`) only inside `src/lib/supabase/secret.ts`, see binding rule 1. The legacy `anon` and `service_role` JWT keys are deprecated by the end of 2026 and are not used at all.",
+        "rejected_spans": [
+          "The current Supabase key format."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Zod 4 at every boundary",
+        "rejected_spans": [
+          "Nothing untrusted enters the application unparsed: the Adzuna response, every model output, every form input, every environment variable."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "react-hook-form with the Zod resolver",
+        "rejected_spans": [
+          "The profile form is long, and per field errors without a server round trip matter there."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "None. URL search params plus `useTransition`",
+        "rejected_spans": [
+          "Filter state in the URL is what feature 18 needs anyway, and `useTransition` keeps previous results on screen during a refetch, which is the direct fix for the repeat search wipes results bug."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A `Result` discriminated union at every boundary",
+        "rejected_spans": [
+          "Under `strict`, the data cannot be read without first narrowing the union, so ignoring a failure is a compile error rather than a habit."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "AI SDK 7 with direct provider packages, one key per vendor",
+        "rejected_spans": [
+          "Keeps personal data flowing only to the vendors the privacy notice names, and keeps the AI layer independent of the hosting choice."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A checked in module, keys in environment variables",
+        "rejected_spans": [
+          "A model change is a reviewable commit that can trigger the eval harness. What is deployed always matches what is in git."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Adzuna REST API",
+        "rejected_spans": [
+          "Already decided, terms already checked, and it supports the structured filters feature 18 needs."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Tailwind CSS v4",
+        "rejected_spans": [
+          "Theming moved into CSS through the `@theme` directive, and colours to OKLCH."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Vercel, Node runtime rather than Edge",
+        "rejected_spans": [
+          "First party Next.js support with no adapter to keep working, preview deployment per push, free tier for a non commercial project."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Sentry",
+        "rejected_spans": [
+          "Errors and the expected failure rate signal both land somewhere a person actually sees."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`@t3-oss/env-nextjs` with Zod, validated at build and at boot. A missing variable fails the build. Importing a server only secret into client code becomes a build error.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Single package, single application",
+        "rejected_spans": [
+          "The eval harness is a script importing the real scoring code, not a copy of it."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "git, initialised before the scaffold",
+        "rejected_spans": [
+          "The brief and the scope are real work that deserves history before generated code lands on top of them."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Deliberately left open**, owned by other features and not decided here:",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

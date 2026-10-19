@@ -1,0 +1,65 @@
+{
+  "record": "0001",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:03:04+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 361,
+  "output_tokens": 489,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b5870232e939473fb3964bd92fbf3cf7",
+  "artifact_format_version": 3,
+  "unit_sha256": "3be8a6946b1674c149f0850fa483e13990c0f74caad6b2908b4ca74bc4438514",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1: One Next.js application on Supabase and Vercel, server first.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Build JobHunt as a single Next.js 16 application whose data path runs entirely on the server through `@supabase/ssr`, with authorisation enforced by Postgres row level security and no object relational mapper in between.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-sdk-setup` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-sdk-setup/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1: One Next.js application on Supabase and Vercel, server first.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Build JobHunt as a single Next.js 16 application whose data path runs entirely on the server through `@supabase/ssr`, with authorisation enforced by Postgres row level security and no object relational mapper in between.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-sdk-setup` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-sdk-setup/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

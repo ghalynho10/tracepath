@@ -1,0 +1,105 @@
+{
+  "record": "0001",
+  "section": "Directory layout",
+  "section_slug": "directory-layout",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:03:04+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 628,
+  "output_tokens": 974,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "dbc0687799fe4a2788e37e66ccd0991c",
+  "artifact_format_version": 3,
+  "unit_sha256": "1b42493a4602761dff8ca320cc30589a6500958fec394f961634597a7c67e514",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Routes live only in `src/app`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A feature's own code lives in `src/features/<feature>/`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Anything shared by two features moves to `src/lib` or `src/components/ui`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"```\\nsrc/\\n  app/\\n    (marketing)/        public routes, no session required\\n    (app)/              protected routes; its layout verifies the session\\n    api/                route handlers, only where an external caller needs HTTP\\n  features/\\n    <feature>/          that feature's actions, queries, components, types, schemas\\n  components/ui/        shared design system primitives (feature 5)\\n  lib/\\n    supabase/\\n      server.ts         request scoped server client, carries the user token\\n      secret.ts         the ONLY place a secret key client may be constructed\\n    ai/\\n      tiers.ts          tier to vendor and model map, checked in\\n      client.ts         the feature 13 router\\n    adzuna/\\n    result.ts           the Result union and the failure() constructor\\n  env.ts                validated environment variables\\nsupabase/\\n  migrations/           hand written SQL, source of truth for schema and policy\\ndocs/\\n  observability/        alert rule definitions, kept in git for review\\n```\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Amended 2026-08-29 by spec 0007.** This tree listed a fourth file, `lib/supabase/browser.ts`, \\\"publishable key client\\\", reserved for the OAuth handshake in feature 7. Feature 7 does that handshake entirely on the server, so the browser client never gained a caller and is deleted rather than left as a module whose doc comment claims a purpose it no longer has.\",\"rejected_spans\":[\"The trail is kept here rather than the line silently vanishing: this project's data path is server only, and the one exception this file was held open for turned out not to be one.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"mention\":\"spec 0007\"},\"phrase\":\"**Amended 2026-08-29 by spec 0007.**\",\"date\":\"2026-08-29\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Routes live only in `src/app`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A feature's own code lives in `src/features/<feature>/`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Anything shared by two features moves to `src/lib` or `src/components/ui`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "```\nsrc/\n  app/\n    (marketing)/        public routes, no session required\n    (app)/              protected routes; its layout verifies the session\n    api/                route handlers, only where an external caller needs HTTP\n  features/\n    <feature>/          that feature's actions, queries, components, types, schemas\n  components/ui/        shared design system primitives (feature 5)\n  lib/\n    supabase/\n      server.ts         request scoped server client, carries the user token\n      secret.ts         the ONLY place a secret key client may be constructed\n    ai/\n      tiers.ts          tier to vendor and model map, checked in\n      client.ts         the feature 13 router\n    adzuna/\n    result.ts           the Result union and the failure() constructor\n  env.ts                validated environment variables\nsupabase/\n  migrations/           hand written SQL, source of truth for schema and policy\ndocs/\n  observability/        alert rule definitions, kept in git for review\n```",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Amended 2026-08-29 by spec 0007.** This tree listed a fourth file, `lib/supabase/browser.ts`, \"publishable key client\", reserved for the OAuth handshake in feature 7. Feature 7 does that handshake entirely on the server, so the browser client never gained a caller and is deleted rather than left as a module whose doc comment claims a purpose it no longer has.",
+        "rejected_spans": [
+          "The trail is kept here rather than the line silently vanishing: this project's data path is server only, and the one exception this file was held open for turned out not to be one."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": null,
+          "mention": "spec 0007"
+        },
+        "phrase": "**Amended 2026-08-29 by spec 0007.**",
+        "date": "2026-08-29",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

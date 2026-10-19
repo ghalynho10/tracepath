@@ -1,0 +1,139 @@
+{
+  "record": "0001",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:03:04+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 259,
+  "output_tokens": 815,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f0f17be7d7564f62a641e07bb0f14e05",
+  "artifact_format_version": 3,
+  "unit_sha256": "85cdadfba5784f6a7114f8da4ccd07f05ad36faa8d55b67b434c8f512f98355c",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"JobHunt is built as one Next.js application on Supabase, deployed to Vercel, with all data reads and writes happening on the server.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Postgres row level security (a rule in the database itself that decides which rows a request may see) is the real guarantee that one user never reads another user's data\",\"rejected_spans\":[\", rather than a check in application code that could be forgotten\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Failures are returned as values that the type system forces you to handle, not thrown and possibly swallowed, and every failure reports itself to Sentry at the moment it is created.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Three tooling choices (the component source, the test runners, the linter) are deliberately left open and belong to features 5, 8 and 2.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 5\",\"id\":null,\"mention\":\"features 5, 8 and 2\"},\"phrase\":\"belong to features 5, 8 and 2\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 8\",\"id\":null,\"mention\":\"features 5, 8 and 2\"},\"phrase\":\"belong to features 5, 8 and 2\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 2\",\"id\":null,\"mention\":\"features 5, 8 and 2\"},\"phrase\":\"belong to features 5, 8 and 2\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "JobHunt is built as one Next.js application on Supabase, deployed to Vercel, with all data reads and writes happening on the server.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Postgres row level security (a rule in the database itself that decides which rows a request may see) is the real guarantee that one user never reads another user's data",
+        "rejected_spans": [
+          ", rather than a check in application code that could be forgotten"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Failures are returned as values that the type system forces you to handle, not thrown and possibly swallowed, and every failure reports itself to Sentry at the moment it is created.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Three tooling choices (the component source, the test runners, the linter) are deliberately left open and belong to features 5, 8 and 2.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 5",
+          "id": null,
+          "label": null,
+          "mention": "features 5, 8 and 2"
+        },
+        "phrase": "belong to features 5, 8 and 2",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 8",
+          "id": null,
+          "label": null,
+          "mention": "features 5, 8 and 2"
+        },
+        "phrase": "belong to features 5, 8 and 2",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 2",
+          "id": null,
+          "label": null,
+          "mention": "features 5, 8 and 2"
+        },
+        "phrase": "belong to features 5, 8 and 2",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
