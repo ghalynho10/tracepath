@@ -1,0 +1,237 @@
+{
+  "record": "0002",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1425,
+  "output_tokens": 2339,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "913ed0b855894236942ce318fee4f8ad",
+  "artifact_format_version": 3,
+  "unit_sha256": "e858c61b541e721fffafbbc1f2eff07777774734b2bd05bc4f2cb12190e1df31",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A real public URL exists from week one, which is what features 6 and 7 were sequenced against and what makes the portfolio claim real rather than pending.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Binding rule 7's fifth condition becomes enforceable, so the Supabase MCP server can be connected without dropping one of its five conditions.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The kill switch exists before the first external call, which is the ordering the named risk rule asks for.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A gap the scope did not see is closed: the deployed leg of the feature 1 thread was unprovable, and is now provable.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Both hosted environments are free. Nothing here introduces a monthly bill.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two hosted projects means two sets of secrets and a schema that can drift if anyone applies a migration by hand. The workflow is the mitigation; the discipline is still a discipline.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Both hosted projects will pause, and production is the more exposed of the two.** Supabase's free plan pauses a project that has not had sufficient database activity over the previous week, and their guidance is that this means roughly a few user requests a day across that week. That is a daily bar, not a weekly one, so a burst of activity on merge day does not clear it. Production is worse off than development here: nothing touches the production database at all until feature 7 ships a way to sign in, so it will pause while being perfectly healthy. Development is exposed too whenever a few days pass with no previews.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The consequences differ by project. A paused **development** project first breaks **CI**, not previews: the migration workflow's push fails, and with `main` behind a required check, an unrelated pull request goes red for a reason that does not look like the cause. A paused **production** project leaves the marketing page serving normally while anything touching data fails, which is precisely the shape of failure this project's error model exists to make visible.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Detection is Supabase's own email, not the uptime monitor. Supabase sends a warning roughly a week before pausing and a confirmation once paused. The uptime monitor watches Vercel and will happily report the site up with a paused database underneath it. Accepted rather than worked around, on the same reasoning as before: the fix is a dashboard restore, and a scheduled keep awake job was declined.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Vercel and GitHub Actions build the same commit in parallel, so ordering between a migration and a deploy rests on invariant 1 rather than on machinery. A destructive migration written carelessly breaks production, and nothing will stop it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Production runs on Vercel Hobby, which pauses the whole project when free usage is exhausted. That is the intended hard stop, and it means the portfolio URL can go down without warning. The uptime monitor tells you; it does not prevent it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Preview trace sampling below 1.0 means a rare failure on a preview may not be sampled. Accepted:\",\"rejected_spans\":[\"previews are hand driven, so a missed sample is noticed by the person driving.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This feature edits feature 1's code (the sign in guard) and feature 10's future territory (the kill switch read). Both are deliberate and both are named in binding rule 1's allow list already, but it does mean feature 10 inherits a read path it did not write.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Turning off preview protection later would silently break the guarantee that no real personal data reaches the development project. Nothing enforces the link between those two facts except this spec.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The canonical site URL is the production origin even locally, so a metadata check run on `localhost` shows production links. That is correct behaviour and it will look wrong the first time.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Vercel's framework prefixed system variables (`NEXT_PUBLIC_VERCEL_*`) are used rather than the bare ones. Their exact availability should be confirmed at build time rather than assumed.\",\"rejected_spans\":[\"because the client bundle needs them\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`VERCEL_URL` is documented as incompatible with standard deployment protection. Nothing in this design uses it; the branch URL is used instead.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The function region was a free choice on this plan, and it is set to `iad1`, beside both databases in `us-east-1`. Settled rather than open.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The production Supabase project will sit empty until feature 7 ships a way to sign in. That is expected, not a fault, though it is also the reason it will pause.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A real public URL exists from week one, which is what features 6 and 7 were sequenced against and what makes the portfolio claim real rather than pending.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Binding rule 7's fifth condition becomes enforceable, so the Supabase MCP server can be connected without dropping one of its five conditions.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The kill switch exists before the first external call, which is the ordering the named risk rule asks for.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A gap the scope did not see is closed: the deployed leg of the feature 1 thread was unprovable, and is now provable.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Both hosted environments are free. Nothing here introduces a monthly bill.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two hosted projects means two sets of secrets and a schema that can drift if anyone applies a migration by hand. The workflow is the mitigation; the discipline is still a discipline.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Both hosted projects will pause, and production is the more exposed of the two.** Supabase's free plan pauses a project that has not had sufficient database activity over the previous week, and their guidance is that this means roughly a few user requests a day across that week. That is a daily bar, not a weekly one, so a burst of activity on merge day does not clear it. Production is worse off than development here: nothing touches the production database at all until feature 7 ships a way to sign in, so it will pause while being perfectly healthy. Development is exposed too whenever a few days pass with no previews.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The consequences differ by project. A paused **development** project first breaks **CI**, not previews: the migration workflow's push fails, and with `main` behind a required check, an unrelated pull request goes red for a reason that does not look like the cause. A paused **production** project leaves the marketing page serving normally while anything touching data fails, which is precisely the shape of failure this project's error model exists to make visible.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Detection is Supabase's own email, not the uptime monitor. Supabase sends a warning roughly a week before pausing and a confirmation once paused. The uptime monitor watches Vercel and will happily report the site up with a paused database underneath it. Accepted rather than worked around, on the same reasoning as before: the fix is a dashboard restore, and a scheduled keep awake job was declined.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Vercel and GitHub Actions build the same commit in parallel, so ordering between a migration and a deploy rests on invariant 1 rather than on machinery. A destructive migration written carelessly breaks production, and nothing will stop it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Production runs on Vercel Hobby, which pauses the whole project when free usage is exhausted. That is the intended hard stop, and it means the portfolio URL can go down without warning. The uptime monitor tells you; it does not prevent it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Preview trace sampling below 1.0 means a rare failure on a preview may not be sampled. Accepted:",
+        "rejected_spans": [
+          "previews are hand driven, so a missed sample is noticed by the person driving."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This feature edits feature 1's code (the sign in guard) and feature 10's future territory (the kill switch read). Both are deliberate and both are named in binding rule 1's allow list already, but it does mean feature 10 inherits a read path it did not write.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Turning off preview protection later would silently break the guarantee that no real personal data reaches the development project. Nothing enforces the link between those two facts except this spec.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The canonical site URL is the production origin even locally, so a metadata check run on `localhost` shows production links. That is correct behaviour and it will look wrong the first time.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Vercel's framework prefixed system variables (`NEXT_PUBLIC_VERCEL_*`) are used rather than the bare ones. Their exact availability should be confirmed at build time rather than assumed.",
+        "rejected_spans": [
+          "because the client bundle needs them"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`VERCEL_URL` is documented as incompatible with standard deployment protection. Nothing in this design uses it; the branch URL is used instead.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The function region was a free choice on this plan, and it is set to `iad1`, beside both databases in `us-east-1`. Settled rather than open.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The production Supabase project will sit empty until feature 7 ships a way to sign in. That is expected, not a fault, though it is also the reason it will pause.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,275 @@
+{
+  "record": "0001",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0001-stack-and-architecture/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1553,
+  "output_tokens": 2613,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c0a8032ed1094391bb5d52ff05d533e7",
+  "artifact_format_version": 3,
+  "unit_sha256": "7f0df7687119a3060c2357e656342fbb00925b0f398ebb54cbcc70784c019278",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The scaffold includes one trivial but completely real end to end thread**: a protected page that reads one row from Supabase through the real server client and renders it. This proves the framework, the client, the session, the policy, the deployment and the error path all connect, at Foundation rather than at feature 11. It mirrors feature 1's done when clause in the scope. Note the ordering consequence: the Supabase project and its first table have to exist during feature 1, not feature 4.\",\"rejected_spans\":[\"it is here rather than only in `rationale.md` because `/develop` does not read that file\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Initialise the git repository before the scaffold\",\"rejected_spans\":[\"so the brief, the scope and this spec are the first commit rather than being buried under generated code\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Confirm the exact Node Active LTS line at scaffold time and pin it in `.nvmrc` and `engines`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Confirm the current Sentry alert configuration for a failure rate condition against Sentry's own documentation at build time. The mechanism (mark the span failed inside `failure()`, alert on the failure share with an attempt floor) is settled; the exact product surface for configuring it was not verified during this design\",\"rejected_spans\":[\"the `sentry-sdk-setup` skill is installed to help\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Disable the Sentry transport in the test environment before the first test run\",\"rejected_spans\":[\"or `failure()` will report during tests\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 10 owns building binding rule 4 and must say so in its done when clause.** `docs/scope/scope.md` line 208 now carries all four commitments this item asked for, including the \\\"in a non production project\\\" smoke test qualifier. Its done when clause needed: the alert rule defined in `docs/observability/`, trace sampling at 1.0 on the alerted operations, the attempt counter incremented inside the atomic gate function, and a forced failure smoke test proving the alert actually fires end to end in a non production project.\",\"rejected_spans\":[\"The smoke test is the load bearing half, because it proves the whole chain (span, sampling, fingerprint, threshold, delivery) rather than proving a rule exists on paper.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"spec 0011 built and proved the rule, two failure rate metric monitors (`usage_gate.check`, `kill_switch.read`) configured per environment in the one `jobhunt` Sentry project, and the forced failure smoke test proven end to end in the development environment with a real alert delivered by email.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Drift detection between Sentry's live alert rules and `docs/observability/` is a v1.5 item, not v1. Add it once the forced failure smoke test has shown the alert works.\",\"rejected_spans\":[\"A scheduled diff proves the rule exists, not that it fires, and costs a scheduler plus API credentials.\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Decide the UI component source in feature 5, together with the `@theme` port of the seven token palette.\",\"rejected_spans\":[\"Tailwind v4 made those a single decision.\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Decide the test runners in feature 8.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Decide the linter and formatter in feature 2, against the two constraints in binding rule 8.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 3 owns the environment half of the MCP decision: which project the development connection points at, and confirmation that no production project is ever reachable from it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The four installed skills (`supabase`, `supabase-postgres-best-practices`, `sentry-sdk-setup`, `sentry-nextjs-sdk`) are not yet referenced anywhere in project context. All four are project wide, so their conventions belong in root `AGENTS.md` once feature 2 creates it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Install `sentry-nextjs-sdk` and remove `sentry-node-sdk` from `.agents/skills/`.** The spec text above is corrected, but the installed skill directory still has to be brought in line before feature 2 writes skill conventions into `AGENTS.md`.\",\"rejected_spans\":[\"This spec originally named the Node SDK skill; the router skill points Next.js projects at the Next.js one, and the SDK wiring built during `/develop` follows the Next.js package.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The Vercel MCP server is present in the environment but not authorised, and it cannot be authorised from a non interactive session. Authorise it through `claude mcp` or `/mcp` in an interactive session if it is wanted; binding rule 7 says Supabase MCP only, so this needs a deliberate decision rather than a default.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Residual from the brief, unchanged by this spec: a direct email to Adzuna confirming the multi user reading of their terms.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"scope\",\"id\":null,\"label\":\"feature 1\",\"mention\":\"feature 1\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"mention\":\"spec 0011\"},\"phrase\":\"**Ticked 2026-09-03:** spec 0011 built and proved the rule\",\"date\":\"2026-09-03\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"phrase\":\"**Ticked 2026-09-03:**\",\"date\":\"2026-09-03\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The scaffold includes one trivial but completely real end to end thread**: a protected page that reads one row from Supabase through the real server client and renders it. This proves the framework, the client, the session, the policy, the deployment and the error path all connect, at Foundation rather than at feature 11. It mirrors feature 1's done when clause in the scope. Note the ordering consequence: the Supabase project and its first table have to exist during feature 1, not feature 4.",
+        "rejected_spans": [
+          "it is here rather than only in `rationale.md` because `/develop` does not read that file"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Initialise the git repository before the scaffold",
+        "rejected_spans": [
+          "so the brief, the scope and this spec are the first commit rather than being buried under generated code"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Confirm the exact Node Active LTS line at scaffold time and pin it in `.nvmrc` and `engines`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Confirm the current Sentry alert configuration for a failure rate condition against Sentry's own documentation at build time. The mechanism (mark the span failed inside `failure()`, alert on the failure share with an attempt floor) is settled; the exact product surface for configuring it was not verified during this design",
+        "rejected_spans": [
+          "the `sentry-sdk-setup` skill is installed to help"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Disable the Sentry transport in the test environment before the first test run",
+        "rejected_spans": [
+          "or `failure()` will report during tests"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 10 owns building binding rule 4 and must say so in its done when clause.** `docs/scope/scope.md` line 208 now carries all four commitments this item asked for, including the \"in a non production project\" smoke test qualifier. Its done when clause needed: the alert rule defined in `docs/observability/`, trace sampling at 1.0 on the alerted operations, the attempt counter incremented inside the atomic gate function, and a forced failure smoke test proving the alert actually fires end to end in a non production project.",
+        "rejected_spans": [
+          "The smoke test is the load bearing half, because it proves the whole chain (span, sampling, fingerprint, threshold, delivery) rather than proving a rule exists on paper."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "spec 0011 built and proved the rule, two failure rate metric monitors (`usage_gate.check`, `kill_switch.read`) configured per environment in the one `jobhunt` Sentry project, and the forced failure smoke test proven end to end in the development environment with a real alert delivered by email.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Drift detection between Sentry's live alert rules and `docs/observability/` is a v1.5 item, not v1. Add it once the forced failure smoke test has shown the alert works.",
+        "rejected_spans": [
+          "A scheduled diff proves the rule exists, not that it fires, and costs a scheduler plus API credentials."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Decide the UI component source in feature 5, together with the `@theme` port of the seven token palette.",
+        "rejected_spans": [
+          "Tailwind v4 made those a single decision."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Decide the test runners in feature 8.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Decide the linter and formatter in feature 2, against the two constraints in binding rule 8.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 3 owns the environment half of the MCP decision: which project the development connection points at, and confirmation that no production project is ever reachable from it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The four installed skills (`supabase`, `supabase-postgres-best-practices`, `sentry-sdk-setup`, `sentry-nextjs-sdk`) are not yet referenced anywhere in project context. All four are project wide, so their conventions belong in root `AGENTS.md` once feature 2 creates it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Install `sentry-nextjs-sdk` and remove `sentry-node-sdk` from `.agents/skills/`.** The spec text above is corrected, but the installed skill directory still has to be brought in line before feature 2 writes skill conventions into `AGENTS.md`.",
+        "rejected_spans": [
+          "This spec originally named the Node SDK skill; the router skill points Next.js projects at the Next.js one, and the SDK wiring built during `/develop` follows the Next.js package."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The Vercel MCP server is present in the environment but not authorised, and it cannot be authorised from a non interactive session. Authorise it through `claude mcp` or `/mcp` in an interactive session if it is wanted; binding rule 7 says Supabase MCP only, so this needs a deliberate decision rather than a default.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Residual from the brief, unchanged by this spec: a direct email to Adzuna confirming the multi user reading of their terms.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "scope",
+          "id": null,
+          "label": "feature 1",
+          "mention": "feature 1"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011"
+        },
+        "phrase": "**Ticked 2026-09-03:** spec 0011 built and proved the rule",
+        "date": "2026-09-03",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "phrase": "**Ticked 2026-09-03:**",
+        "date": "2026-09-03",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

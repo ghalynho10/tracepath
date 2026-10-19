@@ -1,0 +1,275 @@
+{
+  "record": "0003",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0003-data-model/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1333,
+  "output_tokens": 2514,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "4fe6a8ba1f634551a7b57bd2961d47f3",
+  "artifact_format_version": 3,
+  "unit_sha256": "51df1bab768506cc9914a07752c3ce2717ee6742ef5361ef7a5076692063289e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 12's done when clause needs a criterion for the missing profile case: an apply attempt by a user with no profile row must fail visibly as an expected failure, never as an unhandled database error.\",\"rejected_spans\":[\"Recorded here because the constraint originates in this spec's ownership chain.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Spec 0014 AC-5 supplies the criterion, and feature 12's scope row now carries it in its `Done when`. Built and proved against the real stack: the foreign key refuses the insert, this feature maps `23503` to `record_not_found` at `expected` severity, and the reader gets a sentence naming the profile plus a working link to `/profile`. No raw database error reaches the screen.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**`application` has no column for whether a snapshotted salary was predicted.** Recorded from spec 0013 on 2026-09-04: feature 11's `Listing` shape carries `salaryIsPredicted` (driving its \\\"(estimated)\\\" label), and feature 12 is named as the importer of that same shape for its own field mapping (this spec's Value sourcing table above, the `salary_min`/`salary_max` row). As `application` stands today (`salary_min`, `salary_max`, `salary_currency`, no predicted flag), snapshotting a predicted salary into it loses the distinction, and any later screen reading the row (an applications dashboard, feature 23) would show it as stated fact. Feature 12's own spec must decide: add a column (an additive migration) or make dropping the flag an explicit, documented choice.\",\"rejected_spans\":[\"Not decided here, since the write belongs to feature 12.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column: `salary_is_predicted boolean`, nullable, with `application_predicted_pairing` making it present exactly when a pay figure is. Migration `20260905120000_application_salary_is_predicted.sql`.\",\"rejected_spans\":[\"The deliberation added the nullability, which the lean did not consider: Adzuna sends the flag on every advert including ones quoting no pay, so writing the boolean straight through would stamp `false` on rows with no salary, which is a claim about a figure that does not exist.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 20 adds the check constraint on `application_answer.question_key` once its question set is decided, while the table is still empty.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 23 adds the application status column and its check, as an alter against a table holding real rows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Features 24 and 25 will want profile links\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"feature 18 will want an employment type on work history.\",\"rejected_spans\":[\"Both were deliberately left out of v1 as columns nothing reads yet.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 8 replaces the seeded fixture users, and should mint identifiers that satisfy `z.uuid()`, which the current pair does not, as `supabase/seed.sql` already records.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The check constraint value lists and their Zod counterparts are the one place this design allows drift. Feature 8 is the natural owner of a test that asserts the two agree.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Spec 0002's two open obligations on this feature are discharged here: invariant 1 (expand then contract) is carried in full in `## Build plan` with its mechanism rather than its conclusion, and the explicit `grant` rule is written into AC-2, the Security model and build task 1.\",\"rejected_spans\":[\"Both were found missing from the first draft by the cross check, which is exactly the failure 0002 predicted when it wrote that a rule living only in the deployment spec is one the data model spec will not read.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 8 inherits a third synthetic fixture user carrying no profile row. It exists for AC-14's missing profile path and should survive the fixture pool rewrite.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"phrase\":\"**Done 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"**Decided and built 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-5\",\"mention\":\"Spec 0014 AC-5\"},\"phrase\":\"Spec 0014 AC-5 supplies the criterion\",\"date\":\"2026-09-05\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-6\",\"mention\":\"Spec 0014 AC-6\"},\"phrase\":\"Spec 0014 AC-6 weighed spec 0013's lean\",\"date\":\"2026-09-05\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":null,\"mention\":\"spec 0013\"},\"phrase\":\"Recorded from spec 0013 on 2026-09-04\",\"date\":\"2026-09-04\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"mention\":\"Spec 0002's two open obligations on this feature\"},\"phrase\":\"Spec 0002's two open obligations on this feature are discharged here\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 12's done when clause needs a criterion for the missing profile case: an apply attempt by a user with no profile row must fail visibly as an expected failure, never as an unhandled database error.",
+        "rejected_spans": [
+          "Recorded here because the constraint originates in this spec's ownership chain."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Spec 0014 AC-5 supplies the criterion, and feature 12's scope row now carries it in its `Done when`. Built and proved against the real stack: the foreign key refuses the insert, this feature maps `23503` to `record_not_found` at `expected` severity, and the reader gets a sentence naming the profile plus a working link to `/profile`. No raw database error reaches the screen.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**`application` has no column for whether a snapshotted salary was predicted.** Recorded from spec 0013 on 2026-09-04: feature 11's `Listing` shape carries `salaryIsPredicted` (driving its \"(estimated)\" label), and feature 12 is named as the importer of that same shape for its own field mapping (this spec's Value sourcing table above, the `salary_min`/`salary_max` row). As `application` stands today (`salary_min`, `salary_max`, `salary_currency`, no predicted flag), snapshotting a predicted salary into it loses the distinction, and any later screen reading the row (an applications dashboard, feature 23) would show it as stated fact. Feature 12's own spec must decide: add a column (an additive migration) or make dropping the flag an explicit, documented choice.",
+        "rejected_spans": [
+          "Not decided here, since the write belongs to feature 12."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column: `salary_is_predicted boolean`, nullable, with `application_predicted_pairing` making it present exactly when a pay figure is. Migration `20260905120000_application_salary_is_predicted.sql`.",
+        "rejected_spans": [
+          "The deliberation added the nullability, which the lean did not consider: Adzuna sends the flag on every advert including ones quoting no pay, so writing the boolean straight through would stamp `false` on rows with no salary, which is a claim about a figure that does not exist."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 20 adds the check constraint on `application_answer.question_key` once its question set is decided, while the table is still empty.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 23 adds the application status column and its check, as an alter against a table holding real rows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Features 24 and 25 will want profile links",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "feature 18 will want an employment type on work history.",
+        "rejected_spans": [
+          "Both were deliberately left out of v1 as columns nothing reads yet."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 8 replaces the seeded fixture users, and should mint identifiers that satisfy `z.uuid()`, which the current pair does not, as `supabase/seed.sql` already records.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The check constraint value lists and their Zod counterparts are the one place this design allows drift. Feature 8 is the natural owner of a test that asserts the two agree.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Spec 0002's two open obligations on this feature are discharged here: invariant 1 (expand then contract) is carried in full in `## Build plan` with its mechanism rather than its conclusion, and the explicit `grant` rule is written into AC-2, the Security model and build task 1.",
+        "rejected_spans": [
+          "Both were found missing from the first draft by the cross check, which is exactly the failure 0002 predicted when it wrote that a rule living only in the deployment spec is one the data model spec will not read."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 8 inherits a third synthetic fixture user carrying no profile row. It exists for AC-14's missing profile path and should survive the fixture pool rewrite.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "phrase": "**Done 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "phrase": "**Decided and built 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-5",
+          "label": null,
+          "mention": "Spec 0014 AC-5"
+        },
+        "phrase": "Spec 0014 AC-5 supplies the criterion",
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-6",
+          "label": null,
+          "mention": "Spec 0014 AC-6"
+        },
+        "phrase": "Spec 0014 AC-6 weighed spec 0013's lean",
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": null,
+          "mention": "spec 0013"
+        },
+        "phrase": "Recorded from spec 0013 on 2026-09-04",
+        "date": "2026-09-04",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0002's two open obligations on this feature"
+        },
+        "phrase": "Spec 0002's two open obligations on this feature are discharged here",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

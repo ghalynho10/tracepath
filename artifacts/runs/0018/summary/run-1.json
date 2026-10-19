@@ -1,0 +1,93 @@
+{
+  "record": "0018",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0018-band-anchor-review/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 247,
+  "output_tokens": 485,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "1ee824fab29b4644b32eeb751be4287f",
+  "artifact_format_version": 3,
+  "unit_sha256": "0556c39626de5177661ac35b6345ea3a4765e8db5d4507b9e5cdc0c54df0cb34",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec is that review, and its finding is that the anchors do not need to change.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One of the two disagreements is a mistake in the committed expectation, which the existing anchor text already settles, and it is corrected here.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The other turned out to rest on a misread number and is ordinary variation, not a defined gap.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Nothing about live scoring changes.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":null,\"mention\":\"spec 0015 said the band anchors (the text in `rubric.ts` telling the model what each of the five fit bands means) were the first thing to revise if that happened\"},\"phrase\":\"This spec is that review\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec is that review, and its finding is that the anchors do not need to change.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One of the two disagreements is a mistake in the committed expectation, which the existing anchor text already settles, and it is corrected here.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The other turned out to rest on a misread number and is ordinary variation, not a defined gap.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Nothing about live scoring changes.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": null,
+          "mention": "spec 0015 said the band anchors (the text in `rubric.ts` telling the model what each of the five fit bands means) were the first thing to revise if that happened"
+        },
+        "phrase": "This spec is that review",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

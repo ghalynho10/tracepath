@@ -1,0 +1,205 @@
+{
+  "record": "0018",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0018-band-anchor-review/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1221,
+  "output_tokens": 3330,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "dafc503d7cfe48a89f2ee9d0532ed370",
+  "artifact_format_version": 3,
+  "unit_sha256": "68fe167e327d17dc30a2b857cdf39a6c8159f0bf0c03f72841b3c0a989bfd498",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person maintaining the rubric, I want the one disagreement the anchors can already settle to be settled,\",\"rejected_spans\":[\"so a committed expectation stops asserting an answer its own anchor text contradicts.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person maintaining the rubric, I want a rule that was drafted and rejected to be written down with its reasons,\",\"rejected_spans\":[\"so the next person to look at this does not spend the same effort reaching the same dead end.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As someone reading a fit score, I want the rubric left alone unless there is evidence to change it,\",\"rejected_spans\":[\"because every anchor edit moves real scores with nothing recording what they were before.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: `control-one-gap`'s `expectedBand` in `src/features/scoring/eval/pairs.ts` is `possible_match`, with no `acceptableBands`, and its `rationale` argues that from the existing `possible_match` anchor text rather than from any new rule. The rationale also states plainly that this band was re-argued on 2026-09-08 after two runs disagreed, and names the ground that makes it independent of those runs: the posting's own sentence calling the infrastructure half what sets the role apart, written before any model was asked.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-1b\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1b**: `pairs.ts`'s header no longer claims without exception that every `expectedBand` was argued before any model was asked. It names the exception and why the exception is not the accommodation the header warns about.\",\"rejected_spans\":[\"because after AC-1 that is untrue of one pair\",\"This matters more than a comment usually would: the sentence immediately after that claim is the file's whole justification, that a band read off a model's output would make the set a description of today's scorer rather than a measurement of it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: `BAND_ANCHORS` in `src/features/scoring/rubric.ts` is unchanged, so `band-anchors.test.ts`'s pinned text and committed hash `1b45f524b356` are untouched and still pass, and reports written before and after this change remain comparable.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: `validateGroundTruth(ARCHETYPES, PAIRS)` reports no issue on the updated set, and `ground-truth.test.ts`'s stricter check that every band is some pair's exact `expectedBand` still passes, which it does because `good-match-adjacent` keeps `good_match`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: The misread run evidence is corrected everywhere it appears. Searched and found at `docs/scope/scope.md:326`, added in commit `b51cb83` (`docs(scope): record the eval harness verification and its first finding`), which also layers the inference \\\"a stable disagreement rather than noise\\\" on top of the misread and closes by handing the question to `/architect`. The correction states the per pair distributions rather than a summary line, removes the \\\"stable disagreement\\\" inference, and points at this spec. `docs/experiments/0016-eval-ground-truth-set.md` is a recorded transcript and stays as it is.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-4b\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4b**: Spec 0016's two now stale references to `control-one-gap` are corrected: its table row at line 141 lists the pair as `good_match`, and its Follow up at line 182 quotes that pair's rationale saying \\\"That is good_match's wording\\\" as present tense evidence of how the set was authored. The row is updated and the Follow up quote is marked as historical, true of the set as authored and superseded here. Both are recording edits, not changes to what spec 0016 decides.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: `pnpm eval -t control-one-gap` passes, confirming the corrected expectation against the real scorer for five vendor calls rather than eighty.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1b\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"phrase\":\"because after AC-1 that is untrue of one pair\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"corrected-by\",\"source\":{\"kind\":\"reference\",\"record\":\"scope\",\"id\":null,\"mention\":\"`docs/scope/scope.md:326`\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"phrase\":\"The misread run evidence is corrected everywhere it appears.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":null,\"mention\":\"Spec 0016's two now stale references to `control-one-gap`\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-4b\"},\"phrase\":\"Both are recording edits, not changes to what spec 0016 decides.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person maintaining the rubric, I want the one disagreement the anchors can already settle to be settled,",
+        "rejected_spans": [
+          "so a committed expectation stops asserting an answer its own anchor text contradicts."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person maintaining the rubric, I want a rule that was drafted and rejected to be written down with its reasons,",
+        "rejected_spans": [
+          "so the next person to look at this does not spend the same effort reaching the same dead end."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As someone reading a fit score, I want the rubric left alone unless there is evidence to change it,",
+        "rejected_spans": [
+          "because every anchor edit moves real scores with nothing recording what they were before."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: `control-one-gap`'s `expectedBand` in `src/features/scoring/eval/pairs.ts` is `possible_match`, with no `acceptableBands`, and its `rationale` argues that from the existing `possible_match` anchor text rather than from any new rule. The rationale also states plainly that this band was re-argued on 2026-09-08 after two runs disagreed, and names the ground that makes it independent of those runs: the posting's own sentence calling the infrastructure half what sets the role apart, written before any model was asked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1b",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1b**: `pairs.ts`'s header no longer claims without exception that every `expectedBand` was argued before any model was asked. It names the exception and why the exception is not the accommodation the header warns about.",
+        "rejected_spans": [
+          "because after AC-1 that is untrue of one pair",
+          "This matters more than a comment usually would: the sentence immediately after that claim is the file's whole justification, that a band read off a model's output would make the set a description of today's scorer rather than a measurement of it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: `BAND_ANCHORS` in `src/features/scoring/rubric.ts` is unchanged, so `band-anchors.test.ts`'s pinned text and committed hash `1b45f524b356` are untouched and still pass, and reports written before and after this change remain comparable.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: `validateGroundTruth(ARCHETYPES, PAIRS)` reports no issue on the updated set, and `ground-truth.test.ts`'s stricter check that every band is some pair's exact `expectedBand` still passes, which it does because `good-match-adjacent` keeps `good_match`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: The misread run evidence is corrected everywhere it appears. Searched and found at `docs/scope/scope.md:326`, added in commit `b51cb83` (`docs(scope): record the eval harness verification and its first finding`), which also layers the inference \"a stable disagreement rather than noise\" on top of the misread and closes by handing the question to `/architect`. The correction states the per pair distributions rather than a summary line, removes the \"stable disagreement\" inference, and points at this spec. `docs/experiments/0016-eval-ground-truth-set.md` is a recorded transcript and stays as it is.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4b",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4b**: Spec 0016's two now stale references to `control-one-gap` are corrected: its table row at line 141 lists the pair as `good_match`, and its Follow up at line 182 quotes that pair's rationale saying \"That is good_match's wording\" as present tense evidence of how the set was authored. The row is updated and the Follow up quote is marked as historical, true of the set as authored and superseded here. Both are recording edits, not changes to what spec 0016 decides.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: `pnpm eval -t control-one-gap` passes, confirming the corrected expectation against the real scorer for five vendor calls rather than eighty.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1b"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "phrase": "because after AC-1 that is untrue of one pair",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "reference",
+          "record": "scope",
+          "id": null,
+          "label": null,
+          "mention": "`docs/scope/scope.md:326`"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "phrase": "The misread run evidence is corrected everywhere it appears.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0016",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0016's two now stale references to `control-one-gap`"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-4b"
+        },
+        "phrase": "Both are recording edits, not changes to what spec 0016 decides.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

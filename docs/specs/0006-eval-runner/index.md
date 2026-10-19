@@ -75,6 +75,7 @@ This spec adds one command, `tracepath eval`, that runs every question of an eva
 - **AC-28b**: `eval/held-out.json` carries `"held_out": true` (a test).
 - **AC-29**: With `--release-held-out`, the output opens with `Held out check (spec 0006): a check of the choices features 13 and 11 made, not a measurement.` and reports each question on its own, under AC-7.
 - **AC-30**: `eval/held-out.json` is committed before the first commit of feature 13's spec, and no run artifact exists for any unit holding a line it cites.
+  - **Note, 2026-10-19**: the second clause (no run artifact exists for any unit holding a line it cites) ended by design when feature 9 extracted the whole corpus, after features 11 and 13 had locked their choices. Its test, `test_ac_30_no_unit_the_held_out_file_cites_has_a_run_artifact`, is skipped with that reason. The criterion text above is unchanged.
 
 *The extraction for questions 1, 2, 4 and 5*
 - **AC-31**: Before any paid call, `extract --dry-run` is run over the eight units in Feature design, and the engineer gives a go and a ceiling after reading its measured figures and the output assumption with its source.
@@ -194,6 +195,7 @@ and a short note listing the files you opened.
 
 **Key invariants**:
 1. Spec 0004's walk rules (AC-20 to AC-30), matching rule (AC-35, AC-36) and reason rules (AC-38) are unchanged. Only two things are added beside them: a start rule where AC-34 would refuse, and a result built from the findings.
+   - **Note, 2026-10-19**: spec 0004's matching rule (AC-36) gained a one line tolerance in `8fbaf90`, recorded under spec 0004 AC-36. The invariant's text above is otherwise unchanged.
 2. `walk.py` and the Cypher read are not edited, and the walk never reads `eval/` (spec 0004 AC-31). `report.py` stays the only code that reads `eval/`, and `eval/runner.json` is read there.
 3. No result is a total. No line anywhere counts questions passed (AC-7).
 4. `INCONCLUSIVE` is never `PASS`. An absence only counts when the graph holds the item (AC-17).

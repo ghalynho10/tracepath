@@ -7,11 +7,13 @@ with no accepted entity.
 
 from collections import Counter
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
+from tests.conftest import pre_feature_9_runs
 from tests.test_code_pass import AC2, SPLIT, criterion, run, unit_of
-from tests.test_code_pass_commands import COMMIT, ROOT, SNAPSHOT
+from tests.test_code_pass_commands import COMMIT, SNAPSHOT
 from tracepath.extract.compare import route_runs
 from tracepath.extract.units import UnitKind
 from tracepath.hold_ratio import (
@@ -31,13 +33,19 @@ from tracepath.resolve.endpoints import Resolution
 
 
 @pytest.fixture(scope="module")
-def holds() -> tuple[UnitHold, ...]:
-    results = committed_units(ROOT, SNAPSHOT)
+def frozen_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The 29 units before feature 9, the corpus experiment 0014 measured (frozen data)."""
+    return pre_feature_9_runs(tmp_path_factory.mktemp("frozen"))
+
+
+@pytest.fixture(scope="module")
+def holds(frozen_root: Path) -> tuple[UnitHold, ...]:
+    results = committed_units(frozen_root, SNAPSHOT)
     records = records_for_units(results, SNAPSHOT, COMMIT)
     return unit_holds(results, resolve_accepted(results, records))
 
 
-def queue_counts() -> Counter[tuple[str, str, int]]:
+def queue_counts(root: Path) -> Counter[tuple[str, str, int]]:
     """The queue's rows without the narrow hold rule, by record, section and signature length.
 
     The ratio measures routing without the rule (AC-7), so it is checked against the
@@ -45,17 +53,19 @@ def queue_counts() -> Counter[tuple[str, str, int]]:
     `hold_ratio`. The committed queue is the default routing's, the rule on, since spec
     0008 AC-9b.
     """
-    results = committed_units(ROOT, SNAPSHOT)
+    results = committed_units(root, SNAPSHOT)
     corpus = resolve_accepted(results, records_for_units(results, SNAPSHOT, COMMIT))
     rows = review_rows(results, corpus.held, "m", "t")
     return Counter((r["record"], r["section"], len(r["signature"])) for r in rows)
 
 
 @pytest.mark.slow
-def test_ac_7_one_named_unit_matches_a_hand_count(holds: tuple[UnitHold, ...]) -> None:
+def test_ac_7_one_named_unit_matches_a_hand_count(
+    holds: tuple[UnitHold, ...], frozen_root: Path
+) -> None:
     """covers: AC-7 (0009 Requirements, counted off the queue's own rows)."""
     [hold] = [h for h in holds if (h.record, h.section) == ("0009", "Requirements")]
-    counted = queue_counts()
+    counted = queue_counts(frozen_root)
 
     assert hold.count.held_entities == counted[("0009", "Requirements", 2)] == 10
     assert hold.count.held_links == counted[("0009", "Requirements", 3)] == 6
@@ -64,9 +74,9 @@ def test_ac_7_one_named_unit_matches_a_hand_count(holds: tuple[UnitHold, ...]) -
 
 
 @pytest.mark.slow
-def test_ac_7_every_unit_matches_the_queue(holds: tuple[UnitHold, ...]) -> None:
+def test_ac_7_every_unit_matches_the_queue(holds: tuple[UnitHold, ...], frozen_root: Path) -> None:
     """covers: AC-7 (rebuilt from the runs, every unit's held rows equal the queue's rows)."""
-    counted = queue_counts()
+    counted = queue_counts(frozen_root)
 
     for hold in holds:
         assert hold.count.held_entities == counted[(hold.record, hold.section, 2)], hold

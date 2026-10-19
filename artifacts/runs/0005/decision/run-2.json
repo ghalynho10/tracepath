@@ -1,0 +1,77 @@
+{
+  "record": "0005",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 254,
+  "output_tokens": 427,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "8da1e43f5f8349fca17c031b8b61dfe2",
+  "artifact_format_version": 3,
+  "unit_sha256": "701b852ac53a09c0a2405ff2e3f12a0ce3e3df8ddaecc91044eea75a120becb9",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Component API as the enforcement mechanism, new code only (Option 1 in the full options record).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The base components listed under `## Component design` are the only sanctioned way to render these patterns; a future hand rolled Tailwind composition duplicating one of them is a code review finding.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No existing production code needs migrating,\",\"rejected_spans\":[\"since `globals.css` is still a placeholder and no component exists in `src/` yet.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`)\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Component API as the enforcement mechanism, new code only (Option 1 in the full options record).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The base components listed under `## Component design` are the only sanctioned way to render these patterns; a future hand rolled Tailwind composition duplicating one of them is a code review finding.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No existing production code needs migrating,",
+        "rejected_spans": [
+          "since `globals.css` is still a placeholder and no component exists in `src/` yet."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

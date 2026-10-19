@@ -1,0 +1,689 @@
+{
+  "record": "feature-7",
+  "section": "7. Auth & per user isolation \u00b7 done \u00b7 GA",
+  "section_slug": "7-auth-per-user-isolation-done-ga",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 5092,
+  "output_tokens": 8283,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c69354b7f3244a5586b9ff4f94ab680c",
+  "artifact_format_version": 3,
+  "unit_sha256": "b9f9a4595634477164402673130216b6294b3fb47596ff6d419f16673450b8c1",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"OAuth sign in only (Google and GitHub), plus real per user data isolation enforced at the database rather than in application code. OAuth is kept over email and password for v1\",\"rejected_spans\":[\"because a linked real account is harder to fake for abuse than a burner address, and it removes the need for any transactional email in v1.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** a user can sign in and out with either provider on the deployed URL,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"an authenticated request only ever reaches its own rows,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"an unauthenticated request to a protected route fails visibly rather than returning empty data that looks like success,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the development only password sign in from feature 1 is deleted, not merely blocked.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"Also, this feature is the first user facing thing that actually works, so it **retires the `working` placeholder** in the entry page's \\\"What's real today\\\" card, which read `nothing yet, this page is the first of it` (spec 0006, **AC-8**).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"It moves no claim across, because sign in was never one of the five listed under `planned`\",\"rejected_spans\":[\"which is exactly why nothing else would have prompted this.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**This clause was not actually met when the feature was marked done on 2026-08-30.** The row was ticked and the string in `about-section.tsx` was never touched, so the live site went on telling every visitor that nothing worked for two days after signing in worked. Noticed and fixed on 2026-09-01; the card now reads `sign in with Google or GitHub`.\",\"rejected_spans\":[\"Recorded rather than quietly corrected, because a `Done when` clause that went unmet under a `done` row is worth more as evidence than as a tidy row: the card is prose, spec 0006 deliberately put no test on it, and the only thing standing between it and a false claim is somebody reading the page.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect auth & per user isolation` \u00b7 written 2026-08-29, 20 acceptance criteria.\",\"rejected_spans\":[\"The isolation half turned out to be already built and already proved (spec 0003's forced policies, spec 0004's tests), so the spec is narrower than the feature's name and says so in a premise note.\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop auth & per user isolation`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Prerequisites, confirmed rather than assumed: both OAuth applications, GoTrue's callback registered three times per provider, the two redirect allowlists (exact on production, branch shaped wildcard on development), the linking default and the GitHub `user:email` behaviour, satisfies AC-20\",\"rejected_spans\":[\"done 2026-08-30 during `/architect`, and ticked here on the spec's own record rather than on a fresh check\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The thin thread, Google only, proved on a preview: both provider stanzas in `config.toml` with the local redirect URLs corrected, `src/features/auth/` with `signInWithGoogle()` and the `/auth/callback` route handler, `/sign-in` rebuilt as a real page with the five member error enum, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"rejected_spans\":[\"**done 2026-08-30**, code and preview leg both.\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Thicken: GitHub with the `user:email` scope, sign out rebuilt in `src/features/auth/` with its span and failure path, then the deletions (`src/features/dev-session/`, `src/lib/supabase/browser.ts`) and the span registry, satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"rejected_spans\":[\"done 2026-08-30.\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The account rule: the `public.before_user_created_hook` migration (`security definer`, empty `search_path`, explicit grants) rejecting on its own internal error too, enabled in both hosted dashboards, P10 answered against the local stack and `COPY-2` wired, plus the integration suite, satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"rejected_spans\":[\"**done**, migration, hook, `COPY-2` and the tests on 2026-08-30, then both hosted dashboards on 2026-08-30\"],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The entry page and the record: the two provider labels become real submits with `COPY-1` and both status chips deleted, spec 0006's \\\"no dead controls\\\" test split so its apply half survives, and the session policy matrix read off both dashboards, satisfies AC-8, AC-15, AC-16, AC-19\",\"rejected_spans\":[\"**done 2026-08-30.**\"],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify auth & per user isolation` \u00b7 **done 2026-08-31.** 20 of 20 acceptance criteria met, nothing failed\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test auth & per user isolation` \u00b7 **done 2026-08-31.**\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review auth & per user isolation` \u00b7 **done 2026-08-31**, reviewed on Sonnet 5 against an Opus 5 author, 29 files across feature 7's whole implementation range. **Changes requested**\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a review check rather than delivering one.\"},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document auth & per user isolation` \u00b7 **done via `/document changelog`, run 2026-08-31.**\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, **AC-8**\"},\"phrase\":\"(spec 0006, **AC-8**)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-20\",\"mention\":\"AC-20\"},\"phrase\":\"satisfies AC-20\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-18\",\"mention\":\"AC-18\"},\"phrase\":\"satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-17\",\"mention\":\"AC-17\"},\"phrase\":\"satisfies AC-1, AC-11, AC-12, AC-13, AC-17\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-19\",\"mention\":\"AC-19\"},\"phrase\":\"satisfies AC-9, AC-10, AC-14, AC-15, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"satisfies AC-8, AC-15, AC-16, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"satisfies AC-8, AC-15, AC-16, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-16\",\"mention\":\"AC-16\"},\"phrase\":\"satisfies AC-8, AC-15, AC-16, AC-19\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-19\",\"mention\":\"AC-19\"},\"phrase\":\"satisfies AC-8, AC-15, AC-16, AC-19\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "OAuth sign in only (Google and GitHub), plus real per user data isolation enforced at the database rather than in application code. OAuth is kept over email and password for v1",
+        "rejected_spans": [
+          "because a linked real account is harder to fake for abuse than a burner address, and it removes the need for any transactional email in v1."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** a user can sign in and out with either provider on the deployed URL,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "an authenticated request only ever reaches its own rows,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "an unauthenticated request to a protected route fails visibly rather than returning empty data that looks like success,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the development only password sign in from feature 1 is deleted, not merely blocked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "Also, this feature is the first user facing thing that actually works, so it **retires the `working` placeholder** in the entry page's \"What's real today\" card, which read `nothing yet, this page is the first of it` (spec 0006, **AC-8**).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "It moves no claim across, because sign in was never one of the five listed under `planned`",
+        "rejected_spans": [
+          "which is exactly why nothing else would have prompted this."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**This clause was not actually met when the feature was marked done on 2026-08-30.** The row was ticked and the string in `about-section.tsx` was never touched, so the live site went on telling every visitor that nothing worked for two days after signing in worked. Noticed and fixed on 2026-09-01; the card now reads `sign in with Google or GitHub`.",
+        "rejected_spans": [
+          "Recorded rather than quietly corrected, because a `Done when` clause that went unmet under a `done` row is worth more as evidence than as a tidy row: the card is prose, spec 0006 deliberately put no test on it, and the only thing standing between it and a false claim is somebody reading the page."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect auth & per user isolation` \u00b7 written 2026-08-29, 20 acceptance criteria.",
+        "rejected_spans": [
+          "The isolation half turned out to be already built and already proved (spec 0003's forced policies, spec 0004's tests), so the spec is narrower than the feature's name and says so in a premise note."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop auth & per user isolation`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Prerequisites, confirmed rather than assumed: both OAuth applications, GoTrue's callback registered three times per provider, the two redirect allowlists (exact on production, branch shaped wildcard on development), the linking default and the GitHub `user:email` behaviour, satisfies AC-20",
+        "rejected_spans": [
+          "done 2026-08-30 during `/architect`, and ticked here on the spec's own record rather than on a fresh check"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The thin thread, Google only, proved on a preview: both provider stanzas in `config.toml` with the local redirect URLs corrected, `src/features/auth/` with `signInWithGoogle()` and the `/auth/callback` route handler, `/sign-in` rebuilt as a real page with the five member error enum, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "rejected_spans": [
+          "**done 2026-08-30**, code and preview leg both."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Thicken: GitHub with the `user:email` scope, sign out rebuilt in `src/features/auth/` with its span and failure path, then the deletions (`src/features/dev-session/`, `src/lib/supabase/browser.ts`) and the span registry, satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "rejected_spans": [
+          "done 2026-08-30."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The account rule: the `public.before_user_created_hook` migration (`security definer`, empty `search_path`, explicit grants) rejecting on its own internal error too, enabled in both hosted dashboards, P10 answered against the local stack and `COPY-2` wired, plus the integration suite, satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "rejected_spans": [
+          "**done**, migration, hook, `COPY-2` and the tests on 2026-08-30, then both hosted dashboards on 2026-08-30"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The entry page and the record: the two provider labels become real submits with `COPY-1` and both status chips deleted, spec 0006's \"no dead controls\" test split so its apply half survives, and the session policy matrix read off both dashboards, satisfies AC-8, AC-15, AC-16, AC-19",
+        "rejected_spans": [
+          "**done 2026-08-30.**"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify auth & per user isolation` \u00b7 **done 2026-08-31.** 20 of 20 acceptance criteria met, nothing failed",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test auth & per user isolation` \u00b7 **done 2026-08-31.**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review auth & per user isolation` \u00b7 **done 2026-08-31**, reviewed on Sonnet 5 against an Opus 5 author, 29 files across feature 7's whole implementation range. **Changes requested**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a review check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document auth & per user isolation` \u00b7 **done via `/document changelog`, run 2026-08-31.**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, **AC-8**"
+        },
+        "phrase": "(spec 0006, **AC-8**)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20"
+        },
+        "phrase": "satisfies AC-20",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-18",
+          "label": null,
+          "mention": "AC-18"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-19",
+          "label": null,
+          "mention": "AC-19"
+        },
+        "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16"
+        },
+        "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-19",
+          "label": null,
+          "mention": "AC-19"
+        },
+        "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

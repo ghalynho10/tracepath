@@ -1,0 +1,171 @@
+{
+  "record": "feature-2",
+  "section": "2. Coding standards & tooling \u00b7 done",
+  "section_slug": "2-coding-standards-tooling-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 645,
+  "output_tokens": 1177,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "229fd197788245ae800771a4227caab3",
+  "artifact_format_version": 3,
+  "unit_sha256": "d148b8e01676fad6cfaaa2fada8a5f3437d217eecf272b85f41911fd9c6e3bf9",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Capture the conventions and tooling from the real scaffolded project, then install them,\",\"rejected_spans\":[\"so every line written after this follows one standard rather than drifting per feature.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** root `AGENTS.md` reflects the real stack,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and lint, format, type checking and a pre commit hook all run clean on the scaffold.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Capture conventions + tooling choices: `/audit`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop tooling`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"ESLint flat config: Next core web vitals plus TypeScript, `jsx-a11y` strict raised to errors (binding rule 8)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The `src/lib/supabase/secret.ts` import block from `src/app/**` (binding rule 1), proven to fire on relative and type only imports\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Prettier plus `eslint-config-prettier`, with a repo wide format check\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Pre commit hook: husky plus lint-staged on staged files, then a project wide type check\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"CI: GitHub Actions on push and pull request running lint, format check, type check and build; no test job until feature 8\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify coding standards & tooling` \u00b7 **skipped**, called done after the build.\",\"rejected_spans\":[\"The build self checked every Done when clause and proved both binding rules fire; the durable steps are in [verify.md](../specs/0001-stack-and-architecture/verify.md) under the feature 2 heading.\"],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one; it records the verify step was skipped.\"}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 8\",\"id\":null,\"mention\":\"feature 8\"},\"phrase\":\"no test job until feature 8\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Capture the conventions and tooling from the real scaffolded project, then install them,",
+        "rejected_spans": [
+          "so every line written after this follows one standard rather than drifting per feature."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** root `AGENTS.md` reflects the real stack,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and lint, format, type checking and a pre commit hook all run clean on the scaffold.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Capture conventions + tooling choices: `/audit`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop tooling`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "ESLint flat config: Next core web vitals plus TypeScript, `jsx-a11y` strict raised to errors (binding rule 8)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The `src/lib/supabase/secret.ts` import block from `src/app/**` (binding rule 1), proven to fire on relative and type only imports",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Prettier plus `eslint-config-prettier`, with a repo wide format check",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Pre commit hook: husky plus lint-staged on staged files, then a project wide type check",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "CI: GitHub Actions on push and pull request running lint, format check, type check and build; no test job until feature 8",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify coding standards & tooling` \u00b7 **skipped**, called done after the build.",
+        "rejected_spans": [
+          "The build self checked every Done when clause and proved both binding rules fire; the durable steps are in [verify.md](../specs/0001-stack-and-architecture/verify.md) under the feature 2 heading."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one; it records the verify step was skipped.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 8",
+          "id": null,
+          "label": null,
+          "mention": "feature 8"
+        },
+        "phrase": "no test job until feature 8",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

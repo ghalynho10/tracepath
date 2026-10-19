@@ -1,0 +1,83 @@
+{
+  "record": "0009",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 296,
+  "output_tokens": 509,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "165c24e254384a7cbcc8f11c5bd3886d",
+  "artifact_format_version": 3,
+  "unit_sha256": "8051938df6f0116da7a960cbfc5efd12bff318dbc860df2ac89c118ae793b533",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 2: Write both pages from the code, enforce the recipient list with a test,\\nand carry the work through to the Google console.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":null},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two static pages generated from verified facts about this codebase, with the third party list held\\nin a typed registry that a test guards, and the feature is not finished until Google's app is\\npublished and brand verification submitted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: none. This feature writes no database code and no Supabase queries,\",\"rejected_spans\":[\"so\\nneither `supabase` nor `supabase-postgres-best-practices` applies.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`vitest`\\n(`antfu/skills`, `.agents/skills/vitest/`) is relevant only for the registry test's project\\nplacement,\",\"rejected_spans\":[\"and the existing unit tests beside components are a closer model than the skill.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 2: Write both pages from the code, enforce the recipient list with a test,\nand carry the work through to the Google console.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two static pages generated from verified facts about this codebase, with the third party list held\nin a typed registry that a test guards, and the feature is not finished until Google's app is\npublished and brand verification submitted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: none. This feature writes no database code and no Supabase queries,",
+        "rejected_spans": [
+          "so\nneither `supabase` nor `supabase-postgres-best-practices` applies."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`vitest`\n(`antfu/skills`, `.agents/skills/vitest/`) is relevant only for the registry test's project\nplacement,",
+        "rejected_spans": [
+          "and the existing unit tests beside components are a closer model than the skill."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

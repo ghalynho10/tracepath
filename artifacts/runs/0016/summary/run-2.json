@@ -1,0 +1,95 @@
+{
+  "record": "0016",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 277,
+  "output_tokens": 571,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "84b0c35c27dc4eefadcdade28227ab2d",
+  "artifact_format_version": 3,
+  "unit_sha256": "80ff2964afa21b74dce5386fe0cd356d66a1124b8e051bafd832f2d27a2cc81e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec defines the authored data feature 16's eval harness will run against: four invented candidate profiles (never a real person's data) and sixteen fixed pairs of one profile against one job posting, each with a band decided from the rubric's own written wording before any model is asked.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Where the rubric's wording genuinely cannot settle one exact band on its own, the pair carries a range of acceptable bands instead of a single invented answer\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"the gap is handed to spec 0015 to consider closing later.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"It fixes a real gap in an earlier draft: the draft assumed the rubric caps a candidate's band by seniority, and that rule is not actually written anywhere in `rubric.ts`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":null,\"mention\":\"spec 0015\"},\"phrase\":\"the gap is handed to spec 0015 to consider closing later\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec defines the authored data feature 16's eval harness will run against: four invented candidate profiles (never a real person's data) and sixteen fixed pairs of one profile against one job posting, each with a band decided from the rubric's own written wording before any model is asked.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Where the rubric's wording genuinely cannot settle one exact band on its own, the pair carries a range of acceptable bands instead of a single invented answer",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "the gap is handed to spec 0015 to consider closing later.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "It fixes a real gap in an earlier draft: the draft assumed the rubric caps a candidate's band by seniority, and that rule is not actually written anywhere in `rubric.ts`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": null,
+          "mention": "spec 0015"
+        },
+        "phrase": "the gap is handed to spec 0015 to consider closing later",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

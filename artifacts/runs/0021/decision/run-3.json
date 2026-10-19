@@ -1,0 +1,77 @@
+{
+  "record": "0021",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 248,
+  "output_tokens": 489,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "e697d3a6ca9846eca05c804703472661",
+  "artifact_format_version": 3,
+  "unit_sha256": "b28deac88a782e371e3f42ec4b2ffc3ac82bd8e9bf675becad965994b8ebaa75",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key\\nclient already reserved for this feature) and extend it with a manually triggered, atomic refresh\\nthat populates that table from real data, rather than switching to a different storage or read\\nstrategy.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The refresh authenticates as a dedicated internal identity and is triggered by a\\nprotected route handler;\",\"rejected_spans\":[\"both are new decisions this rework required, weighed in `rationale.md`\\nagainst the alternatives (triggering under the engineer's own session, bypassing the usage gate,\\nand a local script) and against the original options this decision still rests on.\"],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":null,\"mention\":\"spec 0021's original mechanism decision\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"phrase\":\"Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key\\nclient already reserved for this feature) and extend it\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key\nclient already reserved for this feature) and extend it with a manually triggered, atomic refresh\nthat populates that table from real data, rather than switching to a different storage or read\nstrategy.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The refresh authenticates as a dedicated internal identity and is triggered by a\nprotected route handler;",
+        "rejected_spans": [
+          "both are new decisions this rework required, weighed in `rationale.md`\nagainst the alternatives (triggering under the engineer's own session, bypassing the usage gate,\nand a local script) and against the original options this decision still rests on."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0021",
+          "id": null,
+          "label": null,
+          "mention": "spec 0021's original mechanism decision"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "phrase": "Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key\nclient already reserved for this feature) and extend it",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

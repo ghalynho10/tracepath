@@ -1,0 +1,87 @@
+{
+  "record": "0008",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 357,
+  "output_tokens": 609,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c9035a4841444512a4bd5591f4d89143",
+  "artifact_format_version": 3,
+  "unit_sha256": "bc0dc7df666a7e6b7b09433635a20e7e9bbfffc3b738eb4c38685ad4de19c330",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1, the thin shell with a neutral door, built on the **request header variant** of the return path (sub decision below).\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Three routes under `(app)`, a chrome only header primitive in `src/components/ui/` composed per page on both sides (revision 5), no mobile navigation machinery, one shared landing rule, the return path carried as a request header then a query parameter then a cookie written by the Server Action, and a small door route handler that lets `/` stay static while never inviting a signed in visitor to sign in.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, span conventions behind AC-24) \u00b7 `vercel-react-best-practices` (`vercel-labs/agent-skills`, App Router layout and navigation patterns)\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24\",\"mention\":\"span conventions behind AC-24\"},\"phrase\":\"span conventions behind AC-24\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1, the thin shell with a neutral door, built on the **request header variant** of the return path (sub decision below).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Three routes under `(app)`, a chrome only header primitive in `src/components/ui/` composed per page on both sides (revision 5), no mobile navigation machinery, one shared landing rule, the return path carried as a request header then a query parameter then a cookie written by the Server Action, and a small door route handler that lets `/` stay static while never inviting a signed in visitor to sign in.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, span conventions behind AC-24) \u00b7 `vercel-react-best-practices` (`vercel-labs/agent-skills`, App Router layout and navigation patterns)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24",
+          "label": null,
+          "mention": "span conventions behind AC-24"
+        },
+        "phrase": "span conventions behind AC-24",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -2,12 +2,12 @@
 AC-34, AC-42, AC-43, AC-44, AC-52).
 
 The questions here are not eval questions: they cite spec 0012, which no eval chain
-touches, so these runs say nothing about question 3. The graph is the committed corpus,
-loaded through the `load` command from a copy of its artifacts.
+touches, so these runs say nothing about question 3. The graph is the 29 units before
+feature 9, whose reasons the questions were written against (frozen data), loaded
+through the `load` command from a copy of their artifacts.
 """
 
 import json
-import shutil
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -15,7 +15,7 @@ import pytest
 from neo4j import Driver
 from typer.testing import CliRunner
 
-from tracepath.artifacts import RUNS_DIR
+from tests.conftest import pre_feature_9_runs
 from tracepath.cli import app
 from tracepath.config import Neo4jSettings
 from tracepath.graph import connect
@@ -67,8 +67,7 @@ def flat(text: str) -> str:
 
 @pytest.fixture(scope="module")
 def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    root = tmp_path_factory.mktemp("corpus")
-    shutil.copytree(ROOT / RUNS_DIR, root / RUNS_DIR)
+    root = pre_feature_9_runs(tmp_path_factory.mktemp("corpus"))
     (root / "eval").mkdir()
     (root / "eval" / "questions.json").write_text(json.dumps(QUESTIONS))
     return root
@@ -89,7 +88,7 @@ def load(root: Path) -> None:
 
 @pytest.fixture
 def loaded(corpus_root: Path, neo4j_settings: Neo4jSettings) -> Iterator[Path]:
-    """The committed corpus in the graph, loaded again whenever another test replaced it."""
+    """The corpus in the graph, loaded again whenever another test replaced it."""
     with connect(neo4j_settings) as driver:
         if not _holds_corpus(driver, neo4j_settings.database):
             load(corpus_root)
@@ -97,10 +96,13 @@ def loaded(corpus_root: Path, neo4j_settings: Neo4jSettings) -> Iterator[Path]:
 
 
 def _holds_corpus(driver: Driver, database: str) -> bool:
+    """Only the corpus before feature 9 holds an entity at prompt `0002.3`."""
     found, _, _ = driver.execute_query(
-        "MATCH (e:Entity {canonical_id: '0012/AC-7'}) RETURN count(e) AS n", database_=database
+        "RETURN COUNT { (:Entity {canonical_id: '0012/AC-7'}) } AS n, "
+        "COUNT { (:Entity {prompt_version: '0002.3'}) } AS frozen",
+        database_=database,
     )
-    return bool(found[0]["n"])
+    return bool(found[0]["n"] and found[0]["frozen"])
 
 
 def trace_eval(root: Path, number: int) -> tuple[int, str, str]:

@@ -1,0 +1,140 @@
+{
+  "record": "0008",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1141,
+  "output_tokens": 3118,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "9fe9c1f818d74c499cbfeeddc5d84049",
+  "artifact_format_version": 3,
+  "unit_sha256": "e9679a8a7143cb86185fc468683a08b783f9611f0bf99a71255c015319ddf9f3",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Write the dated amendment into spec 0001's binding rule 6, naming what the proxy may now do and what it still may not, and pointing at `src/proxy.test.ts` lines 49 to 70 as the guard that stays. Done 2026-08-31, marked AMENDMENT PENDING, and it carries the route handler authorisation rule the same paragraph asks for.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Write the four supersession notes into specs 0006 and 0007, dated, matching the format spec 0007 used for spec 0006's AC-7. Done 2026-08-31: spec 0006 AC-4's jump link clause, spec 0007 AC-1's `/health` destination, spec 0007 AC-16's first sentence, and spec 0007's security model line on `/sign-in`. All four are marked PENDING and name this spec's Proposed status\",\"rejected_spans\":[\"because none is false yet\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done 2026-08-31**, at the moment the status advanced: all five notes now read as settled rather than pending, and the \\\"(status Proposed, so ... still ...)\\\" caveats are gone. Original item: revisit all five notes and drop the pending qualifier, or update them if the spec changed again. `/develop` owns this, at the same moment it advances the Status line.\",\"rejected_spans\":[\"because the thing they were waiting on shipped\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done**: recorded against feature 32's `Build it` box on 2026-08-31. Three clauses are amended there, not one. Original item: update scope feature 32's done when wording from \\\"everyone else on `/`\\\" to the landing rule of AC-6, when the feature ships (`/develop` records it against the row).\",\"rejected_spans\":[\"rather than edited into the row, so the row still reads as it was scoped\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Mark the entry page invitation item in `docs/archive/app-shell-direction.md` (\\\"Still open, deliberately\\\") as resolved by this spec, pointing at AC-18 and AC-17.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done 2026-08-31** by `/test`: `src/app/(app)/shell.test.ts`, 14 tests, including a guard that no two routes claim the same page. Checked for vacuousness by setting `/profile` to `current=\\\"search\\\"`, which fails two of them. Original item: **a page level test for the four `(app)` call sites**, asserting each route passes its own `current` and that none is omitted. `/test app shell & navigation` owns this.\",\"rejected_spans\":[\"Raised by the revision 5 cross check: `app-header.test.ts` tests the component with props written in the test, so a route shipping the wrong `current` renders a correct looking page with `aria-current` pointing at the wrong item, and nothing automated fails.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Two code comments call this amendment outstanding and it is not**. `src/features/app-shell/app-header.tsx` and `src/app/(app)/layout.tsx` both say AC-3a \\\"needs a dated amendment saying so\\\". whoever next touches those files should drop the clause.\",\"rejected_spans\":[\"since revision 5 is the amendment\",\"`/architect` writes no code, so\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 14 layers its scoring gate onto the landing rule's callers rather than replacing the rule; name that layering in feature 14's spec when it is designed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The Adzuna attribution asset flagged in the mock up findings belongs to feature 11, not here; do not let it drift into this build.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Write the dated amendment into spec 0001's binding rule 6, naming what the proxy may now do and what it still may not, and pointing at `src/proxy.test.ts` lines 49 to 70 as the guard that stays. Done 2026-08-31, marked AMENDMENT PENDING, and it carries the route handler authorisation rule the same paragraph asks for.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Write the four supersession notes into specs 0006 and 0007, dated, matching the format spec 0007 used for spec 0006's AC-7. Done 2026-08-31: spec 0006 AC-4's jump link clause, spec 0007 AC-1's `/health` destination, spec 0007 AC-16's first sentence, and spec 0007's security model line on `/sign-in`. All four are marked PENDING and name this spec's Proposed status",
+        "rejected_spans": [
+          "because none is false yet"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done 2026-08-31**, at the moment the status advanced: all five notes now read as settled rather than pending, and the \"(status Proposed, so ... still ...)\" caveats are gone. Original item: revisit all five notes and drop the pending qualifier, or update them if the spec changed again. `/develop` owns this, at the same moment it advances the Status line.",
+        "rejected_spans": [
+          "because the thing they were waiting on shipped"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done**: recorded against feature 32's `Build it` box on 2026-08-31. Three clauses are amended there, not one. Original item: update scope feature 32's done when wording from \"everyone else on `/`\" to the landing rule of AC-6, when the feature ships (`/develop` records it against the row).",
+        "rejected_spans": [
+          "rather than edited into the row, so the row still reads as it was scoped"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Mark the entry page invitation item in `docs/archive/app-shell-direction.md` (\"Still open, deliberately\") as resolved by this spec, pointing at AC-18 and AC-17.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done 2026-08-31** by `/test`: `src/app/(app)/shell.test.ts`, 14 tests, including a guard that no two routes claim the same page. Checked for vacuousness by setting `/profile` to `current=\"search\"`, which fails two of them. Original item: **a page level test for the four `(app)` call sites**, asserting each route passes its own `current` and that none is omitted. `/test app shell & navigation` owns this.",
+        "rejected_spans": [
+          "Raised by the revision 5 cross check: `app-header.test.ts` tests the component with props written in the test, so a route shipping the wrong `current` renders a correct looking page with `aria-current` pointing at the wrong item, and nothing automated fails."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Two code comments call this amendment outstanding and it is not**. `src/features/app-shell/app-header.tsx` and `src/app/(app)/layout.tsx` both say AC-3a \"needs a dated amendment saying so\". whoever next touches those files should drop the clause.",
+        "rejected_spans": [
+          "since revision 5 is the amendment",
+          "`/architect` writes no code, so"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 14 layers its scoring gate onto the landing rule's callers rather than replacing the rule; name that layering in feature 14's spec when it is designed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The Adzuna attribution asset flagged in the mock up findings belongs to feature 11, not here; do not let it drift into this build.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "record": "0002",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0002-deployment-and-environments/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 321,
+  "output_tokens": 655,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "66867229a30d417a9cc639d3f010f4fa",
+  "artifact_format_version": 3,
+  "unit_sha256": "d9105d8d29efe25655c132c165ec154d9a05cb907911ce1f9b3b10eb274321e1",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"JobHunt goes live on Vercel with three environments and two hosted databases: local Docker for day to day work, a development Supabase project that every preview deployment reads, and a production Supabase project that only the live URL touches.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Previews are locked behind a Vercel login so nothing half built is reachable and no real personal data can land in the development project\",\"rejected_spans\":[\", which is what finally makes spec 0001's rule about the database agent enforceable\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The global kill switch stops being an idea and becomes one row in Postgres, readable only by the one module allowed to hold the secret key, flipped from a dashboard with no deploy, and failing closed when it cannot be read.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Along the way this feature fixes a gap the scope did not see: the scaffold's sign in is blocked outside local development, so today there is no way to prove the end to end thread on a real URL at all.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"rule about the database agent\",\"mention\":\"spec 0001's rule about the database agent\"},\"phrase\":\"which is what finally makes spec 0001's rule about the database agent enforceable\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "JobHunt goes live on Vercel with three environments and two hosted databases: local Docker for day to day work, a development Supabase project that every preview deployment reads, and a production Supabase project that only the live URL touches.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Previews are locked behind a Vercel login so nothing half built is reachable and no real personal data can land in the development project",
+        "rejected_spans": [
+          ", which is what finally makes spec 0001's rule about the database agent enforceable"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The global kill switch stops being an idea and becomes one row in Postgres, readable only by the one module allowed to hold the secret key, flipped from a dashboard with no deploy, and failing closed when it cannot be read.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Along the way this feature fixes a gap the scope did not see: the scaffold's sign in is blocked outside local development, so today there is no way to prove the end to end thread on a real URL at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "rule about the database agent",
+          "mention": "spec 0001's rule about the database agent"
+        },
+        "phrase": "which is what finally makes spec 0001's rule about the database agent enforceable",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "record": "0005",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 269,
+  "output_tokens": 687,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f96b3ad0bc1148b4853a3a7b1fbb3d87",
+  "artifact_format_version": 3,
+  "unit_sha256": "f453cbccc3888c29d01172eb5393ebb57a109f0b22bcbfdaf34c15aca4708e7c",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec ports the already settled colour palette and type scale into a real Tailwind v4 token layer, and defines the base components (Card, Button, Chip, Text, MatchBar, Section, and the icon set) every later screen builds from.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"It also fixes the structural gap a verified composition review found in the landing page prototype: the page background and card background are too close in lightness to separate anything, which forced one container idiom, one divider idea, and a flat, uniform rhythm across the whole page.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set instead of copying the prototype's patterns forward.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 6\",\"id\":null,\"mention\":\"feature 6 (the landing page port)\"},\"phrase\":\"Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"feature 11 (the first real results card)\"},\"phrase\":\"Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec ports the already settled colour palette and type scale into a real Tailwind v4 token layer, and defines the base components (Card, Button, Chip, Text, MatchBar, Section, and the icon set) every later screen builds from.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "It also fixes the structural gap a verified composition review found in the landing page prototype: the page background and card background are too close in lightness to separate anything, which forced one container idiom, one divider idea, and a flat, uniform rhythm across the whole page.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set instead of copying the prototype's patterns forward.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 6",
+          "id": null,
+          "label": null,
+          "mention": "feature 6 (the landing page port)"
+        },
+        "phrase": "Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "feature 11 (the first real results card)"
+        },
+        "phrase": "Once this lands, feature 6 (the landing page port) and feature 11 (the first real results card) build against a real component set",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

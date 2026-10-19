@@ -1,0 +1,627 @@
+{
+  "record": "feature-17",
+  "section": "17. Cross vendor self check \u00b7 done \u00b7 GA",
+  "section_slug": "17-cross-vendor-self-check-done-ga",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 5333,
+  "output_tokens": 7702,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "0cc9dab7d0994c6f8fbadb18ba26948b",
+  "artifact_format_version": 3,
+  "unit_sha256": "9c15e837f74682dbcc398761341fe6c69c81be758116159f27f65c998318c984",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"A genuine verification pass, not a bigger prompt: does the stated reasoning actually cite skills present in both the listing and the profile. It runs on a different vendor than the bulk scoring pass. The same principle as cross model code review, applied one layer down inside the pipeline.\",\"rejected_spans\":[\"because checking a model's work with the same model defeats the point of having a check.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the check runs on a demonstrably different vendor than the scoring tier;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a fabricated skill in the reasoning is caught;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a caught result is surfaced to the user rather than silently dropped or silently kept;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the check's own failure is visible rather than treated as a pass.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect cross vendor self check`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop cross vendor self check` \u00b7 all four milestones landed\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The check primitive: extract the shared listing text builder and grounding criterion, write `checkFitScore()` against the `ai_check` tier, covers AC-1, AC-2, AC-3, AC-11.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Measure `ai_check`'s real latency and set its derived timeout in `tiers.ts`, covers AC-6. **Measured for real on 2026-09-09**, five live calls against `google.generative-ai/gemini-3.5-flash-lite`: 928, 677, 684, 5905, 5272 milliseconds. AC-6's rule gives 5905 x 3 = 17715, rounded up to 20000, inside the 15000 to 30000 clamp unchanged, so **`ai_check.timeoutMs` is 20000**, down from the 30000 it had shared with `ai_scoring`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Wire the check into `scoreListings()`'s dispatch and into `page.tsx` / `score-card.tsx`'s rendering (the three card states, the reasoning caveat, the unchanged band), covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13. `scoreListings()` now returns `ListingOutcome[]`, one score plus one check per listing, with the check chained after its own score and skipped in both AC-4 and AC-5 cases\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Observability and tests: extend the `scoring.score_listings` span, update the existing test suites for the new `ListingOutcome` shape, and write this feature's own critical test scenarios, covers AC-1 through AC-13. 1215 unit tests green (up 35), plus 128 integration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify cross vendor self check` \u00b7 **PASS** 2026-09-09, all 13 acceptance criteria met, 23 of 25 `verify.md` steps run and passed and the other 2 descoped by decision rather than skipped.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test cross vendor self check` \u00b7 4 tests across 2 new files, closing the two gaps `/check verify` had proved only with throwaway probes it then deleted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review cross vendor self check` \u00b7 run 2026-09-09 on **Fable 5.1** against an Opus 5 author, 21 files (15 under `src/` and `test/`). Verdict **Changes requested**: no blockers, one major, six minors, four nits.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a review result rather than delivering one.\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document cross vendor self check` \u00b7 [PR #121](https://github.com/ghalynho10/JobHunt/pull/121), opened 2026-09-10 against `main`, 13 commits and 23 files.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"covers AC-1, AC-2, AC-3, AC-11\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"covers AC-1, AC-2, AC-3, AC-11\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"covers AC-1, AC-2, AC-3, AC-11\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"covers AC-1, AC-2, AC-3, AC-11\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"covers AC-6\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-1\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-2\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-3\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-4\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-5\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-6\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-7\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-8\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-10\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-11\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-12\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-13\",\"mention\":\"AC-1 through AC-13\"},\"phrase\":\"covers AC-1 through AC-13\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A genuine verification pass, not a bigger prompt: does the stated reasoning actually cite skills present in both the listing and the profile. It runs on a different vendor than the bulk scoring pass. The same principle as cross model code review, applied one layer down inside the pipeline.",
+        "rejected_spans": [
+          "because checking a model's work with the same model defeats the point of having a check."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the check runs on a demonstrably different vendor than the scoring tier;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a fabricated skill in the reasoning is caught;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a caught result is surfaced to the user rather than silently dropped or silently kept;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the check's own failure is visible rather than treated as a pass.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect cross vendor self check`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop cross vendor self check` \u00b7 all four milestones landed",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The check primitive: extract the shared listing text builder and grounding criterion, write `checkFitScore()` against the `ai_check` tier, covers AC-1, AC-2, AC-3, AC-11.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Measure `ai_check`'s real latency and set its derived timeout in `tiers.ts`, covers AC-6. **Measured for real on 2026-09-09**, five live calls against `google.generative-ai/gemini-3.5-flash-lite`: 928, 677, 684, 5905, 5272 milliseconds. AC-6's rule gives 5905 x 3 = 17715, rounded up to 20000, inside the 15000 to 30000 clamp unchanged, so **`ai_check.timeoutMs` is 20000**, down from the 30000 it had shared with `ai_scoring`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Wire the check into `scoreListings()`'s dispatch and into `page.tsx` / `score-card.tsx`'s rendering (the three card states, the reasoning caveat, the unchanged band), covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13. `scoreListings()` now returns `ListingOutcome[]`, one score plus one check per listing, with the check chained after its own score and skipped in both AC-4 and AC-5 cases",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Observability and tests: extend the `scoring.score_listings` span, update the existing test suites for the new `ListingOutcome` shape, and write this feature's own critical test scenarios, covers AC-1 through AC-13. 1215 unit tests green (up 35), plus 128 integration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify cross vendor self check` \u00b7 **PASS** 2026-09-09, all 13 acceptance criteria met, 23 of 25 `verify.md` steps run and passed and the other 2 descoped by decision rather than skipped.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test cross vendor self check` \u00b7 4 tests across 2 new files, closing the two gaps `/check verify` had proved only with throwaway probes it then deleted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review cross vendor self check` \u00b7 run 2026-09-09 on **Fable 5.1** against an Opus 5 author, 21 files (15 under `src/` and `test/`). Verdict **Changes requested**: no blockers, one major, six minors, four nits.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a review result rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document cross vendor self check` \u00b7 [PR #121](https://github.com/ghalynho10/JobHunt/pull/121), opened 2026-09-10 against `main`, 13 commits and 23 files.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "covers AC-6",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-1 through AC-13"
+        },
+        "phrase": "covers AC-1 through AC-13",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "record": "0005",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 858,
+  "output_tokens": 2978,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "3ec0f879a3b04fec8aafefe6f2f5b2bd",
+  "artifact_format_version": 3,
+  "unit_sha256": "4c88cc36c24209a3e82b7dc4c2a72dfd0857ac971926049b90b0cb8d1ce47ecb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 6 (entry page and link metadata) ports `docs/design/JobHuntLanding.tsx` onto this system, including collapsing the step 02 hand copied `MatchBar` (Weakness #1) onto the real component and removing the shadow from the \\\"JobHunt\\\" comparison card (Tell #6) so both comparison cards share the flat idiom identically.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Confirm the exact Adzuna \\\"Jobs by Adzuna\\\" attribution image asset and link targets when feature 11 (job search and results list) builds the first real results card using the `Card.Footer` `attribution` slot.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done at feature 11's close out, 2026-09-04.** The asset is `src/features/search/adzuna-logo.svg`, rendered inline from `adzuna-logo-geometry.ts`. Both the word and the mark link to `https://www.adzuna.com`, verified against Adzuna's own terms of service and recorded in spec 0013 AC-6. The row at line 86 below guessed those targets and guessed wrong; it has been corrected in the same pass.\",\"rejected_spans\":[\"because no SVG loader is configured and a licensed attribution must not depend on a second request succeeding\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Logo mark integration is out of scope for this feature per the engineer's explicit constraint; revisit when that work is scheduled.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Discharged by spec 0006, ticked 2026-08-28 when feature 6 shipped.** The engineer lifted the constraint deliberately during that spec's design conversation, and `Logo` now lives in `src/components/ui/logo.tsx` with three consumers on day one (the page header, the page footer, and the social preview image generator). It enlarges this spec's component inventory by one. Both halves are now discharged: `/sync` added the `src/components/ui/AGENTS.md` row on 2026-08-29, and the inventory table above gained its `Logo` row the same day, folded into spec 0007's run\",\"rejected_spans\":[\"because `/sync` may not edit spec content and this was otherwise recorded only inside an already ticked box\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If the project grows past a single engineer, reconsider a broader, general purpose lint rule (or a compile time check) covering more of the base component API, beyond the one narrow `no-restricted-syntax` rule and the review convention this spec adopts.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"phrase\":\"**Done at feature 11's close out, 2026-09-04.**\",\"date\":\"2026-09-04\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-6\",\"mention\":\"spec 0013 AC-6\"},\"phrase\":\"recorded in spec 0013 AC-6\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"**Discharged by spec 0006, ticked 2026-08-28 when feature 6 shipped.**\",\"date\":\"2026-08-28\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 6 (entry page and link metadata) ports `docs/design/JobHuntLanding.tsx` onto this system, including collapsing the step 02 hand copied `MatchBar` (Weakness #1) onto the real component and removing the shadow from the \"JobHunt\" comparison card (Tell #6) so both comparison cards share the flat idiom identically.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Confirm the exact Adzuna \"Jobs by Adzuna\" attribution image asset and link targets when feature 11 (job search and results list) builds the first real results card using the `Card.Footer` `attribution` slot.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done at feature 11's close out, 2026-09-04.** The asset is `src/features/search/adzuna-logo.svg`, rendered inline from `adzuna-logo-geometry.ts`. Both the word and the mark link to `https://www.adzuna.com`, verified against Adzuna's own terms of service and recorded in spec 0013 AC-6. The row at line 86 below guessed those targets and guessed wrong; it has been corrected in the same pass.",
+        "rejected_spans": [
+          "because no SVG loader is configured and a licensed attribution must not depend on a second request succeeding"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Logo mark integration is out of scope for this feature per the engineer's explicit constraint; revisit when that work is scheduled.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Discharged by spec 0006, ticked 2026-08-28 when feature 6 shipped.** The engineer lifted the constraint deliberately during that spec's design conversation, and `Logo` now lives in `src/components/ui/logo.tsx` with three consumers on day one (the page header, the page footer, and the social preview image generator). It enlarges this spec's component inventory by one. Both halves are now discharged: `/sync` added the `src/components/ui/AGENTS.md` row on 2026-08-29, and the inventory table above gained its `Logo` row the same day, folded into spec 0007's run",
+        "rejected_spans": [
+          "because `/sync` may not edit spec content and this was otherwise recorded only inside an already ticked box"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If the project grows past a single engineer, reconsider a broader, general purpose lint rule (or a compile time check) covering more of the base component API, beyond the one narrow `no-restricted-syntax` rule and the review convention this spec adopts.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "phrase": "**Done at feature 11's close out, 2026-09-04.**",
+        "date": "2026-09-04",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-6",
+          "label": null,
+          "mention": "spec 0013 AC-6"
+        },
+        "phrase": "recorded in spec 0013 AC-6",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "**Discharged by spec 0006, ticked 2026-08-28 when feature 6 shipped.**",
+        "date": "2026-08-28",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

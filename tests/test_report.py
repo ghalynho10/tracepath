@@ -223,6 +223,28 @@ def test_an_entity_at_the_same_line_of_another_file_does_not_reach_the_item(
     assert not reached
 
 
+def test_an_item_citing_a_blank_line_is_reached_at_the_line_below(
+    evidence: Any, split: Any
+) -> None:
+    question = one_question(trace_entry("spec 0012 criteria", SPEC_0012, 18))
+    below = chain_of(entity_step("0012#requirements:1", SPEC_0012, 19))
+
+    [(reached, _)] = scored(question, below, evidence, split)
+
+    assert reached
+
+
+def test_an_item_citing_a_line_with_text_is_not_reached_at_the_line_below(
+    evidence: Any, split: Any
+) -> None:
+    question = one_question(trace_entry("spec 0012 AC-1", SPEC_0012, 20))
+    below = chain_of(entity_step("0012/AC-2", SPEC_0012, 21))
+
+    [(reached, _)] = scored(question, below, evidence, split)
+
+    assert not reached
+
+
 def test_ac_37_every_expected_item_gets_one_reached_or_not_reached_line(
     evidence: Any, split: Any
 ) -> None:

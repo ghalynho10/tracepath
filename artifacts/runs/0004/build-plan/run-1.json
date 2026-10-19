@@ -1,0 +1,365 @@
+{
+  "record": "0004",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1013,
+  "output_tokens": 2913,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c7b49c2014f14f83be583bc57bdfd420",
+  "artifact_format_version": 3,
+  "unit_sha256": "ac5f957e1c65d91c0aa8d8a616c34b15e4b3673c91a21003d3164e5a85c504bb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Tracer Bullet: stand up the thinnest real thread first (a real session, a real read, real isolation), then thicken with record and replay, on demand mints, commands, and CI.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Tracer Bullet\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Scaffold Vitest as two projects: a unit project (jsdom only where a test renders a component) and an integration project (`node`). Point the unit project at colocated `src/**/*.test.ts` and the integration project at `test/integration/**`. Alias `server-only` to an empty module, resolve `@/` with `vite-tsconfig-paths`, load `.env.test`, and install the in memory Sentry transport in the setup file. Add `pnpm test` as `vitest run`, satisfies **AC-5**, **AC-10**\",\"rejected_spans\":[\"because `@t3-oss/env-nextjs` will not hand a server variable to code it believes runs on the client\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Re-mint the fixture pool in `supabase/seed.sql` with valid version 4 UUIDs, keeping the three user shapes (dev one and dev two with profiles, dev three with none). The old `1111\u2026` and `2222\u2026` rows must be deleted earlier in the same file than the new rows are inserted. Tighten the profile parser from `z.guid()` to `z.uuid()`, satisfies **AC-4**, **AC-6**\",\"rejected_spans\":[\"because `auth.users.email` is unique and the new pool reuses the addresses\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Give `createClient()` in `src/lib/supabase/server.ts` an optional cookie adapter, defaulting to the `next/headers` store it reads today. No existing caller changes and no behaviour changes\",\"rejected_spans\":[\"so a test can drive the application's own client with an in memory jar\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the development only session mint under `test/helpers/`, guarded by `DEV_SESSION_ENABLED`, using the admin magiclink exchange into an in memory cookie jar passed to `createClient()`. Verify the exact Supabase auth API surface against current docs at build time (per the supabase skill), satisfies **AC-3**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write the isolation integration test: mint as dev one, write, mint as dev two, prove isolation, against the local stack and through `createClient()`, satisfies **AC-1**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the bespoke record and replay recorder with an explicit record mode, replay from `test/fixtures/<service>/`, redaction at write time, and record the GitHub stand in response. Add `test/fixtures/` to `.prettierignore` in the same step, satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the on demand fixture user mint helper for fresh per test users, satisfies **AC-11**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Split the commands: `pnpm test` for unit, `pnpm test:integration` for integration with a clear error when the stack is down, satisfies **AC-12**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the CI test job that runs `supabase start` in Docker, then unit and integration, satisfies **AC-7**\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-5**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"satisfies **AC-5**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"satisfies **AC-4**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"satisfies **AC-4**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"satisfies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"satisfies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"satisfies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"satisfies **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"satisfies **AC-7**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Tracer Bullet: stand up the thinnest real thread first (a real session, a real read, real isolation), then thicken with record and replay, on demand mints, commands, and CI.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Tracer Bullet"
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Scaffold Vitest as two projects: a unit project (jsdom only where a test renders a component) and an integration project (`node`). Point the unit project at colocated `src/**/*.test.ts` and the integration project at `test/integration/**`. Alias `server-only` to an empty module, resolve `@/` with `vite-tsconfig-paths`, load `.env.test`, and install the in memory Sentry transport in the setup file. Add `pnpm test` as `vitest run`, satisfies **AC-5**, **AC-10**",
+        "rejected_spans": [
+          "because `@t3-oss/env-nextjs` will not hand a server variable to code it believes runs on the client"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Re-mint the fixture pool in `supabase/seed.sql` with valid version 4 UUIDs, keeping the three user shapes (dev one and dev two with profiles, dev three with none). The old `1111\u2026` and `2222\u2026` rows must be deleted earlier in the same file than the new rows are inserted. Tighten the profile parser from `z.guid()` to `z.uuid()`, satisfies **AC-4**, **AC-6**",
+        "rejected_spans": [
+          "because `auth.users.email` is unique and the new pool reuses the addresses"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Give `createClient()` in `src/lib/supabase/server.ts` an optional cookie adapter, defaulting to the `next/headers` store it reads today. No existing caller changes and no behaviour changes",
+        "rejected_spans": [
+          "so a test can drive the application's own client with an in memory jar"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the development only session mint under `test/helpers/`, guarded by `DEV_SESSION_ENABLED`, using the admin magiclink exchange into an in memory cookie jar passed to `createClient()`. Verify the exact Supabase auth API surface against current docs at build time (per the supabase skill), satisfies **AC-3**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write the isolation integration test: mint as dev one, write, mint as dev two, prove isolation, against the local stack and through `createClient()`, satisfies **AC-1**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the bespoke record and replay recorder with an explicit record mode, replay from `test/fixtures/<service>/`, redaction at write time, and record the GitHub stand in response. Add `test/fixtures/` to `.prettierignore` in the same step, satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the on demand fixture user mint helper for fresh per test users, satisfies **AC-11**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Split the commands: `pnpm test` for unit, `pnpm test:integration` for integration with a clear error when the stack is down, satisfies **AC-12**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the CI test job that runs `supabase start` in Docker, then unit and integration, satisfies **AC-7**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "satisfies **AC-4**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "satisfies **AC-4**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "satisfies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "satisfies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "satisfies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "satisfies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "satisfies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

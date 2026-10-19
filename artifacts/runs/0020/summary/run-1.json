@@ -1,0 +1,116 @@
+{
+  "record": "0020",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 707,
+  "output_tokens": 2382,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "a5944080189045b588ab3d451c35667c",
+  "artifact_format_version": 3,
+  "unit_sha256": "3902bf0866429a30244b825740e3879ab3ff9fbf11b2f4bc2080eb860ef27ccf",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec lets a signed in user see their own job search usage against their weekly cap, right on the search page, before a refusal ever surprises them.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The two other goals feature 28 named, gating a new call type by default and keeping the kill switch a last resort, are already true of the code as it stands today, so this spec builds only the one thing that was actually missing.\",\"rejected_spans\":[\"verified line by line rather than assumed,\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"It also fixes a stale claim in the privacy notice about the same tables this one makes visible.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The revision decides that question: `SearchPage` awaits the search and hands the result to `UsageNotice` as a prop, so the one existing read cannot run until the search has been counted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The correction switches to the shape the old words already described, passing the promise and awaiting it inside `UsageNotice`,\",\"rejected_spans\":[\"so the recorded mechanism and the operating mechanism are the same one.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"It also corrects AC-10, which claimed to fix two user facing sentences when only one of the two is rendered anywhere.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"**Corrected 2026-09-13, after a fresh model `/check review`.**\",\"date\":\"2026-09-13\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec lets a signed in user see their own job search usage against their weekly cap, right on the search page, before a refusal ever surprises them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The two other goals feature 28 named, gating a new call type by default and keeping the kill switch a last resort, are already true of the code as it stands today, so this spec builds only the one thing that was actually missing.",
+        "rejected_spans": [
+          "verified line by line rather than assumed,"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "It also fixes a stale claim in the privacy notice about the same tables this one makes visible.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The revision decides that question: `SearchPage` awaits the search and hands the result to `UsageNotice` as a prop, so the one existing read cannot run until the search has been counted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The correction switches to the shape the old words already described, passing the promise and awaiting it inside `UsageNotice`,",
+        "rejected_spans": [
+          "so the recorded mechanism and the operating mechanism are the same one."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "It also corrects AC-10, which claimed to fix two user facing sentences when only one of the two is rendered anywhere.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "**Corrected 2026-09-13, after a fresh model `/check review`.**",
+        "date": "2026-09-13",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

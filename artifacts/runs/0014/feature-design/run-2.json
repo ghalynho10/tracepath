@@ -1,0 +1,861 @@
+{
+  "record": "0014",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 6014,
+  "output_tokens": 13071,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b88f988e78bf483d95548787e2168535",
+  "artifact_format_version": 3,
+  "unit_sha256": "c1a19e4971c318446d0e741015ab5328b6e92577b15750fa04882a5200c37471",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One additive migration. No new table, no new policy: `application` and its four `application_*_own` policies already ship from feature 4, and both unique constraints already exist.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Everything else `application` needs already exists: `unique (profile_id, source, source_job_id)` is what refuses the second apply, `unique (id, profile_id)` is already there for `application_answer`'s composite foreign key in Slice 4, and the four policies already compare `(select auth.uid()) = profile_id`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Null carries the third meaning the data actually has: Adzuna said nothing about pay, so the question does not arise. The check constraint is what stops the two from drifting apart.\",\"rejected_spans\":[\"`Listing.salaryIsPredicted` is always a boolean, because Adzuna sends the field on every advert whether or not it quoted pay. Writing that boolean straight through would put `false` on rows that carry no salary at all, which reads as \\\"this figure was stated, not predicted\\\" about a figure that does not exist.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. `application` deliberately carries no status column in v1 and feature 23 introduces one when the dashboard needs it (spec 0003, `## State transitions`). A row exists or it does not.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Shared code this feature relocates.** `/applications` must render the same attribution, the same `(estimated)` label and the same salary formatting as `/search`. Three things move, and this is a relocation of shipped, tested code rather than a rewrite:\",\"rejected_spans\":[\"and `AGENTS.md`'s folder rule says anything two features share moves out of the feature folder\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`src/components/`, NOT `src/components/ui/`, and the first revision of this spec said the wrong one.** Corrected 2026-09-05 during the build\",\"rejected_spans\":[\"which is when anyone first read the destination's own rules.\",\"[src/components/ui/AGENTS.md](../../../src/components/ui/AGENTS.md) defines that directory as spec 0005's design system: \\\"the token layer's consumers, and the only sanctioned way to render these patterns\\\", with every file enumerated in a table. A vendor licence attribution is not a design system primitive and does not consume the token layer; filing it there would have put a terms obligation inside a spec 0005 governed directory and required editing that spec's table for a component that does not belong to it.\",\"Root `AGENTS.md` names two destinations for shared code, `src/lib` and `src/components/ui`, and neither fits: `src/lib` holds no JSX at all, and `src/components/ui` is the design system. `src/components/` is a third location, and adding it is the smallest change that keeps both rules true.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`/sync` should record it in root `AGENTS.md` after the merge.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`ADZUNA_COUNTRY` moved too, which the first revision missed\",\"rejected_spans\":[\"`ADZUNA_ATTRIBUTION_URL` derives from it, so leaving the country behind would have made a shared module import from a feature.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`CURRENCY_BY_COUNTRY` deliberately stayed in the search feature\",\"rejected_spans\":[\"since only that feature parses a response.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The confirmation screen needs no read of its own: `/applications` already holds the rows, so the job named in the question comes from the row the page rendered. That is why there are four operations here and not five.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither read is a route handler and neither lives under `src/app/api/`, so binding rule 6's restriction on handlers reading user data is respected rather than worked around.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Copy**: one slot per user facing string, text left for the engineer to write before `/develop`, the same convention specs 0007, 0011 and 0013 use.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`COPY-4` carries two placeholders, `{title}` and `{company}`, so it is a function rather than a constant\",\"rejected_spans\":[\", the same shape `deleteConfirmation(title, company)` already has in `src/features/profile/copy.ts`\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`COPY-6` is the same visible label feature 11 uses on a result card, and it is correct that both read the same. It needs the same treatment feature 11 gave it: the accessible name has to name the posting. That is a build obligation under AC-18 and the project's WCAG 2.2 AA bar, not a second copy slot.\",\"rejected_spans\":[\"because a list of application rows all carrying a link named `View the posting` is indistinguishable in a screen reader's link list.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Opening a posting records nothing. Only the explicit control writes.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One application per user per source listing, guaranteed by the unique constraint rather than by a caller remembering to check.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`salary_is_predicted` is present exactly when a salary figure is present, guaranteed by the check constraint.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A predicted salary is never displayed indistinguishably from a stated one, on `/applications` as on `/search`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Attribution renders once per displayed advert, never once per screen, on every screen that displays one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The apply action triggers no re-render of `/search`, by any of the five routes, including the cookie write nobody performs deliberately.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing in this feature makes an outbound call, so nothing here passes through the usage gate.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every value written to a row comes from verified claims, a constant, or a re-parsed listing, never from a value the browser is trusted on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No screen ever renders an absence of information as a statement of fact: an unmarked card during a failed marker read, and an empty salary, both say what they are.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both writes verify their own caller inside the action (binding rule 6), independently of the protected layout.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Row level security is the real guarantee: all four `application` policies compare `(select auth.uid()) = profile_id`, so a caller can only ever read, write or delete their own rows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The closure encryption is an integrity measure, not a confidentiality one. What the encryption buys is that a client cannot mint a listing it was never served. It does not stop a client replaying a listing it *was* served\",\"rejected_spans\":[\"The listing is public job data already rendered in plain sight on the same page, so there is nothing to hide from the reader.\",\", which is fine, because that only ever writes their own row\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the Zod parse on arrival is not optional and the row is narrowed by the caller's id regardless\",\"rejected_spans\":[\"Next's own docs advise against relying on it alone, which is why\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The read only cookie adapter is a budget measure rather than a security one. It stops the action writing a refreshed session cookie, and the session still refreshes: `src/proxy.ts` does it on every request\",\"rejected_spans\":[\"and it is worth being clear about which\",\"which is exactly what the existing adapter's catch block already depends on for Server Components\"],\"known_trap_flags\":[]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Compliance scope: `application` rows are personal data. Spec 0009's privacy notice already classifies the table and lists its columns, and its drift guard reads the generated database types, so the new column fails the unit suite until it is described.\",\"rejected_spans\":[\"That failure is the mechanism working, not a defect.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none. This feature adds no environment variable and no credential\",\"rejected_spans\":[\"so it cannot hit the preview build failure features 11, 13 and 14 each carry\"],\"known_trap_flags\":[]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a signed in user with a profile marks a real listing applied, one row lands with all eleven snapshot fields plus `profile_id` and `source`, and the card flips to applied without the page re-rendering, verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Duplicate: the same listing applied twice writes one row and the second attempt shows `COPY-2`, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Duplicate\"},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"No profile: an apply by a user with no `profile` row is refused by the foreign key and shows `COPY-3` linking to `/profile`, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No profile\"},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Predicted salary round trip: a listing with `salary_is_predicted` true stores `true` and renders `(estimated)` plus Jobsworth on `/applications`; one with a stated salary stores `false` and renders neither; one with no salary at all stores `null`, verifies **AC-6**, **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Predicted salary round trip\"},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Pairing refusal: an insert carrying `salary_is_predicted` with no salary figure, or a salary figure with no flag, is refused by the check constraint, verifies **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Pairing refusal\"},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Expired session apply: an apply on a session whose access token has expired spends no Adzuna call, verifies **AC-10**, **AC-20a**. **Drive it from a real browser and make the action `POST` the first request after expiry**\",\"rejected_spans\":[\"which is the one a fresh session measurement misses entirely\",\": an ordinary request arriving first (a nav prefetch will do it) refreshes the session and heals the case before the click, which is how this bug hid.\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Expired session apply\"},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Unparseable posted date: a listing whose `postedAt` is not an ISO datetime is refused by `listingSnapshotSchema` as `validation_failed`, never reaching the insert to raise a `22007` reported as an outage, verifies **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Unparseable posted date\"},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Attribution per row: a page of three applications carries three attribution blocks, and a page of none carries zero, verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Attribution per row\"},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Applied marker: a search repeating a job already applied to shows it marked with its control disabled, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Applied marker\"},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failed marker read: the read fails and the page says so rather than rendering every card as not applied, verifies **AC-9**, invariant 9.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failed marker read\"},{\"id\":\"derived:41\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"No spend on apply: against a production build, an apply moves neither the weekly `job_search` counter nor produces a second `search.run` span, verifies **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No spend on apply\"},{\"id\":\"derived:42\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Remove: the confirmation URL is visited without removing anything, then the form removes the row and the list re-renders; a remove matching zero rows reports a failure, verifies **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Remove\"},{\"id\":\"derived:43\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Empty listing fields: an Adzuna item with an empty `title` is dropped by the parse rather than rendered or inserted, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Empty listing fields\"},{\"id\":\"derived:44\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Privacy drift guard: the migration without a `STORED_FIELDS` entry fails the unit suite with the guard's own message, verifies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Privacy drift guard\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:33\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:34\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:34\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:35\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**, **AC-20a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"**AC-20a**\"},\"phrase\":\"verifies **AC-10**, **AC-20a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:37\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:38\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:39\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:40\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**, invariant 9\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:40\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"phrase\":\"invariant 9\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:41\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:42\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:43\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:44\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One additive migration. No new table, no new policy: `application` and its four `application_*_own` policies already ship from feature 4, and both unique constraints already exist.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Everything else `application` needs already exists: `unique (profile_id, source, source_job_id)` is what refuses the second apply, `unique (id, profile_id)` is already there for `application_answer`'s composite foreign key in Slice 4, and the four policies already compare `(select auth.uid()) = profile_id`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Null carries the third meaning the data actually has: Adzuna said nothing about pay, so the question does not arise. The check constraint is what stops the two from drifting apart.",
+        "rejected_spans": [
+          "`Listing.salaryIsPredicted` is always a boolean, because Adzuna sends the field on every advert whether or not it quoted pay. Writing that boolean straight through would put `false` on rows that carry no salary at all, which reads as \"this figure was stated, not predicted\" about a figure that does not exist."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. `application` deliberately carries no status column in v1 and feature 23 introduces one when the dashboard needs it (spec 0003, `## State transitions`). A row exists or it does not.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Shared code this feature relocates.** `/applications` must render the same attribution, the same `(estimated)` label and the same salary formatting as `/search`. Three things move, and this is a relocation of shipped, tested code rather than a rewrite:",
+        "rejected_spans": [
+          "and `AGENTS.md`'s folder rule says anything two features share moves out of the feature folder"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`src/components/`, NOT `src/components/ui/`, and the first revision of this spec said the wrong one.** Corrected 2026-09-05 during the build",
+        "rejected_spans": [
+          "which is when anyone first read the destination's own rules.",
+          "[src/components/ui/AGENTS.md](../../../src/components/ui/AGENTS.md) defines that directory as spec 0005's design system: \"the token layer's consumers, and the only sanctioned way to render these patterns\", with every file enumerated in a table. A vendor licence attribution is not a design system primitive and does not consume the token layer; filing it there would have put a terms obligation inside a spec 0005 governed directory and required editing that spec's table for a component that does not belong to it.",
+          "Root `AGENTS.md` names two destinations for shared code, `src/lib` and `src/components/ui`, and neither fits: `src/lib` holds no JSX at all, and `src/components/ui` is the design system. `src/components/` is a third location, and adding it is the smallest change that keeps both rules true."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`/sync` should record it in root `AGENTS.md` after the merge.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`ADZUNA_COUNTRY` moved too, which the first revision missed",
+        "rejected_spans": [
+          "`ADZUNA_ATTRIBUTION_URL` derives from it, so leaving the country behind would have made a shared module import from a feature."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`CURRENCY_BY_COUNTRY` deliberately stayed in the search feature",
+        "rejected_spans": [
+          "since only that feature parses a response."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The confirmation screen needs no read of its own: `/applications` already holds the rows, so the job named in the question comes from the row the page rendered. That is why there are four operations here and not five.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither read is a route handler and neither lives under `src/app/api/`, so binding rule 6's restriction on handlers reading user data is respected rather than worked around.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Copy**: one slot per user facing string, text left for the engineer to write before `/develop`, the same convention specs 0007, 0011 and 0013 use.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`COPY-4` carries two placeholders, `{title}` and `{company}`, so it is a function rather than a constant",
+        "rejected_spans": [
+          ", the same shape `deleteConfirmation(title, company)` already has in `src/features/profile/copy.ts`"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`COPY-6` is the same visible label feature 11 uses on a result card, and it is correct that both read the same. It needs the same treatment feature 11 gave it: the accessible name has to name the posting. That is a build obligation under AC-18 and the project's WCAG 2.2 AA bar, not a second copy slot.",
+        "rejected_spans": [
+          "because a list of application rows all carrying a link named `View the posting` is indistinguishable in a screen reader's link list."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Opening a posting records nothing. Only the explicit control writes.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One application per user per source listing, guaranteed by the unique constraint rather than by a caller remembering to check.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`salary_is_predicted` is present exactly when a salary figure is present, guaranteed by the check constraint.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A predicted salary is never displayed indistinguishably from a stated one, on `/applications` as on `/search`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Attribution renders once per displayed advert, never once per screen, on every screen that displays one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The apply action triggers no re-render of `/search`, by any of the five routes, including the cookie write nobody performs deliberately.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing in this feature makes an outbound call, so nothing here passes through the usage gate.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every value written to a row comes from verified claims, a constant, or a re-parsed listing, never from a value the browser is trusted on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No screen ever renders an absence of information as a statement of fact: an unmarked card during a failed marker read, and an empty salary, both say what they are.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both writes verify their own caller inside the action (binding rule 6), independently of the protected layout.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Row level security is the real guarantee: all four `application` policies compare `(select auth.uid()) = profile_id`, so a caller can only ever read, write or delete their own rows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The closure encryption is an integrity measure, not a confidentiality one. What the encryption buys is that a client cannot mint a listing it was never served. It does not stop a client replaying a listing it *was* served",
+        "rejected_spans": [
+          "The listing is public job data already rendered in plain sight on the same page, so there is nothing to hide from the reader.",
+          ", which is fine, because that only ever writes their own row"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the Zod parse on arrival is not optional and the row is narrowed by the caller's id regardless",
+        "rejected_spans": [
+          "Next's own docs advise against relying on it alone, which is why"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The read only cookie adapter is a budget measure rather than a security one. It stops the action writing a refreshed session cookie, and the session still refreshes: `src/proxy.ts` does it on every request",
+        "rejected_spans": [
+          "and it is worth being clear about which",
+          "which is exactly what the existing adapter's catch block already depends on for Server Components"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Compliance scope: `application` rows are personal data. Spec 0009's privacy notice already classifies the table and lists its columns, and its drift guard reads the generated database types, so the new column fails the unit suite until it is described.",
+        "rejected_spans": [
+          "That failure is the mechanism working, not a defect."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none. This feature adds no environment variable and no credential",
+        "rejected_spans": [
+          "so it cannot hit the preview build failure features 11, 13 and 14 each carry"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a signed in user with a profile marks a real listing applied, one row lands with all eleven snapshot fields plus `profile_id` and `source`, and the card flips to applied without the page re-rendering, verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Duplicate: the same listing applied twice writes one row and the second attempt shows `COPY-2`, verifies **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Duplicate"
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "No profile: an apply by a user with no `profile` row is refused by the foreign key and shows `COPY-3` linking to `/profile`, verifies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No profile"
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Predicted salary round trip: a listing with `salary_is_predicted` true stores `true` and renders `(estimated)` plus Jobsworth on `/applications`; one with a stated salary stores `false` and renders neither; one with no salary at all stores `null`, verifies **AC-6**, **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Predicted salary round trip"
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Pairing refusal: an insert carrying `salary_is_predicted` with no salary figure, or a salary figure with no flag, is refused by the check constraint, verifies **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Pairing refusal"
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Expired session apply: an apply on a session whose access token has expired spends no Adzuna call, verifies **AC-10**, **AC-20a**. **Drive it from a real browser and make the action `POST` the first request after expiry**",
+        "rejected_spans": [
+          "which is the one a fresh session measurement misses entirely",
+          ": an ordinary request arriving first (a nav prefetch will do it) refreshes the session and heals the case before the click, which is how this bug hid."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Expired session apply"
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Unparseable posted date: a listing whose `postedAt` is not an ISO datetime is refused by `listingSnapshotSchema` as `validation_failed`, never reaching the insert to raise a `22007` reported as an outage, verifies **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Unparseable posted date"
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Attribution per row: a page of three applications carries three attribution blocks, and a page of none carries zero, verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Attribution per row"
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Applied marker: a search repeating a job already applied to shows it marked with its control disabled, verifies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Applied marker"
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failed marker read: the read fails and the page says so rather than rendering every card as not applied, verifies **AC-9**, invariant 9.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failed marker read"
+      },
+      {
+        "id": "derived:41",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "No spend on apply: against a production build, an apply moves neither the weekly `job_search` counter nor produces a second `search.run` span, verifies **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No spend on apply"
+      },
+      {
+        "id": "derived:42",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Remove: the confirmation URL is visited without removing anything, then the form removes the row and the list re-renders; a remove matching zero rows reports a failure, verifies **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Remove"
+      },
+      {
+        "id": "derived:43",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Empty listing fields: an Adzuna item with an empty `title` is dropped by the parse rather than rendered or inserted, verifies **AC-13**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Empty listing fields"
+      },
+      {
+        "id": "derived:44",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Privacy drift guard: the migration without a `STORED_FIELDS` entry fails the unit suite with the guard's own message, verifies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Privacy drift guard"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-3**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:32"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:33"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:34"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:34"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:35"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**, **AC-20a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "**AC-20a**"
+        },
+        "phrase": "verifies **AC-10**, **AC-20a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:37"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:38"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:39"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:40"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**, invariant 9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:40"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:23"
+        },
+        "phrase": "invariant 9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:41"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:42"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:43"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:44"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "verifies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

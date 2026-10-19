@@ -1,0 +1,646 @@
+{
+  "record": "0010",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0010-profile-entry/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 6199,
+  "output_tokens": 9919,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f9fd95e962d34bd9b0ef4756c0610522",
+  "artifact_format_version": 3,
+  "unit_sha256": "fbec4ce4a065e5a04dacfdb0f86241cbc71108772a0ef8a778acf968b7e52dd9",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This feature adds no new schema. It is the first write path onto the four tables spec 0003 already applied and migrated:\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"None for the data itself (spec 0003 records none). The page has a small state of its own, driven entirely by the URL: plain view, or one of `edit` / `add` / `delete` for a named section (and, for work history, a named entry). No state is held anywhere else.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"All six actions live in `src/features/profile/actions.ts`, each opening a named span (binding rule 3) and verifying the caller itself (binding rule 6) before it touches the database. Five spans, not six: `addWorkExperience` and `updateWorkExperience` share one (see below).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every action follows the established pattern in `src/features/auth/actions.ts`: `redirect()` is called outside the span and outside `attempt()`\",\"rejected_spans\":[\"since it works by throwing and a throw inside either would be recorded as the operation failing when it succeeded\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every action calls `revalidatePath(\\\"/profile\\\")` inside the span, before its `redirect()`\",\"rejected_spans\":[\"so a save is never read as not having stuck on the very next render\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`updateWorkExperience` and `deleteWorkExperience` detect a zero row result with `{ count: \\\"exact\\\" }` on the Supabase call, never `.select()`\",\"rejected_spans\":[\"since supabase-js returns no row count by default and the row's own data is not needed afterward\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`addWorkExperience` and `updateWorkExperience` share one span, `profile.save_work_experience`, distinguished by an `operation: \\\"insert\\\" | \\\"update\\\"` attribute\",\"rejected_spans\":[\"the same way `auth.sign_in` carries a `provider` attribute for two closely related calls\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"They stay two separate actions, not one taking an `id` and branching\",\"rejected_spans\":[\"because their failure shapes genuinely differ: an insert is refused outright by the insert policy's `with check` if anything about it is wrong, while an update that row level security excludes affects zero rows and does not raise at all, the same two shapes spec 0003's own AC-4 test proved separately for `with check` on insert versus `using` on update\",\"Collapsing the two into one action would move that distinction inside a single function that has to get both branches right, for a savings of one file.\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`profile.id` is always `auth.uid()`, never a value the client supplies. Saving identity is always an upsert keyed on `id`, and saving preferences is always an upsert keyed on `profile_id`\",\"rejected_spans\":[\"so a repeated submission is idempotent rather than a second insert that would fail on the primary key\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A skill name reaching `profile_skill` has already passed the same cleanup its unique index enforces (trimmed, deduplicated ignoring case). The rare case it still can, a concurrent save from another tab, is mapped to `validation_failed` / expected, naming the colliding skill, never to `database_unavailable`.\",\"rejected_spans\":[\"so the write never has to recover from a constraint violation it could have avoided\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A work history date stored by this feature is always the first of a month, constructed from a validated month and year, never accepted as a raw date.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A single, entry addressed delete or update (`updateWorkExperience`, `deleteWorkExperience`) that changes zero rows is always reported as a failure, detected with `{ count: \\\"exact\\\" }` on the Supabase call (supabase-js returns no row count by default), never with `.select()`. Row level security silently excluding that row is never read as a successful no-op. This does not apply to `saveSkills`' bulk delete: a diff computed delete that matches fewer rows than expected (another tab already removed one of the same names) is a benign concurrency outcome, the same last write wins rule invariant 10 states for the rest of the feature, and is never itself a failure.\",\"rejected_spans\":[\"since the row's own data is not needed afterward\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No `job_preference` row is created except by an explicit save of that section. A profile with no stated preferences has no row, never a row full of defaults.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every write path opens its own named span before any guard clause (binding rule 3), verifies the caller inside itself (binding rule 6) independent of the page's own session check, and calls `revalidatePath(\\\"/profile\\\")` inside the span before its `redirect()` (kept outside both, per the pattern in `src/features/auth/actions.ts`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The delete confirmation URL (`?delete=experience&entry=<id>`) mutates nothing by itself; it only renders a form naming the entry. It stays safe to link, prefetch, or bookmark. The delete only ever happens through that confirmation form's own POST, and a later change must not turn this into a one click delete link.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"An optional text field (`profile.location`, `profile.summary`, `work_experience.location`, `work_experience.description`) that trims to nothing is stored as `NULL`, never as an empty string\",\"rejected_spans\":[\"so \\\"is this set\\\" stays a real question the database can answer\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Skills are written insert first, then delete (see Value sourcing).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two tabs saving the same section is last write wins, deliberately. `profile` and `job_preference` carry no optimistic concurrency check\",\"rejected_spans\":[\"the only writer of a row is its own owner, and a version conflict UI would cost more than the rare collision it would prevent\"],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every one of the four tables already carries row level security forced, with policies confining every action to `(select auth.uid()) = profile_id` (or `= id` on `profile` itself), per spec 0003. This feature adds no new tables and no new policies; it is the first code path to actually call the insert, update and delete grants spec 0003 already put in place. No roles, no cross user access, no compliance scope beyond what spec 0009's privacy notice already covers for these fields (spec 0003's Security model lists them as personal data).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every Server Action re-verifies the caller itself, independent of the page's own protected layout check, per binding rule 6\",\"rejected_spans\":[\"because a Server Action is a callable endpoint whatever page renders it\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Written by the engineer, used verbatim**, the same as spec 0007's `COPY-1` through `COPY-6`. `/develop` must not invent or reword any of them. Spec 0007's punctuation rule applies here with no carve out: no em dashes, no en dashes, no semicolons in any slot\",\"rejected_spans\":[\"because product copy is the only text a user actually reads and em dash overuse is one of the most cited markers of AI written text, which costs something real on a portfolio facing product\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**One constraint the copy creates.** `COPY-2` fixes the page's heading outline: a stable `h1` of \\\"Profile\\\" and four peer `h2` section headings. AC-17's keyboard and heading pass checks this one outline, not two.\",\"rejected_spans\":[\"It is chosen because AC-1 renders before any `full_name` exists, so a name based `h1` would need a second outline for first run.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"None. No new environment variable, secret, or third party credential.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path, identity: a signed in user with no profile submits only a name; the profile row is created and `/profile` switches to its full view, verifies **AC-1**, **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path, identity\"},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path, skills diff: a profile already holding skills `a`, `b`, `c` submits `a`, `c`, `d`; `b` is deleted, `d` is inserted, `a` and `c` are untouched, verifies **AC-5**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path, skills diff\"},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, skills partial write: the delete half of a skills save fails after the insert half already succeeded; the caller's prior skills are all still present, verifies **AC-5**, invariant 9.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, skills partial write\"},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Work history, current role: an entry saved with no ended month or year reads as the current role, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Work history, current role\"},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, spoofed delete: a delete submitted for a work history entry id that does not belong to the caller changes zero rows and is reported as a named failure, not a silent success, verifies **AC-8**, **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, spoofed delete\"},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, stale entry: `?edit=experience&entry=<id>` for an id already deleted in another tab renders the plain view with the \\\"no longer there\\\" line, not a blank insert form, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, stale entry\"},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, validation: an identity submission with a blank name writes nothing, returns a per field error, and keeps the location and summary the user had typed, verifies **AC-3**, **AC-12**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, validation\"},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"No browser Server Action drive: fetching `/profile?edit=identity`, reading the rendered form's hidden action fields, and posting them back returns a redirect carrying the session cookie, verifies **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No browser Server Action drive\"},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth and permission: a request to any of the six actions with no session is refused visibly rather than silently doing nothing, verifies **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth and permission\"},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Isolation: two real accounts each save their own profile and, on read back, see only their own row, verifies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Isolation\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-8**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**, **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-3**, **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:33\"},\"target\":{\"kind\":\"reference\",\"record\":\"0010\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This feature adds no new schema. It is the first write path onto the four tables spec 0003 already applied and migrated:",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "None for the data itself (spec 0003 records none). The page has a small state of its own, driven entirely by the URL: plain view, or one of `edit` / `add` / `delete` for a named section (and, for work history, a named entry). No state is held anywhere else.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "All six actions live in `src/features/profile/actions.ts`, each opening a named span (binding rule 3) and verifying the caller itself (binding rule 6) before it touches the database. Five spans, not six: `addWorkExperience` and `updateWorkExperience` share one (see below).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every action follows the established pattern in `src/features/auth/actions.ts`: `redirect()` is called outside the span and outside `attempt()`",
+        "rejected_spans": [
+          "since it works by throwing and a throw inside either would be recorded as the operation failing when it succeeded"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every action calls `revalidatePath(\"/profile\")` inside the span, before its `redirect()`",
+        "rejected_spans": [
+          "so a save is never read as not having stuck on the very next render"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`updateWorkExperience` and `deleteWorkExperience` detect a zero row result with `{ count: \"exact\" }` on the Supabase call, never `.select()`",
+        "rejected_spans": [
+          "since supabase-js returns no row count by default and the row's own data is not needed afterward"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`addWorkExperience` and `updateWorkExperience` share one span, `profile.save_work_experience`, distinguished by an `operation: \"insert\" | \"update\"` attribute",
+        "rejected_spans": [
+          "the same way `auth.sign_in` carries a `provider` attribute for two closely related calls"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "They stay two separate actions, not one taking an `id` and branching",
+        "rejected_spans": [
+          "because their failure shapes genuinely differ: an insert is refused outright by the insert policy's `with check` if anything about it is wrong, while an update that row level security excludes affects zero rows and does not raise at all, the same two shapes spec 0003's own AC-4 test proved separately for `with check` on insert versus `using` on update",
+          "Collapsing the two into one action would move that distinction inside a single function that has to get both branches right, for a savings of one file."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`profile.id` is always `auth.uid()`, never a value the client supplies. Saving identity is always an upsert keyed on `id`, and saving preferences is always an upsert keyed on `profile_id`",
+        "rejected_spans": [
+          "so a repeated submission is idempotent rather than a second insert that would fail on the primary key"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A skill name reaching `profile_skill` has already passed the same cleanup its unique index enforces (trimmed, deduplicated ignoring case). The rare case it still can, a concurrent save from another tab, is mapped to `validation_failed` / expected, naming the colliding skill, never to `database_unavailable`.",
+        "rejected_spans": [
+          "so the write never has to recover from a constraint violation it could have avoided"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A work history date stored by this feature is always the first of a month, constructed from a validated month and year, never accepted as a raw date.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A single, entry addressed delete or update (`updateWorkExperience`, `deleteWorkExperience`) that changes zero rows is always reported as a failure, detected with `{ count: \"exact\" }` on the Supabase call (supabase-js returns no row count by default), never with `.select()`. Row level security silently excluding that row is never read as a successful no-op. This does not apply to `saveSkills`' bulk delete: a diff computed delete that matches fewer rows than expected (another tab already removed one of the same names) is a benign concurrency outcome, the same last write wins rule invariant 10 states for the rest of the feature, and is never itself a failure.",
+        "rejected_spans": [
+          "since the row's own data is not needed afterward"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No `job_preference` row is created except by an explicit save of that section. A profile with no stated preferences has no row, never a row full of defaults.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every write path opens its own named span before any guard clause (binding rule 3), verifies the caller inside itself (binding rule 6) independent of the page's own session check, and calls `revalidatePath(\"/profile\")` inside the span before its `redirect()` (kept outside both, per the pattern in `src/features/auth/actions.ts`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The delete confirmation URL (`?delete=experience&entry=<id>`) mutates nothing by itself; it only renders a form naming the entry. It stays safe to link, prefetch, or bookmark. The delete only ever happens through that confirmation form's own POST, and a later change must not turn this into a one click delete link.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "An optional text field (`profile.location`, `profile.summary`, `work_experience.location`, `work_experience.description`) that trims to nothing is stored as `NULL`, never as an empty string",
+        "rejected_spans": [
+          "so \"is this set\" stays a real question the database can answer"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Skills are written insert first, then delete (see Value sourcing).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two tabs saving the same section is last write wins, deliberately. `profile` and `job_preference` carry no optimistic concurrency check",
+        "rejected_spans": [
+          "the only writer of a row is its own owner, and a version conflict UI would cost more than the rare collision it would prevent"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every one of the four tables already carries row level security forced, with policies confining every action to `(select auth.uid()) = profile_id` (or `= id` on `profile` itself), per spec 0003. This feature adds no new tables and no new policies; it is the first code path to actually call the insert, update and delete grants spec 0003 already put in place. No roles, no cross user access, no compliance scope beyond what spec 0009's privacy notice already covers for these fields (spec 0003's Security model lists them as personal data).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every Server Action re-verifies the caller itself, independent of the page's own protected layout check, per binding rule 6",
+        "rejected_spans": [
+          "because a Server Action is a callable endpoint whatever page renders it"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Written by the engineer, used verbatim**, the same as spec 0007's `COPY-1` through `COPY-6`. `/develop` must not invent or reword any of them. Spec 0007's punctuation rule applies here with no carve out: no em dashes, no en dashes, no semicolons in any slot",
+        "rejected_spans": [
+          "because product copy is the only text a user actually reads and em dash overuse is one of the most cited markers of AI written text, which costs something real on a portfolio facing product"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**One constraint the copy creates.** `COPY-2` fixes the page's heading outline: a stable `h1` of \"Profile\" and four peer `h2` section headings. AC-17's keyboard and heading pass checks this one outline, not two.",
+        "rejected_spans": [
+          "It is chosen because AC-1 renders before any `full_name` exists, so a name based `h1` would need a second outline for first run."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "None. No new environment variable, secret, or third party credential.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path, identity: a signed in user with no profile submits only a name; the profile row is created and `/profile` switches to its full view, verifies **AC-1**, **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path, identity"
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path, skills diff: a profile already holding skills `a`, `b`, `c` submits `a`, `c`, `d`; `b` is deleted, `d` is inserted, `a` and `c` are untouched, verifies **AC-5**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path, skills diff"
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, skills partial write: the delete half of a skills save fails after the insert half already succeeded; the caller's prior skills are all still present, verifies **AC-5**, invariant 9.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, skills partial write"
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Work history, current role: an entry saved with no ended month or year reads as the current role, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Work history, current role"
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, spoofed delete: a delete submitted for a work history entry id that does not belong to the caller changes zero rows and is reported as a named failure, not a silent success, verifies **AC-8**, **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, spoofed delete"
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, stale entry: `?edit=experience&entry=<id>` for an id already deleted in another tab renders the plain view with the \"no longer there\" line, not a blank insert form, verifies **AC-13**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, stale entry"
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, validation: an identity submission with a blank name writes nothing, returns a per field error, and keeps the location and summary the user had typed, verifies **AC-3**, **AC-12**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, validation"
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "No browser Server Action drive: fetching `/profile?edit=identity`, reading the rendered form's hidden action fields, and posting them back returns a redirect carrying the session cookie, verifies **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No browser Server Action drive"
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth and permission: a request to any of the six actions with no session is refused visibly rather than silently doing nothing, verifies **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth and permission"
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Isolation: two real accounts each save their own profile and, on read back, see only their own row, verifies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Isolation"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-8**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**, **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "verifies **AC-3**, **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:32"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:33"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0010",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "verifies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

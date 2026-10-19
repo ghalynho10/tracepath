@@ -1,0 +1,209 @@
+{
+  "record": "0018",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0018-band-anchor-review/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 532,
+  "output_tokens": 1522,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "4796819cd1c64230916b73cfdcfe5d01",
+  "artifact_format_version": 3,
+  "unit_sha256": "a56f2f6ce6b8948e0fc7ac3b70f67509301958a06a84d87b204351c22a0584ca",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Ordered so that everything provable for free is proved before anything is paid for\",\"rejected_spans\":[\"which is this project's Tracer Bullet approach applied to a change whose only expensive step is a vendor call.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct `control-one-gap` in `src/features/scoring/eval/pairs.ts`: `expectedBand` to `possible_match`, no `acceptableBands`, and rewrite its `rationale` to argue from the existing `possible_match` anchor text and from the posting's own \\\"what sets this role apart\\\" wording, stating that it was re-argued on 2026-09-08 and on what independent ground. Then amend the file header so its \\\"before any model was asked\\\" claim names this one exception. Satisfies **AC-1**, **AC-1b**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct the misread evidence at `docs/scope/scope.md:326`, stating the per pair distributions rather than the summary line and dropping the \\\"stable disagreement\\\" inference. Then correct spec 0016's table row at line 141 and mark its Follow up quote at line 182 as historical. Satisfies **AC-4**, **AC-4b**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Run the free suite: the drift guard still passes untouched, `validateGroundTruth` reports no issue, and every band still has an exact expectation. Satisfies **AC-2**, **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Run `pnpm eval -t control-one-gap`, five vendor calls, and confirm the pair now passes. Satisfies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-1b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1b\",\"mention\":\"**AC-1b**\"},\"phrase\":\"Satisfies **AC-1**, **AC-1b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-4**, **AC-4b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-4b\",\"mention\":\"**AC-4b**\"},\"phrase\":\"Satisfies **AC-4**, **AC-4b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-2**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-2**, **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-5**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Ordered so that everything provable for free is proved before anything is paid for",
+        "rejected_spans": [
+          "which is this project's Tracer Bullet approach applied to a change whose only expensive step is a vendor call."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct `control-one-gap` in `src/features/scoring/eval/pairs.ts`: `expectedBand` to `possible_match`, no `acceptableBands`, and rewrite its `rationale` to argue from the existing `possible_match` anchor text and from the posting's own \"what sets this role apart\" wording, stating that it was re-argued on 2026-09-08 and on what independent ground. Then amend the file header so its \"before any model was asked\" claim names this one exception. Satisfies **AC-1**, **AC-1b**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct the misread evidence at `docs/scope/scope.md:326`, stating the per pair distributions rather than the summary line and dropping the \"stable disagreement\" inference. Then correct spec 0016's table row at line 141 and mark its Follow up quote at line 182 as historical. Satisfies **AC-4**, **AC-4b**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Run the free suite: the drift guard still passes untouched, `validateGroundTruth` reports no issue, and every band still has an exact expectation. Satisfies **AC-2**, **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Run `pnpm eval -t control-one-gap`, five vendor calls, and confirm the pair now passes. Satisfies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-1b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1b",
+          "label": null,
+          "mention": "**AC-1b**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-1b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-4**, **AC-4b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-4b",
+          "label": null,
+          "mention": "**AC-4b**"
+        },
+        "phrase": "Satisfies **AC-4**, **AC-4b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

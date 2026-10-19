@@ -1,0 +1,83 @@
+{
+  "record": "0003",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0003-data-model/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 267,
+  "output_tokens": 466,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "90d8f3b5941648d6b988d0d39aa902ea",
+  "artifact_format_version": 3,
+  "unit_sha256": "bacead18d60b1eb4dee0ce3752a243a9267aaa82398f0c30a0d3d5de4310c091",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec settles the six tables every later feature reads and writes: the profile, its skills, its work history, its stated job preferences, the application record, and the typed answers captured against an application.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Everything is normalised (one fact in one place, related by keys) and every rule that matters is enforced by the database rather than by application code\",\"rejected_spans\":[\"because the database is the only thing no feature can forget to call\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Search results still do not persist, so an application carries a full copy of the listing it was made against.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The scaffold table from feature 1 is removed here, but only after the health page has been repointed at the profile and that repoint is live on production\",\"rejected_spans\":[\"so the deployed end to end proof never goes dark and no running build ever queries a table that is already gone\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec settles the six tables every later feature reads and writes: the profile, its skills, its work history, its stated job preferences, the application record, and the typed answers captured against an application.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Everything is normalised (one fact in one place, related by keys) and every rule that matters is enforced by the database rather than by application code",
+        "rejected_spans": [
+          "because the database is the only thing no feature can forget to call"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Search results still do not persist, so an application carries a full copy of the listing it was made against.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The scaffold table from feature 1 is removed here, but only after the health page has been repointed at the profile and that repoint is live on production",
+        "rejected_spans": [
+          "so the deployed end to end proof never goes dark and no running build ever queries a table that is already gone"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

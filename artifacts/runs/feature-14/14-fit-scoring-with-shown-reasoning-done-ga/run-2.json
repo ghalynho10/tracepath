@@ -1,0 +1,713 @@
+{
+  "record": "feature-14",
+  "section": "14. Fit scoring with shown reasoning \u00b7 done \u00b7 GA",
+  "section_slug": "14-fit-scoring-with-shown-reasoning-done-ga",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2512,
+  "output_tokens": 9904,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "051e5556384446ac95ad010236e19fe6",
+  "artifact_format_version": 3,
+  "unit_sha256": "99def084045b0d4d7dcbc32030f1924b5d1439a17bd708dc54334c91d29a3f6b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Score a listing against the profile and stated preferences, and show the work: the skills that matched and the skills that are missing, not just a number. The spec defines the scoring bands\",\"rejected_spans\":[\"The shown reasoning is both the usability point and a built in sanity check against the constant score failure mode.\",\"which is what makes the eval ranges in feature 15 meaningful\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** scoring uses an anchored band rubric rather than an open numeric range;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"results across genuinely different listings spread across bands instead of clustering;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"every score displays its matched and missing skills;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a scoring failure is visible and never writes a record that reports success;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and an optional sponsorship signal is scored when the posting states one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"Also, this feature moves its own claim (`ranked results with reasoning`) from planned to working in the entry page's \\\"What's real today\\\" card (spec 0006, **AC-8**).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The scoring gate layers onto the landing rule's callers, it does not replace the rule.** Whatever gate this feature adds for a profile too thin to score against belongs at the callers of that rule, so a signed in visitor still has one place deciding where they land.\",\"rejected_spans\":[\"Naming this here so the layering is decided when this feature is designed rather than discovered by widening the shared rule until it becomes the onboarding flow `docs/archive/app-shell-direction.md` explicitly ruled out.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"First, its own recipient entry if it reaches a vendor feature 13 has not already registered.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Second, and this one no test can catch: **the notice currently states plainly that data is not used to train models, and this is the first feature that sends a person's own profile and written summary to somebody else's model.** Before it ships, read that provider's terms on whether it retains or trains on what it is sent, and change the claim if it no longer holds.\",\"rejected_spans\":[\"Inference is not training, but that distinction is the provider's to honour and ours to verify, not ours to assert.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna's search response carries only a 500 character description snippet, never the full posting.\",\"rejected_spans\":[\"(verified directly against a recorded fixture, spec 0015 rationale)\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Spec 0015 decided to score the snippet honestly rather than fetch the full posting: `notMentionedSkills` replaces \\\"missing skills\\\" and is labeled as unconfirmed, not fetched and verified.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The fetch option is parked in Deferred, not closed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): [0015](../specs/0015-fit-scoring-with-shown-reasoning/index.md)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop fit scoring with shown reasoning` \u00b7 code in `src/features/scoring/`, plus `src/features/search/focus-keeper.tsx` and `focus-key.ts` for AC-17's focus restore\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`scoreListing()` and the thin end to end thread: the router call, `score-card.tsx`, and the zero skills and zero work experience gate wired into `/search` behind a Suspense boundary (AC-3, AC-7)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Concurrent dispatch and ranking: `scoreListings()`, widening the Suspense boundary to all 20 listings, the one time sort by band, the per card failure state, and the page level cap reached notice (AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Tests: the critical test scenarios, the prompt builder's truncation unit test, and the thin profile gate\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Entry page: move `ranked results with reasoning` from `planned` to `working` (AC-15)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Keyboard focus across the reveal: `focus-keeper.tsx`, the `data-focus-key` on both card controls, the list's `tabindex=\\\"-1\\\"`, and the browser only steps written into `verify.md` for `/check verify` to run (AC-16's focus half, AC-17).\",\"rejected_spans\":[\"Added 2026-09-06 from spec 0015's amendment, after `/check verify` found the reveal dropping focus to the document body\"],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify fit scoring with shown reasoning` \u00b7 **deliberately unticked under a done row**, the same shape feature 2's row uses.\",\"rejected_spans\":[\"39 of 43 steps in verify.md are ticked with the observation that proved each, driven across 2026-09-06 and 2026-09-07 against the real app, the real vendors, Sentry and the OpenAI dashboard. **None of the four open ones is a defect and none can be closed from a terminal**: two need a real screen reader (AC-16's busy and re-rank announcements), one needs a listing whose visible excerpt states a visa sponsorship stance (AC-6, structurally rare given that scoring sees only Adzuna's 500 character snippet), and one is unrunnable as written, because AC-17 rule 3's stated rationale names a mechanism the app does not use. That last one, and AC-9's pairing wording, are both recorded in spec 0015's Follow-up for `/architect`; neither needs a code change\"],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check already run rather than delivering one.\"},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Test it: `/test fit scoring with shown reasoning` \u00b7 `focus-keeper.dom.test.tsx`, the project's first `jsdom` test (spec 0004's just in time rule), pinning AC-17's capture phase contract and its restore rules\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Review it (fresh model): `/check review fit scoring with shown reasoning` \u00b7 `docs/reviews/2026-09-07-feat-fit-scoring-with-shown-reasoning.md`, reviewed on Sonnet, verdict Approve with nits.\",\"rejected_spans\":[\"Its one Major (`scoreListing()` reachable by no unit test) and its one Minor (`Button`'s `focusKey` with nothing proving `data-focus-key` rendered) are both closed by `c0f7d12` (the commit adding `src/features/scoring/score.test.ts` and the three branch assertions in `button.test.ts`), which also took the jsdom nit in `src/components/ui/AGENTS.md`. The findings file itself is left as the point in time record and says nothing about the fixes\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"rationale_boundary_call\"],\"unclassified_note\":\"A stage line that only reports a review check rather than delivering one.\"},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Document it: `/document fit scoring with shown reasoning` \u00b7 pull request title and body written 2026-09-07 from the 29 commits and the real diff.\",\"rejected_spans\":[\"As with feature 12's row, this box records the pull request text being written, not the feature being finished: `Verify it` above is still honestly unticked, with 4 of 43 `verify.md` steps open (two need a screen reader, one needs a listing stating a visa stance, one is unrunnable as written), and the body says so rather than implying closure\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"spec 0006, **AC-8**\"},\"phrase\":\"(spec 0006, **AC-8**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 32\",\"id\":null,\"mention\":\"feature 32\"},\"phrase\":\"Constrained by feature 32\",\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 13\",\"id\":null,\"mention\":\"feature 13\"},\"phrase\":\"if it reaches a vendor feature 13 has not already registered\",\"date\":\"2026-09-01\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-2\",\"mention\":\"the anchor wording AC-2 is later measured against\"},\"phrase\":\"the anchor wording AC-2 is later measured against\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"(AC-3, AC-7)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"(AC-3, AC-7)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-16\",\"mention\":\"AC-16\"},\"phrase\":\"(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"(AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-16\",\"mention\":\"AC-16's focus half\"},\"phrase\":\"(AC-16's focus half, AC-17)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-17\",\"mention\":\"AC-17\"},\"phrase\":\"(AC-16's focus half, AC-17)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-17\",\"mention\":\"AC-17's capture phase contract and its restore rules\"},\"phrase\":\"pinning AC-17's capture phase contract and its restore rules\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Score a listing against the profile and stated preferences, and show the work: the skills that matched and the skills that are missing, not just a number. The spec defines the scoring bands",
+        "rejected_spans": [
+          "The shown reasoning is both the usability point and a built in sanity check against the constant score failure mode.",
+          "which is what makes the eval ranges in feature 15 meaningful"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** scoring uses an anchored band rubric rather than an open numeric range;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "results across genuinely different listings spread across bands instead of clustering;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "every score displays its matched and missing skills;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a scoring failure is visible and never writes a record that reports success;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and an optional sponsorship signal is scored when the posting states one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "Also, this feature moves its own claim (`ranked results with reasoning`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The scoring gate layers onto the landing rule's callers, it does not replace the rule.** Whatever gate this feature adds for a profile too thin to score against belongs at the callers of that rule, so a signed in visitor still has one place deciding where they land.",
+        "rejected_spans": [
+          "Naming this here so the layering is decided when this feature is designed rather than discovered by widening the shared rule until it becomes the onboarding flow `docs/archive/app-shell-direction.md` explicitly ruled out."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "First, its own recipient entry if it reaches a vendor feature 13 has not already registered.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Second, and this one no test can catch: **the notice currently states plainly that data is not used to train models, and this is the first feature that sends a person's own profile and written summary to somebody else's model.** Before it ships, read that provider's terms on whether it retains or trains on what it is sent, and change the claim if it no longer holds.",
+        "rejected_spans": [
+          "Inference is not training, but that distinction is the provider's to honour and ours to verify, not ours to assert."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Adzuna's search response carries only a 500 character description snippet, never the full posting.",
+        "rejected_spans": [
+          "(verified directly against a recorded fixture, spec 0015 rationale)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Spec 0015 decided to score the snippet honestly rather than fetch the full posting: `notMentionedSkills` replaces \"missing skills\" and is labeled as unconfirmed, not fetched and verified.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The fetch option is parked in Deferred, not closed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): [0015](../specs/0015-fit-scoring-with-shown-reasoning/index.md)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop fit scoring with shown reasoning` \u00b7 code in `src/features/scoring/`, plus `src/features/search/focus-keeper.tsx` and `focus-key.ts` for AC-17's focus restore",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`scoreListing()` and the thin end to end thread: the router call, `score-card.tsx`, and the zero skills and zero work experience gate wired into `/search` behind a Suspense boundary (AC-3, AC-7)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Concurrent dispatch and ranking: `scoreListings()`, widening the Suspense boundary to all 20 listings, the one time sort by band, the per card failure state, and the page level cap reached notice (AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Tests: the critical test scenarios, the prompt builder's truncation unit test, and the thin profile gate",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Entry page: move `ranked results with reasoning` from `planned` to `working` (AC-15)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Keyboard focus across the reveal: `focus-keeper.tsx`, the `data-focus-key` on both card controls, the list's `tabindex=\"-1\"`, and the browser only steps written into `verify.md` for `/check verify` to run (AC-16's focus half, AC-17).",
+        "rejected_spans": [
+          "Added 2026-09-06 from spec 0015's amendment, after `/check verify` found the reveal dropping focus to the document body"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify fit scoring with shown reasoning` \u00b7 **deliberately unticked under a done row**, the same shape feature 2's row uses.",
+        "rejected_spans": [
+          "39 of 43 steps in verify.md are ticked with the observation that proved each, driven across 2026-09-06 and 2026-09-07 against the real app, the real vendors, Sentry and the OpenAI dashboard. **None of the four open ones is a defect and none can be closed from a terminal**: two need a real screen reader (AC-16's busy and re-rank announcements), one needs a listing whose visible excerpt states a visa sponsorship stance (AC-6, structurally rare given that scoring sees only Adzuna's 500 character snippet), and one is unrunnable as written, because AC-17 rule 3's stated rationale names a mechanism the app does not use. That last one, and AC-9's pairing wording, are both recorded in spec 0015's Follow-up for `/architect`; neither needs a code change"
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check already run rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Test it: `/test fit scoring with shown reasoning` \u00b7 `focus-keeper.dom.test.tsx`, the project's first `jsdom` test (spec 0004's just in time rule), pinning AC-17's capture phase contract and its restore rules",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Review it (fresh model): `/check review fit scoring with shown reasoning` \u00b7 `docs/reviews/2026-09-07-feat-fit-scoring-with-shown-reasoning.md`, reviewed on Sonnet, verdict Approve with nits.",
+        "rejected_spans": [
+          "Its one Major (`scoreListing()` reachable by no unit test) and its one Minor (`Button`'s `focusKey` with nothing proving `data-focus-key` rendered) are both closed by `c0f7d12` (the commit adding `src/features/scoring/score.test.ts` and the three branch assertions in `button.test.ts`), which also took the jsdom nit in `src/components/ui/AGENTS.md`. The findings file itself is left as the point in time record and says nothing about the fixes"
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": "A stage line that only reports a review check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Document it: `/document fit scoring with shown reasoning` \u00b7 pull request title and body written 2026-09-07 from the 29 commits and the real diff.",
+        "rejected_spans": [
+          "As with feature 12's row, this box records the pull request text being written, not the feature being finished: `Verify it` above is still honestly unticked, with 4 of 43 `verify.md` steps open (two need a screen reader, one needs a listing stating a visa stance, one is unrunnable as written), and the body says so rather than implying closure"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0006, **AC-8**"
+        },
+        "phrase": "(spec 0006, **AC-8**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 32",
+          "id": null,
+          "label": null,
+          "mention": "feature 32"
+        },
+        "phrase": "Constrained by feature 32",
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 13",
+          "id": null,
+          "label": null,
+          "mention": "feature 13"
+        },
+        "phrase": "if it reaches a vendor feature 13 has not already registered",
+        "date": "2026-09-01",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-2",
+          "label": null,
+          "mention": "the anchor wording AC-2 is later measured against"
+        },
+        "phrase": "the anchor wording AC-2 is later measured against",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "(AC-3, AC-7)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "(AC-3, AC-7)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16"
+        },
+        "phrase": "(AC-8, AC-9, AC-10, AC-11, AC-14, AC-16)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "(AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-16",
+          "label": null,
+          "mention": "AC-16's focus half"
+        },
+        "phrase": "(AC-16's focus half, AC-17)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": "(AC-16's focus half, AC-17)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:23"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17's capture phase contract and its restore rules"
+        },
+        "phrase": "pinning AC-17's capture phase contract and its restore rules",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

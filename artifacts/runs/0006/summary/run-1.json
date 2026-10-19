@@ -1,0 +1,85 @@
+{
+  "record": "0006",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 326,
+  "output_tokens": 1331,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "afec2fd0064a4c14a6b18dbcdd5d6db8",
+  "artifact_format_version": 3,
+  "unit_sha256": "6305a7a9ca9f8bbba3e07c0974c57b31c09d7c5b4a6da2eb81ecc0c55a42c018",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec is the build spec for the front door: the page at `/`, and what a pasted link to it looks like. It ports `docs/design/JobHuntLanding.tsx` onto feature 5's component set, carries forward the composition decisions spec 0005 already made rather than re deciding them, and settles the four things that spec left open: how many times the match bar appears, what happens to the over signalled sign in band, what the sign in buttons do before real auth exists, and where the social preview image comes from.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Three things on the prototype turned out to be wrong rather than merely generic, and this spec corrects all of them: the \\\"What's real today\\\" card claims four working features that do not exist, it also promises one that is not even planned, and every one of the page's three most important controls points at `#`. The page now says only what is true\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"it ships no client JavaScript at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"mention\":\"spec 0005\"},\"phrase\":\"carries forward the composition decisions spec 0005 already made\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec is the build spec for the front door: the page at `/`, and what a pasted link to it looks like. It ports `docs/design/JobHuntLanding.tsx` onto feature 5's component set, carries forward the composition decisions spec 0005 already made rather than re deciding them, and settles the four things that spec left open: how many times the match bar appears, what happens to the over signalled sign in band, what the sign in buttons do before real auth exists, and where the social preview image comes from.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Three things on the prototype turned out to be wrong rather than merely generic, and this spec corrects all of them: the \"What's real today\" card claims four working features that do not exist, it also promises one that is not even planned, and every one of the page's three most important controls points at `#`. The page now says only what is true",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "it ships no client JavaScript at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": null,
+          "mention": "spec 0005"
+        },
+        "phrase": "carries forward the composition decisions spec 0005 already made",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

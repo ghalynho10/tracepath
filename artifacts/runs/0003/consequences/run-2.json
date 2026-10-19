@@ -1,0 +1,173 @@
+{
+  "record": "0003",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0003-data-model/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 765,
+  "output_tokens": 2354,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "9f2f0af10fe042e49d30865914425690",
+  "artifact_format_version": 3,
+  "unit_sha256": "76f5550cbe294e06abcacf36461e1d2db26d49a7a8d8c0bb01b24bcc367e20ed",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every rule that later features depend on is enforced in one place that no feature can bypass. A caller that forgets to check for a duplicate application still cannot create one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Deletion is real and complete\",\"rejected_spans\":[\"so feature 21's privacy notice can describe it truthfully rather than carefully.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The deployed end to end proof survives the removal of the scaffold table instead of going dark until feature 9.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Feature 9's form, feature 12's apply action and feature 14's scoring all read a shape that is already decided\",\"rejected_spans\":[\"so none of them has to invent one mid build.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"An application cannot be written before a profile row exists. Nothing in the product enforces that ordering today, only the foreign key does, so feature 12 has to handle the missing profile as a visible expected failure rather than letting a raw database error escape.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"With no status column, feature 23 will alter a table that already holds real application rows. The change is a nullable column plus a check, which is cheap, but it is a migration against live user data rather than an empty table.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Fixed value lists are check constraints, so the generated TypeScript types carry plain `string` rather than a union. The allowed values are therefore named twice, once in SQL and once in Zod, and the two can drift.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`job_description` stores a description snippet per application, not a full listing body (corrected 2026-09-05 with the table above; both places said full text and both were wrong). Harmless at this scale, and it is still the widest column on the row, though far smaller than this line originally assumed.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`application_answer` carries a redundant `profile_id`. It buys policy simplicity and a database guarantee, and it is still denormalisation.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Twenty three policies to write and keep right, against one in the repository today, each needing the clause its action actually permits.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two migrations across two pull requests rather than one. The feature therefore closes in two merges, not one.\",\"rejected_spans\":[\"because the drop is separated from the create by a confirmed production deploy\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The seed grows a profile row per synthetic user, and loses its scaffold rows in the same feature.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`src/features/scaffold-check/` and its span disappear, which is the first removal of scaffold code in this project.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every rule that later features depend on is enforced in one place that no feature can bypass. A caller that forgets to check for a duplicate application still cannot create one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Deletion is real and complete",
+        "rejected_spans": [
+          "so feature 21's privacy notice can describe it truthfully rather than carefully."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The deployed end to end proof survives the removal of the scaffold table instead of going dark until feature 9.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Feature 9's form, feature 12's apply action and feature 14's scoring all read a shape that is already decided",
+        "rejected_spans": [
+          "so none of them has to invent one mid build."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "An application cannot be written before a profile row exists. Nothing in the product enforces that ordering today, only the foreign key does, so feature 12 has to handle the missing profile as a visible expected failure rather than letting a raw database error escape.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "With no status column, feature 23 will alter a table that already holds real application rows. The change is a nullable column plus a check, which is cheap, but it is a migration against live user data rather than an empty table.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Fixed value lists are check constraints, so the generated TypeScript types carry plain `string` rather than a union. The allowed values are therefore named twice, once in SQL and once in Zod, and the two can drift.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`job_description` stores a description snippet per application, not a full listing body (corrected 2026-09-05 with the table above; both places said full text and both were wrong). Harmless at this scale, and it is still the widest column on the row, though far smaller than this line originally assumed.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`application_answer` carries a redundant `profile_id`. It buys policy simplicity and a database guarantee, and it is still denormalisation.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Twenty three policies to write and keep right, against one in the repository today, each needing the clause its action actually permits.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two migrations across two pull requests rather than one. The feature therefore closes in two merges, not one.",
+        "rejected_spans": [
+          "because the drop is separated from the create by a confirmed production deploy"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The seed grows a profile row per synthetic user, and loses its scaffold rows in the same feature.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`src/features/scaffold-check/` and its span disappear, which is the first removal of scaffold code in this project.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

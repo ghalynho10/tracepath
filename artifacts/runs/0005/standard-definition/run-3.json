@@ -1,0 +1,203 @@
+{
+  "record": "0005",
+  "section": "Standard definition",
+  "section_slug": "standard-definition",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 780,
+  "output_tokens": 1598,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f575caf48e184a5a9c95736fc418bfa6",
+  "artifact_format_version": 3,
+  "unit_sha256": "35aa88c244935a14ef4ca80d4a03050e799331edd5986d9d3e07d35e0c7d2079",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Canonical pattern**:\\n```tsx\\n// The one right way to compose a container and a section\\n<Section weight=\\\"generous\\\" background=\\\"sunken\\\" divider=\\\"none\\\">\\n  <Card tone=\\\"flat\\\">\\n    <Card.Footer attribution={<AdzunaAttribution />}>\\n      <Button variant=\\\"tertiary\\\" href=\\\"https://example.com/the-real-posting\\\">\\n        Apply on the real posting\\n      </Button>\\n    </Card.Footer>\\n  </Card>\\n</Section>\\n```\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Never: `<div className=\\\"border-t border-line\\\"><div className=\\\"rounded-2xl border border-line p-6\\\">...`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Hand rolled `rounded-2xl border border-line` composed per instance (Tell #8)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Uniform `py-20` on every section regardless of what it holds (Tell #1)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Hairline `border-t border-line` as the only divider mechanism (Tell #3)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Mono applied by default to any data shaped or label shaped content (Tell #4)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A hand copied `MatchBar` at a different proportion (Weakness #1)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Per instance \\\"SOON\\\" badge class strings (Weakness #2)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Enforcement**: The component API is the primary mechanism; code review catches a hand rolled composition duplicating a base component's job.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Alongside that, one narrow ESLint `no-restricted-syntax` rule flags the exact shape Tell #8 named (a `rounded-2xl`/`rounded-xl` class paired with `border` in a `className` literal outside `src/components/ui/`), configured in `eslint.config.mjs` next to the existing `no-restricted-imports` override.\",\"rejected_spans\":[\"See `## Decision` and `rationale.md` for why a broader, general purpose lint rule is not adopted at this project's current size.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Rollout**: New code only. There is no existing production code in `src/` to migrate.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`docs/design/JobHuntLanding.tsx` is ported onto this system by feature 6, not retrofitted here.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Exceptions**: The dark sign in band (`bg-primary-800`) uses the inverted text and button treatments `brand-tokens.md` already documents for that surface; this is a recorded exception, not a violation.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 6\",\"id\":null,\"mention\":\"feature 6\"},\"phrase\":\"is ported onto this system by feature 6\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Canonical pattern**:\n```tsx\n// The one right way to compose a container and a section\n<Section weight=\"generous\" background=\"sunken\" divider=\"none\">\n  <Card tone=\"flat\">\n    <Card.Footer attribution={<AdzunaAttribution />}>\n      <Button variant=\"tertiary\" href=\"https://example.com/the-real-posting\">\n        Apply on the real posting\n      </Button>\n    </Card.Footer>\n  </Card>\n</Section>\n```",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Never: `<div className=\"border-t border-line\"><div className=\"rounded-2xl border border-line p-6\">...`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Hand rolled `rounded-2xl border border-line` composed per instance (Tell #8)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Uniform `py-20` on every section regardless of what it holds (Tell #1)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Hairline `border-t border-line` as the only divider mechanism (Tell #3)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Mono applied by default to any data shaped or label shaped content (Tell #4)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A hand copied `MatchBar` at a different proportion (Weakness #1)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Per instance \"SOON\" badge class strings (Weakness #2)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Enforcement**: The component API is the primary mechanism; code review catches a hand rolled composition duplicating a base component's job.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Alongside that, one narrow ESLint `no-restricted-syntax` rule flags the exact shape Tell #8 named (a `rounded-2xl`/`rounded-xl` class paired with `border` in a `className` literal outside `src/components/ui/`), configured in `eslint.config.mjs` next to the existing `no-restricted-imports` override.",
+        "rejected_spans": [
+          "See `## Decision` and `rationale.md` for why a broader, general purpose lint rule is not adopted at this project's current size."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Rollout**: New code only. There is no existing production code in `src/` to migrate.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`docs/design/JobHuntLanding.tsx` is ported onto this system by feature 6, not retrofitted here.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Exceptions**: The dark sign in band (`bg-primary-800`) uses the inverted text and button treatments `brand-tokens.md` already documents for that surface; this is a recorded exception, not a violation.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 6",
+          "id": null,
+          "label": null,
+          "mention": "feature 6"
+        },
+        "phrase": "is ported onto this system by feature 6",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

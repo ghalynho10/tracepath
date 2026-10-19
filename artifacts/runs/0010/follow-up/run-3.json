@@ -1,0 +1,185 @@
+{
+  "record": "0010",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0010-profile-entry/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 496,
+  "output_tokens": 1343,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "ff8d1970d1294a7c9df66bea640a14c2",
+  "artifact_format_version": 3,
+  "unit_sha256": "911407ee10a5ffb5b7a91d28707217ee30ad9eb3779e3f6007faf27350f2e9ea",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 11 owns its own search input and segmented control. `ui-registry.md`'s open gap for those specific controls is not closed by this feature's `Input`, `Textarea`, `Select`, and `Field` set; only the identity, skills, experience, and preferences form gap is.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 14's completeness threshold, what counts as \\\"enough profile to score against\\\", is still open, named in `docs/archive/app-shell-direction.md` and owned by feature 14, not this one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Whether Playwright gets installed remains open. This feature's own Server Action test uses the no browser technique from spec 0004's Follow up and does not need a browser.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`ui-registry.md` should register the four new base components once they land, via `/imprint`, the same way `Logo` was registered after spec 0006.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap**, recorded as an accepted tradeoff in `## Consequences` on 2026 09 02. Scoring is the first thing that reads work history without a person looking at it, so feature 14 is the one that can say whether duplicates need to be impossible rather than merely visible.\",\"rejected_spans\":[\"It is listed here as well as there because a later builder scans this list for what is owed, and `## Consequences` reads as closed.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"Feature 11\"},\"phrase\":\"Feature 11 owns its own search input and segmented control.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"mention\":\"Feature 14's completeness threshold\"},\"phrase\":\"owned by feature 14, not this one\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":null,\"mention\":\"spec 0004's Follow up\"},\"phrase\":\"uses the no browser technique from spec 0004's Follow up\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":null,\"mention\":\"spec 0006\"},\"phrase\":\"the same way `Logo` was registered after spec 0006\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"mention\":\"Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap\"},\"phrase\":\"Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 11 owns its own search input and segmented control. `ui-registry.md`'s open gap for those specific controls is not closed by this feature's `Input`, `Textarea`, `Select`, and `Field` set; only the identity, skills, experience, and preferences form gap is.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 14's completeness threshold, what counts as \"enough profile to score against\", is still open, named in `docs/archive/app-shell-direction.md` and owned by feature 14, not this one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Whether Playwright gets installed remains open. This feature's own Server Action test uses the no browser technique from spec 0004's Follow up and does not need a browser.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`ui-registry.md` should register the four new base components once they land, via `/imprint`, the same way `Logo` was registered after spec 0006.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap**, recorded as an accepted tradeoff in `## Consequences` on 2026 09 02. Scoring is the first thing that reads work history without a person looking at it, so feature 14 is the one that can say whether duplicates need to be impossible rather than merely visible.",
+        "rejected_spans": [
+          "It is listed here as well as there because a later builder scans this list for what is owed, and `## Consequences` reads as closed."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "Feature 11"
+        },
+        "phrase": "Feature 11 owns its own search input and segmented control.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "Feature 14's completeness threshold"
+        },
+        "phrase": "owned by feature 14, not this one",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": null,
+          "label": null,
+          "mention": "spec 0004's Follow up"
+        },
+        "phrase": "uses the no browser technique from spec 0004's Follow up",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": null,
+          "label": null,
+          "mention": "spec 0006"
+        },
+        "phrase": "the same way `Logo` was registered after spec 0006",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap"
+        },
+        "phrase": "Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "record": "0010",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0010-profile-entry/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1232,
+  "output_tokens": 2110,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b0c845d18f364903822cf9dcd5865c9a",
+  "artifact_format_version": 3,
+  "unit_sha256": "d2dc6fc09fdda8a35b10bef8aaa35eab4aa7a1b93815ad304f02b3f6fcd18410",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The four tables feature 9 owns now have a real write path; feature 14's scoring has real data to read, and feature 12's applications already have a profile to belong to.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The new `Input`, `Textarea`, `Select`, and `Field`/`Label` components give the next form heavy features (18, 20, 22) a proven base to build on\",\"rejected_spans\":[\"the same way `Logo` did after spec 0006\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Saving per section means a database hiccup on one table never leaves another half written; each save touches a single table. (Skills is still two statements, an insert and a delete, on that one table; invariant 9's write order is what keeps a mid save failure from losing anything the user already had.)\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Six Server Actions and four URL driven edit states are more code than a single combined form would have been.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every edit is a full navigation (a GET, then a redirect back to a GET), not a client side transition. The mock up's own inline toggle would feel snappier; it was rejected\",\"rejected_spans\":[\"because it would put the edit form behind a click, breaking the no browser Server Action test technique this feature depends on\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`/profile` ships client JavaScript, unlike `/` under spec 0006's AC-4. This is a deliberate difference between the two trees, not an oversight: the marketing entry page's zero JavaScript contract never extended to the signed in app.\",\"rejected_spans\":[\"`useActionState` (needed for AC-12's per field errors) makes each edit form a Client Component.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The skills diff, the write ordering that protects it, and the delete's and update's zero row checks all cost real code a naive implementation would skip: a read before the write, a specific statement order, and a `failure()` on a write that silently matched nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No completeness gate is added here. A profile with only a name saved is a valid, if thin, profile.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Feature 14 owns deciding when a profile is too thin to score against.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**`addWorkExperience` is not idempotent, and identity and preferences are.** Those two are always an upsert, and the Value sourcing table above gives the reason in terms: a repeated submission (a double click, or a back button resubmission) updates the same row instead of failing a second insert. Work history has no equivalent guard. A double click faster than React's own re-render, or a resubmission with JavaScript switched off, creates two identical `work_experience` rows, and that table carries no uniqueness rule to catch one. **Accepted rather than fixed on 2026 09 02**\",\"rejected_spans\":[\"after the fresh model review of feature 9 raised it (`docs/reviews/2026-09-02-feat-profile-entry.md`)\",\"The asymmetry is not an oversight: identity and preferences each have a natural key to upsert on (`id` and `profile_id`) and a work history entry has none, so closing this means either a synthetic idempotency key threaded through the form the way `entry_id` already is, or a uniqueness rule on `(profile_id, company, title, started_on)`, which is a migration and a new constraint on user data. Neither is clearly right, the submit control is already disabled once React registers the click, and a duplicate is visible on the page and removable in two clicks. That is what makes this a tradeoff rather than a defect.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Feature 14 owns revisiting it**\",\"rejected_spans\":[\"since scoring is the first thing that reads work history without a person looking at it, and it is the feature that can say whether duplicates need to be impossible rather than merely visible\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No new migration; spec 0003's schema is already applied to all three databases.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Education, matched or missing skill display, and a role or years of experience field are all explicitly out of scope, deferred to feature 26 and feature 14 respectively.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"spec 0006's AC-4\"},\"phrase\":\"unlike `/` under spec 0006's AC-4\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"mention\":\"Feature 14 owns revisiting it\"},\"phrase\":\"Feature 14 owns revisiting it\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The four tables feature 9 owns now have a real write path; feature 14's scoring has real data to read, and feature 12's applications already have a profile to belong to.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The new `Input`, `Textarea`, `Select`, and `Field`/`Label` components give the next form heavy features (18, 20, 22) a proven base to build on",
+        "rejected_spans": [
+          "the same way `Logo` did after spec 0006"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Saving per section means a database hiccup on one table never leaves another half written; each save touches a single table. (Skills is still two statements, an insert and a delete, on that one table; invariant 9's write order is what keeps a mid save failure from losing anything the user already had.)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Six Server Actions and four URL driven edit states are more code than a single combined form would have been.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every edit is a full navigation (a GET, then a redirect back to a GET), not a client side transition. The mock up's own inline toggle would feel snappier; it was rejected",
+        "rejected_spans": [
+          "because it would put the edit form behind a click, breaking the no browser Server Action test technique this feature depends on"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`/profile` ships client JavaScript, unlike `/` under spec 0006's AC-4. This is a deliberate difference between the two trees, not an oversight: the marketing entry page's zero JavaScript contract never extended to the signed in app.",
+        "rejected_spans": [
+          "`useActionState` (needed for AC-12's per field errors) makes each edit form a Client Component."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The skills diff, the write ordering that protects it, and the delete's and update's zero row checks all cost real code a naive implementation would skip: a read before the write, a specific statement order, and a `failure()` on a write that silently matched nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No completeness gate is added here. A profile with only a name saved is a valid, if thin, profile.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Feature 14 owns deciding when a profile is too thin to score against.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**`addWorkExperience` is not idempotent, and identity and preferences are.** Those two are always an upsert, and the Value sourcing table above gives the reason in terms: a repeated submission (a double click, or a back button resubmission) updates the same row instead of failing a second insert. Work history has no equivalent guard. A double click faster than React's own re-render, or a resubmission with JavaScript switched off, creates two identical `work_experience` rows, and that table carries no uniqueness rule to catch one. **Accepted rather than fixed on 2026 09 02**",
+        "rejected_spans": [
+          "after the fresh model review of feature 9 raised it (`docs/reviews/2026-09-02-feat-profile-entry.md`)",
+          "The asymmetry is not an oversight: identity and preferences each have a natural key to upsert on (`id` and `profile_id`) and a work history entry has none, so closing this means either a synthetic idempotency key threaded through the form the way `entry_id` already is, or a uniqueness rule on `(profile_id, company, title, started_on)`, which is a migration and a new constraint on user data. Neither is clearly right, the submit control is already disabled once React registers the click, and a duplicate is visible on the page and removable in two clicks. That is what makes this a tradeoff rather than a defect."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Feature 14 owns revisiting it**",
+        "rejected_spans": [
+          "since scoring is the first thing that reads work history without a person looking at it, and it is the feature that can say whether duplicates need to be impossible rather than merely visible"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No new migration; spec 0003's schema is already applied to all three databases.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Education, matched or missing skill display, and a role or years of experience field are all explicitly out of scope, deferred to feature 26 and feature 14 respectively.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "spec 0006's AC-4"
+        },
+        "phrase": "unlike `/` under spec 0006's AC-4",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "Feature 14 owns revisiting it"
+        },
+        "phrase": "Feature 14 owns revisiting it",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

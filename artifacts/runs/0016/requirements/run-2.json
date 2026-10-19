@@ -1,0 +1,231 @@
+{
+  "record": "0016",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3130,
+  "output_tokens": 5358,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "1bd73b2ba2834c30910eaf41f72c63b8",
+  "artifact_format_version": 3,
+  "unit_sha256": "7c28d3a74520e9edb9ab78accf32692ef5574ac8650341ef2f1f3b79a5342b7b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person maintaining the scoring rubric, I want a fixed set of profile and posting pairs with a band decided in advance,\",\"rejected_spans\":[\"so a later prompt or model change can be checked against real expectations instead of a fresh read of the output.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person running feature 16's harness, I want to know which pairs allow more than one acceptable band,\",\"rejected_spans\":[\"so a run does not report a genuine rubric ambiguity as a scoring bug.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person maintaining spec 0015's rubric, I want any gap the ground truth set finds in the anchor wording written down plainly,\",\"rejected_spans\":[\"so it can be closed on purpose rather than guessed at again later.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: `src/features/scoring/eval/archetypes.ts` defines at least four candidate archetypes. Each is a fully invented person: no real name, no real employer, no text traced back to any real person's history. Each clears spec 0015's AC-7 scoring gate (at least one skill or one work history entry). Each represents a plainly different career shape from the others (documented in a short `description` field, separate from the `summary` text actually sent to the model).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: Across the full pair set, every one of the five bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`) appears as the `expectedBand` or inside the `acceptableBands` of at least one pair. Wherever `rubric.ts`'s written anchor text alone can support one confident answer, the pair states a single exact `expectedBand`, not a range.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: At least one pair is built specifically around a severe experience or seniority shortfall paired with a genuinely overlapping named skill. this pair's `acceptableBands` holds more than one band rather than asserting a single invented answer, and its `rationale` field states the ambiguity plainly and points at spec 0015 as the place to resolve it.\",\"rejected_spans\":[\"Because `BAND_ANCHORS` (`rubric.ts:69`) names a seniority expectation only inside `strong_match` and states nothing about how a severe shortfall elsewhere should weigh against one overlapping skill,\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: At least three pairs share one archetype and near identical posting skill and experience requirements, differing only in whether the posting conflicts with that archetype's own `preferences` (which the prompt does send, `rubric.ts:437-463`). Between them they cover all four preference dimensions spec 0015's Follow up names, **title, location, remote, and pay**: the stated title against `desired_titles`, the stated location against `desired_locations`, the on site or remote language against `remote_preference`, and the pay figure against `minimum_pay`. Every conflict is written into `title`, `location` or `descriptionSnippet` (three of the four fields `buildScoringPrompt` sends, alongside `companyName`; salary fields are never sent, so the pay conflict has to live in `descriptionSnippet`'s text, never in `salaryMin`/`salaryMax`). Every one of these pairs carries the same `expectedBand`. A harness run scoring them differently is evidence that a stated preference moved the band, which spec 0015's own instructions forbid.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Grouped by what a preference describes, not one pair per dimension.** This is a decision, not an accident of how the set grew, and it is what the third pair's existence turns on. Two reasons put title in its own pair and leave the other three together:\",\"rejected_spans\":[\"- **Coverage.** Title was the dimension covered nowhere. Before this amendment the set already varied location, remote and pay together in `preference-violation`, so all three had a case that could catch them leaking; title had none, and no pair anywhere in the set conflicted with `desired_titles` while holding skills fixed. Title needed a pair of its own for that reason alone. Location did not, because it already had one.\",\"- **Semantic fusion.** A title names the work itself. A fit judgment about a Backend Engineer posting and a stated desire for a Backend Engineer title are one short step apart, which makes the two easy to fuse even for a model following the instruction in good faith. Location, remote and pay describe the circumstances of employment and are orthogonal to capability, so reading any of them as a fit signal takes a longer and less natural step. Title is the likeliest leak, so it gets the pair that can name it unambiguously.\",\"Those three stay together because they share one failure mode, the model reading stated circumstances as a fit signal, and because splitting them would add two vendor calls to every harness run forever to buy a diagnosis that bisecting once gives for free.\",\"**The reasoning this replaced, recorded so it is not reintroduced.** An earlier draft of this clause argued that title is the only preference whose value has a structured counterpart among the fields `buildScoringPrompt` sends. That is false. The prompt sends `Title:`, `Company:` and `Location:` for the posting and `- Desired titles:`, `- Desired locations:`, `- Remote preference:` and `- Minimum pay:` for the candidate (`rubric.ts:451-479`), so `Location:` against `- Desired locations:` is the same structure as `Title:` against `- Desired titles:`; this spec's own `preference-violation` pair puts `Location: Chicago, IL` and `- Desired locations: Atlanta, GA, Remote` in one prompt. Remote and pay are the two with no structured counterpart, reaching the model only as description prose. Applied honestly that rule would isolate location too, which the cost argument above argues against, so the rule was wrong rather than merely imprecisely worded.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"granularity_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A fifth preference dimension, if one is ever added to the profile feature, is placed by asking what it describes: **the work itself, or the circumstances around it.** One that describes the work joins title and earns its own pair, because that is where fusion with a fit judgment is plausible. One that describes circumstances joins the grouped pair. Do not decide it by asking whether the value has a counterpart among the listing fields; that test does not separate these four.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: At least one pair is tagged `stability-probe`: a posting whose `descriptionSnippet` states no concrete requirement, skill, or seniority language at all, authored close to the 500 character Adzuna ceiling (not a short snippet with a decorative ellipsis appended), and ending in the literal ellipsis character U+2026, the exact character `buildScoringPrompt`'s own check reads (`descriptionSnippet.trimEnd().endsWith(\\\"\u2026\\\")`, `rubric.ts:490`) to route a listing into its cut off branch. The near full length matters as much as the character itself: only then is `buildScoringPrompt`'s own claim, \\\"this is the first 500 characters of a longer description\\\", actually true of this fixture, rather than a mismatch between what the prompt asserts and what the snippet really contains. Its data records the real instability spec 0015's Follow up already observed for this exact input shape (the same excerpt scoring `strong_match` three times and `possible_match` six times in one 2026-09-06 render) rather than asserting one confident band. `validateGroundTruth()` checks that every `stability-probe` tagged pair's `descriptionSnippet` ends in U+2026, since a plain three period `...` would silently land the pair in the untruncated branch and defeat the point of the pair.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: Every archetype's `profile` field is exactly a `ScoringProfile` (`src/features/scoring/rubric.ts:259`). Every pair's `listing` field is exactly a `Listing` (`src/features/search/adzuna.ts:162`), authored as frozen literal text, never a live Adzuna fetch, with `descriptionSnippet` never exceeding the 500 character `ADZUNA_SNIPPET_CHARACTERS` ceiling `rubric.ts` already names.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: The archetypes and pairs live as typed TypeScript modules under `src/features/scoring/eval/`, not inside a `.test.ts` file and not embedded in feature 16's own harness code,\",\"rejected_spans\":[\"so a malformed entry is a compile error against the app's own `ScoringProfile`, `Listing`, and `Band` types rather than a runtime surprise.\"],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: A pure `validateGroundTruth()` function catches what TypeScript's structural typing cannot: a duplicate id, a pair whose `archetypeId` names no real archetype, a band missing from every pair's `expectedBand` and `acceptableBands`, a `descriptionSnippet` longer than 500 characters, an `acceptableBands` that omits its own `expectedBand` or holds fewer than two bands, a `stability-probe` tagged pair whose `descriptionSnippet` does not end in the literal U+2026 character, and the absence of a `preference-isolation` or `stability-probe` tagged pair. Each returned issue names which check failed and which id, band, or tag triggered it (the `GroundTruthIssue` shape below). A committed guard test asserts it returns no issues for the current, real data, and separately asserts, against deliberately malformed inline fixtures, that each of these checks actually fires on its own broken case, not only that the real data happens to pass. Running under `pnpm test`, so an edit that silently narrows the set, or a validator that silently stops checking something, both fail the unit suite.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"spec 0015's AC-7 scoring gate\"},\"phrase\":\"Each clears spec 0015's AC-7 scoring gate\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":null,\"mention\":\"spec 0015 as the place to resolve it\"},\"phrase\":\"points at spec 0015 as the place to resolve it\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person maintaining the scoring rubric, I want a fixed set of profile and posting pairs with a band decided in advance,",
+        "rejected_spans": [
+          "so a later prompt or model change can be checked against real expectations instead of a fresh read of the output."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person running feature 16's harness, I want to know which pairs allow more than one acceptable band,",
+        "rejected_spans": [
+          "so a run does not report a genuine rubric ambiguity as a scoring bug."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person maintaining spec 0015's rubric, I want any gap the ground truth set finds in the anchor wording written down plainly,",
+        "rejected_spans": [
+          "so it can be closed on purpose rather than guessed at again later."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: `src/features/scoring/eval/archetypes.ts` defines at least four candidate archetypes. Each is a fully invented person: no real name, no real employer, no text traced back to any real person's history. Each clears spec 0015's AC-7 scoring gate (at least one skill or one work history entry). Each represents a plainly different career shape from the others (documented in a short `description` field, separate from the `summary` text actually sent to the model).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: Across the full pair set, every one of the five bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`) appears as the `expectedBand` or inside the `acceptableBands` of at least one pair. Wherever `rubric.ts`'s written anchor text alone can support one confident answer, the pair states a single exact `expectedBand`, not a range.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: At least one pair is built specifically around a severe experience or seniority shortfall paired with a genuinely overlapping named skill. this pair's `acceptableBands` holds more than one band rather than asserting a single invented answer, and its `rationale` field states the ambiguity plainly and points at spec 0015 as the place to resolve it.",
+        "rejected_spans": [
+          "Because `BAND_ANCHORS` (`rubric.ts:69`) names a seniority expectation only inside `strong_match` and states nothing about how a severe shortfall elsewhere should weigh against one overlapping skill,"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: At least three pairs share one archetype and near identical posting skill and experience requirements, differing only in whether the posting conflicts with that archetype's own `preferences` (which the prompt does send, `rubric.ts:437-463`). Between them they cover all four preference dimensions spec 0015's Follow up names, **title, location, remote, and pay**: the stated title against `desired_titles`, the stated location against `desired_locations`, the on site or remote language against `remote_preference`, and the pay figure against `minimum_pay`. Every conflict is written into `title`, `location` or `descriptionSnippet` (three of the four fields `buildScoringPrompt` sends, alongside `companyName`; salary fields are never sent, so the pay conflict has to live in `descriptionSnippet`'s text, never in `salaryMin`/`salaryMax`). Every one of these pairs carries the same `expectedBand`. A harness run scoring them differently is evidence that a stated preference moved the band, which spec 0015's own instructions forbid.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Grouped by what a preference describes, not one pair per dimension.** This is a decision, not an accident of how the set grew, and it is what the third pair's existence turns on. Two reasons put title in its own pair and leave the other three together:",
+        "rejected_spans": [
+          "- **Coverage.** Title was the dimension covered nowhere. Before this amendment the set already varied location, remote and pay together in `preference-violation`, so all three had a case that could catch them leaking; title had none, and no pair anywhere in the set conflicted with `desired_titles` while holding skills fixed. Title needed a pair of its own for that reason alone. Location did not, because it already had one.",
+          "- **Semantic fusion.** A title names the work itself. A fit judgment about a Backend Engineer posting and a stated desire for a Backend Engineer title are one short step apart, which makes the two easy to fuse even for a model following the instruction in good faith. Location, remote and pay describe the circumstances of employment and are orthogonal to capability, so reading any of them as a fit signal takes a longer and less natural step. Title is the likeliest leak, so it gets the pair that can name it unambiguously.",
+          "Those three stay together because they share one failure mode, the model reading stated circumstances as a fit signal, and because splitting them would add two vendor calls to every harness run forever to buy a diagnosis that bisecting once gives for free.",
+          "**The reasoning this replaced, recorded so it is not reintroduced.** An earlier draft of this clause argued that title is the only preference whose value has a structured counterpart among the fields `buildScoringPrompt` sends. That is false. The prompt sends `Title:`, `Company:` and `Location:` for the posting and `- Desired titles:`, `- Desired locations:`, `- Remote preference:` and `- Minimum pay:` for the candidate (`rubric.ts:451-479`), so `Location:` against `- Desired locations:` is the same structure as `Title:` against `- Desired titles:`; this spec's own `preference-violation` pair puts `Location: Chicago, IL` and `- Desired locations: Atlanta, GA, Remote` in one prompt. Remote and pay are the two with no structured counterpart, reaching the model only as description prose. Applied honestly that rule would isolate location too, which the cost argument above argues against, so the rule was wrong rather than merely imprecisely worded."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A fifth preference dimension, if one is ever added to the profile feature, is placed by asking what it describes: **the work itself, or the circumstances around it.** One that describes the work joins title and earns its own pair, because that is where fusion with a fit judgment is plausible. One that describes circumstances joins the grouped pair. Do not decide it by asking whether the value has a counterpart among the listing fields; that test does not separate these four.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: At least one pair is tagged `stability-probe`: a posting whose `descriptionSnippet` states no concrete requirement, skill, or seniority language at all, authored close to the 500 character Adzuna ceiling (not a short snippet with a decorative ellipsis appended), and ending in the literal ellipsis character U+2026, the exact character `buildScoringPrompt`'s own check reads (`descriptionSnippet.trimEnd().endsWith(\"\u2026\")`, `rubric.ts:490`) to route a listing into its cut off branch. The near full length matters as much as the character itself: only then is `buildScoringPrompt`'s own claim, \"this is the first 500 characters of a longer description\", actually true of this fixture, rather than a mismatch between what the prompt asserts and what the snippet really contains. Its data records the real instability spec 0015's Follow up already observed for this exact input shape (the same excerpt scoring `strong_match` three times and `possible_match` six times in one 2026-09-06 render) rather than asserting one confident band. `validateGroundTruth()` checks that every `stability-probe` tagged pair's `descriptionSnippet` ends in U+2026, since a plain three period `...` would silently land the pair in the untruncated branch and defeat the point of the pair.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: Every archetype's `profile` field is exactly a `ScoringProfile` (`src/features/scoring/rubric.ts:259`). Every pair's `listing` field is exactly a `Listing` (`src/features/search/adzuna.ts:162`), authored as frozen literal text, never a live Adzuna fetch, with `descriptionSnippet` never exceeding the 500 character `ADZUNA_SNIPPET_CHARACTERS` ceiling `rubric.ts` already names.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: The archetypes and pairs live as typed TypeScript modules under `src/features/scoring/eval/`, not inside a `.test.ts` file and not embedded in feature 16's own harness code,",
+        "rejected_spans": [
+          "so a malformed entry is a compile error against the app's own `ScoringProfile`, `Listing`, and `Band` types rather than a runtime surprise."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: A pure `validateGroundTruth()` function catches what TypeScript's structural typing cannot: a duplicate id, a pair whose `archetypeId` names no real archetype, a band missing from every pair's `expectedBand` and `acceptableBands`, a `descriptionSnippet` longer than 500 characters, an `acceptableBands` that omits its own `expectedBand` or holds fewer than two bands, a `stability-probe` tagged pair whose `descriptionSnippet` does not end in the literal U+2026 character, and the absence of a `preference-isolation` or `stability-probe` tagged pair. Each returned issue names which check failed and which id, band, or tag triggered it (the `GroundTruthIssue` shape below). A committed guard test asserts it returns no issues for the current, real data, and separately asserts, against deliberately malformed inline fixtures, that each of these checks actually fires on its own broken case, not only that the real data happens to pass. Running under `pnpm test`, so an edit that silently narrows the set, or a validator that silently stops checking something, both fail the unit suite.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "spec 0015's AC-7 scoring gate"
+        },
+        "phrase": "Each clears spec 0015's AC-7 scoring gate",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": null,
+          "mention": "spec 0015 as the place to resolve it"
+        },
+        "phrase": "points at spec 0015 as the place to resolve it",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -13,7 +13,7 @@ import pytest
 from neo4j import Driver
 from typer.testing import CliRunner
 
-from tests.conftest import UNREACHABLE_URI
+from tests.conftest import UNREACHABLE_URI, pre_feature_9_runs
 from tracepath.artifacts import GRAPH_BUILD, RUNS_DIR
 from tracepath.cli import app
 from tracepath.config import Neo4jSettings
@@ -68,6 +68,12 @@ def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     root = tmp_path_factory.mktemp("corpus")
     shutil.copytree(ROOT / RUNS_DIR, root / RUNS_DIR)
     return root
+
+
+@pytest.fixture(scope="module")
+def frozen_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The 29 units before feature 9, across three prompt versions (frozen data)."""
+    return pre_feature_9_runs(tmp_path_factory.mktemp("frozen"))
 
 
 @pytest.fixture
@@ -129,7 +135,7 @@ def test_load_writes_the_manifest_under_the_root_it_was_given(tmp_path: Path) ->
 
 
 def test_load_over_two_prompt_versions_prints_each_count_and_loads_both(tmp_path: Path) -> None:
-    root = root_with(tmp_path, "0001/binding-rules", "0014/requirements")
+    root = pre_feature_9_runs(tmp_path, "0001/binding-rules", "0014/requirements")
 
     code, stdout, stderr = run_load(root)
 
@@ -157,11 +163,12 @@ def test_every_typed_relationship_carries_prompt_version_model_and_commit(
 
 
 def test_a_link_carries_the_prompt_version_of_the_unit_it_was_written_in(
-    whole_corpus: Driver, corpus_root: Path, neo4j_settings: Neo4jSettings
+    driver: Driver, frozen_root: Path, neo4j_settings: Neo4jSettings
 ) -> None:
-    driver = whole_corpus
-    """The committed units span three prompt versions, so a single stamp would show."""
-    manifest = json.loads((corpus_root / GRAPH_BUILD).read_text())
+    """The units before feature 9 span three prompt versions, so a single stamp would show."""
+    code, _, stderr = run_load(frozen_root)
+    assert code == 0, stderr
+    manifest = json.loads((frozen_root / GRAPH_BUILD).read_text())
     by_section = {(u["record"], u["section"]): u["prompt_version"] for u in manifest["units"]}
     rows, _, _ = driver.execute_query(
         "MATCH ()-[r]->() WHERE type(r) <> 'PART_OF' "
@@ -338,8 +345,9 @@ def test_ac_15_every_units_accepted_entities_are_in_the_graph(
 
 
 def test_ac_51_load_prints_how_many_links_collapsed(tmp_path: Path) -> None:
-    """covers: AC-51. Feature 9's row writes several links between the same pairs."""
-    root = root_with(tmp_path, "feature-9/9-profile-entry-done")
+    """covers: AC-51. Feature 9's row wrote several links between the same pairs before
+    the whole corpus run, so its runs from then are read (frozen data)."""
+    root = pre_feature_9_runs(tmp_path, "feature-9/9-profile-entry-done")
     results = committed_units(root, SNAPSHOT)
     links = resolve_accepted(
         results, records_for_units(results, SNAPSHOT, "2e40bcf")

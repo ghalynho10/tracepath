@@ -1,0 +1,219 @@
+{
+  "record": "0011",
+  "section": "Options considered",
+  "section_slug": "options-considered",
+  "file": "specs/0011-usage-gating-and-kill-switch/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 866,
+  "output_tokens": 3335,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "baa040b0fc0d4103b68bfb3d34855b67",
+  "artifact_format_version": 3,
+  "unit_sha256": "8e58d6376914e565e887026706d490ad6a74a79333c6f48cd9746b3beadf2148",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Reuse `readKillSwitch()` unchanged as a first, separate step. Only if the switch reads off does a single `SECURITY DEFINER` Postgres function run: it takes no caller supplied identity, derives the account from `auth.uid()` internally, and in one transaction checks and updates all three windows (account week, global day, global month) with a fixed lock order.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"],\"unclassified_note\":\"A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.\",\"label\":\"Option 1: Two sequential steps, kill switch pre-check then one atomic multi window function\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No second code path reads `app_settings`; spec 0002's binding rule 4 (\\\"only `kill-switch.ts` reads `app_settings`\\\") stays true without amendment.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The atomic function stays narrowly about the budget\",\"rejected_spans\":[\", which is the one part that genuinely needs multi row, multi window atomicity\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two sequential calls means a kill switch flipped on between the read and the window check lets one call through. Accepted rather than engineered around\",\"rejected_spans\":[\"the switch is a stop the bleeding lever operated by a human, not a transactional guarantee, and the gap is a single call, not a sustained leak.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"One `SECURITY DEFINER` function reads `app_settings` directly (by virtue of running as its owner) in the same transaction as the window checks, so kill switch and budget are one indivisible decision with no gap at all.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"],\"unclassified_note\":\"A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.\",\"label\":\"Option 2: Fold the kill switch read into the same atomic function\"},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Removes the small race window Option 1 accepts.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One round trip instead of two.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A second code path now reads `app_settings`, which is exactly what spec 0002's binding rule 4 was written to prevent, and that rule would need to be amended rather than simply obeyed.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The gate function's job grows from \\\"the budget decision\\\" to \\\"the budget and kill switch decision,\\\" which is a wider blast radius for one function to own.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Read the current count, compare to the cap, then write the incremented value back, all in application code rather than one database statement.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"unclassified_note\":\"A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.\",\"label\":\"Option 3: Application level counting (read then write in TypeScript)\"},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No `SECURITY DEFINER` function to write and no `plpgsql` to review.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Not atomic. Two concurrent requests can both read the same pre increment count, both decide they are under the cap, and both write, letting one over budget call through, which directly violates spec 0001's own binding rule that atomic work is one statement in the database, naming this exact gate as the reason the rule exists.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"label\":\"binding rule 4\",\"mention\":\"spec 0002's binding rule 4\"},\"phrase\":\"spec 0002's binding rule 4 (\\\"only `kill-switch.ts` reads `app_settings`\\\") stays true without amendment\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"label\":\"binding rule 4\",\"mention\":\"spec 0002's binding rule 4\"},\"phrase\":\"exactly what spec 0002's binding rule 4 was written to prevent, and that rule would need to be amended rather than simply obeyed\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":null,\"mention\":\"spec 0001's own binding rule that atomic work is one statement in the database\"},\"phrase\":\"which directly violates spec 0001's own binding rule that atomic work is one statement in the database\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Reuse `readKillSwitch()` unchanged as a first, separate step. Only if the switch reads off does a single `SECURITY DEFINER` Postgres function run: it takes no caller supplied identity, derives the account from `auth.uid()` internally, and in one transaction checks and updates all three windows (account week, global day, global month) with a fixed lock order.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": "A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.",
+        "label": "Option 1: Two sequential steps, kill switch pre-check then one atomic multi window function"
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No second code path reads `app_settings`; spec 0002's binding rule 4 (\"only `kill-switch.ts` reads `app_settings`\") stays true without amendment.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The atomic function stays narrowly about the budget",
+        "rejected_spans": [
+          ", which is the one part that genuinely needs multi row, multi window atomicity"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two sequential calls means a kill switch flipped on between the read and the window check lets one call through. Accepted rather than engineered around",
+        "rejected_spans": [
+          "the switch is a stop the bleeding lever operated by a human, not a transactional guarantee, and the gap is a single call, not a sustained leak."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "One `SECURITY DEFINER` function reads `app_settings` directly (by virtue of running as its owner) in the same transaction as the window checks, so kill switch and budget are one indivisible decision with no gap at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": "A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.",
+        "label": "Option 2: Fold the kill switch read into the same atomic function"
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Removes the small race window Option 1 accepts.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One round trip instead of two.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A second code path now reads `app_settings`, which is exactly what spec 0002's binding rule 4 was written to prevent, and that rule would need to be amended rather than simply obeyed.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The gate function's job grows from \"the budget decision\" to \"the budget and kill switch decision,\" which is a wider blast radius for one function to own.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Read the current count, compare to the cap, then write the incremented value back, all in application code rather than one database statement.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": "A considered design option, an alternative weighed in the decision. It is not yet a requirement, constraint or consequence, so no named type fits.",
+        "label": "Option 3: Application level counting (read then write in TypeScript)"
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No `SECURITY DEFINER` function to write and no `plpgsql` to review.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Not atomic. Two concurrent requests can both read the same pre increment count, both decide they are under the cap, and both write, letting one over budget call through, which directly violates spec 0001's own binding rule that atomic work is one statement in the database, naming this exact gate as the reason the rule exists.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "binding rule 4",
+          "mention": "spec 0002's binding rule 4"
+        },
+        "phrase": "spec 0002's binding rule 4 (\"only `kill-switch.ts` reads `app_settings`\") stays true without amendment",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": "binding rule 4",
+          "mention": "spec 0002's binding rule 4"
+        },
+        "phrase": "exactly what spec 0002's binding rule 4 was written to prevent, and that rule would need to be amended rather than simply obeyed",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001's own binding rule that atomic work is one statement in the database"
+        },
+        "phrase": "which directly violates spec 0001's own binding rule that atomic work is one statement in the database",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

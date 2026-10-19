@@ -1,0 +1,93 @@
+{
+  "record": "0014",
+  "section": "Preamble",
+  "section_slug": "preamble",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Preamble",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 432,
+  "output_tokens": 1094,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "16ca62dcbf644aa7864758bc19efebf7",
+  "artifact_format_version": 3,
+  "unit_sha256": "689ea80a6f0b2593d942748ac6260e866c9ddee4856a67c8ecf6078cc0b08dc6",
+  "raw_response": "{\"entities\":[],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20\",\"mention\":\"AC-20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"**AC-20a**\"},\"phrase\":\"New **AC-20a** records the fix\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":null,\"mention\":\"specs 0008 and 0001\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"**AC-20a**\"},\"phrase\":\"New **AC-20a** records the fix and amends specs 0008 and 0001\",\"date\":\"2026-09-05\",\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"mention\":\"specs 0008 and 0001\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"**AC-20a**\"},\"phrase\":\"New **AC-20a** records the fix and amends specs 0008 and 0001\",\"date\":\"2026-09-05\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "**AC-20a**"
+        },
+        "phrase": "New **AC-20a** records the fix",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0008",
+          "id": null,
+          "label": null,
+          "mention": "specs 0008 and 0001"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "**AC-20a**"
+        },
+        "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "specs 0008 and 0001"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "**AC-20a**"
+        },
+        "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+        "date": "2026-09-05",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

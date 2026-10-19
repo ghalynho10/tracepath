@@ -1,0 +1,170 @@
+{
+  "record": "0007",
+  "section": "Copy",
+  "section_slug": "copy",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1259,
+  "output_tokens": 3343,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d458a5d873354bf9b334aaccb22dbd0e",
+  "artifact_format_version": 3,
+  "unit_sha256": "e7ec1383c94879d392c1627f18e0fbf2355992f989b01e54131947bd5424a7fb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Written by the engineer, used verbatim.** One slot per code in the **Failure codes** table. Five were written on 2026-08-30 and are **final**. `/develop` must not invent or reword any of them.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`COPY-2` stays empty until milestone 4\",\"rejected_spans\":[\"because its content depends on P10's answer\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the punctuation rule that applies to the rest of this document applies inside the Text column too. There is no carve out. **Do not reintroduce an em dash, an en dash, or a semicolon into any of them, `COPY-2` included when it is written at milestone 4.**\",\"rejected_spans\":[\"The reasoning is stronger here than anywhere else in the spec: this workflow already avoids dashes in its own prose, and product copy is the last place to make an exception, because it is the only text a user actually reads. Em dashes and semicolons in microcopy read as machine written, and em dash overuse in particular is one of the most cited markers of AI generated text, which costs something real on a portfolio facing product.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-4`'s \\\"Start again from here. An older tab or link won't work.\\\" is the AC-4 fix in plain words, not politeness.** The clause is load bearing and must not be trimmed for brevity.\",\"rejected_spans\":[\"Restarting from this page is precisely what resolves the host only PKCE cookie case, on a per commit preview URL or on the old production host.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Every \\\"below\\\" assumes the error line renders ABOVE the two provider forms.** That is a layout constraint the copy imposes on `/sign-in`, AC-5 carries it so it is checkable rather than only documented.\",\"rejected_spans\":[\"recorded here because otherwise someone reorders the page later and the copy silently becomes wrong.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-3`, `COPY-4` and `COPY-6` all tell the person to \\\"start again\\\", and that repetition is deliberate.** The action genuinely is the same and only the first sentence differs.\",\"rejected_spans\":[\"Recorded so a later reader does not improve them into artificial variety.\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`COPY-5` stays generic rather than naming the failing provider.**\",\"rejected_spans\":[\"The redirect carries only `/sign-in?error=<code>`, and AC-7 parses a closed enum of five with no provider dimension in it. Naming the provider would mean widening what AC-7 parses, for very little gain.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No slot apologises or reassures.**\",\"rejected_spans\":[\"This matches spec 0006's register, where its own `COPY-1` states the fact and moves on with nothing softening it.\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"is the AC-4 fix in plain words\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"AC-5 carries it so it is checkable rather than only documented\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Written by the engineer, used verbatim.** One slot per code in the **Failure codes** table. Five were written on 2026-08-30 and are **final**. `/develop` must not invent or reword any of them.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`COPY-2` stays empty until milestone 4",
+        "rejected_spans": [
+          "because its content depends on P10's answer"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the punctuation rule that applies to the rest of this document applies inside the Text column too. There is no carve out. **Do not reintroduce an em dash, an en dash, or a semicolon into any of them, `COPY-2` included when it is written at milestone 4.**",
+        "rejected_spans": [
+          "The reasoning is stronger here than anywhere else in the spec: this workflow already avoids dashes in its own prose, and product copy is the last place to make an exception, because it is the only text a user actually reads. Em dashes and semicolons in microcopy read as machine written, and em dash overuse in particular is one of the most cited markers of AI generated text, which costs something real on a portfolio facing product."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-4`'s \"Start again from here. An older tab or link won't work.\" is the AC-4 fix in plain words, not politeness.** The clause is load bearing and must not be trimmed for brevity.",
+        "rejected_spans": [
+          "Restarting from this page is precisely what resolves the host only PKCE cookie case, on a per commit preview URL or on the old production host."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Every \"below\" assumes the error line renders ABOVE the two provider forms.** That is a layout constraint the copy imposes on `/sign-in`, AC-5 carries it so it is checkable rather than only documented.",
+        "rejected_spans": [
+          "recorded here because otherwise someone reorders the page later and the copy silently becomes wrong."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-3`, `COPY-4` and `COPY-6` all tell the person to \"start again\", and that repetition is deliberate.** The action genuinely is the same and only the first sentence differs.",
+        "rejected_spans": [
+          "Recorded so a later reader does not improve them into artificial variety."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`COPY-5` stays generic rather than naming the failing provider.**",
+        "rejected_spans": [
+          "The redirect carries only `/sign-in?error=<code>`, and AC-7 parses a closed enum of five with no provider dimension in it. Naming the provider would mean widening what AC-7 parses, for very little gain."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No slot apologises or reassures.**",
+        "rejected_spans": [
+          "This matches spec 0006's register, where its own `COPY-1` states the fact and moves on with nothing softening it."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "is the AC-4 fix in plain words",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "AC-5 carries it so it is checkable rather than only documented",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

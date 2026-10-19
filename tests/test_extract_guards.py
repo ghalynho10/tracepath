@@ -24,7 +24,7 @@ from typer.testing import CliRunner
 
 from tests import fake_api as fake
 from tests.test_extract_client import (
-    FAILED_ATTEMPT,
+    SCHEMA_FAILURE,
     answering,
     dropping,
     first_events,
@@ -309,7 +309,7 @@ def test_ac_67_a_stream_ended_before_message_stop_is_a_transport_failure() -> No
 
 def test_ac_67_a_complete_response_failing_validation_is_a_model_failure() -> None:
     """covers: AC-67 (malformed or failing validation)."""
-    raw = json.loads(FAILED_ATTEMPT.read_text())["raw_response"]
+    raw = json.loads(SCHEMA_FAILURE.read_text())["raw_response"]
     client = answering(lambda: httpx2.Response(200, content=recorded_stream(raw, 8123)))
 
     attempt = calls_through(client, settings_for())(requirements_0021(), 1)
@@ -341,8 +341,8 @@ def test_ac_67b_a_failed_attempt_records_its_kind_in_its_artifact(tmp_path: Path
 
 
 COMMITTED_FAILED_ATTEMPTS = (
-    "artifacts/runs/0021/requirements/failed-run-2-attempt-1.json",
-    "artifacts/runs/0021/requirements/failed-run-2-attempt-2.json",
+    "artifacts/superseded/2026-10-18-claude-sonnet-5/0021/requirements/failed-run-2-attempt-1.json",
+    "artifacts/superseded/2026-10-18-claude-sonnet-5/0021/requirements/failed-run-2-attempt-2.json",
     "artifacts/superseded/2026-09-24-prompt-0002.3/0021/requirements/failed-run-1-attempt-1.json",
     "artifacts/superseded/2026-09-28-prompt-0002.3/0014/requirements/failed-run-1-attempt-1.json",
 )
@@ -664,7 +664,7 @@ def test_ac_65_the_manifest_carries_each_units_passes() -> None:
 
     assert isinstance(units, list)
     by_unit = {(u["record"], u["section"]): u["extracted_at"] for u in units}
-    assert by_unit[("0002", "Requirements")] == ["2026-10-05T21:38:39+00:00"]
+    assert by_unit[("0002", "Requirements")] == ["2026-10-19T02:38:25+00:00"]
 
 
 # The transport failure, resume and ceiling paths over real HTTP: the real command and

@@ -1,0 +1,169 @@
+{
+  "record": "0017",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1253,
+  "output_tokens": 1834,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "ea09f96268834dbdb8e9425d3d52bf2a",
+  "artifact_format_version": 3,
+  "unit_sha256": "6c213f59e9921c9ab82189d9c917f5a2ff440b5b88de073c917ed10c5d157396",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Spec 0015's AC-2 (do the five bands actually spread real listings) and spec 0016's whole purpose (a ground truth set with nothing to run it against) both get their first real answer.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The preference isolation check gives a structural, named way to catch a preference leaking into the band, distinct from an equally real but different finding (the rubric drifting for everyone at once), which closes the gap `rubric.ts`'s own comment names as otherwise untestable.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The `BAND_ANCHORS` drift test means a rubric wording change is caught by the free, always run unit suite, not only by someone remembering to run the paid harness and compare two reports by hand.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Reusing `scoreListing()` unchanged, rather than a second call path straight to `TIERS`, means this feature can never drift from what the real app actually sends; a schema or prompt change is proven here exactly as it is proven in production.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Aborting the whole run on the first usage gate refusal, rather than absorbing it into ordinary per pair accounting, keeps that same honesty: a budget or kill switch stop is reported as exactly what it is, not laundered into a wall of `inconclusive` verdicts that would misdescribe what actually happened.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A full run spends 80 real vendor calls (16 pairs times 5 reruns) every time it runs the whole set; the `-t` subset filter is what keeps day to day iteration cheap, but this is still the largest deliberate, repeatable spend in this project, and it grows linearly with every future pair added to feature 15's set.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The 3 of 5 success threshold for `inconclusive` means a genuinely bad but real result (all 5 reruns land on the same, wrong band) is never confused with a run too broken to trust, which is correct, but it also means an unlucky run (3 vendor timeouts and 2 real, matching answers) is reported exactly the same way as one with no useful data at all, even though 2 real matching answers is weak but real evidence. This spec accepts that loss rather than inventing a second, softer verdict tier.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The preference leak check only covers the three pairs feature 15 built for exactly this purpose; it is not a general \\\"did any preference move any band\\\" detector across the other thirteen pairs, none of which vary a preference at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`maxConcurrency` bounds how many pairs run at once, not how many vendor calls run at once across pairs; a pair whose own five reruns are mid flight does not free a concurrency slot until all five finish, so the actual number of simultaneous vendor calls can briefly exceed the pair level bound. This is accepted rather than built around.\",\"rejected_spans\":[\", since the global day cap (1320) has wide headroom under this feature's whole weekly spend\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Aborting the entire run on the first usage gate refusal means one unlucky global cap hit (shared with whatever else is calling `ai_scoring` at the time, including local `pnpm dev` usage) discards every result computed so far in that run, even pairs that had already cleanly passed.\",\"rejected_spans\":[\"This is accepted because a refusal genuinely means the run's remaining data would not reflect real scoring anyway, not because the discarded cost is small.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"If the ground truth set (feature 15) grows past sixteen pairs, this feature's cost and run time grow with it; nothing here caps the set's size, that boundary belongs to spec 0016.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The JSON report format is not versioned or schema checked; it is a plain, structural artifact for a human to read or diff by hand, not a contract another program depends on. If that changes later (a dashboard, a CI gate reading these reports), the format becomes its own decision.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Spec 0015's AC-2 (do the five bands actually spread real listings) and spec 0016's whole purpose (a ground truth set with nothing to run it against) both get their first real answer.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The preference isolation check gives a structural, named way to catch a preference leaking into the band, distinct from an equally real but different finding (the rubric drifting for everyone at once), which closes the gap `rubric.ts`'s own comment names as otherwise untestable.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The `BAND_ANCHORS` drift test means a rubric wording change is caught by the free, always run unit suite, not only by someone remembering to run the paid harness and compare two reports by hand.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reusing `scoreListing()` unchanged, rather than a second call path straight to `TIERS`, means this feature can never drift from what the real app actually sends; a schema or prompt change is proven here exactly as it is proven in production.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Aborting the whole run on the first usage gate refusal, rather than absorbing it into ordinary per pair accounting, keeps that same honesty: a budget or kill switch stop is reported as exactly what it is, not laundered into a wall of `inconclusive` verdicts that would misdescribe what actually happened.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A full run spends 80 real vendor calls (16 pairs times 5 reruns) every time it runs the whole set; the `-t` subset filter is what keeps day to day iteration cheap, but this is still the largest deliberate, repeatable spend in this project, and it grows linearly with every future pair added to feature 15's set.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The 3 of 5 success threshold for `inconclusive` means a genuinely bad but real result (all 5 reruns land on the same, wrong band) is never confused with a run too broken to trust, which is correct, but it also means an unlucky run (3 vendor timeouts and 2 real, matching answers) is reported exactly the same way as one with no useful data at all, even though 2 real matching answers is weak but real evidence. This spec accepts that loss rather than inventing a second, softer verdict tier.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The preference leak check only covers the three pairs feature 15 built for exactly this purpose; it is not a general \"did any preference move any band\" detector across the other thirteen pairs, none of which vary a preference at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`maxConcurrency` bounds how many pairs run at once, not how many vendor calls run at once across pairs; a pair whose own five reruns are mid flight does not free a concurrency slot until all five finish, so the actual number of simultaneous vendor calls can briefly exceed the pair level bound. This is accepted rather than built around.",
+        "rejected_spans": [
+          ", since the global day cap (1320) has wide headroom under this feature's whole weekly spend"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Aborting the entire run on the first usage gate refusal means one unlucky global cap hit (shared with whatever else is calling `ai_scoring` at the time, including local `pnpm dev` usage) discards every result computed so far in that run, even pairs that had already cleanly passed.",
+        "rejected_spans": [
+          "This is accepted because a refusal genuinely means the run's remaining data would not reflect real scoring anyway, not because the discarded cost is small."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "If the ground truth set (feature 15) grows past sixteen pairs, this feature's cost and run time grow with it; nothing here caps the set's size, that boundary belongs to spec 0016.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The JSON report format is not versioned or schema checked; it is a plain, structural artifact for a human to read or diff by hand, not a contract another program depends on. If that changes later (a dashboard, a CI gate reading these reports), the format becomes its own decision.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

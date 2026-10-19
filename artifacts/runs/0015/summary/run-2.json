@@ -1,0 +1,111 @@
+{
+  "record": "0015",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 264,
+  "output_tokens": 613,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "45e823bfc6c24ebb9652a973b5ee1fa2",
+  "artifact_format_version": 3,
+  "unit_sha256": "f0cecfdfab2f8c4fe67f8288b8410e0b9ab1f5bcc3ea49a5941b8a9418477956",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec scores every job listing a search returns against the signed in user's own profile and shows the work: which skills matched, which were not mentioned in the posting, and a short written reason, sorted into one of five bands instead of a bare number.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the design treats \\\"not mentioned\\\" as an honest, uncertain label rather than a confident claim that a skill is missing.\",\"rejected_spans\":[\"Because Adzuna only ever returns a 500 character excerpt of a posting,\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Scoring runs on OpenAI through the router spec 0012 already built,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"fires all 20 listings at once\",\"rejected_spans\":[\"so a search does not hang\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"never runs at all for a profile with no skills and no work history yet.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":null,\"label\":null,\"mention\":\"the router spec 0012 already built\"},\"phrase\":\"through the router spec 0012 already built\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec scores every job listing a search returns against the signed in user's own profile and shows the work: which skills matched, which were not mentioned in the posting, and a short written reason, sorted into one of five bands instead of a bare number.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the design treats \"not mentioned\" as an honest, uncertain label rather than a confident claim that a skill is missing.",
+        "rejected_spans": [
+          "Because Adzuna only ever returns a 500 character excerpt of a posting,"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Scoring runs on OpenAI through the router spec 0012 already built,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "fires all 20 listings at once",
+        "rejected_spans": [
+          "so a search does not hang"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "never runs at all for a profile with no skills and no work history yet.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "the router spec 0012 already built"
+        },
+        "phrase": "through the router spec 0012 already built",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

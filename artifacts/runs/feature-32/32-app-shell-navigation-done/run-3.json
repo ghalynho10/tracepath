@@ -1,0 +1,700 @@
+{
+  "record": "feature-32",
+  "section": "32. App shell & navigation \u00b7 done",
+  "section_slug": "32-app-shell-navigation-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2945,
+  "output_tokens": 8674,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b1ff3d51df414738bfbdc531ee43fe26",
+  "artifact_format_version": 3,
+  "unit_sha256": "df67e39b2d0f33aded08bb92c6f657eebfd0575d53489a5afa3b1d1916eae183",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The authenticated app's page inventory, navigation, post sign in destination and header,\",\"rejected_spans\":[\"the gap features 9, 11 and 12 were each about to invent on their own.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Must land before feature 9 starts;\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"it does not block feature 7,\",\"rejected_spans\":[\"whose done when clause needs no decided shell.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** `/search`, `/profile` and `/applications` exist as real routes with only the first two in the signed in nav;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"one header component renders its signed in variant from `(app)/layout.tsx` and its signed out variant from the marketing layout;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a user with no profile row lands on `/profile` and everyone else on `/`, with feature 14's later scoring gate layered on top rather than replacing it;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a deep link followed while signed out survives sign in and returns the visitor to it, rejecting anything that is not a single leading slash path;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the signed in shell needs no hamburger, drawer or tab bar at 320 pixels;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and a signed in visitor at `/` no longer sees a sign in invitation, without `/` reading the session.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect app shell & navigation` \u00b7 done 2026-08-31, spec 0008 at **revision 5**. The spec amends this row's **Done when** wording in two places, and `/develop` records both against the row when the feature ships. First, \\\"everyone else on `/`\\\" becomes `/search`. Second, \\\"its signed out variant from the marketing layout\\\" becomes each marketing page composing it.\",\"rejected_spans\":[\"because that wording predates the settled decision that `/` is the static marketing page\",\"because a layout never learns the pathname and the row's phrasing assumed it could\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop app shell & navigation` \u00b7 done 2026-08-31 on `feat/app-shell-and-navigation`, seven code commits. All four gates green (lint, format, typecheck, `pnpm build`), 365 unit tests and 52 integration tests passing, and the whole thread driven in a real browser against the local stack. **The `Done when` wording above is amended in three places, recorded here rather than edited into it**. The third was found during this build: \\\"renders its signed in variant from `(app)/layout.tsx`\\\" is now each route under `(app)` composing it, and **spec 0008's AC-3a carries that amendment as of revision 5**.\",\"rejected_spans\":[\"so the row still reads as it was written when the feature was scoped\",\"because AC-3a and AC-5 cannot both hold\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it \u00b7 **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. **That mechanic holds, measured rather than reasoned about on 2026-08-31**: the cookie a Server Action writes survives that action's redirect off site. **The recorded fallback is not needed.** The proxy's half is locked by an integration test that fails when the headers are hoisted, checked by reintroducing that exact bug\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The door, the entry page swap and the sign in bounce: `/go` with `no-store`, `/` losing every provider form, and a signed in visitor at `/sign-in` bounced \u00b7 **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-20**. `/` still builds as a static prerender, so its accepted contract holds. The band's opening clause \\\"Sign in with Google or GitHub\\\" was **deleted at the engineer's direction**,\",\"rejected_spans\":[\"since AC-18 asks for no sign in invitation anywhere and the spec's Copy table did not cover that sentence\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The shell itself: the chrome only header, the marketing pages composing their own variant, the three routes with their copy slots, `/health` tidied \u00b7 **AC-1** to **AC-5a**, **AC-21**, **AC-22**, **AC-23**. **AC-4 failed on first measurement and is now fixed**: the 190 pixel lockup left 82 pixels at 320, so every route under the shell overflowed. The chrome now renders the mark below `sm` and the lockup above it, and all seven routes measure exactly 320 by 320\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The three span names registered in `docs/observability/spans.md` \u00b7 **AC-24**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify app shell & navigation` \u00b7 **PASS** on 2026-08-31, all 24 acceptance criteria met and all 28 steps in verify.md ticked with the observation that proved each one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test app shell & navigation` \u00b7 done 2026-08-31, **57 new tests across four files**, all green, suite now 422 unit and 52 integration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"id\":null,\"mention\":\"feature 9\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"phrase\":\"Must land before feature 9 starts\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":null,\"mention\":\"spec 0008\"},\"phrase\":null,\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":null,\"mention\":\"spec 0008\"},\"phrase\":null,\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-3a\",\"mention\":\"spec 0008's AC-3a\"},\"phrase\":\"**spec 0008's AC-3a carries that amendment as of revision 5**\",\"date\":\"2026-08-31\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5b\",\"mention\":\"**AC-5b**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-7a\",\"mention\":\"**AC-7a**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-10a\",\"mention\":\"**AC-10a**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-11\",\"mention\":\"**AC-11** to **AC-16**\"},\"phrase\":\"**AC-11** to **AC-16**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-16\",\"mention\":\"**AC-11** to **AC-16**\"},\"phrase\":\"**AC-11** to **AC-16**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24a\",\"mention\":\"**AC-24a**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-17a\",\"mention\":\"**AC-17a**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-19\",\"mention\":\"**AC-19**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-20\",\"mention\":\"**AC-20**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-1\",\"mention\":\"**AC-1** to **AC-5a**\"},\"phrase\":\"**AC-1** to **AC-5a**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5a\",\"mention\":\"**AC-1** to **AC-5a**\"},\"phrase\":\"**AC-1** to **AC-5a**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-21\",\"mention\":\"**AC-21**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-22\",\"mention\":\"**AC-22**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-23\",\"mention\":\"**AC-23**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24\",\"mention\":\"**AC-24**\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The authenticated app's page inventory, navigation, post sign in destination and header,",
+        "rejected_spans": [
+          "the gap features 9, 11 and 12 were each about to invent on their own."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Must land before feature 9 starts;",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "it does not block feature 7,",
+        "rejected_spans": [
+          "whose done when clause needs no decided shell."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** `/search`, `/profile` and `/applications` exist as real routes with only the first two in the signed in nav;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "one header component renders its signed in variant from `(app)/layout.tsx` and its signed out variant from the marketing layout;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a user with no profile row lands on `/profile` and everyone else on `/`, with feature 14's later scoring gate layered on top rather than replacing it;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a deep link followed while signed out survives sign in and returns the visitor to it, rejecting anything that is not a single leading slash path;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the signed in shell needs no hamburger, drawer or tab bar at 320 pixels;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and a signed in visitor at `/` no longer sees a sign in invitation, without `/` reading the session.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect app shell & navigation` \u00b7 done 2026-08-31, spec 0008 at **revision 5**. The spec amends this row's **Done when** wording in two places, and `/develop` records both against the row when the feature ships. First, \"everyone else on `/`\" becomes `/search`. Second, \"its signed out variant from the marketing layout\" becomes each marketing page composing it.",
+        "rejected_spans": [
+          "because that wording predates the settled decision that `/` is the static marketing page",
+          "because a layout never learns the pathname and the row's phrasing assumed it could"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop app shell & navigation` \u00b7 done 2026-08-31 on `feat/app-shell-and-navigation`, seven code commits. All four gates green (lint, format, typecheck, `pnpm build`), 365 unit tests and 52 integration tests passing, and the whole thread driven in a real browser against the local stack. **The `Done when` wording above is amended in three places, recorded here rather than edited into it**. The third was found during this build: \"renders its signed in variant from `(app)/layout.tsx`\" is now each route under `(app)` composing it, and **spec 0008's AC-3a carries that amendment as of revision 5**.",
+        "rejected_spans": [
+          "so the row still reads as it was written when the feature was scoped",
+          "because AC-3a and AC-5 cannot both hold"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it \u00b7 **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. **That mechanic holds, measured rather than reasoned about on 2026-08-31**: the cookie a Server Action writes survives that action's redirect off site. **The recorded fallback is not needed.** The proxy's half is locked by an integration test that fails when the headers are hoisted, checked by reintroducing that exact bug",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The door, the entry page swap and the sign in bounce: `/go` with `no-store`, `/` losing every provider form, and a signed in visitor at `/sign-in` bounced \u00b7 **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-20**. `/` still builds as a static prerender, so its accepted contract holds. The band's opening clause \"Sign in with Google or GitHub\" was **deleted at the engineer's direction**,",
+        "rejected_spans": [
+          "since AC-18 asks for no sign in invitation anywhere and the spec's Copy table did not cover that sentence"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The shell itself: the chrome only header, the marketing pages composing their own variant, the three routes with their copy slots, `/health` tidied \u00b7 **AC-1** to **AC-5a**, **AC-21**, **AC-22**, **AC-23**. **AC-4 failed on first measurement and is now fixed**: the 190 pixel lockup left 82 pixels at 320, so every route under the shell overflowed. The chrome now renders the mark below `sm` and the lockup above it, and all seven routes measure exactly 320 by 320",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The three span names registered in `docs/observability/spans.md` \u00b7 **AC-24**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify app shell & navigation` \u00b7 **PASS** on 2026-08-31, all 24 acceptance criteria met and all 28 steps in verify.md ticked with the observation that proved each one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test app shell & navigation` \u00b7 done 2026-08-31, **57 new tests across four files**, all green, suite now 422 unit and 52 integration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "feature 9"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "phrase": "Must land before feature 9 starts",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": null,
+          "label": null,
+          "mention": "spec 0008"
+        },
+        "phrase": null,
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": null,
+          "label": null,
+          "mention": "spec 0008"
+        },
+        "phrase": null,
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-3a",
+          "label": null,
+          "mention": "spec 0008's AC-3a"
+        },
+        "phrase": "**spec 0008's AC-3a carries that amendment as of revision 5**",
+        "date": "2026-08-31",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5b",
+          "label": null,
+          "mention": "**AC-5b**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-7a",
+          "label": null,
+          "mention": "**AC-7a**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-10a",
+          "label": null,
+          "mention": "**AC-10a**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11** to **AC-16**"
+        },
+        "phrase": "**AC-11** to **AC-16**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-11** to **AC-16**"
+        },
+        "phrase": "**AC-11** to **AC-16**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24a",
+          "label": null,
+          "mention": "**AC-24a**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-17a",
+          "label": null,
+          "mention": "**AC-17a**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-19",
+          "label": null,
+          "mention": "**AC-19**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-20",
+          "label": null,
+          "mention": "**AC-20**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1** to **AC-5a**"
+        },
+        "phrase": "**AC-1** to **AC-5a**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5a",
+          "label": null,
+          "mention": "**AC-1** to **AC-5a**"
+        },
+        "phrase": "**AC-1** to **AC-5a**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-21",
+          "label": null,
+          "mention": "**AC-21**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-22",
+          "label": null,
+          "mention": "**AC-22**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-23",
+          "label": null,
+          "mention": "**AC-23**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24",
+          "label": null,
+          "mention": "**AC-24**"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

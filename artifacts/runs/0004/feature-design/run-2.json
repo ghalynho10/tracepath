@@ -1,0 +1,662 @@
+{
+  "record": "0004",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2933,
+  "output_tokens": 9867,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "182194ea40bd4416ad1a286ba3b3c203",
+  "artifact_format_version": 3,
+  "unit_sha256": "7e32dad77e0371052682cdb7cf0d240a5809a23e1878c48e61aeb2a01b82a598",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The feature adds no product tables. It changes fixture data in the auth schema and adds a file based replay store.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`auth.users` (existing): the fixed fixture pool of three users, re-minted with valid version 4 UUIDs and emails on the `.test` domain, with idempotent inserts in `supabase/seed.sql`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Dev one and dev two each have a profile row in `public.profile`; dev three has none (the missing profile path from spec 0003).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"On demand fixture users: created by a development only helper through the admin API (secret client), each with a generated UUID and a unique email, for tests that write.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Replay store: files under `test/fixtures/<service>/<name>.json` in git, holding the recorded request shape, status, headers, and body of a real external response.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. The feature introduces no state machine.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The surfaces are programmatic helpers in test code, not HTTP endpoints.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The session mint cannot be a route under `src/app`, and it must not live in `src/features/dev-session`.\",\"rejected_spans\":[\"(binding rule 1 forbids importing the secret client from there)\",\"(feature 7 deletes that folder)\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both helpers live under `test/helpers/`, outside `src/` entirely.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`tsconfig.json` already includes `**/*.ts`, so they are type checked, and the `@/` alias still resolves for their imports.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Only the allowed callers use the secret key client (binding rule 1); the session mint is caller 1, and no new caller is added without editing spec 0001.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The session mint never runs unless `DEV_SESSION_ENABLED` is explicitly true.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Fixtures never carry a real personal identifier; fixture emails use the reserved `.test` domain.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Fixture user ids always satisfy `z.uuid()`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Replay never touches the network; only record mode does, and it is an explicit opt in.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Tests that write data use a fresh user per test.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The test layer lives outside `src/` except for colocated unit tests\",\"rejected_spans\":[\"so no application module can import a test helper, and the secret key client stays unreachable from `src/app` by construction rather than by lint pattern\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The test layer builds no Supabase client of its own. It drives `src/lib/supabase/server.ts` with a different cookie adapter\",\"rejected_spans\":[\"so a break in the application's client wiring breaks the test rather than passing against a parallel implementation\"],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The integration project runs the `node` environment.\",\"rejected_spans\":[\"Under jsdom the mint cannot read the secret key at all.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A recording committed to git holds no credential.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The session mint is a secret key caller (binding rule 1, slot 1), hard blocked outside development, and lives under `test/helpers/`, outside `src/` entirely.\",\"rejected_spans\":[\"That location is a security decision, not a filing preference. The `@typescript-eslint/no-restricted-imports` override in `eslint.config.mjs` blocks `src/app/**` from importing `**/supabase/secret` directly, and it would not have blocked `src/app/**` from importing a mint under `src/lib/testing`, which imports that module transitively. Rather than extend the rule to chase that path, the mint is kept out of the application's module graph, where the path cannot exist to be blocked. A structural guarantee beats a pattern list that has to be kept complete.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No HTTP route exposes the mint; tests call it directly.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The mint does not depend on the development password sign in from feature 1, which feature 7 deletes.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Record mode warns when it records\",\"rejected_spans\":[\"so a human reviews the committed file before it is merged\"],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new compliance scope; fixtures hold no real personal data by construction and by review.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`DEV_SESSION_ENABLED`: already exists (default false).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The mint reuses the same guard as the development sign in.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"feature 7 deleted the development sign in, so the mint is now the only reader and AC-13 fixes that as the variable's one remaining job. Feature 7 added a SECOND privileged test path, the direct Postgres connection in `test/helpers/database.ts`, and deliberately did not reuse this variable: it takes its own `TEST_DIRECT_DB_ENABLED`, so that one remaining job stays literally true and the two guards fail independently.\",\"rejected_spans\":[\"**Amended 2026-08-30 by spec 0007**:\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`TEST_FIXTURE_MODE`: test only, values `record` or `replay` (default replay). Read by the recorder module and parsed with a small Zod schema at its boundary.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"It is test only, so it stays out of `src/env.ts`\",\"rejected_spans\":[\", which describes the application's environment contract.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`.env.test`: the values a test run reads (the local stack's URL and keys, `NEXT_PUBLIC_SITE_URL`, `DEV_SESSION_ENABLED=true`). Not committed; a `.env.test.example` records the shape.\",\"rejected_spans\":[\"It exists because `src/env.ts` validates the whole contract on import and the mint genuinely needs the secret key present.\",\"`SKIP_ENV_VALIDATION` is not an alternative here: it would let a run start with `SUPABASE_SECRET_KEY` undefined and fail later inside the mint, which is the silent failure shape the error model exists to prevent.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new secrets or third party credentials. The local stack's keys are fixed development values, not secrets.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: mint a session for dev one, write a profile, mint for dev two, assert dev two cannot read dev one's profile, against the real local stack, verifies **AC-1**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: replay a missing fixture fails loudly, naming the file and the record command, verifies **AC-9**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case\"},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth and permission: the mint refuses when `DEV_SESSION_ENABLED` is false, verifies **AC-3**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth and permission\"},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Fixture integrity: every seeded id passes `z.uuid()`, dev three has no profile row, no fixture carries a real personal identifier, verifies **AC-4**, **AC-6**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Fixture integrity\"},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Record and replay: record a real response from GitHub's public REST API once, commit it, replay it, verifies **AC-2**, **AC-8**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Record and replay\"},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"CI: the integration job starts the local stack and runs the suite, verifies **AC-7**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"CI\"},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Sentry: a test constructs a `failure()` of each severity and asserts the in memory transport captured an event carrying the `[\\\"failure\\\", <kind>]` fingerprint, both tags and the level that severity implies, and that nothing reached a Sentry ingest host, verifies **AC-10**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Sentry\"},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Redaction: a recording captured from a request carrying an API key, a bearer token and a `set-cookie` header is written with all three replaced by the placeholder, verifies **AC-13**\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Redaction\"}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"phrase\":\"**Amended 2026-08-30 by spec 0007**\",\"date\":\"2026-08-30\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:33\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:34\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:35\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:36\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-4**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:37\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:37\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-2**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:38\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:39\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:40\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The feature adds no product tables. It changes fixture data in the auth schema and adds a file based replay store.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`auth.users` (existing): the fixed fixture pool of three users, re-minted with valid version 4 UUIDs and emails on the `.test` domain, with idempotent inserts in `supabase/seed.sql`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Dev one and dev two each have a profile row in `public.profile`; dev three has none (the missing profile path from spec 0003).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "On demand fixture users: created by a development only helper through the admin API (secret client), each with a generated UUID and a unique email, for tests that write.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Replay store: files under `test/fixtures/<service>/<name>.json` in git, holding the recorded request shape, status, headers, and body of a real external response.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. The feature introduces no state machine.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The surfaces are programmatic helpers in test code, not HTTP endpoints.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The session mint cannot be a route under `src/app`, and it must not live in `src/features/dev-session`.",
+        "rejected_spans": [
+          "(binding rule 1 forbids importing the secret client from there)",
+          "(feature 7 deletes that folder)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both helpers live under `test/helpers/`, outside `src/` entirely.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`tsconfig.json` already includes `**/*.ts`, so they are type checked, and the `@/` alias still resolves for their imports.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Only the allowed callers use the secret key client (binding rule 1); the session mint is caller 1, and no new caller is added without editing spec 0001.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The session mint never runs unless `DEV_SESSION_ENABLED` is explicitly true.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Fixtures never carry a real personal identifier; fixture emails use the reserved `.test` domain.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Fixture user ids always satisfy `z.uuid()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Replay never touches the network; only record mode does, and it is an explicit opt in.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Tests that write data use a fresh user per test.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The test layer lives outside `src/` except for colocated unit tests",
+        "rejected_spans": [
+          "so no application module can import a test helper, and the secret key client stays unreachable from `src/app` by construction rather than by lint pattern"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The test layer builds no Supabase client of its own. It drives `src/lib/supabase/server.ts` with a different cookie adapter",
+        "rejected_spans": [
+          "so a break in the application's client wiring breaks the test rather than passing against a parallel implementation"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The integration project runs the `node` environment.",
+        "rejected_spans": [
+          "Under jsdom the mint cannot read the secret key at all."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A recording committed to git holds no credential.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The session mint is a secret key caller (binding rule 1, slot 1), hard blocked outside development, and lives under `test/helpers/`, outside `src/` entirely.",
+        "rejected_spans": [
+          "That location is a security decision, not a filing preference. The `@typescript-eslint/no-restricted-imports` override in `eslint.config.mjs` blocks `src/app/**` from importing `**/supabase/secret` directly, and it would not have blocked `src/app/**` from importing a mint under `src/lib/testing`, which imports that module transitively. Rather than extend the rule to chase that path, the mint is kept out of the application's module graph, where the path cannot exist to be blocked. A structural guarantee beats a pattern list that has to be kept complete."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No HTTP route exposes the mint; tests call it directly.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The mint does not depend on the development password sign in from feature 1, which feature 7 deletes.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Record mode warns when it records",
+        "rejected_spans": [
+          "so a human reviews the committed file before it is merged"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new compliance scope; fixtures hold no real personal data by construction and by review.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`DEV_SESSION_ENABLED`: already exists (default false).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The mint reuses the same guard as the development sign in.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "feature 7 deleted the development sign in, so the mint is now the only reader and AC-13 fixes that as the variable's one remaining job. Feature 7 added a SECOND privileged test path, the direct Postgres connection in `test/helpers/database.ts`, and deliberately did not reuse this variable: it takes its own `TEST_DIRECT_DB_ENABLED`, so that one remaining job stays literally true and the two guards fail independently.",
+        "rejected_spans": [
+          "**Amended 2026-08-30 by spec 0007**:"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`TEST_FIXTURE_MODE`: test only, values `record` or `replay` (default replay). Read by the recorder module and parsed with a small Zod schema at its boundary.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "It is test only, so it stays out of `src/env.ts`",
+        "rejected_spans": [
+          ", which describes the application's environment contract."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`.env.test`: the values a test run reads (the local stack's URL and keys, `NEXT_PUBLIC_SITE_URL`, `DEV_SESSION_ENABLED=true`). Not committed; a `.env.test.example` records the shape.",
+        "rejected_spans": [
+          "It exists because `src/env.ts` validates the whole contract on import and the mint genuinely needs the secret key present.",
+          "`SKIP_ENV_VALIDATION` is not an alternative here: it would let a run start with `SUPABASE_SECRET_KEY` undefined and fail later inside the mint, which is the silent failure shape the error model exists to prevent."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new secrets or third party credentials. The local stack's keys are fixed development values, not secrets.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: mint a session for dev one, write a profile, mint for dev two, assert dev two cannot read dev one's profile, against the real local stack, verifies **AC-1**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: replay a missing fixture fails loudly, naming the file and the record command, verifies **AC-9**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case"
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth and permission: the mint refuses when `DEV_SESSION_ENABLED` is false, verifies **AC-3**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth and permission"
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Fixture integrity: every seeded id passes `z.uuid()`, dev three has no profile row, no fixture carries a real personal identifier, verifies **AC-4**, **AC-6**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Fixture integrity"
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Record and replay: record a real response from GitHub's public REST API once, commit it, replay it, verifies **AC-2**, **AC-8**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Record and replay"
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "CI: the integration job starts the local stack and runs the suite, verifies **AC-7**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "CI"
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Sentry: a test constructs a `failure()` of each severity and asserts the in memory transport captured an event carrying the `[\"failure\", <kind>]` fingerprint, both tags and the level that severity implies, and that nothing reached a Sentry ingest host, verifies **AC-10**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Sentry"
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Redaction: a recording captured from a request carrying an API key, a bearer token and a `set-cookie` header is written with all three replaced by the placeholder, verifies **AC-13**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Redaction"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "phrase": "**Amended 2026-08-30 by spec 0007**",
+        "date": "2026-08-30",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:33"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:34"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:35"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:36"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-4**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:37"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-2**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:37"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-2**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:38"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:39"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:40"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

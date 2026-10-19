@@ -1,0 +1,456 @@
+{
+  "record": "0008",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1906,
+  "output_tokens": 9272,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "2308320e52c54c94ac18ce1e4fc19643",
+  "artifact_format_version": 3,
+  "unit_sha256": "3cd5c8a9ce81c5823bf0fd779feb8682a605fe9a7ea39af8ea4a92f91e5732ba",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Features 9, 11 and 12 each inherit a decided shell instead of inventing one. Their specs start from routes that exist.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One landing rule means one place to reason about where a visitor ends up, and one place for feature 14's gate to layer onto.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`/` keeps its accepted contract: static, session free, and now honest for signed in visitors too.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Binding rule 6's mechanical guard survives intact. The proxy still cannot tell a protected route from a public one, and still writes no cookie\",\"rejected_spans\":[\", which is what the rule is actually protecting.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The signed in user's path through the app is three routes and two links. Nothing to redesign when features 20 and 23 land.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A signed out visitor loses the one click provider buttons on `/` and takes one extra hop through `/sign-in`. Accepted deliberately\",\"rejected_spans\":[\": the alternative was a session read on a page whose whole value is that it reads nothing.\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The return path is visible in a query parameter between the layout and `/sign-in`, where revision 1's cookie kept it opaque. This is the real cost of the variant, and it is why AC-12 parses at all three boundaries rather than trusting the first.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The proxy takes on a second job (echoing the requested path as a header). Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it (see Follow-up). Its substance and both its tests survive unchanged, which is the difference from revision 1.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The mechanism touches three components instead of two.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**One mechanic is inferred, not verified**: that a `Set-Cookie` written in a Server Action survives that action's `redirect()` to an external URL. The docs confirm a Server Function may set cookies (`cookies.md` lines 6 and 74) and the existing action already redirects off-site, but the combination is not documented. Build step 1 proves it before anything is built on it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Recorded fallback if it does not hold**: the provider forms POST to a route handler that writes the cookie and then redirects to the provider URL.\",\"rejected_spans\":[\"Route handlers may unambiguously do both, and a form posting to a handler keeps the no JavaScript property the provider controls have today.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Composing the header on each marketing page, which none but `/` does today, puts a header on `/sign-in` and `/ui-preview` for the first time.\",\"rejected_spans\":[\"*(Corrected in revision 5: this line still described the marketing layout revision 4 removed. The effect it names is unchanged.)*\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`EntryHeader`'s in page anchors must not travel with it or those pages ship dead links; **AC-5a is the criterion that prevents it**\",\"rejected_spans\":[\"which the entry page's own AGENTS.md forbids\",\"rather than this paragraph being the only place it is named\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"It also changes `src/app/(marketing)/page.test.ts` at lines 186 to 190 and 256 to 265.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A signed out visitor already on `/sign-in` sees a header control pointing at `/go`, which sends them back to `/sign-in`. Cosmetic, accepted\",\"rejected_spans\":[\": the alternative is a per route exception in a header whose whole value is that it is the same everywhere.\"],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Existing entry page tests covering the sign in band's provider forms change with AC-18, including the four form assertion at `page.test.ts:245-254`, which becomes zero.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The return cookie is one more stateful artifact in a stateless render path\",\"rejected_spans\":[\"; its lifecycle is fully specified here so no later reader has to rederive it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Tap targets in the header keep the sizes the design system already locks. The mock up measured 32px and 28px, above the WCAG 2.2 AA 24px floor (SC 2.5.8) and below the 44px AAA comfort tier this project has not committed to.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Prefetch no longer pollutes the return path. In revision 1 the proxy recorded every `(app)` request including prefetches; here the value is captured only at the moment the layout actually redirects, so a hovered nav link records nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0001, binding rule 6**: \\\"refreshes the Supabase session cookie and does nothing else\\\". The closed enumeration widens to include echoing the requested path as a request header. The no authorisation half and both tests are untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0001, binding rule 6's surrounding paragraph**, which says a route handler that must touch user data means writing its authorisation rule into that spec first. `/go` and the amended callback are the first route handlers here to read a user data table, so that rule is owed: each verifies its own caller through the session before the read, and row level security remains the guarantee behind it. The same amendment that widens the rule carries this.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0007, AC-1**: signing in arrives at `/health`. Flagged provisional there; AC-6 replaces it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0007, AC-16**: \\\"the entry page's two provider controls are real submits\\\". After AC-18 there are no provider controls on `/`. The real submits substance moves to `/sign-in` and still holds there.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0007, security model**: \\\"`/` and `/sign-in` are public and read nothing\\\". AC-20 makes `/sign-in` read the session and, through the landing rule, profile row existence. `/` is unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Spec 0006, AC-4**: the clause that the header's sign in jump link is present at every width. AC-18 replaces the jump with the door CTA. The zero client JavaScript and static prerender halves are untouched and AC-19 keeps them.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5a\",\"mention\":\"**AC-5a**\"},\"phrase\":\"**AC-5a is the criterion that prevents it**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"binding rule 6\",\"mention\":\"**Spec 0001, binding rule 6**\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"phrase\":\"The closed enumeration widens to include echoing the requested path as a request header.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"binding rule 6's surrounding paragraph\",\"mention\":\"**Spec 0001, binding rule 6's surrounding paragraph**\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"The same amendment that widens the rule carries this.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-1\",\"mention\":\"**Spec 0007, AC-1**\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"AC-6 replaces it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-16\",\"mention\":\"**Spec 0007, AC-16**\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"AC-18\"},\"phrase\":\"After AC-18 there are no provider controls on `/`. The real submits substance moves to `/sign-in` and still holds there.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"label\":\"security model\",\"mention\":\"**Spec 0007, security model**\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-20\",\"mention\":\"AC-20\"},\"phrase\":\"AC-20 makes `/sign-in` read the session\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"**Spec 0006, AC-4**\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"AC-18\"},\"phrase\":\"AC-18 replaces the jump with the door CTA\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Features 9, 11 and 12 each inherit a decided shell instead of inventing one. Their specs start from routes that exist.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One landing rule means one place to reason about where a visitor ends up, and one place for feature 14's gate to layer onto.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`/` keeps its accepted contract: static, session free, and now honest for signed in visitors too.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Binding rule 6's mechanical guard survives intact. The proxy still cannot tell a protected route from a public one, and still writes no cookie",
+        "rejected_spans": [
+          ", which is what the rule is actually protecting."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The signed in user's path through the app is three routes and two links. Nothing to redesign when features 20 and 23 land.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A signed out visitor loses the one click provider buttons on `/` and takes one extra hop through `/sign-in`. Accepted deliberately",
+        "rejected_spans": [
+          ": the alternative was a session read on a page whose whole value is that it reads nothing."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The return path is visible in a query parameter between the layout and `/sign-in`, where revision 1's cookie kept it opaque. This is the real cost of the variant, and it is why AC-12 parses at all three boundaries rather than trusting the first.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The proxy takes on a second job (echoing the requested path as a header). Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it (see Follow-up). Its substance and both its tests survive unchanged, which is the difference from revision 1.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The mechanism touches three components instead of two.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**One mechanic is inferred, not verified**: that a `Set-Cookie` written in a Server Action survives that action's `redirect()` to an external URL. The docs confirm a Server Function may set cookies (`cookies.md` lines 6 and 74) and the existing action already redirects off-site, but the combination is not documented. Build step 1 proves it before anything is built on it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Recorded fallback if it does not hold**: the provider forms POST to a route handler that writes the cookie and then redirects to the provider URL.",
+        "rejected_spans": [
+          "Route handlers may unambiguously do both, and a form posting to a handler keeps the no JavaScript property the provider controls have today."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Composing the header on each marketing page, which none but `/` does today, puts a header on `/sign-in` and `/ui-preview` for the first time.",
+        "rejected_spans": [
+          "*(Corrected in revision 5: this line still described the marketing layout revision 4 removed. The effect it names is unchanged.)*"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`EntryHeader`'s in page anchors must not travel with it or those pages ship dead links; **AC-5a is the criterion that prevents it**",
+        "rejected_spans": [
+          "which the entry page's own AGENTS.md forbids",
+          "rather than this paragraph being the only place it is named"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "It also changes `src/app/(marketing)/page.test.ts` at lines 186 to 190 and 256 to 265.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A signed out visitor already on `/sign-in` sees a header control pointing at `/go`, which sends them back to `/sign-in`. Cosmetic, accepted",
+        "rejected_spans": [
+          ": the alternative is a per route exception in a header whose whole value is that it is the same everywhere."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Existing entry page tests covering the sign in band's provider forms change with AC-18, including the four form assertion at `page.test.ts:245-254`, which becomes zero.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The return cookie is one more stateful artifact in a stateless render path",
+        "rejected_spans": [
+          "; its lifecycle is fully specified here so no later reader has to rederive it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Tap targets in the header keep the sizes the design system already locks. The mock up measured 32px and 28px, above the WCAG 2.2 AA 24px floor (SC 2.5.8) and below the 44px AAA comfort tier this project has not committed to.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Prefetch no longer pollutes the return path. In revision 1 the proxy recorded every `(app)` request including prefetches; here the value is captured only at the moment the layout actually redirects, so a hovered nav link records nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0001, binding rule 6**: \"refreshes the Supabase session cookie and does nothing else\". The closed enumeration widens to include echoing the requested path as a request header. The no authorisation half and both tests are untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0001, binding rule 6's surrounding paragraph**, which says a route handler that must touch user data means writing its authorisation rule into that spec first. `/go` and the amended callback are the first route handlers here to read a user data table, so that rule is owed: each verifies its own caller through the session before the read, and row level security remains the guarantee behind it. The same amendment that widens the rule carries this.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0007, AC-1**: signing in arrives at `/health`. Flagged provisional there; AC-6 replaces it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0007, AC-16**: \"the entry page's two provider controls are real submits\". After AC-18 there are no provider controls on `/`. The real submits substance moves to `/sign-in` and still holds there.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0007, security model**: \"`/` and `/sign-in` are public and read nothing\". AC-20 makes `/sign-in` read the session and, through the landing rule, profile row existence. `/` is unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Spec 0006, AC-4**: the clause that the header's sign in jump link is present at every width. AC-18 replaces the jump with the door CTA. The zero client JavaScript and static prerender halves are untouched and AC-19 keeps them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5a",
+          "label": null,
+          "mention": "**AC-5a**"
+        },
+        "phrase": "**AC-5a is the criterion that prevents it**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 6",
+          "mention": "**Spec 0001, binding rule 6**"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "phrase": "The closed enumeration widens to include echoing the requested path as a request header.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 6's surrounding paragraph",
+          "mention": "**Spec 0001, binding rule 6's surrounding paragraph**"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "The same amendment that widens the rule carries this.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**Spec 0007, AC-1**"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "AC-6 replaces it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**Spec 0007, AC-16**"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "AC-18"
+        },
+        "phrase": "After AC-18 there are no provider controls on `/`. The real submits substance moves to `/sign-in` and still holds there.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": "security model",
+          "mention": "**Spec 0007, security model**"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-20",
+          "label": null,
+          "mention": "AC-20"
+        },
+        "phrase": "AC-20 makes `/sign-in` read the session",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**Spec 0006, AC-4**"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "AC-18"
+        },
+        "phrase": "AC-18 replaces the jump with the door CTA",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

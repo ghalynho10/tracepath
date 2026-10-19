@@ -1,0 +1,77 @@
+{
+  "record": "0010",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0010-profile-entry/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 190,
+  "output_tokens": 367,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b557442b16334f8c8cdea0f2ba6ec42d",
+  "artifact_format_version": 3,
+  "unit_sha256": "ebc9757c8eab932389b3b9edea5aa22c6b545fbd28a62dbd3981cf5bf475646b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec is the form that lets a signed in user type in their profile: personal details, skills, work history and job preferences\",\"rejected_spans\":[\"so scoring later has something real to read\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"It builds the first write path onto the four tables spec 0003 already applied.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The page is view first, not a form filled once: each of the four sections (identity, skills, experience, preferences) saves on its own, editable at any time.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing here calls an outside service, and no new schema is added.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec is the form that lets a signed in user type in their profile: personal details, skills, work history and job preferences",
+        "rejected_spans": [
+          "so scoring later has something real to read"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "It builds the first write path onto the four tables spec 0003 already applied.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The page is view first, not a form filled once: each of the four sections (identity, skills, experience, preferences) saves on its own, editable at any time.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing here calls an outside service, and no new schema is added.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

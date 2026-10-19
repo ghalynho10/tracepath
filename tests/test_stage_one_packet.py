@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 
+from tests.conftest import pre_feature_9_runs
 from tracepath.artifacts import RUNS_DIR
 from tracepath.extract.codepass import code_decided_ids
 from tracepath.extract.compare import route_runs
@@ -454,9 +455,19 @@ def test_ac_29b_scoring_refuses_runs_on_another_model(
 def test_ac_27b_the_committed_result_is_scored_again_from_the_committed_rulings(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """covers: AC-27b, AC-19b, AC-28b (the recorded stage one result, byte for byte)."""
+    """covers: AC-27b, AC-19b, AC-28b (the recorded stage one result, byte for byte).
+
+    Scored over the 29 units before feature 9, the corpus the result was recorded on.
+    """
     script = load_script(SCORE)
     monkeypatch.setattr(script, "RESULT", tmp_path / "result.json")
+    frozen = pre_feature_9_runs(tmp_path / "frozen")
+    rebuild = script.committed_units
+
+    def frozen_units(_root: Path, snapshot: Path, **flags: bool) -> tuple[UnitResult, ...]:
+        return tuple(rebuild(frozen, snapshot, **flags))
+
+    monkeypatch.setattr(script, "committed_units", frozen_units)
 
     script.score()
 

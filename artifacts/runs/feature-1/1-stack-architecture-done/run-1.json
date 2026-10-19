@@ -1,0 +1,185 @@
+{
+  "record": "feature-1",
+  "section": "1. Stack & architecture \u00b7 done",
+  "section_slug": "1-stack-architecture-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 800,
+  "output_tokens": 1500,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "8a4363aa226c4d6d881fda9302a52794",
+  "artifact_format_version": 3,
+  "unit_sha256": "99f881cbb39b36c2c0eaebc574cd63813014e930db9ca8d9a59aadfc583d9bec",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Record the stack already chosen (backend and auth platform, framework, styling) as a real architecture spec, then scaffold a project that boots, and close what the brief left open: exact OAuth providers, directory layout, language strictness, and where the model tier configuration lives.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the architecture decision is written down with what was rejected and why,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and an empty scaffold boots locally and passes a clean build\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and a protected page reads one row from Supabase through the real server client and renders it, proving the framework, client, session, policy and error path all connect.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The deployed leg of that same thread belongs to feature 3, which cannot be proved before a real URL exists.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Decide the stack (spec): `/architect stack & architecture`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Scaffold from the decision: `/develop stack & architecture`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify stack & architecture`\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test stack & architecture` \u00b7 done 2026-08-27, once feature 8 made it possible. Nine tests lock the two rules that outlived the manual steps: binding rule 6 in src/proxy.test.ts (five unit tests, no stack needed, so the rule is checked on every `pnpm test`) and DW-4 in test/integration/protected-route.test.ts (four against the real local stack with real minted sessions). Both were checked for vacuousness rather than trusted: making the proxy redirect fails it in both directions (anonymous and signed in), and removing the layout's guard fails both DW-4 tests.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The rest of verify.md expired rather than went untested**: DW-3's steps drove the `scaffold_check` table feature 4 dropped, and DW-1 plus the wrong password step drive scaffolding features 6 and 7 delete, so pinning them would freeze code the plan removes. DW-2 is CI's job, and DW-5 was already locked by feature 8's isolation test.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 3\",\"id\":null,\"mention\":\"feature 3\"},\"phrase\":\"The deployed leg of that same thread belongs to feature 3\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 8\",\"id\":null,\"mention\":\"feature 8\"},\"phrase\":\"once feature 8 made it possible\",\"date\":\"2026-08-27\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Record the stack already chosen (backend and auth platform, framework, styling) as a real architecture spec, then scaffold a project that boots, and close what the brief left open: exact OAuth providers, directory layout, language strictness, and where the model tier configuration lives.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the architecture decision is written down with what was rejected and why,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and an empty scaffold boots locally and passes a clean build",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and a protected page reads one row from Supabase through the real server client and renders it, proving the framework, client, session, policy and error path all connect.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The deployed leg of that same thread belongs to feature 3, which cannot be proved before a real URL exists.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Decide the stack (spec): `/architect stack & architecture`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Scaffold from the decision: `/develop stack & architecture`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify stack & architecture`",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test stack & architecture` \u00b7 done 2026-08-27, once feature 8 made it possible. Nine tests lock the two rules that outlived the manual steps: binding rule 6 in src/proxy.test.ts (five unit tests, no stack needed, so the rule is checked on every `pnpm test`) and DW-4 in test/integration/protected-route.test.ts (four against the real local stack with real minted sessions). Both were checked for vacuousness rather than trusted: making the proxy redirect fails it in both directions (anonymous and signed in), and removing the layout's guard fails both DW-4 tests.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The rest of verify.md expired rather than went untested**: DW-3's steps drove the `scaffold_check` table feature 4 dropped, and DW-1 plus the wrong password step drive scaffolding features 6 and 7 delete, so pinning them would freeze code the plan removes. DW-2 is CI's job, and DW-5 was already locked by feature 8's isolation test.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 3",
+          "id": null,
+          "label": null,
+          "mention": "feature 3"
+        },
+        "phrase": "The deployed leg of that same thread belongs to feature 3",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 8",
+          "id": null,
+          "label": null,
+          "mention": "feature 8"
+        },
+        "phrase": "once feature 8 made it possible",
+        "date": "2026-08-27",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,859 @@
+{
+  "record": "0008",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1568,
+  "output_tokens": 8788,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "97bf021d79134581bf0ff6204b364eea",
+  "artifact_format_version": 3,
+  "unit_sha256": "ab462a4a23055716d2d097f16f0b1cf96c908a06cb99ef005181b0563690d483",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The build approach is the project default, Tracer Bullet: stand up the thinnest real thread through every layer first, then thicken. Here the thread is the return loop, and it touches the proxy, a layout, a page, a Server Action, a route handler and the validator at once. The header and the placeholder routes thicken the shell after the thread works.\",\"rejected_spans\":[\"which is what makes it real rather than a stub\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**Prove the cookie survives the off-site redirect first.** Write the cookie in one provider Server Action, redirect to the provider, and confirm the browser holds it on return. If it does not hold, stop and take the recorded fallback rather than working around it.\",\"rejected_spans\":[\"This is the one mechanic in this spec marked inferred rather than verified (see Consequences), and the whole mechanism rests on it.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"],\"label\":\"Prove the cookie survives the off-site redirect first.\"},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`src/lib/return-path.ts`: the header name, the cookie name and the length cap as exported constants, plus one Zod schema with the rules of AC-12, and unit tests naming each hostile string, satisfies **AC-12**, **AC-5b**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The proxy sets the pathname header, unconditionally, using the `{ request: { headers } }` form, re-deriving `new Headers(request.headers)` immediately before **each** `NextResponse.next()` call including the one inside `setAll` and after its cookie loop, omitting the header when over the shared cap, with the binding rule 6 comment widened to name the new job, satisfies **AC-8**, **AC-10**, and keeps **AC-9** true\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The AC-10a test, asserting both the pathname header and the refreshed session cookie survive a real refresh, satisfies **AC-10a**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The `(app)` layout appends `?next=` on its redirect, satisfies **AC-11**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`/sign-in` parses `next` and renders the hidden field; the Server Actions validate, write the cookie before the provider call, and carry the value onto their error redirect, satisfies **AC-13**, **AC-14**, **AC-14a**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`completeSignIn()` returns its claims, and the callback consumes, validates and clears the cookie on every path, passes the claims into the landing rule, then redirects to the deep link or the landing rule, carrying the value onto its own error redirect and removing the literal `/health` redirect, satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The door at `/go`, **opening `door.decide` first and keeping `redirect()` outside it**, with its `no-store` and `noindex` headers and its errored read falling to `/sign-in`, plus the `/` swap replacing both `SignInControls` renders and the header control with the door CTA, satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The `/sign-in` bounce, **opening `sign_in.bounce` first** around the session read and the decision, honouring an accepted `next`, skipping on an error parameter, and not bouncing on an errored read, satisfies **AC-20**, **AC-17a**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The chrome only header primitive in `src/components/ui/`, holding no routing logic; each marketing page composing the signed out variant itself with its own navigation content, and **each route under `(app)` composing the signed in one itself, passing its own `current`**; `EntryHeader` folded in, sign out wired to the existing action with `COPY-7`, satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"rejected_spans\":[\"(revision 5, previously the layout)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The three routes under `(app)` with their copy slots, the nav rendering only Search and Profile and marking the current one with `aria-current=\\\"page\\\"`, and the `/profile` link to `/applications`, satisfies **AC-1**, **AC-2**, **AC-5**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The `(app)` layout's no index comment, and `/health`'s inline sign out form removed, satisfies **AC-22**, **AC-23**\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The three span names registered in `docs/observability/spans.md`, the calls themselves having landed in steps 5, 9 and 10, satisfies **AC-24**\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"satisfies **AC-12**, **AC-5b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5b\",\"mention\":\"**AC-5b**\"},\"phrase\":\"satisfies **AC-12**, **AC-5b**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"satisfies **AC-8**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"satisfies **AC-8**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"keeps **AC-9** true\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-10a\",\"mention\":\"**AC-10a**\"},\"phrase\":\"satisfies **AC-10a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-7a\",\"mention\":\"**AC-7a**\"},\"phrase\":\"satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5b\",\"mention\":\"**AC-5b**\"},\"phrase\":\"satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24a\",\"mention\":\"**AC-24a**\"},\"phrase\":\"satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"satisfies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"satisfies **AC-13**, **AC-14**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"satisfies **AC-13**, **AC-14**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-14a\",\"mention\":\"**AC-14a**\"},\"phrase\":\"satisfies **AC-13**, **AC-14**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-15a\",\"mention\":\"**AC-15a**\"},\"phrase\":\"satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-14a\",\"mention\":\"**AC-14a**\"},\"phrase\":\"satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-17a\",\"mention\":\"**AC-17a**\"},\"phrase\":\"satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-19\",\"mention\":\"**AC-19**\"},\"phrase\":\"satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24a\",\"mention\":\"**AC-24a**\"},\"phrase\":\"satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-20\",\"mention\":\"**AC-20**\"},\"phrase\":\"satisfies **AC-20**, **AC-17a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-17a\",\"mention\":\"**AC-17a**\"},\"phrase\":\"satisfies **AC-20**, **AC-17a**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-3a\",\"mention\":\"**AC-3a**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5a\",\"mention\":\"**AC-5a**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-21\",\"mention\":\"**AC-21**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-22\",\"mention\":\"**AC-22**\"},\"phrase\":\"satisfies **AC-22**, **AC-23**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-23\",\"mention\":\"**AC-23**\"},\"phrase\":\"satisfies **AC-22**, **AC-23**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-24\",\"mention\":\"**AC-24**\"},\"phrase\":\"satisfies **AC-24**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The build approach is the project default, Tracer Bullet: stand up the thinnest real thread through every layer first, then thicken. Here the thread is the return loop, and it touches the proxy, a layout, a page, a Server Action, a route handler and the validator at once. The header and the placeholder routes thicken the shell after the thread works.",
+        "rejected_spans": [
+          "which is what makes it real rather than a stub"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**Prove the cookie survives the off-site redirect first.** Write the cookie in one provider Server Action, redirect to the provider, and confirm the browser holds it on return. If it does not hold, stop and take the recorded fallback rather than working around it.",
+        "rejected_spans": [
+          "This is the one mechanic in this spec marked inferred rather than verified (see Consequences), and the whole mechanism rests on it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Prove the cookie survives the off-site redirect first."
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`src/lib/return-path.ts`: the header name, the cookie name and the length cap as exported constants, plus one Zod schema with the rules of AC-12, and unit tests naming each hostile string, satisfies **AC-12**, **AC-5b**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The proxy sets the pathname header, unconditionally, using the `{ request: { headers } }` form, re-deriving `new Headers(request.headers)` immediately before **each** `NextResponse.next()` call including the one inside `setAll` and after its cookie loop, omitting the header when over the shared cap, with the binding rule 6 comment widened to name the new job, satisfies **AC-8**, **AC-10**, and keeps **AC-9** true",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The AC-10a test, asserting both the pathname header and the refreshed session cookie survive a real refresh, satisfies **AC-10a**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The `(app)` layout appends `?next=` on its redirect, satisfies **AC-11**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`/sign-in` parses `next` and renders the hidden field; the Server Actions validate, write the cookie before the provider call, and carry the value onto their error redirect, satisfies **AC-13**, **AC-14**, **AC-14a**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`completeSignIn()` returns its claims, and the callback consumes, validates and clears the cookie on every path, passes the claims into the landing rule, then redirects to the deep link or the landing rule, carrying the value onto its own error redirect and removing the literal `/health` redirect, satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The door at `/go`, **opening `door.decide` first and keeping `redirect()` outside it**, with its `no-store` and `noindex` headers and its errored read falling to `/sign-in`, plus the `/` swap replacing both `SignInControls` renders and the header control with the door CTA, satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The `/sign-in` bounce, **opening `sign_in.bounce` first** around the session read and the decision, honouring an accepted `next`, skipping on an error parameter, and not bouncing on an errored read, satisfies **AC-20**, **AC-17a**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The chrome only header primitive in `src/components/ui/`, holding no routing logic; each marketing page composing the signed out variant itself with its own navigation content, and **each route under `(app)` composing the signed in one itself, passing its own `current`**; `EntryHeader` folded in, sign out wired to the existing action with `COPY-7`, satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "rejected_spans": [
+          "(revision 5, previously the layout)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The three routes under `(app)` with their copy slots, the nav rendering only Search and Profile and marking the current one with `aria-current=\"page\"`, and the `/profile` link to `/applications`, satisfies **AC-1**, **AC-2**, **AC-5**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The `(app)` layout's no index comment, and `/health`'s inline sign out form removed, satisfies **AC-22**, **AC-23**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The three span names registered in `docs/observability/spans.md`, the calls themselves having landed in steps 5, 9 and 10, satisfies **AC-24**",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "satisfies **AC-12**, **AC-5b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5b",
+          "label": null,
+          "mention": "**AC-5b**"
+        },
+        "phrase": "satisfies **AC-12**, **AC-5b**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "satisfies **AC-8**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "satisfies **AC-8**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "keeps **AC-9** true",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-10a",
+          "label": null,
+          "mention": "**AC-10a**"
+        },
+        "phrase": "satisfies **AC-10a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-7a",
+          "label": null,
+          "mention": "**AC-7a**"
+        },
+        "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5b",
+          "label": null,
+          "mention": "**AC-5b**"
+        },
+        "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24a",
+          "label": null,
+          "mention": "**AC-24a**"
+        },
+        "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "satisfies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-14a",
+          "label": null,
+          "mention": "**AC-14a**"
+        },
+        "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-15a",
+          "label": null,
+          "mention": "**AC-15a**"
+        },
+        "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-14a",
+          "label": null,
+          "mention": "**AC-14a**"
+        },
+        "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-17a",
+          "label": null,
+          "mention": "**AC-17a**"
+        },
+        "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-19",
+          "label": null,
+          "mention": "**AC-19**"
+        },
+        "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24a",
+          "label": null,
+          "mention": "**AC-24a**"
+        },
+        "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-20",
+          "label": null,
+          "mention": "**AC-20**"
+        },
+        "phrase": "satisfies **AC-20**, **AC-17a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-17a",
+          "label": null,
+          "mention": "**AC-17a**"
+        },
+        "phrase": "satisfies **AC-20**, **AC-17a**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-3a",
+          "label": null,
+          "mention": "**AC-3a**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5a",
+          "label": null,
+          "mention": "**AC-5a**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-21",
+          "label": null,
+          "mention": "**AC-21**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-22",
+          "label": null,
+          "mention": "**AC-22**"
+        },
+        "phrase": "satisfies **AC-22**, **AC-23**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-23",
+          "label": null,
+          "mention": "**AC-23**"
+        },
+        "phrase": "satisfies **AC-22**, **AC-23**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-24",
+          "label": null,
+          "mention": "**AC-24**"
+        },
+        "phrase": "satisfies **AC-24**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

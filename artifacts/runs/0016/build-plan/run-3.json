@@ -1,0 +1,428 @@
+{
+  "record": "0016",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4397,
+  "output_tokens": 5183,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c2e03f6985da4f87b5d4e95b395053df",
+  "artifact_format_version": 3,
+  "unit_sha256": "30789bf7cdf2635be50fb6806839a3c54b94e34a181eba7ccddf68d646587ddf",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This project's default build approach is Tracer Bullet (a thin end to end slice proven before scaling). Applied here: prove the whole shape (one archetype, one pair, one passing validator and guard test) before authoring the remaining fifteen pairs\",\"rejected_spans\":[\"rather than writing all four archetypes and sixteen pairs first and finding a schema problem at the end\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Export `ADZUNA_SNIPPET_CHARACTERS` from `rubric.ts`. Write `src/features/scoring/eval/ground-truth.ts`: the `EvalArchetype`, `GroundTruthPair`, and `GroundTruthIssue` types (importing `ScoringProfile`, `Band`, and `ADZUNA_SNIPPET_CHARACTERS` from `rubric.ts`, `Preferences` from `@/features/profile/queries`, and `Listing` from `adzuna.ts`), and the pure `validateGroundTruth()` invariant checker, including the description length check against that constant. Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.\",\"rejected_spans\":[\"(a one line change; its own comment already anticipates \\\"the truncation check\\\" as a future consumer)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the `direct-fit-control` archetype alone in `archetypes.ts`, including its `preferences`, and commit it on its own before writing a single posting against it.\",\"rejected_spans\":[\"(needed later for the isolation pair)\",\"per the authoring order invariant above\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the one baseline pair (`control-direct-match`, table below) in `pairs.ts` against the now committed archetype. Wire `ground-truth.test.ts` to call `validateGroundTruth()` against this one archetype and one pair, including the deliberately malformed fixture assertions **AC-8** requires, and get it green under `pnpm test`. This is the thin thread: one archetype, one pair, one passing and one deliberately failing check, before scaling. Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the remaining three archetypes (`severe-experience-gap`, `right-level-wrong-domain`, `adjacent-insufficient-depth`, table below), each fictional, each clearing spec 0015's AC-7 gate. Satisfies the rest of **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the remaining single band accuracy pairs (control and clean cases in the pair table below) across all four archetypes. Satisfies the rest of **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the `boundary-seniority-gap` pair with its `acceptableBands` and its rationale naming the anchor gap for spec 0015. Satisfies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the three `preference-isolation` tagged pairs against `direct-fit-control`'s committed `preferences`: the all matching baseline, the circumstance conflict pair (location, remote and pay at once), and the title conflict pair (`desired_titles` alone, every other dimension left matching). Satisfies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Author the `stability-probe-generic` pair: `descriptionSnippet` written close to the 500 character ceiling, entirely generic corporate boilerplate with no concrete requirement anywhere in it, ending in the literal U+2026 character so it lands in `buildScoringPrompt`'s cut off branch and its \\\"first 500 characters\\\" claim is actually true of this fixture, the same truncated shape spec 0015's Follow up observed producing this instability live. Add `validateGroundTruth()`'s `stability-probe-not-truncated` check and its deliberately broken inline fixture (a `stability-probe` tagged pair ending in three ASCII periods instead of U+2026, proving the check actually distinguishes the two). Write the rationale field naming the 2026-09-06 observation rather than asserting a single confident band. Satisfies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Extend `ground-truth.test.ts` to assert the full coverage invariants (every band present across the set, both required tags present, no duplicate id, every `archetypeId` resolvable, every `acceptableBands` valid) against the complete sixteen pair set. Satisfies the rest of **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`direct-fit-control`'s `preferences`: `desired_titles: [\\\"Backend Engineer\\\", \\\"AI Engineer\\\", \\\"Software Engineer\\\"]`, `desired_locations: [\\\"Atlanta, GA\\\", \\\"Remote\\\"]`, `remote_preference: \\\"remote\\\"`, `minimum_pay: 120000`, `minimum_pay_currency: \\\"USD\\\"`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The other three archetypes leave `preferences` undefined, matching the profile feature's own \\\"not set yet\\\" state.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-8\",\"mention\":\"the type half of **AC-8**\"},\"phrase\":\"Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies the rest of **AC-1**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"spec 0015's AC-7 gate\"},\"phrase\":\"each clearing spec 0015's AC-7 gate\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies the rest of **AC-2**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-4**.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-5**.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies the rest of **AC-8**.\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This project's default build approach is Tracer Bullet (a thin end to end slice proven before scaling). Applied here: prove the whole shape (one archetype, one pair, one passing validator and guard test) before authoring the remaining fifteen pairs",
+        "rejected_spans": [
+          "rather than writing all four archetypes and sixteen pairs first and finding a schema problem at the end"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Export `ADZUNA_SNIPPET_CHARACTERS` from `rubric.ts`. Write `src/features/scoring/eval/ground-truth.ts`: the `EvalArchetype`, `GroundTruthPair`, and `GroundTruthIssue` types (importing `ScoringProfile`, `Band`, and `ADZUNA_SNIPPET_CHARACTERS` from `rubric.ts`, `Preferences` from `@/features/profile/queries`, and `Listing` from `adzuna.ts`), and the pure `validateGroundTruth()` invariant checker, including the description length check against that constant. Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.",
+        "rejected_spans": [
+          "(a one line change; its own comment already anticipates \"the truncation check\" as a future consumer)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the `direct-fit-control` archetype alone in `archetypes.ts`, including its `preferences`, and commit it on its own before writing a single posting against it.",
+        "rejected_spans": [
+          "(needed later for the isolation pair)",
+          "per the authoring order invariant above"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the one baseline pair (`control-direct-match`, table below) in `pairs.ts` against the now committed archetype. Wire `ground-truth.test.ts` to call `validateGroundTruth()` against this one archetype and one pair, including the deliberately malformed fixture assertions **AC-8** requires, and get it green under `pnpm test`. This is the thin thread: one archetype, one pair, one passing and one deliberately failing check, before scaling. Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the remaining three archetypes (`severe-experience-gap`, `right-level-wrong-domain`, `adjacent-insufficient-depth`, table below), each fictional, each clearing spec 0015's AC-7 gate. Satisfies the rest of **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the remaining single band accuracy pairs (control and clean cases in the pair table below) across all four archetypes. Satisfies the rest of **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the `boundary-seniority-gap` pair with its `acceptableBands` and its rationale naming the anchor gap for spec 0015. Satisfies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the three `preference-isolation` tagged pairs against `direct-fit-control`'s committed `preferences`: the all matching baseline, the circumstance conflict pair (location, remote and pay at once), and the title conflict pair (`desired_titles` alone, every other dimension left matching). Satisfies **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Author the `stability-probe-generic` pair: `descriptionSnippet` written close to the 500 character ceiling, entirely generic corporate boilerplate with no concrete requirement anywhere in it, ending in the literal U+2026 character so it lands in `buildScoringPrompt`'s cut off branch and its \"first 500 characters\" claim is actually true of this fixture, the same truncated shape spec 0015's Follow up observed producing this instability live. Add `validateGroundTruth()`'s `stability-probe-not-truncated` check and its deliberately broken inline fixture (a `stability-probe` tagged pair ending in three ASCII periods instead of U+2026, proving the check actually distinguishes the two). Write the rationale field naming the 2026-09-06 observation rather than asserting a single confident band. Satisfies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Extend `ground-truth.test.ts` to assert the full coverage invariants (every band present across the set, both required tags present, no duplicate id, every `archetypeId` resolvable, every `acceptableBands` valid) against the complete sixteen pair set. Satisfies the rest of **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`direct-fit-control`'s `preferences`: `desired_titles: [\"Backend Engineer\", \"AI Engineer\", \"Software Engineer\"]`, `desired_locations: [\"Atlanta, GA\", \"Remote\"]`, `remote_preference: \"remote\"`, `minimum_pay: 120000`, `minimum_pay_currency: \"USD\"`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The other three archetypes leave `preferences` undefined, matching the profile feature's own \"not set yet\" state.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-8",
+          "label": null,
+          "mention": "the type half of **AC-8**"
+        },
+        "phrase": "Satisfies **AC-6**, **AC-7**, the type half of **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies the rest of **AC-1**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "spec 0015's AC-7 gate"
+        },
+        "phrase": "each clearing spec 0015's AC-7 gate",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies the rest of **AC-2**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-4**.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-5**.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies the rest of **AC-8**.",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

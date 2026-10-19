@@ -1,0 +1,338 @@
+{
+  "record": "0012",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2503,
+  "output_tokens": 5710,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d5cbbddc09ee4653a7b2084f8a509751",
+  "artifact_format_version": 3,
+  "unit_sha256": "7c1469c391d54e7936b241216fc649668865151d2d3f28830c16929a19677a66",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new table. This feature adds six rows to `usage_cap` (feature 10, merged to `main` at `5b01b4c`, spec 0011 Accepted), one triple of account/week, global/day, global/month for each of `ai_scoring` and `ai_check`, using that table's existing shape.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. The router is stateless; each call is independent.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A caller never learns, and never needs to learn, which vendor answered a tier. The only place that mapping exists is `tiers.ts`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A refused call and a failed call are never the same shape. Refusal is `success({ allowed: false, reason })`; a broken gate or a broken vendor is a `Failure`.\",\"rejected_spans\":[\"Collapsing the two would corrupt the ratio AC-7's span exists to protect, the same reasoning feature 10's own AC-5 already applies.\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The usage gate check always runs before the vendor is ever called. No code path reaches a vendor without first getting `{ allowed: true }` back.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The router classifies the caught error with a pure function before it calls `failure()`, mirroring `classify()` in `src/features/auth/callback.ts`: `NoObjectGeneratedError.isInstance(error)` becomes `response_malformed`, anything else becomes `external_service_failed`. Exactly one `failure()` call follows the classification, never two, and the classifier is tested directly with constructed error instances, with no vendor call needed to exercise it.\",\"rejected_spans\":[\"`generateObject` throws one error type whether the vendor call itself failed or the vendor's answer did not match the schema, so a single `attempt()` call (which carries one fixed `FailureKind`) cannot tell the two apart.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A tier's generation parameters (temperature, output length, and retry count) are fixed at zero retries in `tiers.ts`.\",\"rejected_spans\":[\"`checkUsageGate()` charges one budget unit per call regardless of how many vendor calls answer it, so a retried call spends more real money than the budget accounted for\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The router's own failure and the usage gate's own failure can both carry `external_service_failed`, and both fingerprint into the same Sentry issue by kind (binding rule 3). The router's span sets `stage: \\\"vendor\\\"` as a span attribute, not `context`\",\"rejected_spans\":[\"since `checkUsageGate()` already uses that kind for its own session check\",\"(an event level field `failure()` sets, never queryable as a span filter), the same way feature 10 had to make `failure.kind` itself a span attribute (`span.setAttribute`) rather than trust the span's status message, after finding the status message unqueryable in a real forced failure test. A `context` only version of this invariant would look identical here and pass every test, then hit the same wall the first time someone writes an alert.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: No new authorisation model. `checkUsageGate()` verifies the caller with `getClaims()` before this router is reached at all; a signed out caller never reaches a vendor.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` are server only values read through `src/env.ts`, never reachable from the browser.\",\"rejected_spans\":[\", matching every other credential in this project\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`OPENAI_API_KEY`: the OpenAI API key backing the `ai_scoring` tier.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`GOOGLE_GENERATIVE_AI_API_KEY`: the Google Generative AI API key backing the `ai_check` tier.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: calling each tier with a small real schema against a real vendor returns a parsed value matching that schema, and the two tiers are proven to hit two different vendors, verifies **AC-1**, **AC-2**. Gated behind `TEST_LIVE_MODEL_CALLS_ENABLED`, read directly from `process.env` in the test helper and unset by default, mirroring `TEST_DIRECT_DB_ENABLED`'s own pattern (`test/helpers/database.ts`)\",\"rejected_spans\":[\"so a plain `pnpm test:integration` run never spends real vendor money\"],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, unit level: `classify()` is called directly with a constructed `NoObjectGeneratedError` and returns the code that maps to `response_malformed`, and with a constructed `APICallError` and returns the code that maps to `external_service_failed`, with no vendor call needed to exercise either branch, verifies **AC-5**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, unit level\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a `usage_cap` row set to `0` for a tier in a test refuses every call to that tier with `success({ allowed: false, reason: \\\"account_week_cap_reached\\\" })` (or the matching reason), and the vendor is never called, verifies **AC-4**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case\"},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: a call made with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth/permission\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-4**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new table. This feature adds six rows to `usage_cap` (feature 10, merged to `main` at `5b01b4c`, spec 0011 Accepted), one triple of account/week, global/day, global/month for each of `ai_scoring` and `ai_check`, using that table's existing shape.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. The router is stateless; each call is independent.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A caller never learns, and never needs to learn, which vendor answered a tier. The only place that mapping exists is `tiers.ts`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A refused call and a failed call are never the same shape. Refusal is `success({ allowed: false, reason })`; a broken gate or a broken vendor is a `Failure`.",
+        "rejected_spans": [
+          "Collapsing the two would corrupt the ratio AC-7's span exists to protect, the same reasoning feature 10's own AC-5 already applies."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The usage gate check always runs before the vendor is ever called. No code path reaches a vendor without first getting `{ allowed: true }` back.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The router classifies the caught error with a pure function before it calls `failure()`, mirroring `classify()` in `src/features/auth/callback.ts`: `NoObjectGeneratedError.isInstance(error)` becomes `response_malformed`, anything else becomes `external_service_failed`. Exactly one `failure()` call follows the classification, never two, and the classifier is tested directly with constructed error instances, with no vendor call needed to exercise it.",
+        "rejected_spans": [
+          "`generateObject` throws one error type whether the vendor call itself failed or the vendor's answer did not match the schema, so a single `attempt()` call (which carries one fixed `FailureKind`) cannot tell the two apart."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A tier's generation parameters (temperature, output length, and retry count) are fixed at zero retries in `tiers.ts`.",
+        "rejected_spans": [
+          "`checkUsageGate()` charges one budget unit per call regardless of how many vendor calls answer it, so a retried call spends more real money than the budget accounted for"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The router's own failure and the usage gate's own failure can both carry `external_service_failed`, and both fingerprint into the same Sentry issue by kind (binding rule 3). The router's span sets `stage: \"vendor\"` as a span attribute, not `context`",
+        "rejected_spans": [
+          "since `checkUsageGate()` already uses that kind for its own session check",
+          "(an event level field `failure()` sets, never queryable as a span filter), the same way feature 10 had to make `failure.kind` itself a span attribute (`span.setAttribute`) rather than trust the span's status message, after finding the status message unqueryable in a real forced failure test. A `context` only version of this invariant would look identical here and pass every test, then hit the same wall the first time someone writes an alert."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: No new authorisation model. `checkUsageGate()` verifies the caller with `getClaims()` before this router is reached at all; a signed out caller never reaches a vendor.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`OPENAI_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` are server only values read through `src/env.ts`, never reachable from the browser.",
+        "rejected_spans": [
+          ", matching every other credential in this project"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`OPENAI_API_KEY`: the OpenAI API key backing the `ai_scoring` tier.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`GOOGLE_GENERATIVE_AI_API_KEY`: the Google Generative AI API key backing the `ai_check` tier.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: calling each tier with a small real schema against a real vendor returns a parsed value matching that schema, and the two tiers are proven to hit two different vendors, verifies **AC-1**, **AC-2**. Gated behind `TEST_LIVE_MODEL_CALLS_ENABLED`, read directly from `process.env` in the test helper and unset by default, mirroring `TEST_DIRECT_DB_ENABLED`'s own pattern (`test/helpers/database.ts`)",
+        "rejected_spans": [
+          "so a plain `pnpm test:integration` run never spends real vendor money"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, unit level: `classify()` is called directly with a constructed `NoObjectGeneratedError` and returns the code that maps to `response_malformed`, and with a constructed `APICallError` and returns the code that maps to `external_service_failed`, with no vendor call needed to exercise either branch, verifies **AC-5**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, unit level"
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a `usage_cap` row set to `0` for a tier in a test refuses every call to that tier with `success({ allowed: false, reason: \"account_week_cap_reached\" })` (or the matching reason), and the vendor is never called, verifies **AC-4**, **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case"
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: a call made with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`, verifies **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth/permission"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-4**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -6,71 +6,51 @@
   "unit_kind": "Section",
   "run": 2,
   "attempt": 1,
-  "model": "claude-sonnet-5",
-  "prompt_version": "0003.0",
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
   "commit": "2e40bcf",
-  "extracted_at": "2026-09-24T18:31:14+00:00",
+  "extracted_at": "2026-10-19T02:38:25+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
-  "input_tokens": 5102,
-  "output_tokens": 23434,
+  "input_tokens": 5105,
+  "output_tokens": 8750,
   "cache_creation_input_tokens": 0,
-  "cache_read_input_tokens": 49114,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c47d988e788945a2872ff5d1ca233f59",
+  "artifact_format_version": 3,
+  "unit_sha256": "98aca4bf1a9994323d0cbd69ff0c214310fd3d62c92d6979ff75a18abf181aab",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new database table. Results are never persisted (by product decision, recorded in `docs/scope/scope.md`'s Slice 1 introduction), so the only new shape is an in memory value object, Zod parsed at the Adzuna response boundary and never written to Postgres.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Feature 12 imports this exact shape later for its own field mapping\",\"rejected_spans\":[\"(spec 0003 already names feature 11 as owner of that mapping)\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna's response is parsed as an envelope first (does the whole body match the expected shape at all) and then per item: a single listing that fails its own parse is dropped and counted, not treated as a reason to fail the whole page.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`response_malformed` is only reported when every item in a non empty batch fails\",\"rejected_spans\":[\"since one bad row among twenty is Adzuna's data quality, not a broken integration (feature 19 owns data quality properly; this is just refusing to let one bad row blank an otherwise good page)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A response whose HTTP status is not success (`res.ok` false, most likely a `429` given Adzuna's 25 calls a minute ceiling) is treated the same as a thrown error: reported as `external_service_failed`, never parsed as if it were a listings body.\",\"rejected_spans\":[\"`fetch()` itself does not throw on a non success status, so this check is explicit rather than assumed to fall out of `attempt()`.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Copy**: one slot per user facing string, text left for the engineer to write before `/develop`, the same convention specs 0007 and 0011 use.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The five gate refusal reasons already have their sentences in `src/lib/usage-gating/copy.ts` (spec 0011); this feature renders those verbatim and writes no copy of its own for them.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none.\",\"rejected_spans\":[\"Neither shape is persisted, so there is no lifecycle to define.\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Exactly one Adzuna call, and exactly one usage gate check, per user submitted search, never zero and never more than one\",\"rejected_spans\":[\"so spec 0011's own accounting assumption (\\\"the cap counts outbound API calls\\\") holds exactly.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A usage gate refusal, or a blank query, always short circuits before any Adzuna call, enforced structurally by the `withUsageGate()` helper (see Build plan), never left to a caller remembering to check `allowed` first.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Currency is never read from Adzuna; it is always the constant derived from the configured country.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Attribution renders once per displayed listing, never once per screen. A screen with zero listings shows no attribution block,\",\"rejected_spans\":[\"since there is nothing to attribute.\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A predicted salary is never shown indistinguishably from a stated one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No listing data is ever written to the database by this feature. Every result is request scoped and re fetched on the next search.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"An optional field with no value (`location`, `descriptionSnippet`, either salary figure, `postedAt`) is simply omitted from the card, never rendered as a placeholder or a dash that could be mistaken for real data.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Only a signed in caller reaches `/search`'s real content, enforced by the existing `(app)` layout guard (spec 0008); this feature adds no new authorization rule,\",\"rejected_spans\":[\"since a search targets nobody's data but the caller's own preferences and a public search API.\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`checkUsageGate()` already verifies the caller with `getClaims()` before spending any budget (spec 0011); this feature adds no separate identity check.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The only things sent outward are the caller's typed query text, the app's own shared Adzuna credentials, and (for the prefill) the caller's own previously stated preferences, never a value belonging to anyone else.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`ADZUNA_APP_ID`: server only, required (`z.string().min(1)`, no default), Adzuna's application id credential.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`ADZUNA_APP_KEY`: server only, required (`z.string().min(1)`, no default), Adzuna's application key credential.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both are added to `.env.example` and `.env.test.example` (both already exist in this repo) as part of Build plan step 1, with placeholder values\",\"rejected_spans\":[\"matching every other credential already documented there\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Country, currency, and the attribution domain are plain code constants, not environment variables\",\"rejected_spans\":[\"they carry no secret and do not vary by deploy environment\"],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: Adzuna forced to time out and, separately, forced to return a malformed body, each renders the failure state and reports the matching kind, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: Adzuna forced to return a non success HTTP status (e.g. a `429`), renders the same failure state and reports `external_service_failed`, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the \\\"every item fails\\\" branch is a separate case, same kind).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Gate: a caller whose account week cap is already spent gets the exact `account_week_cap_reached` sentence and no Adzuna call runs, verifies **AC-3**, **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Gate\"},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Gate failure: `checkUsageGate()` itself forced to fail (an invalid session, or a forced database error) renders the failure state through `session_missing` or `database_unavailable` respectively, never the refusal state, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Gate failure\"},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Validation: a submission with both fields blank is refused before any call and spends no budget, verifies **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Validation\"},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Empty: a search that legitimately matches nothing renders the empty state, distinguishable from both the failure and refusal states, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Empty\"},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Predicted salary: a listing carrying `salary_is_predicted: true` renders the estimate label and the Jobsworth attribution; one carrying `false` (or no salary) renders neither, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Predicted salary\"},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Prefill without spend: a caller with a `job_preference` row visits bare `/search` (no `q`/`where`), sees the fields prefilled, and neither `checkUsageGate()` nor the Adzuna client is called, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Prefill without spend\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-6**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-1**, **AC-6**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-1**, **AC-6**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-1**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-3**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
   "error": null,
+  "failure_kind": null,
   "output": {
     "entities": [
       {
         "id": "derived:1",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "No new database table. Results are never persisted, so the only new shape is an in memory value object, Zod parsed at the Adzuna response boundary and never written to Postgres.",
-        "rejected_spans": [
-          "(by product decision, recorded in `docs/scope/scope.md`'s Slice 1 introduction)"
+        "span": "No new database table. Results are never persisted (by product decision, recorded in `docs/scope/scope.md`'s Slice 1 introduction), so the only new shape is an in memory value object, Zod parsed at the Adzuna response boundary and never written to Postgres.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
         ],
-        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
         "id": "derived:2",
         "id_source": "derived",
-        "type": "Consequence",
-        "span": "Feature 12 imports this exact shape later for its own field mapping.",
+        "type": "Constraint",
+        "span": "Feature 12 imports this exact shape later for its own field mapping",
         "rejected_spans": [
           "(spec 0003 already names feature 11 as owner of that mapping)"
         ],
-        "known_trap_flags": [
-          "embedded_second_claim"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:3",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "**It moved to `src/lib/adzuna.ts` on 2026-09-05** (spec 0014): this feature now imports it too, so neither feature imports from the other",
-        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:4",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "If Adzuna ever returns a max below the min, the Zod schema drops both rather than passing an inverted pair forward",
-        "rejected_spans": [
-          "since spec 0003's own check constraint would refuse it outright at feature 12's insert"
-        ],
-        "known_trap_flags": [
-          "rationale_boundary_call"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:5",
+        "id": "derived:3",
         "id_source": "derived",
         "type": "Constraint",
         "span": "Adzuna's response is parsed as an envelope first (does the whole body match the expected shape at all) and then per item: a single listing that fails its own parse is dropped and counted, not treated as a reason to fail the whole page.",
@@ -82,12 +62,12 @@
         "label": null
       },
       {
-        "id": "derived:6",
+        "id": "derived:4",
         "id_source": "derived",
         "type": "Constraint",
         "span": "`response_malformed` is only reported when every item in a non empty batch fails",
         "rejected_spans": [
-          "since one bad row among twenty is Adzuna's data quality, not a broken integration (feature 19 owns data quality properly; this is just refusing to let one bad row blank an otherwise good page)."
+          "since one bad row among twenty is Adzuna's data quality, not a broken integration (feature 19 owns data quality properly; this is just refusing to let one bad row blank an otherwise good page)"
         ],
         "known_trap_flags": [
           "multi_condition_split"
@@ -96,33 +76,29 @@
         "label": null
       },
       {
-        "id": "derived:7",
+        "id": "derived:5",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "**Copy**: one slot per user facing string, text left for the engineer to write before `/develop`",
+        "span": "A response whose HTTP status is not success (`res.ok` false, most likely a `429` given Adzuna's 25 calls a minute ceiling) is treated the same as a thrown error: reported as `external_service_failed`, never parsed as if it were a listings body.",
         "rejected_spans": [
-          "the same convention specs 0007 and 0011 use"
+          "`fetch()` itself does not throw on a non success status, so this check is explicit rather than assumed to fall out of `attempt()`."
         ],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:8",
+        "id": "derived:6",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "\"We couldn't load your saved preferences, so the fields below start empty. You can still search.\" Added at revision 3 and written rather than left as a slot. It carries `role=\"alert\"`, matching `COPY-3` and `COPY-5` and deliberately unlike `COPY-4`: this is a real failure, not the ordinary empty outcome.",
-        "rejected_spans": [
-          "since the sentence is the whole point of the amendment."
-        ],
-        "known_trap_flags": [
-          "multi_condition_split"
-        ],
+        "span": "**Copy**: one slot per user facing string, text left for the engineer to write before `/develop`, the same convention specs 0007 and 0011 use.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:9",
+        "id": "derived:7",
         "id_source": "derived",
         "type": "Constraint",
         "span": "The five gate refusal reasons already have their sentences in `src/lib/usage-gating/copy.ts` (spec 0011); this feature renders those verbatim and writes no copy of its own for them.",
@@ -132,7 +108,7 @@
         "label": null
       },
       {
-        "id": "derived:10",
+        "id": "derived:8",
         "id_source": "derived",
         "type": "Constraint",
         "span": "**State transitions**: none.",
@@ -144,33 +120,31 @@
         "label": null
       },
       {
-        "id": "derived:11",
+        "id": "derived:9",
         "id_source": "derived",
         "type": "Constraint",
         "span": "Exactly one Adzuna call, and exactly one usage gate check, per user submitted search, never zero and never more than one",
         "rejected_spans": [
           "so spec 0011's own accounting assumption (\"the cap counts outbound API calls\") holds exactly."
         ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A usage gate refusal, or a blank query, always short circuits before any Adzuna call, enforced structurally by the `withUsageGate()` helper (see Build plan), never left to a caller remembering to check `allowed` first.",
+        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
-        "id": "derived:12",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "A usage gate refusal, or a blank query, always short circuits before any Adzuna call, enforced structurally by the `withUsageGate()` helper, never left to a caller remembering to check `allowed` first.",
-        "rejected_spans": [
-          "(see Build plan)"
-        ],
-        "known_trap_flags": [
-          "embedded_second_claim"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:13",
+        "id": "derived:11",
         "id_source": "derived",
         "type": "Constraint",
         "span": "Currency is never read from Adzuna; it is always the constant derived from the configured country.",
@@ -180,10 +154,10 @@
         "label": null
       },
       {
-        "id": "derived:14",
+        "id": "derived:12",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "Attribution renders once per displayed listing, never once per screen. A screen with zero listings shows no attribution block.",
+        "span": "Attribution renders once per displayed listing, never once per screen. A screen with zero listings shows no attribution block,",
         "rejected_spans": [
           "since there is nothing to attribute."
         ],
@@ -192,7 +166,7 @@
         "label": null
       },
       {
-        "id": "derived:15",
+        "id": "derived:13",
         "id_source": "derived",
         "type": "Constraint",
         "span": "A predicted salary is never shown indistinguishably from a stated one.",
@@ -202,7 +176,7 @@
         "label": null
       },
       {
-        "id": "derived:16",
+        "id": "derived:14",
         "id_source": "derived",
         "type": "Constraint",
         "span": "No listing data is ever written to the database by this feature. Every result is request scoped and re fetched on the next search.",
@@ -212,7 +186,7 @@
         "label": null
       },
       {
-        "id": "derived:17",
+        "id": "derived:15",
         "id_source": "derived",
         "type": "Constraint",
         "span": "An optional field with no value (`location`, `descriptionSnippet`, either salary figure, `postedAt`) is simply omitted from the card, never rendered as a placeholder or a dash that could be mistaken for real data.",
@@ -222,46 +196,39 @@
         "label": null
       },
       {
-        "id": "derived:18",
+        "id": "derived:16",
         "id_source": "derived",
         "type": "Constraint",
-        "span": "Only a signed in caller reaches `/search`'s real content, enforced by the existing `(app)` layout guard (spec 0008); this feature adds no new authorization rule.",
+        "span": "Only a signed in caller reaches `/search`'s real content, enforced by the existing `(app)` layout guard (spec 0008); this feature adds no new authorization rule,",
         "rejected_spans": [
           "since a search targets nobody's data but the caller's own preferences and a public search API."
         ],
-        "known_trap_flags": [
-          "multi_condition_split",
-          "rationale_boundary_call"
-        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`checkUsageGate()` already verifies the caller with `getClaims()` before spending any budget (spec 0011); this feature adds no separate identity check.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The only things sent outward are the caller's typed query text, the app's own shared Adzuna credentials, and (for the prefill) the caller's own previously stated preferences, never a value belonging to anyone else.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
         "unclassified_note": null,
         "label": null
       },
       {
         "id": "derived:19",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "`checkUsageGate()` already verifies the caller with `getClaims()` before spending any budget (spec 0011); this feature adds no separate identity check.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "multi_condition_split"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:20",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "The only things sent outward are the caller's typed query text, the app's own shared Adzuna credentials, and (for the prefill) the caller's own previously stated preferences, never a value belonging to anyone else.",
-        "rejected_spans": [],
-        "known_trap_flags": [
-          "multi_condition_split"
-        ],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:21",
         "id_source": "derived",
         "type": "Constraint",
         "span": "`ADZUNA_APP_ID`: server only, required (`z.string().min(1)`, no default), Adzuna's application id credential.",
@@ -271,7 +238,7 @@
         "label": null
       },
       {
-        "id": "derived:22",
+        "id": "derived:20",
         "id_source": "derived",
         "type": "Constraint",
         "span": "`ADZUNA_APP_KEY`: server only, required (`z.string().min(1)`, no default), Adzuna's application key credential.",
@@ -281,27 +248,33 @@
         "label": null
       },
       {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both are added to `.env.example` and `.env.test.example` (both already exist in this repo) as part of Build plan step 1, with placeholder values",
+        "rejected_spans": [
+          "matching every other credential already documented there"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Country, currency, and the attribution domain are plain code constants, not environment variables",
+        "rejected_spans": [
+          "they carry no secret and do not vary by deploy environment"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
         "id": "derived:23",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "Both are added to `.env.example` and `.env.test.example` (both already exist in this repo) as part of Build plan step 1, with placeholder values, matching every other credential already documented there.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:24",
-        "id_source": "derived",
-        "type": "Constraint",
-        "span": "Country, currency, and the attribution domain are plain code constants, not environment variables: they carry no secret and do not vary by deploy environment.",
-        "rejected_spans": [],
-        "known_trap_flags": [],
-        "unclassified_note": null,
-        "label": null
-      },
-      {
-        "id": "derived:25",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**.",
@@ -311,39 +284,37 @@
         "label": "Happy path"
       },
       {
-        "id": "derived:26",
+        "id": "derived:24",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Failure case: Adzuna forced to time out and, separately, forced to return a malformed body, each renders the failure state and reports the matching kind, verifies **AC-5**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": "Failure case"
+        "label": null
       },
       {
-        "id": "derived:27",
+        "id": "derived:25",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Failure case: Adzuna forced to return a non success HTTP status (e.g. a `429`), renders the same failure state and reports `external_service_failed`, verifies **AC-5**.",
         "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": "Failure case"
+        "label": null
       },
       {
-        "id": "derived:28",
+        "id": "derived:26",
         "id_source": "derived",
         "type": "TestScenario",
-        "span": "Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5**.",
-        "rejected_spans": [
-          "(the \"every item fails\" branch is a separate case, same kind)."
-        ],
+        "span": "Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the \"every item fails\" branch is a separate case, same kind).",
+        "rejected_spans": [],
         "known_trap_flags": [],
         "unclassified_note": null,
-        "label": "Failure case"
+        "label": null
       },
       {
-        "id": "derived:29",
+        "id": "derived:27",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Gate: a caller whose account week cap is already spent gets the exact `account_week_cap_reached` sentence and no Adzuna call runs, verifies **AC-3**, **AC-10**.",
@@ -353,7 +324,7 @@
         "label": "Gate"
       },
       {
-        "id": "derived:30",
+        "id": "derived:28",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Gate failure: `checkUsageGate()` itself forced to fail (an invalid session, or a forced database error) renders the failure state through `session_missing` or `database_unavailable` respectively, never the refusal state, verifies **AC-3**.",
@@ -363,7 +334,7 @@
         "label": "Gate failure"
       },
       {
-        "id": "derived:31",
+        "id": "derived:29",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Validation: a submission with both fields blank is refused before any call and spends no budget, verifies **AC-2**.",
@@ -373,7 +344,7 @@
         "label": "Validation"
       },
       {
-        "id": "derived:32",
+        "id": "derived:30",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Empty: a search that legitimately matches nothing renders the empty state, distinguishable from both the failure and refusal states, verifies **AC-4**.",
@@ -383,7 +354,7 @@
         "label": "Empty"
       },
       {
-        "id": "derived:33",
+        "id": "derived:31",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Predicted salary: a listing carrying `salary_is_predicted: true` renders the estimate label and the Jobsworth attribution; one carrying `false` (or no salary) renders neither, verifies **AC-7**.",
@@ -393,7 +364,7 @@
         "label": "Predicted salary"
       },
       {
-        "id": "derived:34",
+        "id": "derived:32",
         "id_source": "derived",
         "type": "TestScenario",
         "span": "Prefill without spend: a caller with a `job_preference` row visits bare `/search` (no `q`/`where`), sees the fields prefilled, and neither `checkUsageGate()` nor the Adzuna client is called, verifies **AC-9**.",
@@ -405,29 +376,10 @@
     ],
     "relationships": [
       {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:3"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0014",
-          "id": null,
-          "label": null,
-          "mention": "spec 0014"
-        },
-        "phrase": "(spec 0014)",
-        "date": "2026-09-05",
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:25"
+          "id": "derived:23"
         },
         "target": {
           "kind": "reference",
@@ -444,7 +396,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:25"
+          "id": "derived:23"
         },
         "target": {
           "kind": "reference",
@@ -461,7 +413,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:25"
+          "id": "derived:23"
         },
         "target": {
           "kind": "reference",
@@ -478,41 +430,41 @@
         "type": "verifies",
         "source": {
           "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
           "id": "derived:26"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0013",
-          "id": "AC-5",
-          "label": null,
-          "mention": "**AC-5**"
-        },
-        "phrase": "verifies **AC-5**",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "verifies",
-        "source": {
-          "kind": "local",
-          "id": "derived:27"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0013",
-          "id": "AC-5",
-          "label": null,
-          "mention": "**AC-5**"
-        },
-        "phrase": "verifies **AC-5**",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "verifies",
-        "source": {
-          "kind": "local",
-          "id": "derived:28"
         },
         "target": {
           "kind": "reference",
@@ -529,7 +481,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:28"
+          "id": "derived:26"
         },
         "target": {
           "kind": "reference",
@@ -546,7 +498,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:29"
+          "id": "derived:27"
         },
         "target": {
           "kind": "reference",
@@ -563,7 +515,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:29"
+          "id": "derived:27"
         },
         "target": {
           "kind": "reference",
@@ -580,7 +532,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:30"
+          "id": "derived:28"
         },
         "target": {
           "kind": "reference",
@@ -597,7 +549,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:31"
+          "id": "derived:29"
         },
         "target": {
           "kind": "reference",
@@ -614,7 +566,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:32"
+          "id": "derived:30"
         },
         "target": {
           "kind": "reference",
@@ -631,7 +583,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:33"
+          "id": "derived:31"
         },
         "target": {
           "kind": "reference",
@@ -648,7 +600,7 @@
         "type": "verifies",
         "source": {
           "kind": "local",
-          "id": "derived:34"
+          "id": "derived:32"
         },
         "target": {
           "kind": "reference",

@@ -6,20 +6,20 @@
   "unit_kind": "Section",
   "run": 2,
   "attempt": 1,
-  "model": "claude-sonnet-5",
+  "model": "claude-sonnet-5-5",
   "prompt_version": "0003.1",
   "commit": "2e40bcf",
-  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "extracted_at": "2026-10-19T03:53:50+00:00",
   "max_output_tokens": 64000,
   "effort": "medium",
-  "input_tokens": 532,
-  "output_tokens": 8230,
+  "input_tokens": 535,
+  "output_tokens": 2730,
   "cache_creation_input_tokens": 0,
-  "cache_read_input_tokens": 57494,
-  "run_id": "111fc757241347ca82980db02a4382ab",
+  "cache_read_input_tokens": 57493,
+  "run_id": "2bb8c00f72634c57937e312ec8090a48",
   "artifact_format_version": 3,
   "unit_sha256": "cf80f91bcaa3700284881478ba3b6cd0358dfda18d3e02ee7583134248001b98",
-  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The production origin moved from `https://usejobhunt.vercel.app` to `https://usejobhunt.dev`. A domain was purchased, Vercel serves it, and the old host 308 redirects to it.\",\"rejected_spans\":[\"Settled on the terms spec 0007's finding 6 set out rather than the original cost ones, and taken at the cheap moment, before feature 7 registers callback URLs.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**What it fixed**: the product now serves from a domain it owns, and that redirect is what spec 0007 **AC-4** leans on to stop a sign in being started on a hostname the callback never returns to.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**What it did not fix, and what since did**: Google's consent screen read the Supabase host\",\"rejected_spans\":[\"because that is the OAuth redirect host and the domain move did not touch it\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Closed on 2026-09-01 by feature 21, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \\\"to continue to JobHunt\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The Supabase custom domain add on was considered and rejected on cost\",\"rejected_spans\":[\"since that route reaches the same place for the price of the domain alone\"],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"label\":\"finding 6\",\"mention\":\"spec 0007's finding 6\"},\"phrase\":\"Settled on the terms spec 0007's finding 6 set out rather than the original cost ones\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 7\",\"id\":null,\"mention\":\"feature 7\"},\"phrase\":\"taken at the cheap moment, before feature 7 registers callback URLs\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"mention\":\"`from spec 0002`\"},\"phrase\":\"`from spec 0002`\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"mention\":\"`from spec 0007`\"},\"phrase\":\"`from spec 0007`\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-4\",\"mention\":\"spec 0007 **AC-4**\"},\"phrase\":\"spec 0007 **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"Closed on 2026-09-01 by feature 21\",\"date\":\"2026-09-01\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"id\":null,\"mention\":\"feature 21\"},\"phrase\":\"Closed on 2026-09-01 by feature 21\",\"date\":\"2026-09-01\",\"known_trap_flags\":[]}]}",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Custom domain**: **done 2026-08-30.** The production origin moved from `https://usejobhunt.vercel.app` to `https://usejobhunt.dev`. A domain was purchased, Vercel serves it, and the old host 308 redirects to it.\",\"rejected_spans\":[\"Settled on the terms spec 0007's finding 6 set out rather than the original cost ones, and taken at the cheap moment, before feature 7 registers callback URLs.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"multi_condition_split\",\"rationale_boundary_call\"],\"unclassified_note\":\"A record of a deferred decision that was made and carried out. It states no requirement, outcome criterion, build step or test, so no named type fits.\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**What it fixed**: the product now serves from a domain it owns, and that redirect is what spec 0007 **AC-4** leans on to stop a sign in being started on a hostname the callback never returns to.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**What it did not fix, and what since did**: Google's consent screen read the Supabase host, and the domain move did not touch it.\",\"rejected_spans\":[\"because that is the OAuth redirect host\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Closed on 2026-09-01 by feature 21**, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \\\"to continue to JobHunt\\\".\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"The Supabase custom domain add on was considered and rejected on cost\",\"rejected_spans\":[\"since that route reaches the same place for the price of the domain alone.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"multi_condition_split\"],\"unclassified_note\":\"A rejected alternative recorded with its reason. It is not a requirement, consequence of the shipped change, build step or test.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"**Closed on 2026-09-01 by feature 21**\",\"date\":\"2026-09-01\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-4\",\"mention\":\"spec 0007 **AC-4**\"},\"phrase\":\"that redirect is what spec 0007 **AC-4** leans on\",\"date\":null,\"known_trap_flags\":[]}]}",
   "stop_reason": "end_turn",
   "error": null,
   "failure_kind": null,
@@ -28,16 +28,17 @@
       {
         "id": "derived:1",
         "id_source": "derived",
-        "type": "Consequence",
-        "span": "The production origin moved from `https://usejobhunt.vercel.app` to `https://usejobhunt.dev`. A domain was purchased, Vercel serves it, and the old host 308 redirects to it.",
+        "type": "unclassified",
+        "span": "**Custom domain**: **done 2026-08-30.** The production origin moved from `https://usejobhunt.vercel.app` to `https://usejobhunt.dev`. A domain was purchased, Vercel serves it, and the old host 308 redirects to it.",
         "rejected_spans": [
           "Settled on the terms spec 0007's finding 6 set out rather than the original cost ones, and taken at the cheap moment, before feature 7 registers callback URLs."
         ],
         "known_trap_flags": [
+          "entity_type_ambiguous",
           "multi_condition_split",
           "rationale_boundary_call"
         ],
-        "unclassified_note": null,
+        "unclassified_note": "A record of a deferred decision that was made and carried out. It states no requirement, outcome criterion, build step or test, so no named type fits.",
         "label": null
       },
       {
@@ -56,9 +57,9 @@
         "id": "derived:3",
         "id_source": "derived",
         "type": "Consequence",
-        "span": "**What it did not fix, and what since did**: Google's consent screen read the Supabase host",
+        "span": "**What it did not fix, and what since did**: Google's consent screen read the Supabase host, and the domain move did not touch it.",
         "rejected_spans": [
-          "because that is the OAuth redirect host and the domain move did not touch it"
+          "because that is the OAuth redirect host"
         ],
         "known_trap_flags": [
           "multi_condition_split",
@@ -71,11 +72,10 @@
         "id": "derived:4",
         "id_source": "derived",
         "type": "Consequence",
-        "span": "Closed on 2026-09-01 by feature 21, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \"to continue to JobHunt\".",
+        "span": "**Closed on 2026-09-01 by feature 21**, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \"to continue to JobHunt\".",
         "rejected_spans": [],
         "known_trap_flags": [
-          "multi_condition_split",
-          "embedded_second_claim"
+          "multi_condition_split"
         ],
         "unclassified_note": null,
         "label": null
@@ -83,15 +83,16 @@
       {
         "id": "derived:5",
         "id_source": "derived",
-        "type": "Consequence",
+        "type": "unclassified",
         "span": "The Supabase custom domain add on was considered and rejected on cost",
         "rejected_spans": [
-          "since that route reaches the same place for the price of the domain alone"
+          "since that route reaches the same place for the price of the domain alone."
         ],
         "known_trap_flags": [
+          "entity_type_ambiguous",
           "multi_condition_split"
         ],
-        "unclassified_note": null,
+        "unclassified_note": "A rejected alternative recorded with its reason. It is not a requirement, consequence of the shipped change, build step or test.",
         "label": null
       }
     ],
@@ -100,73 +101,17 @@
         "type": "unclassified",
         "source": {
           "kind": "local",
-          "id": "derived:1"
+          "id": "derived:3"
         },
         "target": {
-          "kind": "reference",
-          "record": "0007",
-          "id": null,
-          "label": "finding 6",
-          "mention": "spec 0007's finding 6"
+          "kind": "local",
+          "id": "derived:4"
         },
-        "phrase": "Settled on the terms spec 0007's finding 6 set out rather than the original cost ones",
-        "date": null,
+        "phrase": "**Closed on 2026-09-01 by feature 21**",
+        "date": "2026-09-01",
         "known_trap_flags": [
           "relationship_type_ambiguous"
         ]
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:1"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "feature 7",
-          "id": null,
-          "label": null,
-          "mention": "feature 7"
-        },
-        "phrase": "taken at the cheap moment, before feature 7 registers callback URLs",
-        "date": null,
-        "known_trap_flags": [
-          "relationship_type_ambiguous"
-        ]
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:1"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0002",
-          "id": null,
-          "label": null,
-          "mention": "`from spec 0002`"
-        },
-        "phrase": "`from spec 0002`",
-        "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:1"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "0007",
-          "id": null,
-          "label": null,
-          "mention": "`from spec 0007`"
-        },
-        "phrase": "`from spec 0007`",
-        "date": null,
-        "known_trap_flags": []
       },
       {
         "type": "unclassified",
@@ -181,39 +126,8 @@
           "label": null,
           "mention": "spec 0007 **AC-4**"
         },
-        "phrase": "spec 0007 **AC-4**",
+        "phrase": "that redirect is what spec 0007 **AC-4** leans on",
         "date": null,
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:3"
-        },
-        "target": {
-          "kind": "local",
-          "id": "derived:4"
-        },
-        "phrase": "Closed on 2026-09-01 by feature 21",
-        "date": "2026-09-01",
-        "known_trap_flags": []
-      },
-      {
-        "type": "unclassified",
-        "source": {
-          "kind": "local",
-          "id": "derived:4"
-        },
-        "target": {
-          "kind": "reference",
-          "record": "feature 21",
-          "id": null,
-          "label": null,
-          "mention": "feature 21"
-        },
-        "phrase": "Closed on 2026-09-01 by feature 21",
-        "date": "2026-09-01",
         "known_trap_flags": []
       }
     ]

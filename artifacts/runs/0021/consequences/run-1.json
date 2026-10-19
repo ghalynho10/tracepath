@@ -1,0 +1,343 @@
+{
+  "record": "0021",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1513,
+  "output_tokens": 6678,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "0f13e6f05f7148b3b26950a9dbe5cc4a",
+  "artifact_format_version": 3,
+  "unit_sha256": "9e633fb99107a21e2046bf45a4a23ce78d59b13c7530c81b018fd98ec17d70be",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A visitor sees real listings scored for real,\",\"rejected_spans\":[\"which is evidence the ranking works rather than a curated illustration of it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The two candidate personas are now the only fabricated element, disclosed in full on the page,\",\"rejected_spans\":[\"which closes the exact objection (\\\"picked to flatter it\\\") that ended the fabricated version.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The refresh reuses every existing gated code path (`searchListings()`, `scoreListings()`, `checkFitScore()`, `checkUsageGate()`) unchanged,\",\"rejected_spans\":[\"so this feature adds no new vendor call shape to reason about, only a new caller of the existing ones.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The refresh introduces a production session minting path where the only prior one was hard blocked outside development (spec 0001, caller 1). The blast radius is bounded (the identity holds no profile or application row and only this route can trigger it), but it is a genuinely new kind of thing in this codebase and the first route handler under `src/app/api/` to write anything.\",\"rejected_spans\":[\"This was weighed against triggering the refresh from a local script instead, and the route was kept because the alternative moves the far more dangerous `SUPABASE_SECRET_KEY` onto a personal machine for a routine task (**Security model**, `rationale.md`).\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"one Adzuna search\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A refresh spends up to 16 `ai_scoring` calls and up to 16 chained `ai_check` calls (32 model calls total) plus two Adzuna searches, not the 16 scoring calls alone; still negligible against the shared caps at a weekly cadence. Two searches is 2 against `job_search`'s global day cap of 66 and 2 against the refresh identity's own account week cap of 25 (`supabase/migrations/20260902120000_usage_gating.sql`).\",\"rejected_spans\":[\"(revised 2026-09-15; the model call count is unchanged, since the kept total is still at most 8)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two Adzuna ids carrying one posting both appear on `/demo`, The first real refresh had exactly this: Everpure, Inc. under ids `5883839578` and `5883870504`, with byte identical snippets but different titles. It stays visible until feature 19 decides the dedup key (`## Follow-up`).\",\"rejected_spans\":[\"since de-duplication is by id only.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Changing a query after seeing one run's results is the move this spec otherwise forbids. It is accepted once, on a criterion about the cards' information (no matched skills for either persona) rather than about which bands came back, and it is bounded by a stopping rule (`## Follow-up`) whose answer is to leave the queries alone (`rationale.md`, \\\"Revision, 2026-09-15\\\").\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what keeps honest rather than silent.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A real employer's name now appears on a public portfolio page next to a `weak_match` or `not_a_match` band (AC-19), an editorial exposure spec 0021's fabricated version never carried and Adzuna's terms do not govern either way.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A flaky `ai_check` vendor call blocks an otherwise successful refresh entirely, since a check failure or refusal now aborts the whole run rather than writing the listing without its ungrounded skills flag (**Feature design**, AC-17).\",\"rejected_spans\":[\"Accepted deliberately: refreshes are manual and retryable, this is the same shape AC-17 already accepts for a scoring failure, and the alternative was writing a row whose check never actually finished as if it had passed clean, which is the exact misrepresentation `ungrounded_skills` exists to prevent.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No scheduler exists yet, so staying current is a manual, easy to forget action; automating it on a cron is explicitly deferred (see `docs/scope/scope.md`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`demo_result`'s shape changes (four new columns, a changed check constraint, two type changes) but the table and its access pattern (secret key client only) are unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One new table (`demo_refresh`), no relationship to the rest of the schema.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No migration plan section:\",\"rejected_spans\":[\"the original migration never applied to a hosted project, so this is edited in place with no live data to transform and no rollback window to plan for.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"phrase\":\"revised 2026-09-15\",\"date\":\"2026-09-15\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"caller 1\",\"mention\":\"spec 0001, caller 1\"},\"phrase\":\"where the only prior one was hard blocked outside development (spec 0001, caller 1)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 19\",\"id\":null,\"mention\":\"feature 19\"},\"phrase\":\"It stays visible until feature 19 decides the dedup key\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"AC-14's visible timestamp\"},\"phrase\":\"which AC-14's visible timestamp is what keeps honest rather than silent\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-19\",\"mention\":\"(AC-19)\"},\"phrase\":\"(AC-19)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"AC-17\"},\"phrase\":\"(**Feature design**, AC-17)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"scope\",\"id\":null,\"mention\":\"`docs/scope/scope.md`\"},\"phrase\":\"automating it on a cron is explicitly deferred (see `docs/scope/scope.md`)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A visitor sees real listings scored for real,",
+        "rejected_spans": [
+          "which is evidence the ranking works rather than a curated illustration of it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The two candidate personas are now the only fabricated element, disclosed in full on the page,",
+        "rejected_spans": [
+          "which closes the exact objection (\"picked to flatter it\") that ended the fabricated version."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The refresh reuses every existing gated code path (`searchListings()`, `scoreListings()`, `checkFitScore()`, `checkUsageGate()`) unchanged,",
+        "rejected_spans": [
+          "so this feature adds no new vendor call shape to reason about, only a new caller of the existing ones."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The refresh introduces a production session minting path where the only prior one was hard blocked outside development (spec 0001, caller 1). The blast radius is bounded (the identity holds no profile or application row and only this route can trigger it), but it is a genuinely new kind of thing in this codebase and the first route handler under `src/app/api/` to write anything.",
+        "rejected_spans": [
+          "This was weighed against triggering the refresh from a local script instead, and the route was kept because the alternative moves the far more dangerous `SUPABASE_SECRET_KEY` onto a personal machine for a routine task (**Security model**, `rationale.md`)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "one Adzuna search",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A refresh spends up to 16 `ai_scoring` calls and up to 16 chained `ai_check` calls (32 model calls total) plus two Adzuna searches, not the 16 scoring calls alone; still negligible against the shared caps at a weekly cadence. Two searches is 2 against `job_search`'s global day cap of 66 and 2 against the refresh identity's own account week cap of 25 (`supabase/migrations/20260902120000_usage_gating.sql`).",
+        "rejected_spans": [
+          "(revised 2026-09-15; the model call count is unchanged, since the kept total is still at most 8)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two Adzuna ids carrying one posting both appear on `/demo`, The first real refresh had exactly this: Everpure, Inc. under ids `5883839578` and `5883870504`, with byte identical snippets but different titles. It stays visible until feature 19 decides the dedup key (`## Follow-up`).",
+        "rejected_spans": [
+          "since de-duplication is by id only."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Changing a query after seeing one run's results is the move this spec otherwise forbids. It is accepted once, on a criterion about the cards' information (no matched skills for either persona) rather than about which bands came back, and it is bounded by a stopping rule (`## Follow-up`) whose answer is to leave the queries alone (`rationale.md`, \"Revision, 2026-09-15\").",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what keeps honest rather than silent.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A real employer's name now appears on a public portfolio page next to a `weak_match` or `not_a_match` band (AC-19), an editorial exposure spec 0021's fabricated version never carried and Adzuna's terms do not govern either way.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A flaky `ai_check` vendor call blocks an otherwise successful refresh entirely, since a check failure or refusal now aborts the whole run rather than writing the listing without its ungrounded skills flag (**Feature design**, AC-17).",
+        "rejected_spans": [
+          "Accepted deliberately: refreshes are manual and retryable, this is the same shape AC-17 already accepts for a scoring failure, and the alternative was writing a row whose check never actually finished as if it had passed clean, which is the exact misrepresentation `ungrounded_skills` exists to prevent."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No scheduler exists yet, so staying current is a manual, easy to forget action; automating it on a cron is explicitly deferred (see `docs/scope/scope.md`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`demo_result`'s shape changes (four new columns, a changed check constraint, two type changes) but the table and its access pattern (secret key client only) are unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One new table (`demo_refresh`), no relationship to the rest of the schema.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No migration plan section:",
+        "rejected_spans": [
+          "the original migration never applied to a hosted project, so this is edited in place with no live data to transform and no rollback window to plan for."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "revised 2026-09-15",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "caller 1",
+          "mention": "spec 0001, caller 1"
+        },
+        "phrase": "where the only prior one was hard blocked outside development (spec 0001, caller 1)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 19",
+          "id": null,
+          "label": null,
+          "mention": "feature 19"
+        },
+        "phrase": "It stays visible until feature 19 decides the dedup key",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14's visible timestamp"
+        },
+        "phrase": "which AC-14's visible timestamp is what keeps honest rather than silent",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-19",
+          "label": null,
+          "mention": "(AC-19)"
+        },
+        "phrase": "(AC-19)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": "(**Feature design**, AC-17)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "scope",
+          "id": null,
+          "label": null,
+          "mention": "`docs/scope/scope.md`"
+        },
+        "phrase": "automating it on a cron is explicitly deferred (see `docs/scope/scope.md`)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

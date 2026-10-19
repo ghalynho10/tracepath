@@ -1,0 +1,77 @@
+{
+  "record": "0006",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 273,
+  "output_tokens": 455,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "3c63534d3ab943079a43bfe7c75a1ee9",
+  "artifact_format_version": 3,
+  "unit_sha256": "b24f1e5735c1b4dce4f3babc21549329a56aa5cc6d2e83c8349c707fe1b22fba",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1: Port onto the component set, carrying spec 0005's composition decisions forward unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The page is rebuilt from the prototype's content and copy, composed entirely from spec 0005's components, with the rhythm, divider, container and grid decisions taken as already settled in that spec's `rationale.md` rather than reopened here.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\": \"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This spec decides only what that one left open, and corrects the two places where the prototype's copy is untrue.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1: Port onto the component set, carrying spec 0005's composition decisions forward unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The page is rebuilt from the prototype's content and copy, composed entirely from spec 0005's components, with the rhythm, divider, container and grid decisions taken as already settled in that spec's `rationale.md` rather than reopened here.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This spec decides only what that one left open, and corrects the two places where the prototype's copy is untrue.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

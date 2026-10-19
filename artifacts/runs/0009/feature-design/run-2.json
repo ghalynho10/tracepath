@@ -1,0 +1,620 @@
+{
+  "record": "0009",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 5995,
+  "output_tokens": 9359,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "1cb24a25486f404dacc8e23c7429f2ca",
+  "artifact_format_version": 3,
+  "unit_sha256": "310e4f80db3998cac5553521d3e18b4e6126dcdae8dfd14685ec6e8b2e19bfa9",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No schema change. This feature adds no table and no column\",\"rejected_spans\":[\", deliberately: acceptance is not recorded (see Consequences), and every fact the notice states is read from code and configuration that already exists\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`envKeys` is what makes AC-5 enforceable, and an empty array is meaningful: it marks a recipient this app reaches without holding a credential of its own, which is exactly Google and GitHub.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"An empty array is not, however, the same as a key that reaches nobody, and the build needed a second shape to say so without lying (see invariant 2)\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The AC-5 test asserts that the set of keys declared in `src/env.ts` is exactly the union of the two lists, with no key claimed twice and no entry naming a key that no longer exists. A stale entry fails just as loudly as an unclassified key\",\"rejected_spans\":[\"so the registry cannot quietly outlive the configuration it describes\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A second registry does the same job for the stored field list\",\"rejected_spans\":[\"which the cross check found had no drift protection while the recipient list did\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The AC-23 test reads `src/lib/supabase/database.types.ts`, which is regenerated from the applied schema by `pnpm db:types`, and fails when a personal data table holds a column no entry names.\",\"rejected_spans\":[\"This is the same guard as AC-5, pointed at the other half of the notice.\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Added 2026-09-18 (AC-24), revised the same day after a cross check.** A third registry\",\"rejected_spans\":[\"for the same reason invariant 2's asymmetry was closed for fields in AC-23: the cookie claim had no drift guard at all, and it went stale the moment spec 0008 added a second cookie\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Not every cookie setting call site is a cookie, and the registry only names the ones that are.** Nothing there can ever put a `Set-Cookie` header on a response. It is not a cookie the guard has to watch and not a fact the page has to omit; it is not in scope at all. It is not in the registry.\",\"rejected_spans\":[\"The first draft of this criterion carried a `visibleToVisitor: false` entry for `src/features/demo/refresh-session.ts`, the demo refresh's own dedicated internal identity, on the theory that it \\\"sets a cookie\\\" internally but never for a visitor. The cross check that reviewed this correction verified the claim against the code rather than trusting it, and found that module never touches an HTTP cookie store at all: `createCookieJar()` (`refresh-session.ts:77`) holds its state in a plain `Map`, and its `.set(name, value)` at line 100 is `Map.prototype.set`, not a cookie API.\",\"naming it in a legal document, even marked undisclosed, would have been the exact kind of unchecked claim this whole correction exists to stop making\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`src/lib/supabase/read-only-cookies.ts`'s `setAll() {}` is a second, different non cookie: a deliberate no-op adapter for a context where Next.js forbids mutating cookies at all. The secondary source scan below names it explicitly as a known zero-effect match, rather than letting it read as an unaccounted-for call site.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. Both pages are static.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither page reads the session, reads the database, or opens a Sentry span.\",\"rejected_spans\":[\"Binding rule 4 asks for a named span where a failure rate matters; a static prerender has no failure to rate, and opening one would add a client boundary these pages must not have.\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The recipient list on the page and the registry are the same list. The page never hardcodes a company name the registry does not hold.\",\"rejected_spans\":[\"This is the shape that already failed once in this repo, where `hero-section.tsx` carried a written count beside a list that had moved on (`src/features/entry-page/AGENTS.md`).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every key in `src/env.ts` is accounted for by exactly one registry entry, or the suite fails. Most map to the recipient that receives them. Three reach no third party at all, two local switches and this site's own canonical address, and those are named in `ENV_KEYS_WITH_NO_RECIPIENT` with a reason each. Two of Vercel's three system values sit there too, because Vercel supplies them to the build rather than receiving them. The third, `NEXT_PUBLIC_VERCEL_ENV`, does not: Sentry stamps it on every event, so it is filed under Sentry. **What \\\"reaches\\\" means**, since features 11, 13 and 14 will each have to apply it: a key reaches a recipient when it is what connects this app to that company, its credential, its address, or a value transmitted to it. It reaches nobody only when no company is on the other end of it at all. A key supplied *by* a company is not thereby a key that reaches it, and if its value is sent onward to somebody else it belongs to that somebody.\",\"rejected_spans\":[\"That mistake was made in this build and caught by a cross check, which is the case the definition below exists to prevent.\",\"**Corrected on 2026-09-01, after the build.** This invariant first said every key maps to a RECIPIENT, which cannot be satisfied honestly: the only way to obey it literally is to file a local switch under a company, which would put a false sentence on a page whose entire value is that every claim on it can be checked. AC-5 itself is unchanged, because its wording is broad enough to cover a second list, and so is the forcing function. A new key still fails the suite until somebody decides which side of the line it falls on, and landing one in the second list is exactly as visible in review as adding a company.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every column in a personal data table maps to exactly one field registry entry, or the suite fails.\",\"rejected_spans\":[\"Invariants 1 and 2 protect the recipient list; this one protects the field list, and it exists because the cross check found the notice guarded on one side only.\"],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither page may introduce `\\\"use client\\\"`.\",\"rejected_spans\":[\"Both live under the marketing tree, whose `AGENTS.md` forbids it outright.\"],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The published address receives mail. Verified on 2026-09-01; verify checks it again rather than trusting the date.\",\"rejected_spans\":[\"An address on a permanent public page that nobody reads is a silent failure, which this project's rules forbid.\",\"it is the kind of thing that breaks later without telling anyone\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The `Set-Cookie` names a real visitor's browser receives, driven through a real sign in, the real callback, and an ordinary signed in navigation, match the cookie registry exactly, or the suite fails. A secondary, cheaper unit test also maps every cookie setting call site under `src/` to a registry entry, but it is a known incomplete net, not the source of truth: it would miss a wrapper function or a direct `Set-Cookie` header write.\",\"rejected_spans\":[\"**Added 2026-09-18 (AC-24), revised the same day after a cross check.**\",\"This is the claim's real guarantee.\",\"and it cannot by itself tell a real cookie store from something that merely resembles one in source text, which is exactly what nearly happened when this criterion's own first draft proposed disclosing an in memory `Map` as a cookie (see the Feature design section above). Invariants 1, 2 and 2b protect the recipient and field lists; this one protects the cookie claim, which had no such protection when spec 0008 added a second cookie and the privacy notice went stale without any test noticing. The asymmetry is the same shape invariant 2b closed for fields: a notice guarded on some of its claims and not others is a notice whose unguarded half nobody is watching.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both pages are public and hold no user data, so there is nothing to authorise. They read no session and query nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"these two routes deliberately opt back in to search indexing while every other route stays out, so the build must not widen that beyond the two pages.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Compliance scope: this feature is where the project's GDPR and UK GDPR posture is written down. It does not change what is processed; spec 0003 and spec 0007 decided that.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new environment variable.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Mail on `usejobhunt.dev` delivers `contact@usejobhunt.dev` to a mailbox that is read. **Already done**: configured and verified by the engineer on 2026-09-01, and corroborated here by DNS on the same day (Zoho MX at priorities 10, 20 and 50, plus an SPF record including `zohomail.com`). This is a prerequisite that is already met, not one the build waits on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Google Cloud console access, for AC-21 and AC-22.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: both pages render, and the recipient list on each matches the registry, verifies **AC-1**, **AC-3**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Drift: adding a key to `src/env.ts` with no matching registry entry fails the unit suite, and removing the assertion is checked to fail the test, so it is not vacuous, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Drift\"},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Regression: changing a Sentry `dataCollection` value to send personal data fails a test, verifies **AC-4**.\",\"rejected_spans\":[\"so the claim on the page cannot become false silently\"],\"known_trap_flags\":[],\"label\":\"Regression\"},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Schema drift: adding a column to a personal data table without naming it in the field registry fails the unit suite, verifies **AC-23**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Schema drift\"},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Tracking drift: adding an analytics dependency or a third party script tag fails the unit suite, verifies **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Tracking drift\"},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Cookie drift, real response (added 2026-09-18, revised after cross check): the integration suite drives sign in start, the callback, and an ordinary signed in navigation as three separate steps, and asserts each step's own `Set-Cookie` names against the registry, verifies **AC-24**.\",\"rejected_spans\":[\"so a cookie added to what a visitor actually receives, at the step it actually appears, cannot quietly leave `/privacy` incomplete the way it already did once\"],\"known_trap_flags\":[],\"label\":\"Cookie drift, real response\"},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Cookie drift, source scan (secondary net): a new cookie setting call site under `src/` with no matching registry entry fails the unit suite, and a registry entry naming a call site that no longer exists also fails. A known non cookie in source text (an in memory jar, a deliberate no-op adapter) is explicitly excluded rather than silently matched, verifies **AC-24**.\",\"rejected_spans\":[\"so the scan does not propose disclosing something that is not a cookie\"],\"known_trap_flags\":[],\"label\":\"Cookie drift, source scan (secondary net)\"},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Metadata: the two pages are indexable while the root layout's robots assertions still pass, verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Metadata\"},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"No client boundary: `/sign-in` still ships zero client JavaScript with the acceptance line added, verifies **AC-19**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No client boundary\"},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Delivery: a real message to the published address arrives, re confirmed at verify time rather than assumed from the setup date, verifies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Delivery\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-3**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-1**, **AC-3**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-1**, **AC-3**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-23\",\"mention\":\"**AC-23**\"},\"phrase\":\"verifies **AC-23**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-24\",\"mention\":\"**AC-24**\"},\"phrase\":\"verifies **AC-24**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-24\",\"mention\":\"**AC-24**\"},\"phrase\":\"verifies **AC-24**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:32\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-19\",\"mention\":\"**AC-19**\"},\"phrase\":\"verifies **AC-19**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:33\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-9**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No schema change. This feature adds no table and no column",
+        "rejected_spans": [
+          ", deliberately: acceptance is not recorded (see Consequences), and every fact the notice states is read from code and configuration that already exists"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`envKeys` is what makes AC-5 enforceable, and an empty array is meaningful: it marks a recipient this app reaches without holding a credential of its own, which is exactly Google and GitHub.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "An empty array is not, however, the same as a key that reaches nobody, and the build needed a second shape to say so without lying (see invariant 2)",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The AC-5 test asserts that the set of keys declared in `src/env.ts` is exactly the union of the two lists, with no key claimed twice and no entry naming a key that no longer exists. A stale entry fails just as loudly as an unclassified key",
+        "rejected_spans": [
+          "so the registry cannot quietly outlive the configuration it describes"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A second registry does the same job for the stored field list",
+        "rejected_spans": [
+          "which the cross check found had no drift protection while the recipient list did"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The AC-23 test reads `src/lib/supabase/database.types.ts`, which is regenerated from the applied schema by `pnpm db:types`, and fails when a personal data table holds a column no entry names.",
+        "rejected_spans": [
+          "This is the same guard as AC-5, pointed at the other half of the notice."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Added 2026-09-18 (AC-24), revised the same day after a cross check.** A third registry",
+        "rejected_spans": [
+          "for the same reason invariant 2's asymmetry was closed for fields in AC-23: the cookie claim had no drift guard at all, and it went stale the moment spec 0008 added a second cookie"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Not every cookie setting call site is a cookie, and the registry only names the ones that are.** Nothing there can ever put a `Set-Cookie` header on a response. It is not a cookie the guard has to watch and not a fact the page has to omit; it is not in scope at all. It is not in the registry.",
+        "rejected_spans": [
+          "The first draft of this criterion carried a `visibleToVisitor: false` entry for `src/features/demo/refresh-session.ts`, the demo refresh's own dedicated internal identity, on the theory that it \"sets a cookie\" internally but never for a visitor. The cross check that reviewed this correction verified the claim against the code rather than trusting it, and found that module never touches an HTTP cookie store at all: `createCookieJar()` (`refresh-session.ts:77`) holds its state in a plain `Map`, and its `.set(name, value)` at line 100 is `Map.prototype.set`, not a cookie API.",
+          "naming it in a legal document, even marked undisclosed, would have been the exact kind of unchecked claim this whole correction exists to stop making"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`src/lib/supabase/read-only-cookies.ts`'s `setAll() {}` is a second, different non cookie: a deliberate no-op adapter for a context where Next.js forbids mutating cookies at all. The secondary source scan below names it explicitly as a known zero-effect match, rather than letting it read as an unaccounted-for call site.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. Both pages are static.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither page reads the session, reads the database, or opens a Sentry span.",
+        "rejected_spans": [
+          "Binding rule 4 asks for a named span where a failure rate matters; a static prerender has no failure to rate, and opening one would add a client boundary these pages must not have."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The recipient list on the page and the registry are the same list. The page never hardcodes a company name the registry does not hold.",
+        "rejected_spans": [
+          "This is the shape that already failed once in this repo, where `hero-section.tsx` carried a written count beside a list that had moved on (`src/features/entry-page/AGENTS.md`)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every key in `src/env.ts` is accounted for by exactly one registry entry, or the suite fails. Most map to the recipient that receives them. Three reach no third party at all, two local switches and this site's own canonical address, and those are named in `ENV_KEYS_WITH_NO_RECIPIENT` with a reason each. Two of Vercel's three system values sit there too, because Vercel supplies them to the build rather than receiving them. The third, `NEXT_PUBLIC_VERCEL_ENV`, does not: Sentry stamps it on every event, so it is filed under Sentry. **What \"reaches\" means**, since features 11, 13 and 14 will each have to apply it: a key reaches a recipient when it is what connects this app to that company, its credential, its address, or a value transmitted to it. It reaches nobody only when no company is on the other end of it at all. A key supplied *by* a company is not thereby a key that reaches it, and if its value is sent onward to somebody else it belongs to that somebody.",
+        "rejected_spans": [
+          "That mistake was made in this build and caught by a cross check, which is the case the definition below exists to prevent.",
+          "**Corrected on 2026-09-01, after the build.** This invariant first said every key maps to a RECIPIENT, which cannot be satisfied honestly: the only way to obey it literally is to file a local switch under a company, which would put a false sentence on a page whose entire value is that every claim on it can be checked. AC-5 itself is unchanged, because its wording is broad enough to cover a second list, and so is the forcing function. A new key still fails the suite until somebody decides which side of the line it falls on, and landing one in the second list is exactly as visible in review as adding a company."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every column in a personal data table maps to exactly one field registry entry, or the suite fails.",
+        "rejected_spans": [
+          "Invariants 1 and 2 protect the recipient list; this one protects the field list, and it exists because the cross check found the notice guarded on one side only."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither page may introduce `\"use client\"`.",
+        "rejected_spans": [
+          "Both live under the marketing tree, whose `AGENTS.md` forbids it outright."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The published address receives mail. Verified on 2026-09-01; verify checks it again rather than trusting the date.",
+        "rejected_spans": [
+          "An address on a permanent public page that nobody reads is a silent failure, which this project's rules forbid.",
+          "it is the kind of thing that breaks later without telling anyone"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The `Set-Cookie` names a real visitor's browser receives, driven through a real sign in, the real callback, and an ordinary signed in navigation, match the cookie registry exactly, or the suite fails. A secondary, cheaper unit test also maps every cookie setting call site under `src/` to a registry entry, but it is a known incomplete net, not the source of truth: it would miss a wrapper function or a direct `Set-Cookie` header write.",
+        "rejected_spans": [
+          "**Added 2026-09-18 (AC-24), revised the same day after a cross check.**",
+          "This is the claim's real guarantee.",
+          "and it cannot by itself tell a real cookie store from something that merely resembles one in source text, which is exactly what nearly happened when this criterion's own first draft proposed disclosing an in memory `Map` as a cookie (see the Feature design section above). Invariants 1, 2 and 2b protect the recipient and field lists; this one protects the cookie claim, which had no such protection when spec 0008 added a second cookie and the privacy notice went stale without any test noticing. The asymmetry is the same shape invariant 2b closed for fields: a notice guarded on some of its claims and not others is a notice whose unguarded half nobody is watching."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both pages are public and hold no user data, so there is nothing to authorise. They read no session and query nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "these two routes deliberately opt back in to search indexing while every other route stays out, so the build must not widen that beyond the two pages.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Compliance scope: this feature is where the project's GDPR and UK GDPR posture is written down. It does not change what is processed; spec 0003 and spec 0007 decided that.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new environment variable.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Mail on `usejobhunt.dev` delivers `contact@usejobhunt.dev` to a mailbox that is read. **Already done**: configured and verified by the engineer on 2026-09-01, and corroborated here by DNS on the same day (Zoho MX at priorities 10, 20 and 50, plus an SPF record including `zohomail.com`). This is a prerequisite that is already met, not one the build waits on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Google Cloud console access, for AC-21 and AC-22.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: both pages render, and the recipient list on each matches the registry, verifies **AC-1**, **AC-3**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Drift: adding a key to `src/env.ts` with no matching registry entry fails the unit suite, and removing the assertion is checked to fail the test, so it is not vacuous, verifies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Drift"
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Regression: changing a Sentry `dataCollection` value to send personal data fails a test, verifies **AC-4**.",
+        "rejected_spans": [
+          "so the claim on the page cannot become false silently"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Regression"
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Schema drift: adding a column to a personal data table without naming it in the field registry fails the unit suite, verifies **AC-23**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Schema drift"
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Tracking drift: adding an analytics dependency or a third party script tag fails the unit suite, verifies **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Tracking drift"
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Cookie drift, real response (added 2026-09-18, revised after cross check): the integration suite drives sign in start, the callback, and an ordinary signed in navigation as three separate steps, and asserts each step's own `Set-Cookie` names against the registry, verifies **AC-24**.",
+        "rejected_spans": [
+          "so a cookie added to what a visitor actually receives, at the step it actually appears, cannot quietly leave `/privacy` incomplete the way it already did once"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Cookie drift, real response"
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Cookie drift, source scan (secondary net): a new cookie setting call site under `src/` with no matching registry entry fails the unit suite, and a registry entry naming a call site that no longer exists also fails. A known non cookie in source text (an in memory jar, a deliberate no-op adapter) is explicitly excluded rather than silently matched, verifies **AC-24**.",
+        "rejected_spans": [
+          "so the scan does not propose disclosing something that is not a cookie"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Cookie drift, source scan (secondary net)"
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Metadata: the two pages are indexable while the root layout's robots assertions still pass, verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Metadata"
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "No client boundary: `/sign-in` still ships zero client JavaScript with the acceptance line added, verifies **AC-19**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No client boundary"
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Delivery: a real message to the published address arrives, re confirmed at verify time rather than assumed from the setup date, verifies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Delivery"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-3**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-1**, **AC-3**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-1**, **AC-3**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-23",
+          "label": null,
+          "mention": "**AC-23**"
+        },
+        "phrase": "verifies **AC-23**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-24",
+          "label": null,
+          "mention": "**AC-24**"
+        },
+        "phrase": "verifies **AC-24**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-24",
+          "label": null,
+          "mention": "**AC-24**"
+        },
+        "phrase": "verifies **AC-24**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:32"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-19",
+          "label": null,
+          "mention": "**AC-19**"
+        },
+        "phrase": "verifies **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:33"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

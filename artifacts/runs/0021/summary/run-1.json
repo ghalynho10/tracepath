@@ -1,0 +1,116 @@
+{
+  "record": "0021",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 591,
+  "output_tokens": 2235,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "8b4ec30e16d8418f95c634188b3b98c1",
+  "artifact_format_version": 3,
+  "unit_sha256": "0173b2913d86d6c9a29f03bf8febd5fcb594ed5b38595ad1f3f6979cc6dae9a8",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Feature 31, `/demo`, is reworked from a fully fabricated page into one that shows real Adzuna listings, scored for real, under two fictional candidate profiles. Only the two candidates are made up now, and they are shown on the page as the whole disclosure.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A manually triggered refresh runs one real Adzuna search\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A manually triggered refresh runs two real Adzuna searches (revised 2026-09-15), scores every kept listing against both personas exactly the way `/search` scores a real user's results (including the same grounding check), and replaces the page's data in one all or nothing write.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"each reversed line below is kept and struck through rather than deleted, with a note saying when and why it stopped applying\",\"rejected_spans\":[\"so a later reader can see the history rather than only the current rule\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the one broad `\\\"software engineer\\\"` search is replaced by two opposed searches, `\\\"backend engineer\\\"` and `\\\"frontend engineer\\\"`, four listings kept from each (**Feature design**, \\\"The fixed search queries\\\").\",\"rejected_spans\":[\"after the first real refresh: 15 of its 16 rows carried zero matched skills\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"routes one migration comment correction to `/develop` (**Build plan**, step 10).\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"phrase\":\"(revised 2026-09-15)\",\"date\":\"2026-09-15\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Feature 31, `/demo`, is reworked from a fully fabricated page into one that shows real Adzuna listings, scored for real, under two fictional candidate profiles. Only the two candidates are made up now, and they are shown on the page as the whole disclosure.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A manually triggered refresh runs one real Adzuna search",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A manually triggered refresh runs two real Adzuna searches (revised 2026-09-15), scores every kept listing against both personas exactly the way `/search` scores a real user's results (including the same grounding check), and replaces the page's data in one all or nothing write.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "each reversed line below is kept and struck through rather than deleted, with a note saying when and why it stopped applying",
+        "rejected_spans": [
+          "so a later reader can see the history rather than only the current rule"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the one broad `\"software engineer\"` search is replaced by two opposed searches, `\"backend engineer\"` and `\"frontend engineer\"`, four listings kept from each (**Feature design**, \"The fixed search queries\").",
+        "rejected_spans": [
+          "after the first real refresh: 15 of its 16 rows carried zero matched skills"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "routes one migration comment correction to `/develop` (**Build plan**, step 10).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "phrase": "(revised 2026-09-15)",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,724 @@
+Held item view (spec 0005): a second result. Experiment 0009 stays the first.
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 1: Why does the landing rule's profile existence read (src/lib/landing-rule.ts) have its own dedicated query instead of reusing readOwnProfile(), which already reads the same row?
+Start item: 0008/AC-7, from the first trace entry "spec 0008 AC-7".
+
+Expected items:
+  reached      spec 0008 AC-7 · specs/0008-app-shell-and-navigation/index.md:54 · hop 0 · the start · 0008/AC-7
+  not reached  spec 0003 AC-14 · specs/0003-data-model/index.md:34 · link_held
+
+Visited steps matching no expected item: 44 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0008 or 0003: 170.
+  0003#build-plan:3 -[satisfies]-> 0003/AC-1 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-2 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-4 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-5 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-6 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-9 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-10 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-11 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:3 -[satisfies]-> 0003/AC-12 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:4 -[satisfies]-> 0003/AC-3 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:4 -[satisfies]-> 0003/AC-14 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:5 -[satisfies]-> 0003/AC-15 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:6 -[satisfies]-> 0003/AC-14 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:6 -[satisfies]-> 0003/AC-15 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:7 -[satisfies]-> 0003/AC-14 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-2 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-3 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-4 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-5 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-6 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-7 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-8 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-9 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-10 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:8 -[satisfies]-> 0003/AC-11 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:9 -[satisfies]-> 0003/AC-3 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:9 -[satisfies]-> 0003/AC-14 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:10 -[satisfies]-> 0003/AC-16 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:11 -[satisfies]-> 0003/AC-13 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:11 -[satisfies]-> 0003/AC-16 · specs/0003-data-model/index.md · Build plan
+  0003#build-plan:11 -[blocked-by]-> 0003#build-plan:10 · specs/0003-data-model/index.md · Build plan
+  0003#feature-design:22 -[verifies]-> 0003/AC-14 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:22 -[verifies]-> 0003/AC-3 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:23 -[verifies]-> 0003/AC-3 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:24 -[verifies]-> 0003/AC-2 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:25 -[verifies]-> 0003/AC-4 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:26 -[verifies]-> 0003/AC-14 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:27 -[verifies]-> 0003/AC-7 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:28 -[verifies]-> 0003/AC-8 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:29 -[verifies]-> 0003/AC-9 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:29 -[verifies]-> 0003/AC-10 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:29 -[verifies]-> 0003/AC-11 · specs/0003-data-model/index.md · Feature design
+  0003#feature-design:31 -[verifies]-> 0003/AC-12 · specs/0003-data-model/index.md · Feature design
+  0003#follow-up:1 -[unclassified]-> 0003#follow-up:2 · specs/0003-data-model/index.md · Follow-up
+  0003#follow-up:2 -[unclassified]-> 0014/AC-5 · specs/0003-data-model/index.md · Follow-up
+  0003#follow-up:3 -[unclassified]-> 0003#follow-up:4 · specs/0003-data-model/index.md · Follow-up
+  0003#follow-up:4 -[unclassified]-> 0014/AC-6 · specs/0003-data-model/index.md · Follow-up
+  0006#requirements:5 -[superseded-by]-> 0008/AC-18 · specs/0006-entry-page-and-link-metadata/index.md · Requirements
+  0006/AC-4 -[unclassified]-> 0008/AC-19 · specs/0006-entry-page-and-link-metadata/index.md · Requirements
+  0007/AC-1 -[amended-by]-> 0008/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0008#build-plan:3 -[satisfies]-> 0008/AC-12 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:3 -[satisfies]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-8 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-10 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-9 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:5 -[satisfies]-> 0008/AC-10a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-7 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-7a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:7 -[satisfies]-> 0008/AC-11 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-13 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-14 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-15 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-15a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-16 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-17 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-19 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:11 -[satisfies]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:11 -[satisfies]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-3 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-3a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-5 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-5a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-21 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-4 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-1 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-2 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-5 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:14 -[satisfies]-> 0008/AC-22 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:14 -[satisfies]-> 0008/AC-23 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:15 -[satisfies]-> 0008/AC-24 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0001#binding-rules:25 -[amended-by]-> 0008#consequences:20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-1 -[superseded-by]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  unresolved:0008:spec-0007-security-model -[amended-by]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0006/AC-4 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0008#copy:5 -[verifies]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:5 -[verifies]-> 0008/AC-16 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:6 -[verifies]-> 0008/AC-12 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:6 -[verifies]-> 0008/AC-15 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:7 -[verifies]-> 0008/AC-10 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:8 -[verifies]-> 0008/AC-9 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:9 -[verifies]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:10 -[verifies]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:10 -[verifies]-> 0008/AC-19 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008/AC-10 -[amended-by]-> 0008/AC-10b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-10b -[unclassified]-> 0014/AC-20a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0001#binding-rules:25 -[amended-by]-> 0008/AC-10b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-3a -[amended-by]-> 0008/AC-3a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-7 -[amended-by]-> 0008/AC-7a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-10 -[amended-by]-> 0008/AC-10a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-5 -[amended-by]-> 0008/AC-5a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-14 -[amended-by]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-5 -[amended-by]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-15 -[amended-by]-> 0008/AC-15a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-17 -[amended-by]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-24 -[amended-by]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0009/AC-14 -[unclassified]-> 0008/AC-5b · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0008 -[amended-by]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Preamble
+  0014/AC-4 -[unclassified]-> 0003/AC-7 · specs/0014-apply-redirect-and-application-record/index.md · Requirements
+  0014/AC-5 -[unclassified]-> 0003/AC-8 · specs/0014-apply-redirect-and-application-record/index.md · Requirements
+  0008/AC-10 -[amended-by]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Requirements
+  0015/AC-7 -[unclassified]-> 0008/AC-6 · specs/0015-fit-scoring-with-shown-reasoning/index.md · Requirements
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-5b · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-6 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-7 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-7a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-8 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-9 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-10 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-10a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-11 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-16 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-24a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-17 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-17a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-18 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-19 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-20 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-1 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-5a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-21 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-22 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-23 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:18 -[satisfies]-> 0008/AC-24 · scope/scope.md · 32. App shell & navigation · done
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-1 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-2 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-4 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-5 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-6 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-9 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-10 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-11 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:8 -[satisfies]-> 0003/AC-12 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:9 -[satisfies]-> 0003/AC-3 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:9 -[satisfies]-> 0003/AC-14 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:9 -[satisfies]-> 0003/AC-15 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:10 -[satisfies]-> 0003/AC-14 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:10 -[satisfies]-> 0003/AC-15 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-2 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-3 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-4 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-5 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-6 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-7 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-8 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-9 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-10 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-11 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:11 -[satisfies]-> 0003/AC-14 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:12 -[satisfies]-> 0003/AC-13 · scope/scope.md · 4. Data model · done · GA
+  feature-4#4-data-model-done-ga:12 -[satisfies]-> 0003/AC-16 · scope/scope.md · 4. Data model · done · GA
+Across records: no. No expected item outside 0008 was reached from the start.
+Across records through held items: no.
+
+Question 1: FAIL · 0 of 1 expected items reached besides the start.
+Evidence: light · 0008 AC-7 is a link target in examples/0008-preamble.md, the other two items are in no example
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 2: Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?
+Start item: 0011/AC-12, from the first trace entry "spec 0011 AC-12".
+
+Expected items:
+  reached      spec 0011 AC-12 · specs/0011-usage-gating-and-kill-switch/index.md:37 · hop 0 · the start · 0011/AC-12
+  not reached  spec 0014 Decision item 2 and AC-20a · specs/0014-apply-redirect-and-application-record/index.md:69 · no_link
+  not reached  spec 0014 Decision item 2 and AC-20a (also) · specs/0014-apply-redirect-and-application-record/index.md:51 · link_held
+  not reached  spec 0008 AC-10b · specs/0008-app-shell-and-navigation/index.md:62 · link_held
+  not reached  spec 0001 binding rule 6 and amendment item Three · specs/0001-stack-and-architecture/index.md:133 · link_held
+  not reached  spec 0001 binding rule 6 and amendment item Three (also) · specs/0001-stack-and-architecture/index.md:143 · link_held
+
+Visited steps matching no expected item: 15 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0011 or 0014 or 0008 or 0001: 240.
+  0001#follow-up:6 -[unclassified]-> 0011 · specs/0001-stack-and-architecture/index.md · Follow-up
+  0002#summary:2 -[unclassified]-> unresolved:0002:spec-0001-s-rule-about-the-database-agent · specs/0002-deployment-and-environments/index.md · Summary
+  0003#follow-up:2 -[unclassified]-> 0014/AC-5 · specs/0003-data-model/index.md · Follow-up
+  0003#follow-up:4 -[unclassified]-> 0014/AC-6 · specs/0003-data-model/index.md · Follow-up
+  0004/AC-1 -[unclassified]-> 0001 · specs/0004-test-foundation/index.md · Requirements
+  0006#requirements:5 -[superseded-by]-> 0008/AC-18 · specs/0006-entry-page-and-link-metadata/index.md · Requirements
+  0006/AC-4 -[unclassified]-> 0008/AC-19 · specs/0006-entry-page-and-link-metadata/index.md · Requirements
+  0007#decision:3 -[unclassified]-> 0001#binding-rules:25 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007/AC-1 -[amended-by]-> 0008/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0008#build-plan:3 -[satisfies]-> 0008/AC-12 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:3 -[satisfies]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-8 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-10 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:4 -[satisfies]-> 0008/AC-9 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:5 -[satisfies]-> 0008/AC-10a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-7 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-7a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:6 -[satisfies]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:7 -[satisfies]-> 0008/AC-11 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-13 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-14 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:8 -[satisfies]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-15 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-15a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-16 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:9 -[satisfies]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-17 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-19 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:10 -[satisfies]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:11 -[satisfies]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:11 -[satisfies]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-3 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-3a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-5 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-5a · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-21 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:12 -[satisfies]-> 0008/AC-4 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-1 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-2 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:13 -[satisfies]-> 0008/AC-5 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:14 -[satisfies]-> 0008/AC-22 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:14 -[satisfies]-> 0008/AC-23 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0008#build-plan:15 -[satisfies]-> 0008/AC-24 · specs/0008-app-shell-and-navigation/index.md · Build plan
+  0001#binding-rules:25 -[amended-by]-> 0008#consequences:20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-1 -[superseded-by]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  unresolved:0008:spec-0007-security-model -[amended-by]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0006/AC-4 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0008#copy:5 -[verifies]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:5 -[verifies]-> 0008/AC-16 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:6 -[verifies]-> 0008/AC-12 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:6 -[verifies]-> 0008/AC-15 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:7 -[verifies]-> 0008/AC-10 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:8 -[verifies]-> 0008/AC-9 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:9 -[verifies]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:10 -[verifies]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008#copy:10 -[verifies]-> 0008/AC-19 · specs/0008-app-shell-and-navigation/index.md · Copy
+  0008/AC-10 -[amended-by]-> 0008/AC-10b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-10b -[unclassified]-> 0014/AC-20a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0001#binding-rules:25 -[amended-by]-> 0008/AC-10b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-3a -[amended-by]-> 0008/AC-3a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-7 -[amended-by]-> 0008/AC-7a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-10 -[amended-by]-> 0008/AC-10a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-5 -[amended-by]-> 0008/AC-5a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-14 -[amended-by]-> 0008/AC-14a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-5 -[amended-by]-> 0008/AC-5b · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-15 -[amended-by]-> 0008/AC-15a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-17 -[amended-by]-> 0008/AC-17a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0008/AC-24 -[amended-by]-> 0008/AC-24a · specs/0008-app-shell-and-navigation/index.md · Preamble
+  0009/AC-14 -[unclassified]-> 0008/AC-5b · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0011#build-plan:1 -[satisfies]-> 0011/AC-1 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-2 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-6 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-9 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-12 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-14 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:1 -[satisfies]-> 0011/AC-15 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:2 -[satisfies]-> 0011/AC-6 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:3 -[satisfies]-> 0011/AC-3 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:3 -[satisfies]-> 0011/AC-4 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:3 -[satisfies]-> 0011/AC-5 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:3 -[satisfies]-> 0011/AC-13 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:4 -[satisfies]-> 0011/AC-7 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:4 -[satisfies]-> 0011/AC-8 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-1 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-2 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-3 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-4 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-5 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-6 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-9 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-13 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:5 -[satisfies]-> 0011/AC-14 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:6 -[satisfies]-> 0011/AC-10 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:7 -[satisfies]-> 0011/AC-10 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#build-plan:7 -[satisfies]-> 0011/AC-11 · specs/0011-usage-gating-and-kill-switch/index.md · Build plan
+  0011#consequences:11 -[amended-by]-> 0011#consequences:12 · specs/0011-usage-gating-and-kill-switch/index.md · Consequences
+  0011#context:2 -[unclassified]-> unresolved:0011:feature-3-already-built-the-piece-this-spec-assumes · specs/0011-usage-gating-and-kill-switch/index.md · Context
+  0011#context:2 -[unclassified]-> 0001 · specs/0011-usage-gating-and-kill-switch/index.md · Context
+  0011#feature-design:40 -[verifies]-> 0011/AC-1 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:40 -[verifies]-> 0011/AC-9 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:41 -[verifies]-> 0011/AC-1 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:41 -[verifies]-> 0011/AC-2 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:42 -[verifies]-> 0011/AC-6 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:43 -[verifies]-> 0011/AC-4 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:43 -[verifies]-> 0011/AC-5 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#feature-design:44 -[verifies]-> 0011/AC-13 · specs/0011-usage-gating-and-kill-switch/index.md · Feature design
+  0011#follow-up:4 -[unclassified]-> 0011#follow-up:5 · specs/0011-usage-gating-and-kill-switch/index.md · Follow-up
+  0012#consequences:11 -[unclassified]-> 0001 · specs/0012-model-client-router/index.md · Consequences
+  0013#consequences:2 -[unclassified]-> 0011 · specs/0013-job-search-and-results-list/index.md · Consequences
+  0014#build-plan:3 -[satisfies]-> 0014/AC-6 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:3 -[satisfies]-> 0014/AC-15 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:4 -[satisfies]-> 0014/AC-13 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:5 -[satisfies]-> 0014/AC-7 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:5 -[satisfies]-> 0014/AC-8 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:5 -[satisfies]-> 0014/AC-18 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:6 -[satisfies]-> 0014/AC-1 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:6 -[satisfies]-> 0014/AC-2 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:6 -[satisfies]-> 0014/AC-3 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:6 -[satisfies]-> 0014/AC-19 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:6 -[satisfies]-> 0014/AC-20 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:7 -[satisfies]-> 0014/AC-4 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:7 -[satisfies]-> 0014/AC-5 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:7 -[satisfies]-> 0014/AC-21 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:8 -[satisfies]-> 0014/AC-17 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:8 -[satisfies]-> 0014/AC-18 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:9 -[satisfies]-> 0014/AC-9 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:10 -[satisfies]-> 0014/AC-11 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:10 -[unclassified]-> 0010/AC-8 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:11 -[satisfies]-> 0014/AC-14 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:12 -[satisfies]-> 0014/AC-10 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:13 -[satisfies]-> 0014/AC-16 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#build-plan:14 -[satisfies]-> 0014/AC-12 · specs/0014-apply-redirect-and-application-record/index.md · Build plan
+  0014#feature-design:31 -[verifies]-> 0014/AC-1 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:31 -[verifies]-> 0014/AC-2 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:31 -[verifies]-> 0014/AC-3 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:31 -[verifies]-> 0014/AC-9 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:32 -[verifies]-> 0014/AC-4 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:33 -[verifies]-> 0014/AC-5 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:34 -[verifies]-> 0014/AC-6 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:34 -[verifies]-> 0014/AC-7 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:35 -[verifies]-> 0014/AC-6 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:36 -[verifies]-> 0014/AC-10 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:36 -[verifies]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:37 -[verifies]-> 0014/AC-2 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:38 -[verifies]-> 0014/AC-8 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:39 -[verifies]-> 0014/AC-9 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:40 -[verifies]-> 0014/AC-9 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:41 -[verifies]-> 0014/AC-10 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:42 -[verifies]-> 0014/AC-11 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:43 -[verifies]-> 0014/AC-13 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#feature-design:44 -[verifies]-> 0014/AC-15 · specs/0014-apply-redirect-and-application-record/index.md · Feature design
+  0014#follow-up:1 -[unclassified]-> 0014#follow-up:2 · specs/0014-apply-redirect-and-application-record/index.md · Follow-up
+  0014#follow-up:4 -[unclassified]-> 0014#follow-up:5 · specs/0014-apply-redirect-and-application-record/index.md · Follow-up
+  0014#follow-up:6 -[unclassified]-> 0014#follow-up:7 · specs/0014-apply-redirect-and-application-record/index.md · Follow-up
+  0014#follow-up:8 -[unclassified]-> 0014#follow-up:9 · specs/0014-apply-redirect-and-application-record/index.md · Follow-up
+  0014#follow-up:10 -[unclassified]-> 0014#follow-up:11 · specs/0014-apply-redirect-and-application-record/index.md · Follow-up
+  0014/AC-20 -[amended-by]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Preamble
+  0008 -[amended-by]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Preamble
+  0001 -[amended-by]-> 0014/AC-20a · specs/0014-apply-redirect-and-application-record/index.md · Preamble
+  0015/AC-7 -[unclassified]-> 0008/AC-6 · specs/0015-fit-scoring-with-shown-reasoning/index.md · Requirements
+  0015/AC-11 -[unclassified]-> 0011 · specs/0015-fit-scoring-with-shown-reasoning/index.md · Requirements
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-1 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-2 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-6 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-9 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-12 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-14 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:11 -[satisfies]-> 0011/AC-15 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:12 -[satisfies]-> 0011/AC-3 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:12 -[satisfies]-> 0011/AC-4 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:12 -[satisfies]-> 0011/AC-5 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:12 -[satisfies]-> 0011/AC-6 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:12 -[satisfies]-> 0011/AC-13 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-1 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-2 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-3 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-4 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-5 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-6 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-7 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-8 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-9 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-13 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:13 -[satisfies]-> 0011/AC-14 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:14 -[satisfies]-> 0011/AC-10 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-10#10-usage-gating-kill-switch-done-ga:14 -[satisfies]-> 0011/AC-11 · scope/scope.md · 10. Usage gating & kill switch · done · GA
+  feature-12#12-apply-redirect-application-record-done:10 -[unclassified]-> 0014/AC-6 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:12 -[satisfies]-> 0014/AC-6 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:12 -[satisfies]-> 0014/AC-7 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:12 -[satisfies]-> 0014/AC-8 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:12 -[satisfies]-> 0014/AC-13 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:12 -[satisfies]-> 0014/AC-15 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:13 -[satisfies]-> 0014/AC-1 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:13 -[satisfies]-> 0014/AC-2 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:13 -[satisfies]-> 0014/AC-3 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:13 -[satisfies]-> 0014/AC-19 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:13 -[satisfies]-> 0014/AC-20 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:14 -[satisfies]-> 0014/AC-4 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:14 -[satisfies]-> 0014/AC-5 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:14 -[satisfies]-> 0014/AC-11 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:14 -[satisfies]-> 0014/AC-21 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:15 -[satisfies]-> 0014/AC-7 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:15 -[satisfies]-> 0014/AC-8 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:15 -[satisfies]-> 0014/AC-9 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:15 -[satisfies]-> 0014/AC-17 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:15 -[satisfies]-> 0014/AC-18 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-10 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-12 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-14 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-16 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-20a · scope/scope.md · 12. Apply redirect & application record · done
+  feature-12#12-apply-redirect-application-record-done:16 -[satisfies]-> 0014/AC-21 · scope/scope.md · 12. Apply redirect & application record · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-5b · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-6 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-7 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-7a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-8 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-9 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-10 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-10a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-11 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-16 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:15 -[satisfies]-> 0008/AC-24a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-17 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-17a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-18 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-19 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:16 -[satisfies]-> 0008/AC-20 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-1 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-5a · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-21 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-22 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:17 -[satisfies]-> 0008/AC-23 · scope/scope.md · 32. App shell & navigation · done
+  feature-32#32-app-shell-navigation-done:18 -[satisfies]-> 0008/AC-24 · scope/scope.md · 32. App shell & navigation · done
+Across records: no. No expected item outside 0011 was reached from the start.
+Across records through held items: no.
+
+Question 2: FAIL · 0 of 5 expected items reached besides the start.
+Evidence: weaker · 0008 AC-10b and spec 0001's binding rule 6 (3 of 6 expected items) are link targets in examples/0008-preamble.md
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 3: Why is password sign in impossible on production?
+Start item: 0002/AC-10, from the first trace entry "spec 0002 AC-10 (struck)".
+
+Expected items:
+  reached      spec 0002 AC-10 (struck) · specs/0002-deployment-and-environments/index.md:31 · hop 0 · the start · 0002/AC-10
+  held only    spec 0007 AC-12 and key invariant 1 · specs/0007-auth-and-per-user-isolation/index.md:35 · hop 3 · 0007/AC-12 · via 0002/AC-10 -[UNCLASSIFIED]-> 0007/AC-13
+  not reached  spec 0007 AC-12 and key invariant 1 (also) · specs/0007-auth-and-per-user-isolation/index.md:142 · record_not_expanded
+  held only    spec 0007 AC-13 · specs/0007-auth-and-per-user-isolation/index.md:36 · hop 1 · 0007/AC-13 · via 0002/AC-10 -[UNCLASSIFIED]-> 0007/AC-13
+  reached      spec 0002 test scenario (struck) · specs/0002-deployment-and-environments/index.md:232 · hop 1 · 0002#feature-design:46
+
+Visited steps matching no expected item: 6 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0002 or 0007: 69.
+  0002#build-plan:1 -[satisfies]-> 0002/AC-2 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:2 -[satisfies]-> 0002/AC-4 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:2 -[satisfies]-> 0002/AC-13 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:3 -[satisfies]-> 0002/AC-1 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:3 -[satisfies]-> 0002/AC-4 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:4 -[satisfies]-> 0002/AC-3 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:5 -[satisfies]-> 0002/AC-5 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:5 -[satisfies]-> 0002/AC-11 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:6 -[satisfies]-> 0002/AC-11 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:7 -[satisfies]-> 0002/AC-10 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:8 -[satisfies]-> 0002/AC-5 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:9 -[satisfies]-> 0002/AC-5 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:10 -[satisfies]-> 0002/AC-6 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:10 -[satisfies]-> 0002/AC-9 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:11 -[satisfies]-> 0002/AC-6 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:11 -[satisfies]-> 0002/AC-8 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:12 -[satisfies]-> 0002/AC-6 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:12 -[satisfies]-> 0002/AC-7 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:13 -[satisfies]-> 0002/AC-13 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:13 -[satisfies]-> 0002/AC-14 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:14 -[satisfies]-> 0002/AC-15 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:15 -[satisfies]-> 0002/AC-16 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:16 -[satisfies]-> 0002/AC-16 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:17 -[satisfies]-> 0002/AC-12 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:18 -[satisfies]-> 0002/AC-17 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:19 -[satisfies]-> 0002/AC-6 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#build-plan:20 -[satisfies]-> 0002/AC-18 · specs/0002-deployment-and-environments/index.md · Build plan
+  0002#summary:2 -[unclassified]-> unresolved:0002:spec-0001-s-rule-about-the-database-agent · specs/0002-deployment-and-environments/index.md · Summary
+  0003/AC-16 -[unclassified]-> unresolved:0003:spec-0002-s-invariant-1 · specs/0003-data-model/index.md · Requirements
+  0004#follow-up:10 -[amended-by]-> 0007 · specs/0004-test-foundation/index.md · Follow-up
+  0006#feature-design:37 -[amended-by]-> 0007 · specs/0006-entry-page-and-link-metadata/index.md · Feature design
+  0007#consequences:8 -[unclassified]-> 0007/AC-10 · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+  0007#consequences:11 -[blocked-by]-> unresolved:0007:feature-21-terms-and-privacy-notices · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+  0007#copy:5 -[unclassified]-> 0007/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#copy:6 -[unclassified]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#decision:2 -[unclassified]-> 0006/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#decision:3 -[unclassified]-> 0001#binding-rules:25 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#follow-up:10 -[blocked-by]-> unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms · specs/0007-auth-and-per-user-isolation/index.md · Follow-up
+  0007/AC-1 -[superseded-by]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  unresolved:0008:spec-0007-security-model -[amended-by]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0008/AC-2 -[unclassified]-> 0007/AC-16 · specs/0008-app-shell-and-navigation/index.md · Requirements
+  0010/AC-15 -[unclassified]-> 0007/AC-15 · specs/0010-profile-entry/index.md · Requirements
+  0006/AC-7 -[superseded-by]-> 0007/AC-16 · scope/scope.md · 6. Entry page & link metadata · done
+  feature-7#7-auth-per-user-isolation-done-ga:11 -[satisfies]-> 0007/AC-20 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-2 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-3 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-4 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-5 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-6 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-7 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-18 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-11 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-13 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-17 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-9 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-10 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-14 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-8 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-16 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  scope#resolved:2 -[unclassified]-> 0007/AC-4 · scope/scope.md · Resolved
+Across records: no. No expected item outside 0002 was reached from the start.
+Across records through held items: yes (0007/AC-12, hop 3, 0007/AC-13, hop 1)
+
+Question 3: FAIL · 1 of 4 expected items reached besides the start.
+Evidence: no overlap with a worked example · no expected item sits in a record an example draws on (spec 0004 AC-1)
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 4: Why is the return path cookie's max age 10 minutes? Is it matched to the lifetime of the PKCE code verifier cookie Supabase writes on the same sign in action, or to the session policy spec 0007 AC-19 records?
+Start item: 0008/AC-14, from the first checked entry "docs/specs/0008-app-shell-and-navigation/index.md line 67 (AC-14)".
+
+Items that should not be reached:
+  not reached  spec 0007 AC-4 · specs/0007-auth-and-per-user-isolation/index.md:25 · no_link
+  not reached  spec 0007 AC-19 · specs/0007-auth-and-per-user-isolation/index.md:42 · no_link
+
+Visited steps matching no expected item: 9 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0007: 52.
+  0002#feature-design:46 -[superseded-by]-> 0007 · specs/0002-deployment-and-environments/index.md · Feature design
+  0002/AC-10 -[superseded-by]-> 0007 · specs/0002-deployment-and-environments/index.md · Requirements
+  0004#follow-up:10 -[amended-by]-> 0007 · specs/0004-test-foundation/index.md · Follow-up
+  0006#feature-design:37 -[amended-by]-> 0007 · specs/0006-entry-page-and-link-metadata/index.md · Feature design
+  0007#consequences:8 -[unclassified]-> 0007/AC-10 · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+  0007#consequences:11 -[blocked-by]-> unresolved:0007:feature-21-terms-and-privacy-notices · specs/0007-auth-and-per-user-isolation/index.md · Consequences
+  0007#copy:5 -[unclassified]-> 0007/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#copy:6 -[unclassified]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#decision:2 -[unclassified]-> 0006/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#decision:3 -[unclassified]-> 0001#binding-rules:25 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#feature-design:50 -[verifies]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:50 -[verifies]-> 0007/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:51 -[verifies]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:51 -[verifies]-> 0007/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:52 -[verifies]-> 0007/AC-7 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:53 -[verifies]-> 0007/AC-10 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:54 -[verifies]-> 0007/AC-15 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:56 -[verifies]-> 0007/AC-9 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:57 -[verifies]-> 0007/AC-2 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:58 -[verifies]-> 0007/AC-12 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#follow-up:10 -[blocked-by]-> unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms · specs/0007-auth-and-per-user-isolation/index.md · Follow-up
+  0007/AC-1 -[superseded-by]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  unresolved:0008:spec-0007-security-model -[amended-by]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0008/AC-2 -[unclassified]-> 0007/AC-16 · specs/0008-app-shell-and-navigation/index.md · Requirements
+  0010/AC-15 -[unclassified]-> 0007/AC-15 · specs/0010-profile-entry/index.md · Requirements
+  0006/AC-7 -[superseded-by]-> 0007/AC-16 · scope/scope.md · 6. Entry page & link metadata · done
+  feature-7#7-auth-per-user-isolation-done-ga:11 -[satisfies]-> 0007/AC-20 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-2 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-3 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-4 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-5 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-6 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-7 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-18 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-11 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-13 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-17 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-9 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-10 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-14 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-8 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-16 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  scope#resolved:2 -[unclassified]-> 0007/AC-4 · scope/scope.md · Resolved
+Across records: no. No expected item outside 0008 was reached from the start.
+Across records through held items: no.
+
+Question 4: PASS · 0 of 2 expected items reached besides the start.
+Evidence: light · 0008 AC-14 is a link target in examples/0008-preamble.md
+
+held_for_review keeps spec 0004's meaning: the item is held, whether or not this view wrote it.
+
+Question 5: Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?
+Start item: 0007#consequences:11, from the first trace entry "spec 0007 Consequences", the entity at specs/0007-auth-and-per-user-isolation/index.md:313.
+
+Expected items:
+  reached      spec 0007 Consequences · specs/0007-auth-and-per-user-isolation/index.md:313 · hop 0 · the start · 0007#consequences:11
+  not reached  spec 0007 Follow-up · specs/0007-auth-and-per-user-isolation/index.md:335 · no_link
+  not reached  spec 0007 Follow-up (also) · specs/0007-auth-and-per-user-isolation/index.md:336 · held_for_review
+  not reached  scope.md feature 21 row · scope/scope.md:179 · no_link
+  not reached  scope.md feature 21 row (also) · scope/scope.md:180 · no_link
+  not reached  scope.md Resolved, custom domain · scope/scope.md:516 · no_link
+  not reached  spec 0009 Summary · specs/0009-terms-and-privacy-notices/index.md:17 · no_link
+
+Visited steps matching no expected item: 1 (information, not a verdict).
+Accepted links written outside the expected sections that touch 0007 or feature-21 or scope or 0009: 95.
+  0002#feature-design:46 -[superseded-by]-> 0007 · specs/0002-deployment-and-environments/index.md · Feature design
+  0002/AC-10 -[superseded-by]-> 0007 · specs/0002-deployment-and-environments/index.md · Requirements
+  0004#follow-up:10 -[amended-by]-> 0007 · specs/0004-test-foundation/index.md · Follow-up
+  0006#feature-design:37 -[amended-by]-> 0007 · specs/0006-entry-page-and-link-metadata/index.md · Feature design
+  0007#copy:5 -[unclassified]-> 0007/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#copy:6 -[unclassified]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Copy
+  0007#decision:2 -[unclassified]-> 0006/AC-4 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#decision:3 -[unclassified]-> 0001#binding-rules:25 · specs/0007-auth-and-per-user-isolation/index.md · Decision
+  0007#feature-design:50 -[verifies]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:50 -[verifies]-> 0007/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:51 -[verifies]-> 0007/AC-5 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:51 -[verifies]-> 0007/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:52 -[verifies]-> 0007/AC-7 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:53 -[verifies]-> 0007/AC-10 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:54 -[verifies]-> 0007/AC-15 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:56 -[verifies]-> 0007/AC-9 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:57 -[verifies]-> 0007/AC-2 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007#feature-design:58 -[verifies]-> 0007/AC-12 · specs/0007-auth-and-per-user-isolation/index.md · Feature design
+  0007/AC-1 -[amended-by]-> 0008/AC-6 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0007-auth-and-per-user-isolation/index.md · Requirements
+  0007/AC-1 -[superseded-by]-> 0008/AC-6 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0007/AC-16 -[amended-by]-> 0008/AC-18 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  unresolved:0008:spec-0007-security-model -[amended-by]-> 0008/AC-20 · specs/0008-app-shell-and-navigation/index.md · Consequences
+  0008/AC-2 -[unclassified]-> 0007/AC-16 · specs/0008-app-shell-and-navigation/index.md · Requirements
+  0009#build-plan:2 -[satisfies]-> 0009/AC-4 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:2 -[satisfies]-> 0009/AC-5 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:2 -[satisfies]-> 0009/AC-6 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:2 -[satisfies]-> 0009/AC-23 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:2 -[satisfies]-> 0009/AC-14 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:3 -[satisfies]-> 0009/AC-1 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:3 -[satisfies]-> 0009/AC-17 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:3 -[satisfies]-> 0009/AC-20 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:4 -[satisfies]-> 0009/AC-18 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:4 -[satisfies]-> 0009/AC-19 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-2 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-3 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-7 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-8 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-10 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-11 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-12 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-13 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:5 -[satisfies]-> 0009/AC-14 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:6 -[satisfies]-> 0009/AC-15 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:6 -[satisfies]-> 0009/AC-16 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:7 -[satisfies]-> 0009/AC-9 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:7 -[satisfies]-> 0009/AC-21 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#build-plan:7 -[satisfies]-> 0009/AC-22 · specs/0009-terms-and-privacy-notices/index.md · Build plan
+  0009#feature-design:22 -[verifies]-> 0009/AC-1 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:22 -[verifies]-> 0009/AC-3 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:22 -[verifies]-> 0009/AC-6 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:23 -[verifies]-> 0009/AC-5 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:24 -[verifies]-> 0009/AC-4 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:25 -[verifies]-> 0009/AC-23 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:26 -[verifies]-> 0009/AC-14 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:29 -[verifies]-> 0009/AC-17 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:30 -[verifies]-> 0009/AC-19 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#feature-design:31 -[verifies]-> 0009/AC-9 · specs/0009-terms-and-privacy-notices/index.md · Feature design
+  0009#follow-up:9 -[unclassified]-> 0009#follow-up:12 · specs/0009-terms-and-privacy-notices/index.md · Follow-up
+  0009/AC-14 -[corrected-by]-> 0009/AC-14 · specs/0009-terms-and-privacy-notices/index.md · Preamble
+  0009#requirements:5 -[amended-by]-> 0009/AC-14 · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0009/AC-14 -[unclassified]-> 0008/AC-5b · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0009/AC-14 -[unclassified]-> 0009/AC-24 · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0009/AC-15 -[unclassified]-> 0009/AC-16 · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0009/AC-24 -[unclassified]-> 0009/AC-5 · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0009/AC-24 -[unclassified]-> 0009/AC-23 · specs/0009-terms-and-privacy-notices/index.md · Requirements
+  0010/AC-15 -[unclassified]-> 0007/AC-15 · specs/0010-profile-entry/index.md · Requirements
+  0013/AC-11 -[unclassified]-> 0009/AC-5 · specs/0013-job-search-and-results-list/index.md · Requirements
+  0006/AC-7 -[superseded-by]-> 0007/AC-16 · scope/scope.md · 6. Entry page & link metadata · done
+  feature-7#7-auth-per-user-isolation-done-ga:11 -[satisfies]-> 0007/AC-20 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-2 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-3 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-4 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-5 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-6 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-7 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:12 -[satisfies]-> 0007/AC-18 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-1 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-11 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-12 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-13 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:13 -[satisfies]-> 0007/AC-17 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-9 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-10 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-14 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:14 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-8 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-15 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-16 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  feature-7#7-auth-per-user-isolation-done-ga:15 -[satisfies]-> 0007/AC-19 · scope/scope.md · 7. Auth & per user isolation · done · GA
+  scope#deferred:1 -[blocked-by]-> unresolved:scope:feature-23-applications-dashboard · scope/scope.md · Deferred
+  scope#deferred:1 -[blocked-by]-> unresolved:scope:feature-22-discard-with-reason · scope/scope.md · Deferred
+Across records: no. No expected item outside 0007 was reached from the start.
+Across records through held items: no.
+
+Question 5: FAIL · 0 of 6 expected items reached besides the start.
+Evidence: weaker · the feature 21 row (scope.md line 179) is the input of examples/feature-21-scope-row.md, whose output points at spec 0009 ACs

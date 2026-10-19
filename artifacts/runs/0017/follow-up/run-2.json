@@ -1,0 +1,120 @@
+{
+  "record": "0017",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1068,
+  "output_tokens": 1442,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "cb5861194bbc4d9d9c20f7bb101c8fc3",
+  "artifact_format_version": 3,
+  "unit_sha256": "5a227a6cb80e431c9cf03b744e8783837f59610ea6ff2e0eaa0407044c17162a",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"This spec deliberately does not gate `pnpm eval` behind an explicit opt-in environment variable the way `TEST_LIVE_MODEL_CALLS_ENABLED` gates the one paid case inside `pnpm test:integration`. The safety mechanism here is that `eval` is its own Vitest project, reachable only by naming `--project eval` explicitly, and never included in `pnpm test` or `pnpm test:integration`. If a later command is ever added that runs every Vitest project unfiltered, revisit whether that alone is still enough.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The global day cap for `ai_scoring` (1320, shared across everything that calls this tier, including local `pnpm dev` usage on `/search`, not scoped per fixture user) is the real ceiling this feature can hit, not the account weekly cap (500). Roughly sixteen full 80 call runs a day share that global ceiling with everything else touching `ai_scoring` locally; worth watching once this ships if iteration gets heavy, not solved here.\",\"rejected_spans\":[\"since this feature mints a fresh fixture user every run, that account counter starts at zero each time and is not the binding constraint\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`src/lib/ai/tiers.ts`'s `TIERS[tier].model` is typed `LanguageModel`, a union that also permits a plain gateway model id string `tiers.ts` itself never constructs; the `resolvedModel()` guard this feature exports narrows past that. If `tiers.ts` ever legitimately needs the string form, `resolvedModel()`'s own throw is where that would first surface, and it would need revisiting then, not guessed at now.\",\"rejected_spans\":[\"matching the reasoning already written beside the guard it replaces in `tiers.test.ts`\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Root `AGENTS.md`'s `## Commands` section (line 37) still describes Vitest as \\\"two projects\\\"; it was already stale before this feature and this feature adds a fourth plus a new `pnpm eval` script the commands list does not yet name. `/architect` does not edit `AGENTS.md`; flagging it here for `/sync` or a direct edit once this feature builds.\",\"rejected_spans\":[\"(spec 0011 added the third, `integration-serial`, on 2026-09-03)\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done 2026-09-08 at feature close**, by direct edit, the option this item itself names. The claim was verified first and was accurate on both counts. The section now names all four projects with the spec that added each, and the commands block carries `pnpm eval` marked as paid, together with the fact that the binding ceiling is the shared `ai_scoring` global day cap rather than the account weekly cap, since the harness mints a fresh fixture user every run.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"This spec assumes the one minted session comfortably outlives a full run (sixteen pairs, bounded concurrency, five sequential calls each) without needing a refresh. If feature 15's set grows large enough, or a slower model tier is ever routed through this same harness, to make that assumption doubtful, re minting per pair (at the cost of more setup calls) is the fix, not something this build needs to solve preemptively.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"**Done 2026-09-08 at feature close**\",\"date\":\"2026-09-08\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "This spec deliberately does not gate `pnpm eval` behind an explicit opt-in environment variable the way `TEST_LIVE_MODEL_CALLS_ENABLED` gates the one paid case inside `pnpm test:integration`. The safety mechanism here is that `eval` is its own Vitest project, reachable only by naming `--project eval` explicitly, and never included in `pnpm test` or `pnpm test:integration`. If a later command is ever added that runs every Vitest project unfiltered, revisit whether that alone is still enough.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The global day cap for `ai_scoring` (1320, shared across everything that calls this tier, including local `pnpm dev` usage on `/search`, not scoped per fixture user) is the real ceiling this feature can hit, not the account weekly cap (500). Roughly sixteen full 80 call runs a day share that global ceiling with everything else touching `ai_scoring` locally; worth watching once this ships if iteration gets heavy, not solved here.",
+        "rejected_spans": [
+          "since this feature mints a fresh fixture user every run, that account counter starts at zero each time and is not the binding constraint"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`src/lib/ai/tiers.ts`'s `TIERS[tier].model` is typed `LanguageModel`, a union that also permits a plain gateway model id string `tiers.ts` itself never constructs; the `resolvedModel()` guard this feature exports narrows past that. If `tiers.ts` ever legitimately needs the string form, `resolvedModel()`'s own throw is where that would first surface, and it would need revisiting then, not guessed at now.",
+        "rejected_spans": [
+          "matching the reasoning already written beside the guard it replaces in `tiers.test.ts`"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Root `AGENTS.md`'s `## Commands` section (line 37) still describes Vitest as \"two projects\"; it was already stale before this feature and this feature adds a fourth plus a new `pnpm eval` script the commands list does not yet name. `/architect` does not edit `AGENTS.md`; flagging it here for `/sync` or a direct edit once this feature builds.",
+        "rejected_spans": [
+          "(spec 0011 added the third, `integration-serial`, on 2026-09-03)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done 2026-09-08 at feature close**, by direct edit, the option this item itself names. The claim was verified first and was accurate on both counts. The section now names all four projects with the spec that added each, and the commands block carries `pnpm eval` marked as paid, together with the fact that the binding ceiling is the shared `ai_scoring` global day cap rather than the account weekly cap, since the harness mints a fresh fixture user every run.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "This spec assumes the one minted session comfortably outlives a full run (sixteen pairs, bounded concurrency, five sequential calls each) without needing a refresh. If feature 15's set grows large enough, or a slower model tier is ever routed through this same harness, to make that assumption doubtful, re minting per pair (at the cost of more setup calls) is the fix, not something this build needs to solve preemptively.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "**Done 2026-09-08 at feature close**",
+        "date": "2026-09-08",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "record": "0008",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 223,
+  "output_tokens": 388,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b9306ee852bf477ebd59264b610f0ca8",
+  "artifact_format_version": 3,
+  "unit_sha256": "1b524ede1cf612f34050eae3246d2949d1099aa5d16b156b3e06739704978386",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The signed in app gets the smallest shell that can hold it: three routes, a thin header with no mobile menu, and one shared rule for where a visitor lands after sign in.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"A deep link a visitor followed while signed out survives sign in and returns them to it, carried by a request header the proxy echoes on every request, then a query parameter, then a short lived cookie written by the Server Action that already sends the visitor to the provider.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"The door that removes the sign in invitation from `/` is one small route handler.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No database change is involved.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The signed in app gets the smallest shell that can hold it: three routes, a thin header with no mobile menu, and one shared rule for where a visitor lands after sign in.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A deep link a visitor followed while signed out survives sign in and returns them to it, carried by a request header the proxy echoes on every request, then a query parameter, then a short lived cookie written by the Server Action that already sends the visitor to the provider.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "The door that removes the sign in invitation from `/` is one small route handler.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No database change is involved.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

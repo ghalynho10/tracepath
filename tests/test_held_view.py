@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.conftest import pre_feature_9_runs
 from tracepath.extract.compare import ReviewReason, ReviewReasonName
 from tracepath.extract.records import Record
 from tracepath.pipeline import (
@@ -33,8 +34,9 @@ Corpus = tuple[tuple[UnitResult, ...], CorpusResolution, tuple[Record, ...]]
 
 
 @pytest.fixture(scope="module")
-def corpus() -> Corpus:
-    results = committed_units(ROOT, SNAPSHOT)
+def corpus(tmp_path_factory: pytest.TempPathFactory) -> Corpus:
+    """The 29 units before feature 9, where the examples below were read (frozen data)."""
+    results = committed_units(pre_feature_9_runs(tmp_path_factory.mktemp("frozen")), SNAPSHOT)
     records = records_for_units(results, SNAPSHOT, COMMIT)
     return results, resolve_accepted(results, records), records
 

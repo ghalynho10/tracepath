@@ -14,6 +14,7 @@ from typing import cast
 import pytest
 from neo4j import Driver
 
+from tests.conftest import pre_feature_9_runs
 from tracepath.artifacts import RUNS_DIR, read_run, write_graph_build
 from tracepath.extract.schema import RelationshipType
 from tracepath.graph.model import Provenance, entity_row, link_row
@@ -194,7 +195,7 @@ def manifest_for(root: Path) -> dict[str, object]:
 
 
 def test_the_manifest_lists_each_units_run_files_model_and_prompt_version(tmp_path: Path) -> None:
-    root = two_unit_root(tmp_path, "0001/binding-rules", "0014/requirements")
+    root = pre_feature_9_runs(tmp_path, "0001/binding-rules", "0014/requirements")
 
     manifest = manifest_for(root)
 
@@ -273,7 +274,7 @@ def test_ac_17b_every_units_accepted_link_count(
 
 
 def test_the_manifest_lists_prompt_versions_and_the_review_log_count(tmp_path: Path) -> None:
-    root = two_unit_root(tmp_path, "0001/binding-rules", "0014/requirements")
+    root = pre_feature_9_runs(tmp_path, "0001/binding-rules", "0014/requirements")
 
     manifest = manifest_for(root)
 

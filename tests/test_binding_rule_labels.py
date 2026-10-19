@@ -24,6 +24,8 @@ from tracepath.resolve.endpoints import build_label_index
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
 BINDING_RULES = Path("0001") / "binding-rules"
+#: The `0002.3` runs, superseded by feature 9's re extraction.
+FROZEN_RUNS = ROOT / "artifacts" / "superseded" / "2026-10-18-claude-sonnet-5"
 
 RULES_TEXT = (
     "## Binding rules\n\n"
@@ -201,7 +203,7 @@ def test_binding_rule_6_resolves_to_one_entity_on_its_opening_line_in_every_comm
 ) -> None:
     destination = tmp_path / RUNS_DIR / BINDING_RULES
     destination.parent.mkdir(parents=True)
-    shutil.copytree(ROOT / RUNS_DIR / BINDING_RULES, destination)
+    shutil.copytree(FROZEN_RUNS / BINDING_RULES, destination)
 
     (result,) = committed_units(tmp_path, SNAPSHOT)
     opening_line = result.unit.text[: result.unit.text.index("**6.")].count("\n") + 1
@@ -220,7 +222,7 @@ def test_the_same_rebuild_with_the_pre_check_skipped_resolves_nothing(tmp_path: 
     """The committed runs carry no entity label at all, so the pre-check is the whole fix."""
     destination = tmp_path / RUNS_DIR / BINDING_RULES
     destination.parent.mkdir(parents=True)
-    shutil.copytree(ROOT / RUNS_DIR / BINDING_RULES, destination)
+    shutil.copytree(FROZEN_RUNS / BINDING_RULES, destination)
     (result,) = committed_units(tmp_path, SNAPSHOT)
 
     for artifact in result.artifacts:

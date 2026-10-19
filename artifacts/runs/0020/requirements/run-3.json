@@ -1,0 +1,287 @@
+{
+  "record": "0020",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2709,
+  "output_tokens": 4024,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f4006510e149476ba067ee00ab2f828c",
+  "artifact_format_version": 3,
+  "unit_sha256": "f1f8779b61a7b5cd48d14859d420bcd9aa7e503ab565fe31d5277277e2661be1",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want to see my own remaining search allowance before I search,\",\"rejected_spans\":[\"so a refusal is information I already had, not a surprise.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want the privacy notice to keep describing these two tables accurately,\",\"rejected_spans\":[\"so it never states something the code has stopped doing.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: A signed in user visiting `/search` sees their own `job_search` usage against their account week cap (for example \\\"18 of 25 searches used this week\\\") on every render of that page, bare visit or with results, read live from the database rather than a client held or hardcoded number. **On a render that runs a search, the number counts that search.** A render may never show a figure that predates its own call, because the one moment the line is read hardest is straight after a search, and a number that lags by one tells a person at their last allowed search that another remains. This covers the account week window only, the one reason a person's own past searches affect; the other four refusal reasons (the two app wide caps and the two kill switch states) are not previewed here and stay exactly as legible as they already are, a plain sentence at the moment of refusal.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: The shown number is `usage_gate_counter.consumed_count`, never `attempt_count`.\",\"rejected_spans\":[\"`attempt_count` also counts refused attempts, which spent no budget, so showing it would overstate how much of the cap is actually gone.\"],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: A caller with no `usage_gate_counter` row yet for the current week, nobody has searched this week, sees the cap's full remaining amount (for example \\\"0 of 25\\\"), never an error and never a newly created row. The read path performs no insert or update of any kind, unlike `check_usage_gate` itself.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: The read path computes the account week's `period_start` with the exact same UTC expression `check_usage_gate` uses, `pg_catalog.date_trunc('week', pg_catalog.now() at time zone 'utc')::date` (schema qualified, since the new function is `set search_path = ''` too),\",\"rejected_spans\":[\"so the number shown and the number enforced can never disagree at a week boundary.\"],\"known_trap_flags\":[]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: The cap value shown is read live from `usage_cap`, never a literal in application code,\",\"rejected_spans\":[\"so an operator's no deploy change to the cap shows up on the next render.\"],\"known_trap_flags\":[]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: A failure to read usage renders a visible inline notice and does not block the search form or the rest of the page from rendering. No silent zero, no silent hiding.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: The read function derives the caller's account from `auth.uid()` inside itself, never from a parameter, and the TypeScript wrapper verifies the caller with `getClaims()` before calling it, the same defense in depth pattern `checkUsageGate()` already uses. One account's usage is never visible to another.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: No new grant is added on `usage_gate_counter`; it stays reachable only through a `security definer` function, by construction. `usage_cap`'s existing `select` grant to `service_role`, for dashboard debugging, is unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: v1 shows `job_search` usage only, and this is a proven choice, not a deferred one. `src/features/search/adzuna.ts`'s `RESULTS_PER_PAGE` is exported so a test can import the real value rather than a copied literal. That test, run against the real `usage_cap` rows (an integration test, since the caps are no deploy editable per AC-5 and a unit test could only pin the migration's seed values), asserts that `ai_scoring`'s and `ai_check`'s own caps stay at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, for all three window scopes (account week, global day, global month), not only the one this feature displays. That arithmetic is what guarantees `job_search`'s own cap always binds at or before either AI tier's, so showing it alone tells the whole truth about what will actually stop the caller. The test failing, or an operator changing a cap value so it no longer holds, is the signal to revisit this scope.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: `src/features/legal/stored-fields.ts`'s description of `usage_cap` and of `usage_gate_counter.call_type` no longer states or implies these tables count job search calls only. Migration `20260906120000_model_client_router_usage_cap.sql` added `ai_scoring` and `ai_check` rows to the same tables, and neither description was updated to say so. **Corrected 2026-09-12: only ONE of the two is user facing.** This criterion and the Summary both used to say \\\"two sentences in the privacy notice\\\", which is wrong and was caught by `/check verify` reading the rendered page rather than the source. `usage_gate_counter.call_type`'s `describedAs` does render on `/privacy`. `usage_cap`'s text is `NON_PERSONAL_TABLES[].why`, whose only reader is `src/features/legal/stored-fields.test.ts`; it reaches no user facing surface at all. Both corrections are still required, because the registry is what a later reader of the codebase trusts, but only the `call_type` one can be confirmed by reading `/privacy`, and the `usage_cap` one must be confirmed at its source.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: On a render that runs a search, `UsageNotice`'s read is ordered after that search by an `await` it performs itself. `SearchPage` calls `searchListings()` WITHOUT awaiting it and passes the promise to `UsageNotice` and to `SearchResults`; `UsageNotice` awaits that promise as its first statement, then reads usage. The ordering is therefore an `await` in the component that depends on it, guarded two ways: the page tests catch any reordering, including folding the two awaits into one `Promise.all`, and lint catches deleting the `await` outright, because the prop then goes unused. **No claim is made that a refactor cannot undo this.** Two such claims have now been made about this one line and both were wrong, so the criterion states what is true and stays true: where the ordering lives, and what catches its removal. **Rewritten 2026-09-13**: this criterion previously described the prop itself as the guarantee, which was false, and the code satisfying it has changed to match.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: One mechanism serves every render. The number always comes from `get_job_search_usage_summary()`, on the bare visit and the search render alike. There is no second source and therefore no rule deciding which applies,\",\"rejected_spans\":[\"which is what keeps the five refusal reasons, `validation_failed`, and every failure path correct without a special case for each.\"],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: The figure shown after a search that was allowed counts that search; the figure shown after a search that was refused, for any of the five reasons, is unchanged by it, which is the true position in both cases. The boundary case is the test that matters: an account one below its cap runs its last allowed search, and the line must read the post increment figure, never the figure that implies another search remains.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: A search that passes the gate and then fails at Adzuna still shows the incremented figure. This is the path where somebody spent budget and got nothing, so a line that under reported here would be wrong in the most costly direction. It falls out of AC-11 for free, since the read runs after the search resolves whatever the outcome, and it is stated separately because `withUsageGate()` discards the gate decision on that path and an implementation carrying the number through the decision instead would silently lose it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: An integration test proves `anon` cannot execute either `security definer` function, `check_usage_gate` and `get_job_search_usage_summary`.\",\"rejected_spans\":[\"Neither grant is pinned by any test today: spec 0011's scenarios exercise the wrapper's session handling rather than the grant, and this feature's own function had its ACL checked once by hand during verification, which proves nothing about tomorrow. This criterion is kept from the dropped gate option because the gap it closes was never specific to that option.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Clauses 2 and 3 of feature 28's own Done when, gating a new call type by default and the kill switch staying a last resort, are verified already true against the running code (see Context) and need no acceptance criteria here,\",\"rejected_spans\":[\"since nothing is being built for them.\"],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A status note that two existing clauses are already true and need no criteria. It states no requirement, outcome, build step or test of its own.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"phrase\":\"the caps are no deploy editable per AC-5\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-11\"},\"phrase\":\"It falls out of AC-11 for free\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"phrase\":null,\"date\":\"2026-09-12\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want to see my own remaining search allowance before I search,",
+        "rejected_spans": [
+          "so a refusal is information I already had, not a surprise."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want the privacy notice to keep describing these two tables accurately,",
+        "rejected_spans": [
+          "so it never states something the code has stopped doing."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: A signed in user visiting `/search` sees their own `job_search` usage against their account week cap (for example \"18 of 25 searches used this week\") on every render of that page, bare visit or with results, read live from the database rather than a client held or hardcoded number. **On a render that runs a search, the number counts that search.** A render may never show a figure that predates its own call, because the one moment the line is read hardest is straight after a search, and a number that lags by one tells a person at their last allowed search that another remains. This covers the account week window only, the one reason a person's own past searches affect; the other four refusal reasons (the two app wide caps and the two kill switch states) are not previewed here and stay exactly as legible as they already are, a plain sentence at the moment of refusal.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: The shown number is `usage_gate_counter.consumed_count`, never `attempt_count`.",
+        "rejected_spans": [
+          "`attempt_count` also counts refused attempts, which spent no budget, so showing it would overstate how much of the cap is actually gone."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: A caller with no `usage_gate_counter` row yet for the current week, nobody has searched this week, sees the cap's full remaining amount (for example \"0 of 25\"), never an error and never a newly created row. The read path performs no insert or update of any kind, unlike `check_usage_gate` itself.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: The read path computes the account week's `period_start` with the exact same UTC expression `check_usage_gate` uses, `pg_catalog.date_trunc('week', pg_catalog.now() at time zone 'utc')::date` (schema qualified, since the new function is `set search_path = ''` too),",
+        "rejected_spans": [
+          "so the number shown and the number enforced can never disagree at a week boundary."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: The cap value shown is read live from `usage_cap`, never a literal in application code,",
+        "rejected_spans": [
+          "so an operator's no deploy change to the cap shows up on the next render."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: A failure to read usage renders a visible inline notice and does not block the search form or the rest of the page from rendering. No silent zero, no silent hiding.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: The read function derives the caller's account from `auth.uid()` inside itself, never from a parameter, and the TypeScript wrapper verifies the caller with `getClaims()` before calling it, the same defense in depth pattern `checkUsageGate()` already uses. One account's usage is never visible to another.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: No new grant is added on `usage_gate_counter`; it stays reachable only through a `security definer` function, by construction. `usage_cap`'s existing `select` grant to `service_role`, for dashboard debugging, is unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: v1 shows `job_search` usage only, and this is a proven choice, not a deferred one. `src/features/search/adzuna.ts`'s `RESULTS_PER_PAGE` is exported so a test can import the real value rather than a copied literal. That test, run against the real `usage_cap` rows (an integration test, since the caps are no deploy editable per AC-5 and a unit test could only pin the migration's seed values), asserts that `ai_scoring`'s and `ai_check`'s own caps stay at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, for all three window scopes (account week, global day, global month), not only the one this feature displays. That arithmetic is what guarantees `job_search`'s own cap always binds at or before either AI tier's, so showing it alone tells the whole truth about what will actually stop the caller. The test failing, or an operator changing a cap value so it no longer holds, is the signal to revisit this scope.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: `src/features/legal/stored-fields.ts`'s description of `usage_cap` and of `usage_gate_counter.call_type` no longer states or implies these tables count job search calls only. Migration `20260906120000_model_client_router_usage_cap.sql` added `ai_scoring` and `ai_check` rows to the same tables, and neither description was updated to say so. **Corrected 2026-09-12: only ONE of the two is user facing.** This criterion and the Summary both used to say \"two sentences in the privacy notice\", which is wrong and was caught by `/check verify` reading the rendered page rather than the source. `usage_gate_counter.call_type`'s `describedAs` does render on `/privacy`. `usage_cap`'s text is `NON_PERSONAL_TABLES[].why`, whose only reader is `src/features/legal/stored-fields.test.ts`; it reaches no user facing surface at all. Both corrections are still required, because the registry is what a later reader of the codebase trusts, but only the `call_type` one can be confirmed by reading `/privacy`, and the `usage_cap` one must be confirmed at its source.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: On a render that runs a search, `UsageNotice`'s read is ordered after that search by an `await` it performs itself. `SearchPage` calls `searchListings()` WITHOUT awaiting it and passes the promise to `UsageNotice` and to `SearchResults`; `UsageNotice` awaits that promise as its first statement, then reads usage. The ordering is therefore an `await` in the component that depends on it, guarded two ways: the page tests catch any reordering, including folding the two awaits into one `Promise.all`, and lint catches deleting the `await` outright, because the prop then goes unused. **No claim is made that a refactor cannot undo this.** Two such claims have now been made about this one line and both were wrong, so the criterion states what is true and stays true: where the ordering lives, and what catches its removal. **Rewritten 2026-09-13**: this criterion previously described the prop itself as the guarantee, which was false, and the code satisfying it has changed to match.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: One mechanism serves every render. The number always comes from `get_job_search_usage_summary()`, on the bare visit and the search render alike. There is no second source and therefore no rule deciding which applies,",
+        "rejected_spans": [
+          "which is what keeps the five refusal reasons, `validation_failed`, and every failure path correct without a special case for each."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: The figure shown after a search that was allowed counts that search; the figure shown after a search that was refused, for any of the five reasons, is unchanged by it, which is the true position in both cases. The boundary case is the test that matters: an account one below its cap runs its last allowed search, and the line must read the post increment figure, never the figure that implies another search remains.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: A search that passes the gate and then fails at Adzuna still shows the incremented figure. This is the path where somebody spent budget and got nothing, so a line that under reported here would be wrong in the most costly direction. It falls out of AC-11 for free, since the read runs after the search resolves whatever the outcome, and it is stated separately because `withUsageGate()` discards the gate decision on that path and an implementation carrying the number through the decision instead would silently lose it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: An integration test proves `anon` cannot execute either `security definer` function, `check_usage_gate` and `get_job_search_usage_summary`.",
+        "rejected_spans": [
+          "Neither grant is pinned by any test today: spec 0011's scenarios exercise the wrapper's session handling rather than the grant, and this feature's own function had its ACL checked once by hand during verification, which proves nothing about tomorrow. This criterion is kept from the dropped gate option because the gap it closes was never specific to that option."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Clauses 2 and 3 of feature 28's own Done when, gating a new call type by default and the kill switch staying a last resort, are verified already true against the running code (see Context) and need no acceptance criteria here,",
+        "rejected_spans": [
+          "since nothing is being built for them."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A status note that two existing clauses are already true and need no criteria. It states no requirement, outcome, build step or test of its own.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "phrase": "the caps are no deploy editable per AC-5",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-11"
+        },
+        "phrase": "It falls out of AC-11 for free",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "phrase": null,
+        "date": "2026-09-12",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

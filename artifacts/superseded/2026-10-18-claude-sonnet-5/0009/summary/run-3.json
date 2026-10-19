@@ -1,0 +1,136 @@
+{
+  "record": "0009",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 268,
+  "output_tokens": 2087,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "9e74e0f35316438799673a3e0344e092",
+  "artifact_format_version": 3,
+  "unit_sha256": "6b0af00c399b961ab71643d0e5de5f9b3f8309d9464024599240ee185b8fdbd4",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Two public pages, `/terms` and `/privacy`, written against what this codebase actually stores and actually sends to other companies, rather than from a template.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the OAuth app is stuck in Testing because the console's privacy policy and terms fields are empty, and Testing is capped at 100 users counted over the app's whole lifetime.\",\"rejected_spans\":[\"They exist to be true, and they exist to unblock Google:\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The privacy notice names the real columns, the real recipients, and one email address for deletion requests, which the operator fulfils by hand.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A typed registry plus a test keeps the recipient list from quietly going stale when features 11, 13 and 14 add their own.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"features 11, 13 and 14\"},\"phrase\":\"when features 11, 13 and 14 add their own\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 13\",\"id\":null,\"mention\":\"features 11, 13 and 14\"},\"phrase\":\"when features 11, 13 and 14 add their own\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"mention\":\"features 11, 13 and 14\"},\"phrase\":\"when features 11, 13 and 14 add their own\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Two public pages, `/terms` and `/privacy`, written against what this codebase actually stores and actually sends to other companies, rather than from a template.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the OAuth app is stuck in Testing because the console's privacy policy and terms fields are empty, and Testing is capped at 100 users counted over the app's whole lifetime.",
+        "rejected_spans": [
+          "They exist to be true, and they exist to unblock Google:"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The privacy notice names the real columns, the real recipients, and one email address for deletion requests, which the operator fulfils by hand.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A typed registry plus a test keeps the recipient list from quietly going stale when features 11, 13 and 14 add their own.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "features 11, 13 and 14"
+        },
+        "phrase": "when features 11, 13 and 14 add their own",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 13",
+          "id": null,
+          "label": null,
+          "mention": "features 11, 13 and 14"
+        },
+        "phrase": "when features 11, 13 and 14 add their own",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "features 11, 13 and 14"
+        },
+        "phrase": "when features 11, 13 and 14 add their own",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

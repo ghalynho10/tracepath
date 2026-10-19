@@ -1,0 +1,89 @@
+{
+  "record": "scope",
+  "section": "Preamble",
+  "section_slug": "preamble",
+  "file": "scope/scope.md",
+  "unit_kind": "Preamble",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 442,
+  "output_tokens": 696,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "8222747576e349dda561063a535008b7",
+  "artifact_format_version": 3,
+  "unit_sha256": "1fcf693f61a3743767c5e9de1b3c5fbdc1e3f17b6d7c41000e59d74ceed44d26",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"A multi user job search web app: enter a profile, search real listings, see them ranked with the reasoning shown, click through to apply, and record that you applied. Free, no billing, built for the author's own job search plus a few friends and recruiters evaluating it as a portfolio piece.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Build approach:** Tracer Bullet (prove the whole pipe works end to end, narrow but real, before building any single part of it fully).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Workflow:** Beta (after `/develop`: `/check verify`, then `/test`). Four features carry a `\u00b7 GA` tag and also get a fresh model `/check review` plus `/document`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**v1: complete, declared 2026-09-17.** The completion test below was already met before feature 31 shipped that day: a user can enter a profile, search, see ranked results with the reasoning shown, click through to apply, and record that they applied, all verified in production.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"_You are in charge. Every box below is a **suggestion**, not a gate: run any, skip any, and mark a feature `done` when you decide it is. The workflow records what you actually did (including \\\"skipped\\\"), it never requires a step. The one thing it asks is that a load bearing decision be written down (a spec), not that any check be run._\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A multi user job search web app: enter a profile, search real listings, see them ranked with the reasoning shown, click through to apply, and record that you applied. Free, no billing, built for the author's own job search plus a few friends and recruiters evaluating it as a portfolio piece.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Build approach:** Tracer Bullet (prove the whole pipe works end to end, narrow but real, before building any single part of it fully).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Workflow:** Beta (after `/develop`: `/check verify`, then `/test`). Four features carry a `\u00b7 GA` tag and also get a fresh model `/check review` plus `/document`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**v1: complete, declared 2026-09-17.** The completion test below was already met before feature 31 shipped that day: a user can enter a profile, search, see ranked results with the reasoning shown, click through to apply, and record that they applied, all verified in production.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "_You are in charge. Every box below is a **suggestion**, not a gate: run any, skip any, and mark a feature `done` when you decide it is. The workflow records what you actually did (including \"skipped\"), it never requires a step. The one thing it asks is that a load bearing decision be written down (a spec), not that any check be run._",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

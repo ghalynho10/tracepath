@@ -1,0 +1,194 @@
+{
+  "record": "0006",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 784,
+  "output_tokens": 1507,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f3d4313e96094d7fadd86d71760d1067",
+  "artifact_format_version": 3,
+  "unit_sha256": "d8799d14eeac3d73e1a3c0be6066fb96fa425713631545a70157a3ab812d206d",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The design system gets its first real consumer. Spec 0005's components have so far only been exercised by `/ui-preview`, which is a catalogue, not a page\",\"rejected_spans\":[\"a genuine composition is where an awkward API actually shows up.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The front door stops lying. Two concrete untruths (four features claimed as working, two dead primary controls) are removed before anyone outside the author sees the page.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The page ships no client JavaScript, so it is a pure static prerender. That is the cheapest thing to host, the fastest to load, and the easiest to keep correct.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Header, footer and logo exist as components before the second page needs them, so feature 7's sign in screens and the application shell inherit them rather than reinventing them.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The status card becomes a maintenance point. It is copy that must change every time a feature ships, with nothing enforcing it. Ownership is assigned in `## Follow-up`, but assignment is not enforcement, and this card going stale is the most likely way this page becomes untrue again.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The image generator duplicates token values as literals. AC-16's drift guard catches divergence but does not prevent it.\",\"rejected_spans\":[\"because the generator takes inline styles and cannot read Tailwind classes\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A binary font file now lives in the repository. It is small, but it is a redistributed third party asset whose licence has to hold, and it is the first such file the project carries.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The entry page has no working sign in on any environment until feature 7 lands. That is the honest state of the product, but it means the front door's whole job for now is to explain rather than to convert.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Tell #9 stays unfixed by choice. The match bar still appears three times, so the review's second priority finding survives this port; what is fixed is the divergent hand copy beneath it, not the repetition.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`Logo` enlarges spec 0005's component inventory by one. That is recorded above and in `## Follow-up` so the design system's own context file can catch up.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The footer's centre slot is empty on purpose, waiting for feature 21.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`docs/design/JobHuntLanding.tsx` becomes a historical reference once this ships. It is not deleted by this feature, and it is no longer the page.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 7\",\"id\":null,\"mention\":\"feature 7\"},\"phrase\":\"until feature 7 lands\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 21\",\"id\":null,\"mention\":\"feature 21\"},\"phrase\":\"waiting for feature 21\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The design system gets its first real consumer. Spec 0005's components have so far only been exercised by `/ui-preview`, which is a catalogue, not a page",
+        "rejected_spans": [
+          "a genuine composition is where an awkward API actually shows up."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The front door stops lying. Two concrete untruths (four features claimed as working, two dead primary controls) are removed before anyone outside the author sees the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The page ships no client JavaScript, so it is a pure static prerender. That is the cheapest thing to host, the fastest to load, and the easiest to keep correct.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Header, footer and logo exist as components before the second page needs them, so feature 7's sign in screens and the application shell inherit them rather than reinventing them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The status card becomes a maintenance point. It is copy that must change every time a feature ships, with nothing enforcing it. Ownership is assigned in `## Follow-up`, but assignment is not enforcement, and this card going stale is the most likely way this page becomes untrue again.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The image generator duplicates token values as literals. AC-16's drift guard catches divergence but does not prevent it.",
+        "rejected_spans": [
+          "because the generator takes inline styles and cannot read Tailwind classes"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A binary font file now lives in the repository. It is small, but it is a redistributed third party asset whose licence has to hold, and it is the first such file the project carries.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The entry page has no working sign in on any environment until feature 7 lands. That is the honest state of the product, but it means the front door's whole job for now is to explain rather than to convert.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Tell #9 stays unfixed by choice. The match bar still appears three times, so the review's second priority finding survives this port; what is fixed is the divergent hand copy beneath it, not the repetition.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`Logo` enlarges spec 0005's component inventory by one. That is recorded above and in `## Follow-up` so the design system's own context file can catch up.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The footer's centre slot is empty on purpose, waiting for feature 21.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`docs/design/JobHuntLanding.tsx` becomes a historical reference once this ships. It is not deleted by this feature, and it is no longer the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 7",
+          "id": null,
+          "label": null,
+          "mention": "feature 7"
+        },
+        "phrase": "until feature 7 lands",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 21",
+          "id": null,
+          "label": null,
+          "mention": "feature 21"
+        },
+        "phrase": "waiting for feature 21",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

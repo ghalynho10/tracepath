@@ -1,0 +1,134 @@
+{
+  "record": "0007",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 472,
+  "output_tokens": 968,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "4655cd458a2540f791c2dbd8b5db7d34",
+  "artifact_format_version": 3,
+  "unit_sha256": "9495f2364fc2562daf109515933d1f67718b47a6324a2b8795500d81d374f94b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 2: Supabase OAuth, initiated and completed entirely on the server.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Build sign in as two thin Server Actions that call `signInWithOAuth` on the request scoped server client and redirect to the URL it returns\",\"rejected_spans\":[\"(basis: spec 0006 **AC-4**, the entry page ships zero client JavaScript, and spec 0001's server only data path)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"a single route handler at `src/app/auth/callback/route.ts` exchanging the returned code for a session\",\"rejected_spans\":[\"(basis: spec 0001 binding rule 6, no user data in `src/app/api/` route handlers)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"refuse a second unlinked account at the database with the `before_user_created` hook\",\"rejected_spans\":[\"(basis: the project's no silent failures rule, plus the vendor's documented `4xx` refusal that propagates a reason to the client)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"spec 0006 **AC-4**\"},\"phrase\":\"basis: spec 0006 **AC-4**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"binding rule 6\",\"mention\":\"spec 0001 binding rule 6\"},\"phrase\":\"basis: spec 0001 binding rule 6\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 2: Supabase OAuth, initiated and completed entirely on the server.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Build sign in as two thin Server Actions that call `signInWithOAuth` on the request scoped server client and redirect to the URL it returns",
+        "rejected_spans": [
+          "(basis: spec 0006 **AC-4**, the entry page ships zero client JavaScript, and spec 0001's server only data path)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "a single route handler at `src/app/auth/callback/route.ts` exchanging the returned code for a session",
+        "rejected_spans": [
+          "(basis: spec 0001 binding rule 6, no user data in `src/app/api/` route handlers)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "refuse a second unlinked account at the database with the `before_user_created` hook",
+        "rejected_spans": [
+          "(basis: the project's no silent failures rule, plus the vendor's documented `4xx` refusal that propagates a reason to the client)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) \u00b7 `supabase-postgres-best-practices` (`supabase/agent-skills`, `.agents/skills/supabase-postgres-best-practices/`) \u00b7 `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "spec 0006 **AC-4**"
+        },
+        "phrase": "basis: spec 0006 **AC-4**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 6",
+          "mention": "spec 0001 binding rule 6"
+        },
+        "phrase": "basis: spec 0001 binding rule 6",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

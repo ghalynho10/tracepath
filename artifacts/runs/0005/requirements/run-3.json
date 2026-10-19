@@ -1,0 +1,268 @@
+{
+  "record": "0005",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0005-design-system-and-ui-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1685,
+  "output_tokens": 2879,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "32baa8f647f54ac8860d08da03cc34cf",
+  "artifact_format_version": 3,
+  "unit_sha256": "0078c3c34c5a914af0c34800969e4e333b98efe36e91c5e94b6b64322cade3da",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a developer building any screen after this feature, I want a token layer and a base component set\",\"rejected_spans\":[\"so that I never have to hand compose a card, button, or badge from raw Tailwind classes.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a user of any screen, I want visible focus, real labels, and layouts that hold up from phone to desktop,\",\"rejected_spans\":[\"so the product is usable regardless of device or input method.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the product owner, I want the Adzuna attribution requirement designed into the card shape now,\",\"rejected_spans\":[\"so the results card (feature 11) never has to retrofit it.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: The seven token colour palette from `brand-tokens.md` is ported into `src/app/globals.css` as raw channel values in `:root`, mapped through a non-inline `@theme`, replacing the current placeholder `--background`/`--foreground` tokens. One further token, `--surface-sunken`, is added beyond the seven: the composition review names the page background as the one open exception to the otherwise settled palette, and this token is squarely inside that exception (see AC-5).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: Space Grotesk and JetBrains Mono are loaded (`next/font/google` in `src/app/layout.tsx`) and mapped into the `@theme` as `--font-sans`/`--font-mono`. The type scale (ratio 1.25) is encoded as concrete Tailwind v4 theme values, not open ranges: display `clamp(2.5rem, 5vw, 4rem)` (40 to 64px), h2 30px, h3 20px, body 16px below `sm` and 17px at `sm` and above, small 13px, caption 12px.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: Two container idioms exist as variants of a base `Card` component: elevated (shadow led, minimal or no border) and flat (border led, no shadow), both with consistent internal padding so no card is under padded relative to its importance.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: A three tier section rhythm scale (compact, standard, generous) exists as a reusable `Section` component prop, replacing a uniform spacing value applied everywhere.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Section level background alternation is a documented, deliberate convention between `paper` (`#FFFAFB`) and the new `--surface-sunken` token (roughly `oklch(0.965 0.006 3)`, about 3.5% lighter than paper, a real, visible gap unlike the 1% paper/surface gap the review flagged), and the hairline divider renders only where two adjacent sections share the same background.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: A `Text` base component encodes the mono usage rule: mono reserved for written reasoning and literal data (skill gap notes, the summary line, salaries, dates, scores); decorative labels (eyebrows, section micro labels, filter chips, step numerals, status badges) render in tracked sans serif caps. The old global `.eyebrow`/`.mono-label` CSS classes are retired.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: A `MatchBar` base component accepts `matched` and `total` number props and derives its own segmented cell rendering,\",\"rejected_spans\":[\"so no page ever hand copies the bar at a different proportion.\"],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: A 60/40 asymmetric grid ratio is available for primary/secondary two column layouts, distinct from the equal fraction grids reserved for genuinely equal peer content.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: No component applies a default entrance or reveal animation. `prefers-reduced-motion` is respected everywhere motion exists, and the match cell stagger is the only sanctioned default motion; any future entrance animation must be justified against that precedent.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: The `Card` component's footer slot accepts an optional `attribution` node beside the primary action link, laid out `justify-between` and wrapping to a stacked layout before a 116 by 23 pixel block would otherwise compress. This feature builds and tests the slot mechanism only; the real Adzuna attribution content is built in feature 11 (see `## Follow-up`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: `CheckIcon`, `GapIcon`, `GitHubIcon`, `GoogleIcon`, and an `ExternalLinkIcon` exist as named, reusable base components.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` are handled with native Tailwind v4 CSS, with no bespoke JavaScript media query handling.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: Every base component is reachable by keyboard, shows a visible focus indicator, and carries a real accessible label (WCAG 2.2 AA).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: Every base component holds up responsively from phone width to desktop, designed desktop first per the project's standing rule.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: Component variants (`Card`, `Button`, `Chip`, `Text`, `Section`, `Heading`) are managed through `tailwind-variants`, verified compatible with Tailwind v4.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"phrase\":\"(see AC-5)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"feature 11\"},\"phrase\":\"the real Adzuna attribution content is built in feature 11\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a developer building any screen after this feature, I want a token layer and a base component set",
+        "rejected_spans": [
+          "so that I never have to hand compose a card, button, or badge from raw Tailwind classes."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a user of any screen, I want visible focus, real labels, and layouts that hold up from phone to desktop,",
+        "rejected_spans": [
+          "so the product is usable regardless of device or input method."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the product owner, I want the Adzuna attribution requirement designed into the card shape now,",
+        "rejected_spans": [
+          "so the results card (feature 11) never has to retrofit it."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: The seven token colour palette from `brand-tokens.md` is ported into `src/app/globals.css` as raw channel values in `:root`, mapped through a non-inline `@theme`, replacing the current placeholder `--background`/`--foreground` tokens. One further token, `--surface-sunken`, is added beyond the seven: the composition review names the page background as the one open exception to the otherwise settled palette, and this token is squarely inside that exception (see AC-5).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: Space Grotesk and JetBrains Mono are loaded (`next/font/google` in `src/app/layout.tsx`) and mapped into the `@theme` as `--font-sans`/`--font-mono`. The type scale (ratio 1.25) is encoded as concrete Tailwind v4 theme values, not open ranges: display `clamp(2.5rem, 5vw, 4rem)` (40 to 64px), h2 30px, h3 20px, body 16px below `sm` and 17px at `sm` and above, small 13px, caption 12px.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: Two container idioms exist as variants of a base `Card` component: elevated (shadow led, minimal or no border) and flat (border led, no shadow), both with consistent internal padding so no card is under padded relative to its importance.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: A three tier section rhythm scale (compact, standard, generous) exists as a reusable `Section` component prop, replacing a uniform spacing value applied everywhere.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Section level background alternation is a documented, deliberate convention between `paper` (`#FFFAFB`) and the new `--surface-sunken` token (roughly `oklch(0.965 0.006 3)`, about 3.5% lighter than paper, a real, visible gap unlike the 1% paper/surface gap the review flagged), and the hairline divider renders only where two adjacent sections share the same background.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: A `Text` base component encodes the mono usage rule: mono reserved for written reasoning and literal data (skill gap notes, the summary line, salaries, dates, scores); decorative labels (eyebrows, section micro labels, filter chips, step numerals, status badges) render in tracked sans serif caps. The old global `.eyebrow`/`.mono-label` CSS classes are retired.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: A `MatchBar` base component accepts `matched` and `total` number props and derives its own segmented cell rendering,",
+        "rejected_spans": [
+          "so no page ever hand copies the bar at a different proportion."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: A 60/40 asymmetric grid ratio is available for primary/secondary two column layouts, distinct from the equal fraction grids reserved for genuinely equal peer content.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: No component applies a default entrance or reveal animation. `prefers-reduced-motion` is respected everywhere motion exists, and the match cell stagger is the only sanctioned default motion; any future entrance animation must be justified against that precedent.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: The `Card` component's footer slot accepts an optional `attribution` node beside the primary action link, laid out `justify-between` and wrapping to a stacked layout before a 116 by 23 pixel block would otherwise compress. This feature builds and tests the slot mechanism only; the real Adzuna attribution content is built in feature 11 (see `## Follow-up`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: `CheckIcon`, `GapIcon`, `GitHubIcon`, `GoogleIcon`, and an `ExternalLinkIcon` exist as named, reusable base components.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` are handled with native Tailwind v4 CSS, with no bespoke JavaScript media query handling.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: Every base component is reachable by keyboard, shows a visible focus indicator, and carries a real accessible label (WCAG 2.2 AA).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: Every base component holds up responsively from phone width to desktop, designed desktop first per the project's standing rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: Component variants (`Card`, `Button`, `Chip`, `Text`, `Section`, `Heading`) are managed through `tailwind-variants`, verified compatible with Tailwind v4.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "phrase": "(see AC-5)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "feature 11"
+        },
+        "phrase": "the real Adzuna attribution content is built in feature 11",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

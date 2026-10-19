@@ -1,0 +1,237 @@
+{
+  "record": "feature-19",
+  "section": "19. Listing data quality \u00b7 needs a decision",
+  "section_slug": "19-listing-data-quality-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1689,
+  "output_tokens": 2461,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "86aa971d495d45c2a5ba445fb17aa4ee",
+  "artifact_format_version": 3,
+  "unit_sha256": "0f959d80e31b519bd0705572b9c5548b4c337210d8cec012431c01c31055c218",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Fix the known problems in the incoming listing data rather than switching sources: the same job appearing under different identifiers, escaped characters reaching the reader as literal text, a salary rendered as a range from a number to itself, and occasional ungrounded outlier figures. Two problems, not one: incoming source text needs **normalising** as well as de-duplicating, a widening recorded 2026-09-16 rather than the original framing.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The dedup key is the risky part: key on the wrong field and a genuinely different real result disappears silently.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** genuine duplicates collapse into one result while two distinct roles at the same company stay distinct,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"no escape sequence from the source reaches the reader as literal characters,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"a single salary figure renders as a figure rather than a fake range,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"outliers are handled visibly rather than shown as fact,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the dedup key is exercised by a test that would fail if it hid a real result.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"\\\"A single salary figure renders as a figure rather than a fake range\\\" was closed on 2026-09-13 by [#130](https://github.com/ghalynho10/JobHunt/pull/130) (the equal salary minimum and maximum fix): `salaryText` in `src/lib/listing-format.ts` returns one formatted figure when the two are equal, which fixes `/search` and `/applications` together because both screens format pay through that one helper. **The other three clauses are untouched and this feature stays unstarted.**\",\"rejected_spans\":[\"and spec 0013 AC-8, which says \\\"a salary range when present\\\", had simply never considered the equal case, so no spec changed.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The comparison is on the raw numbers, so two figures differing by cents still format identically under `maximumFractionDigits: 0` and still render as a range of one figure to itself (verified 2026-09-13: `salaryMin: 109440.2` with `salaryMax: 109440.4` returns `$109,440 to $109,440`), which is reachable because `src/features/search/adzuna.ts` parses both figures as `z.number()` and not as an integer.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Whether to close that by comparing the formatted strings rather than the raw numbers is undecided and belongs to this feature's design. For: at `maximumFractionDigits: 0` the difference is already invisible, so a range of one figure to itself reveals nothing a single figure would hide, and \\\"do these two render identically\\\" is the question the display is actually asking. Against: a range at least signals that the source supplied two values, where one figure asserts it supplied one. Decide it here rather than inheriting an answer.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Escaped newlines render as literal text.** Adzuna returns the two character sequence `\\\\n` inside the description field and the app prints it verbatim, seen on a PNC listing. Nothing normalises it: `src/features/search/adzuna.ts` parses the field as a plain string (`descriptionSnippet: raw.description`, verified 2026-09-16) and every screen renders that value directly (`/search`, `/applications` and `/demo`, verified 2026-09-16). It is also **stored, not only displayed**: applying copies the snippet onto the application row as `job_description` (`src/features/applications/queries.ts`), so a listing captured today keeps the literal characters after the posting is gone, and fixing the render alone would leave every already saved row wrong.\",\"rejected_spans\":[\"This is the clause that widens the feature from de-duplication to normalisation\"],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"Escaped newlines render as literal text.\"},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the design should settle the general rule (which escape sequences, decoded or stripped, and at the parse boundary or at render) rather than special casing this one sequence.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**One posting, two Adzuna ids.** The same posting comes back under two different `id` values, so de-duplication keyed on `source_job_id` does not collapse them; seen twice for Everpure. This is the failure mode the intent above already predicted, now confirmed on real data, and it says something the prediction did not: the identifier is the wrong key on its own.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"One posting, two Adzuna ids.\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Whatever replaces or supplements it is exactly the risky call this feature's **Done when** asks to be proved by a test.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect listing data quality`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-8\",\"mention\":\"spec 0013 AC-8\"},\"phrase\":\"spec 0013 AC-8, which says \\\"a salary range when present\\\", had simply never considered the equal case\",\"date\":\"2026-09-13\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"a widening recorded 2026-09-16 rather than the original framing\",\"date\":\"2026-09-16\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Fix the known problems in the incoming listing data rather than switching sources: the same job appearing under different identifiers, escaped characters reaching the reader as literal text, a salary rendered as a range from a number to itself, and occasional ungrounded outlier figures. Two problems, not one: incoming source text needs **normalising** as well as de-duplicating, a widening recorded 2026-09-16 rather than the original framing.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The dedup key is the risky part: key on the wrong field and a genuinely different real result disappears silently.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** genuine duplicates collapse into one result while two distinct roles at the same company stay distinct,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "no escape sequence from the source reaches the reader as literal characters,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "a single salary figure renders as a figure rather than a fake range,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "outliers are handled visibly rather than shown as fact,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the dedup key is exercised by a test that would fail if it hid a real result.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "\"A single salary figure renders as a figure rather than a fake range\" was closed on 2026-09-13 by [#130](https://github.com/ghalynho10/JobHunt/pull/130) (the equal salary minimum and maximum fix): `salaryText` in `src/lib/listing-format.ts` returns one formatted figure when the two are equal, which fixes `/search` and `/applications` together because both screens format pay through that one helper. **The other three clauses are untouched and this feature stays unstarted.**",
+        "rejected_spans": [
+          "and spec 0013 AC-8, which says \"a salary range when present\", had simply never considered the equal case, so no spec changed."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The comparison is on the raw numbers, so two figures differing by cents still format identically under `maximumFractionDigits: 0` and still render as a range of one figure to itself (verified 2026-09-13: `salaryMin: 109440.2` with `salaryMax: 109440.4` returns `$109,440 to $109,440`), which is reachable because `src/features/search/adzuna.ts` parses both figures as `z.number()` and not as an integer.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Whether to close that by comparing the formatted strings rather than the raw numbers is undecided and belongs to this feature's design. For: at `maximumFractionDigits: 0` the difference is already invisible, so a range of one figure to itself reveals nothing a single figure would hide, and \"do these two render identically\" is the question the display is actually asking. Against: a range at least signals that the source supplied two values, where one figure asserts it supplied one. Decide it here rather than inheriting an answer.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Escaped newlines render as literal text.** Adzuna returns the two character sequence `\\n` inside the description field and the app prints it verbatim, seen on a PNC listing. Nothing normalises it: `src/features/search/adzuna.ts` parses the field as a plain string (`descriptionSnippet: raw.description`, verified 2026-09-16) and every screen renders that value directly (`/search`, `/applications` and `/demo`, verified 2026-09-16). It is also **stored, not only displayed**: applying copies the snippet onto the application row as `job_description` (`src/features/applications/queries.ts`), so a listing captured today keeps the literal characters after the posting is gone, and fixing the render alone would leave every already saved row wrong.",
+        "rejected_spans": [
+          "This is the clause that widens the feature from de-duplication to normalisation"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "Escaped newlines render as literal text."
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the design should settle the general rule (which escape sequences, decoded or stripped, and at the parse boundary or at render) rather than special casing this one sequence.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**One posting, two Adzuna ids.** The same posting comes back under two different `id` values, so de-duplication keyed on `source_job_id` does not collapse them; seen twice for Everpure. This is the failure mode the intent above already predicted, now confirmed on real data, and it says something the prediction did not: the identifier is the wrong key on its own.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "One posting, two Adzuna ids."
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Whatever replaces or supplements it is exactly the risky call this feature's **Done when** asks to be proved by a test.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect listing data quality`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0013 AC-8"
+        },
+        "phrase": "spec 0013 AC-8, which says \"a salary range when present\", had simply never considered the equal case",
+        "date": "2026-09-13",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "phrase": "a widening recorded 2026-09-16 rather than the original framing",
+        "date": "2026-09-16",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "record": "0009",
+  "section": "Preamble",
+  "section_slug": "preamble",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Preamble",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 390,
+  "output_tokens": 450,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "95fb7221e7a04d16ac60a426abe48531",
+  "artifact_format_version": 3,
+  "unit_sha256": "439dc5cf0333e3a1d2f9ecfa6839631f783aecca7027b05b655f155f48fa1958",
+  "raw_response": "{\"entities\":[],\"relationships\":[{\"type\":\"corrected-by\",\"source\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-14\",\"mention\":\"AC-14's cookie disclosure\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-14\",\"mention\":\"the corrected AC-14\"},\"phrase\":null,\"date\":\"2026-09-18\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-24\",\"mention\":\"AC-24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-5\",\"mention\":\"the recipient list (AC-5)\"},\"phrase\":\"adds the drift guard that the recipient list (AC-5) and the stored field list (AC-23) already have\",\"date\":\"2026-09-18\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-24\",\"mention\":\"AC-24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0009\",\"id\":\"AC-23\",\"mention\":\"the stored field list (AC-23)\"},\"phrase\":\"adds the drift guard that the recipient list (AC-5) and the stored field list (AC-23) already have\",\"date\":\"2026-09-18\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [],
+    "relationships": [
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14's cookie disclosure"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-14",
+          "label": null,
+          "mention": "the corrected AC-14"
+        },
+        "phrase": null,
+        "date": "2026-09-18",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-24",
+          "label": null,
+          "mention": "AC-24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-5",
+          "label": null,
+          "mention": "the recipient list (AC-5)"
+        },
+        "phrase": "adds the drift guard that the recipient list (AC-5) and the stored field list (AC-23) already have",
+        "date": "2026-09-18",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-24",
+          "label": null,
+          "mention": "AC-24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0009",
+          "id": "AC-23",
+          "label": null,
+          "mention": "the stored field list (AC-23)"
+        },
+        "phrase": "adds the drift guard that the recipient list (AC-5) and the stored field list (AC-23) already have",
+        "date": "2026-09-18",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

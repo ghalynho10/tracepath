@@ -1,0 +1,93 @@
+{
+  "record": "0011",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0011-usage-gating-and-kill-switch/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 249,
+  "output_tokens": 537,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "abebe1d4228c4048b8bf50f5ab7c685f",
+  "artifact_format_version": 3,
+  "unit_sha256": "ca870d2b61df0dc271d04edeab3a532ea1cd47caffd9026b1185037e3c550eef",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec builds the budget that stops the app from spending more on outside job listing calls than it can afford, and the alert that proves the safety net actually works.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every outbound Adzuna (the job listing source) search call passes through one atomic database check first: does the caller's own weekly count, the app's daily count, and the app's monthly count all still have room.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"If any is full, or the operator has thrown the emergency kill switch built in feature 3, the call is refused with a plain reason instead of running.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The check also builds this project's first alert rule, one that is proven to fire with a real forced test, not just written down.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 3\",\"id\":null,\"mention\":\"the emergency kill switch built in feature 3\"},\"phrase\":\"the emergency kill switch built in feature 3\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec builds the budget that stops the app from spending more on outside job listing calls than it can afford, and the alert that proves the safety net actually works.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every outbound Adzuna (the job listing source) search call passes through one atomic database check first: does the caller's own weekly count, the app's daily count, and the app's monthly count all still have room.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "If any is full, or the operator has thrown the emergency kill switch built in feature 3, the call is refused with a plain reason instead of running.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The check also builds this project's first alert rule, one that is proven to fire with a real forced test, not just written down.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 3",
+          "id": null,
+          "label": null,
+          "mention": "the emergency kill switch built in feature 3"
+        },
+        "phrase": "the emergency kill switch built in feature 3",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

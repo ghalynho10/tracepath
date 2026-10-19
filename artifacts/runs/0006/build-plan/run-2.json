@@ -1,0 +1,536 @@
+{
+  "record": "0006",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1263,
+  "output_tokens": 5510,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "915054c9bf024a07bb4daab0f5344ad8",
+  "artifact_format_version": 3,
+  "unit_sha256": "0f0537c5958cdbfb609f9a626f736dbe9e9572c60bb84acd16acdff9d57565e3",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Ordered as a Tracer Bullet, the project's recorded build approach. The thin thread here is not a database write, it is the whole link path: a real page at a real URL whose metadata and generated image actually unfurl in a real client. Step 2 proves that end to end while the page is still mostly empty,\",\"rejected_spans\":[\"because a broken image route or a missing font is far cheaper to find before five sections exist than after.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build `Logo` in `src/components/ui/logo.tsx` from `docs/design/logo/lockup.svg` and `mark.svg`, with `lockup` and `mark` variants, a real accessible name, and a test beside it, satisfies **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**The thin thread.** Commit `assets/SpaceGrotesk-SemiBold.ttf` beside its licence file after confirming the licence permits it; build `src/app/opengraph-image.tsx` with its `alt`, `size` and `contentType` exports, drawing the mark inline as SVG rectangles; set the page's title, description and `metadataBase` from `canonicalSiteUrl`; and stand up `EntryHeader`, a bare hero `Section`, and `EntryFooter`. Deploy to a Vercel preview and confirm in a real client that the card unfurls. Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**. The footer's copyright is `COPY-4` and the image headline is `COPY-3`, so both must be written before this step runs.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"The thin thread.\"},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the drift guard test asserting the image generator's literal colours still match `globals.css`, and check it is not vacuous by changing a token and watching it fail, satisfies **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Thicken the hero: the full copy, a plain `<figure>` wrapping the elevated result `Card`, the `COPY-2` example label as a `Text` eyebrow in `Card.Header`, `MatchBar` at 8 of 11, the matched and missing `Chip` clusters, the reasoning lines, and the inert apply control in `Card.Footer`, laid out on the 60/40 `grid-split`, satisfies **AC-5**, **AC-9**, **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the sign in controls as non linking labels with the `Chip` status variant, carrying `COPY-1`, in both the hero and the band, and wire the header's anchor to the band, satisfies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the \\\"how it works\\\" section at `compact` on `sunken`: three equal columns, `MatchBar` at 6 of 8 in step 02 replacing the hand copied bar, satisfies **AC-1**, **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the reasoning section at `generous` on `sunken`, with both comparison cards flat on `bg-paper` and identical, and the single hairline divider above it, satisfies **AC-3**, **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the about section at `standard` on `paper`, with the status card as `tone=\\\"flat\\\"` and rewritten so nothing sits under `working` that the scope still calls `planned`, satisfies **AC-5**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the sign in band at `standard`, dark, left aligned and full measure, satisfies **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Delete the scaffold placeholder in `src/app/(marketing)/page.tsx` and compose the real page from the section modules, satisfies **AC-1**, **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Run the keyboard, focus, responsive and reduced motion pass at 320 and 1440 pixels, and grep the rendered tree for `\\\"use client\\\"`, satisfies **AC-4**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"satisfies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"satisfies **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-5**, **AC-9**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"satisfies **AC-5**, **AC-9**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"satisfies **AC-5**, **AC-9**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"satisfies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"satisfies **AC-3**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-3**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"satisfies **AC-5**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"satisfies **AC-5**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"satisfies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"satisfies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"satisfies **AC-4**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"satisfies **AC-4**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Ordered as a Tracer Bullet, the project's recorded build approach. The thin thread here is not a database write, it is the whole link path: a real page at a real URL whose metadata and generated image actually unfurl in a real client. Step 2 proves that end to end while the page is still mostly empty,",
+        "rejected_spans": [
+          "because a broken image route or a missing font is far cheaper to find before five sections exist than after."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build `Logo` in `src/components/ui/logo.tsx` from `docs/design/logo/lockup.svg` and `mark.svg`, with `lockup` and `mark` variants, a real accessible name, and a test beside it, satisfies **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**The thin thread.** Commit `assets/SpaceGrotesk-SemiBold.ttf` beside its licence file after confirming the licence permits it; build `src/app/opengraph-image.tsx` with its `alt`, `size` and `contentType` exports, drawing the mark inline as SVG rectangles; set the page's title, description and `metadataBase` from `canonicalSiteUrl`; and stand up `EntryHeader`, a bare hero `Section`, and `EntryFooter`. Deploy to a Vercel preview and confirm in a real client that the card unfurls. Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**. The footer's copyright is `COPY-4` and the image headline is `COPY-3`, so both must be written before this step runs.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "The thin thread."
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the drift guard test asserting the image generator's literal colours still match `globals.css`, and check it is not vacuous by changing a token and watching it fail, satisfies **AC-16**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Thicken the hero: the full copy, a plain `<figure>` wrapping the elevated result `Card`, the `COPY-2` example label as a `Text` eyebrow in `Card.Header`, `MatchBar` at 8 of 11, the matched and missing `Chip` clusters, the reasoning lines, and the inert apply control in `Card.Footer`, laid out on the 60/40 `grid-split`, satisfies **AC-5**, **AC-9**, **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the sign in controls as non linking labels with the `Chip` status variant, carrying `COPY-1`, in both the hero and the band, and wire the header's anchor to the band, satisfies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the \"how it works\" section at `compact` on `sunken`: three equal columns, `MatchBar` at 6 of 8 in step 02 replacing the hand copied bar, satisfies **AC-1**, **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the reasoning section at `generous` on `sunken`, with both comparison cards flat on `bg-paper` and identical, and the single hairline divider above it, satisfies **AC-3**, **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the about section at `standard` on `paper`, with the status card as `tone=\"flat\"` and rewritten so nothing sits under `working` that the scope still calls `planned`, satisfies **AC-5**, **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the sign in band at `standard`, dark, left aligned and full measure, satisfies **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Delete the scaffold placeholder in `src/app/(marketing)/page.tsx` and compose the real page from the section modules, satisfies **AC-1**, **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Run the keyboard, focus, responsive and reduced motion pass at 320 and 1440 pixels, and grep the rendered tree for `\"use client\"`, satisfies **AC-4**, **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "satisfies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "satisfies **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "satisfies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-3**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "satisfies **AC-5**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "satisfies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "satisfies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "satisfies **AC-4**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "satisfies **AC-4**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -168,30 +168,33 @@ def test_an_unclassified_entity_must_say_why() -> None:
         )
 
 
-def test_a_named_type_must_not_carry_an_unclassified_note() -> None:
-    with pytest.raises(ValidationError):
-        ExtractedEntity.model_validate(
-            {
-                "id": "derived:1",
-                "id_source": "derived",
-                "type": "Constraint",
-                "span": "x",
-                "unclassified_note": "unsure",
-            }
-        )
+def test_an_unclassified_note_on_a_typed_entity_is_kept_not_rejected() -> None:
+    entity = ExtractedEntity.model_validate(
+        {
+            "id": "derived:1",
+            "id_source": "derived",
+            "type": "Constraint",
+            "span": "x",
+            "known_trap_flags": ["entity_type_ambiguous"],
+            "unclassified_note": "no named type fits",
+        }
+    )
+    assert entity.type is EntityType.CONSTRAINT
+    assert entity.known_trap_flags == (KnownTrapFlag.ENTITY_TYPE_AMBIGUOUS,)
+    assert entity.unclassified_note == "no named type fits"
 
 
-def test_entity_type_ambiguous_is_only_ever_set_on_an_unclassified_entity() -> None:
-    with pytest.raises(ValidationError):
-        ExtractedEntity.model_validate(
-            {
-                "id": "derived:1",
-                "id_source": "derived",
-                "type": "Constraint",
-                "span": "x",
-                "known_trap_flags": ["entity_type_ambiguous"],
-            }
-        )
+def test_entity_type_ambiguous_on_a_typed_entity_is_kept_not_rejected() -> None:
+    entity = ExtractedEntity.model_validate(
+        {
+            "id": "derived:1",
+            "id_source": "derived",
+            "type": "Constraint",
+            "span": "x",
+            "known_trap_flags": ["entity_type_ambiguous"],
+        }
+    )
+    assert entity.known_trap_flags == (KnownTrapFlag.ENTITY_TYPE_AMBIGUOUS,)
 
 
 def test_an_unclassified_relationship_must_keep_the_phrase_that_made_it() -> None:

@@ -1,0 +1,381 @@
+{
+  "record": "0006",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0006-entry-page-and-link-metadata/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2538,
+  "output_tokens": 7038,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "fc93077b386549ea9f216471629c23b8",
+  "artifact_format_version": 3,
+  "unit_sha256": "16570ed68d09d89e3cd150634f5285184630df37f20b815100b62e9928eaede9",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a recruiter opening a pasted link, I want the card that unfurls in Slack or a message to show a real product rather than a bare domain,\",\"rejected_spans\":[\"so that the link is worth clicking.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a friend the author sent this to, I want the page to tell me plainly what works today and what does not,\",\"rejected_spans\":[\"so that I am not promised something that is not built.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the author, I want the page to be the first real consumer of the design system,\",\"rejected_spans\":[\"so that spec 0005's components are proved against a genuine page and not only against the preview route.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a developer building any later screen, I want the header, footer and logo to already exist as components,\",\"rejected_spans\":[\"so that the second page does not invent its own.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: Every part of the page renders through spec 0005's base components. The page's own code contains no hand composed rounded and bordered container, no hand written match bar, and no `.eyebrow` or `.mono-label` class. `pnpm lint` passes, including the `no-restricted-syntax` rule from spec 0005.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: The five body sections carry exactly the rhythm tiers spec 0005's `rationale.md` assigned: hero `generous`, how it works `compact`, the reasoning `generous`, about `standard`, sign in `standard`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: Section backgrounds run `paper`, `sunken`, `sunken`, `paper`, then the dark band. Exactly one hairline divider renders on the whole page, between the two `sunken` sections; every other boundary is carried by the background change alone, per spec 0005's adjacency rule.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the header's sign in jump link is present at every width\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: The route renders zero client JavaScript. No file it reaches carries `\\\"use client\\\"`, there is no scroll reveal, and there is no mobile menu holding state. The three in page anchors are hidden below `md`, and The header control becomes a link to the door route instead, present at every width exactly as before. **The rest of this criterion is untouched and spec 0008 AC-19 restates it**: zero client JavaScript and static prerender are the halves that matter, and the automated grep that enforces them keeps running.\",\"rejected_spans\":[\"**that last clause is SUPERSEDED, 2026-08-31, by spec 0008 AC-18**, which is Accepted and shipped, so the replacement is what the product does today.\",\"The jump link points at the sign in band, and spec 0008 removes the provider forms from `/` entirely, which makes the band nothing to jump to.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Both comparison cards render as flat `Card`s on `bg-paper`, styled identically to each other. The \\\"What's real today\\\" status card is also `tone=\\\"flat\\\"`. The hero result card is the only elevated `Card` on the page.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: The sign in band uses the same left aligned, full width content measure as every other section. Its dark background is its only distinguishing axis: it is neither centred nor narrowed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: No sign in control on the page is a link. The two provider controls render as labels carrying the `Chip` status variant, beside a line saying accounts open with feature 7. The header's \\\"Sign in\\\" is an in page anchor to that band and is a working link at every width. This criterion is deliberately environment independent: it holds on production, preview and locally alike, because the page never links to `/sign-in` at all.\",\"rejected_spans\":[\"**SUPERSEDED 2026-08-29 by spec 0007 AC-16.** Not edited into agreement and not deleted, because it was a deliberate, well argued criterion and a later reader should be able to see why it stopped applying. It was right for exactly as long as sign in did not work: a control that looks live and does nothing is worse than a label saying so. Feature 7 makes sign in real, which makes `COPY-1` (\\\"Sign in isn't live yet\\\") and both `Chip state=\\\"status\\\"` labels false for every visitor, so the criterion's own premise is gone. What replaces it: both provider controls become real `<form action={...}>` submits. What survives untouched: **AC-17**, the inert apply control, and with it this spec's one rule with no exceptions, that nothing which cannot work is a link. An example listing still has nothing real to apply to.\"],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: The \\\"What's real today\\\" card is true in **both** its lists. Nothing sits under `working` that is not shipped, so profile, filtered search, ranked results with reasoning and application tracking all move to `planned`. And nothing sits under `planned` that is not actually planned, so `email digests` is removed: its only trace in the repo is the \\\"Scheduled push digest\\\" line in the deferred ideas list at the end of `docs/scope/scope.md`, which is an idea held back, not a planned feature. `a no sign in demo account` stays, because it is a real scope feature (31, Seeded demo account).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: The hero result card is visibly labelled as an illustration, so it cannot be read as live data. The label is a `Text` eyebrow at the top of `Card.Header`, and the wrapping `<figure>` carries an `aria-label` saying the same thing. The label is NOT put in the `figcaption`: the prototype's `figcaption` already holds the job role (`JobHuntLanding.tsx` line 211), HTML allows only one per `<figure>`, and the role is the genuine caption.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: The page sets a title and a description, and `metadataBase` resolves from `canonicalSiteUrl` in `src/lib/origin.ts`, never from a hard coded string and never from `currentOrigin()`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: `src/app/opengraph-image.tsx` produces a 1200 by 630 pixel PNG at build time, showing the JobHunt mark, the page headline, and the match chip, drawn on the brand token values, and exports `alt`, `size` and `contentType`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `robots` stays `index: false, follow: false` in `src/app/layout.tsx`, and no `robots.ts` or `robots.txt` is added anywhere.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: The footer holds the lockup on the left and the copyright on the right, with the centre slot deliberately empty and reserved.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: The page holds up from 320 pixels to 1440 pixels with no horizontal overflow, every control is reachable by keyboard with a visible focus ring, and every decorative icon is `aria-hidden` (WCAG 2.2 AA).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: The Space Grotesk font file committed for the image generator sits beside its own licence file in the repo, and that licence permits redistributing the font inside this repository.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: A test fails if any colour hard coded in `opengraph-image.tsx` drifts from its token in `src/app/globals.css`. The guarded set is named, not left to the test author's judgement: `--paper`, `--ink`, `--muted`, `--accent-300` and `--primary-800`. The test asserts every one of the five,\",\"rejected_spans\":[\"so it cannot pass by checking a single easy value.\"],\"known_trap_flags\":[]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-17**: The hero card's \\\"Apply on the real posting\\\" control is not a link either (`JobHuntLanding.tsx` line 259 has it as `href=\\\"#\\\"`). It renders as `Text` with the `ExternalLinkIcon`, inside `Card.Footer`. Together with **AC-7** this gives the page one rule with no exceptions: nothing that cannot work is a link, and an example listing has nothing real to apply to.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-16\",\"mention\":\"spec 0007 AC-16\"},\"phrase\":\"**SUPERSEDED 2026-08-29 by spec 0007 AC-16.**\",\"date\":\"2026-08-29\",\"known_trap_flags\":[]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"spec 0008 AC-18\"},\"phrase\":\"**that last clause is SUPERSEDED, 2026-08-31, by spec 0008 AC-18**\",\"date\":\"2026-08-31\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-19\",\"mention\":\"spec 0008 AC-19\"},\"phrase\":\"spec 0008 AC-19 restates it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"mention\":\"spec 0005's base components\"},\"phrase\":\"Every part of the page renders through spec 0005's base components.\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"label\":\"adjacency rule\",\"mention\":\"spec 0005's adjacency rule\"},\"phrase\":\"per spec 0005's adjacency rule\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-17\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"phrase\":\"Together with **AC-7** this gives the page one rule with no exceptions\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a recruiter opening a pasted link, I want the card that unfurls in Slack or a message to show a real product rather than a bare domain,",
+        "rejected_spans": [
+          "so that the link is worth clicking."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a friend the author sent this to, I want the page to tell me plainly what works today and what does not,",
+        "rejected_spans": [
+          "so that I am not promised something that is not built."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the author, I want the page to be the first real consumer of the design system,",
+        "rejected_spans": [
+          "so that spec 0005's components are proved against a genuine page and not only against the preview route."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a developer building any later screen, I want the header, footer and logo to already exist as components,",
+        "rejected_spans": [
+          "so that the second page does not invent its own."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: Every part of the page renders through spec 0005's base components. The page's own code contains no hand composed rounded and bordered container, no hand written match bar, and no `.eyebrow` or `.mono-label` class. `pnpm lint` passes, including the `no-restricted-syntax` rule from spec 0005.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: The five body sections carry exactly the rhythm tiers spec 0005's `rationale.md` assigned: hero `generous`, how it works `compact`, the reasoning `generous`, about `standard`, sign in `standard`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: Section backgrounds run `paper`, `sunken`, `sunken`, `paper`, then the dark band. Exactly one hairline divider renders on the whole page, between the two `sunken` sections; every other boundary is carried by the background change alone, per spec 0005's adjacency rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the header's sign in jump link is present at every width",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: The route renders zero client JavaScript. No file it reaches carries `\"use client\"`, there is no scroll reveal, and there is no mobile menu holding state. The three in page anchors are hidden below `md`, and The header control becomes a link to the door route instead, present at every width exactly as before. **The rest of this criterion is untouched and spec 0008 AC-19 restates it**: zero client JavaScript and static prerender are the halves that matter, and the automated grep that enforces them keeps running.",
+        "rejected_spans": [
+          "**that last clause is SUPERSEDED, 2026-08-31, by spec 0008 AC-18**, which is Accepted and shipped, so the replacement is what the product does today.",
+          "The jump link points at the sign in band, and spec 0008 removes the provider forms from `/` entirely, which makes the band nothing to jump to."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Both comparison cards render as flat `Card`s on `bg-paper`, styled identically to each other. The \"What's real today\" status card is also `tone=\"flat\"`. The hero result card is the only elevated `Card` on the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: The sign in band uses the same left aligned, full width content measure as every other section. Its dark background is its only distinguishing axis: it is neither centred nor narrowed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: No sign in control on the page is a link. The two provider controls render as labels carrying the `Chip` status variant, beside a line saying accounts open with feature 7. The header's \"Sign in\" is an in page anchor to that band and is a working link at every width. This criterion is deliberately environment independent: it holds on production, preview and locally alike, because the page never links to `/sign-in` at all.",
+        "rejected_spans": [
+          "**SUPERSEDED 2026-08-29 by spec 0007 AC-16.** Not edited into agreement and not deleted, because it was a deliberate, well argued criterion and a later reader should be able to see why it stopped applying. It was right for exactly as long as sign in did not work: a control that looks live and does nothing is worse than a label saying so. Feature 7 makes sign in real, which makes `COPY-1` (\"Sign in isn't live yet\") and both `Chip state=\"status\"` labels false for every visitor, so the criterion's own premise is gone. What replaces it: both provider controls become real `<form action={...}>` submits. What survives untouched: **AC-17**, the inert apply control, and with it this spec's one rule with no exceptions, that nothing which cannot work is a link. An example listing still has nothing real to apply to."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: The \"What's real today\" card is true in **both** its lists. Nothing sits under `working` that is not shipped, so profile, filtered search, ranked results with reasoning and application tracking all move to `planned`. And nothing sits under `planned` that is not actually planned, so `email digests` is removed: its only trace in the repo is the \"Scheduled push digest\" line in the deferred ideas list at the end of `docs/scope/scope.md`, which is an idea held back, not a planned feature. `a no sign in demo account` stays, because it is a real scope feature (31, Seeded demo account).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: The hero result card is visibly labelled as an illustration, so it cannot be read as live data. The label is a `Text` eyebrow at the top of `Card.Header`, and the wrapping `<figure>` carries an `aria-label` saying the same thing. The label is NOT put in the `figcaption`: the prototype's `figcaption` already holds the job role (`JobHuntLanding.tsx` line 211), HTML allows only one per `<figure>`, and the role is the genuine caption.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: The page sets a title and a description, and `metadataBase` resolves from `canonicalSiteUrl` in `src/lib/origin.ts`, never from a hard coded string and never from `currentOrigin()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: `src/app/opengraph-image.tsx` produces a 1200 by 630 pixel PNG at build time, showing the JobHunt mark, the page headline, and the match chip, drawn on the brand token values, and exports `alt`, `size` and `contentType`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `robots` stays `index: false, follow: false` in `src/app/layout.tsx`, and no `robots.ts` or `robots.txt` is added anywhere.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: The footer holds the lockup on the left and the copyright on the right, with the centre slot deliberately empty and reserved.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: The page holds up from 320 pixels to 1440 pixels with no horizontal overflow, every control is reachable by keyboard with a visible focus ring, and every decorative icon is `aria-hidden` (WCAG 2.2 AA).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: The Space Grotesk font file committed for the image generator sits beside its own licence file in the repo, and that licence permits redistributing the font inside this repository.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: A test fails if any colour hard coded in `opengraph-image.tsx` drifts from its token in `src/app/globals.css`. The guarded set is named, not left to the test author's judgement: `--paper`, `--ink`, `--muted`, `--accent-300` and `--primary-800`. The test asserts every one of the five,",
+        "rejected_spans": [
+          "so it cannot pass by checking a single easy value."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-17**: The hero card's \"Apply on the real posting\" control is not a link either (`JobHuntLanding.tsx` line 259 has it as `href=\"#\"`). It renders as `Text` with the `ExternalLinkIcon`, inside `Card.Footer`. Together with **AC-7** this gives the page one rule with no exceptions: nothing that cannot work is a link, and an example listing has nothing real to apply to.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-16",
+          "label": null,
+          "mention": "spec 0007 AC-16"
+        },
+        "phrase": "**SUPERSEDED 2026-08-29 by spec 0007 AC-16.**",
+        "date": "2026-08-29",
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "spec 0008 AC-18"
+        },
+        "phrase": "**that last clause is SUPERSEDED, 2026-08-31, by spec 0008 AC-18**",
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-19",
+          "label": null,
+          "mention": "spec 0008 AC-19"
+        },
+        "phrase": "spec 0008 AC-19 restates it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": null,
+          "mention": "spec 0005's base components"
+        },
+        "phrase": "Every part of the page renders through spec 0005's base components.",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": "adjacency rule",
+          "mention": "spec 0005's adjacency rule"
+        },
+        "phrase": "per spec 0005's adjacency rule",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "phrase": "Together with **AC-7** this gives the page one rule with no exceptions",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

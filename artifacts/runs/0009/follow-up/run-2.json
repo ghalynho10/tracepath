@@ -1,0 +1,237 @@
+{
+  "record": "0009",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0009-terms-and-privacy-notices/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:38:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2456,
+  "output_tokens": 5204,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "56daff2f3463445aa6e7791565e0074c",
+  "artifact_format_version": 3,
+  "unit_sha256": "dbd4d591bee7067078f40ded8aa078e75f967c29278d65f95eea36fa4c42cbeb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**This item was written on a false premise, corrected 2026-09-01.** It said feature 27's scope row does not mention account deletion. It does, and always did: that row's `Done when` clause reads \\\"account settings covers deletion\\\". The obligation that is genuinely missing runs the other way, and it is now recorded on row 27. This notice describes deletion as a request emailed to the published address and fulfilled by hand, phrased that way deliberately. The day feature 27 ships a real control, the same prose becomes false in the opposite direction by understating what a reader can do, so rewriting it is part of that build. No test guards it, because the wording is prose. Recorded by `/scope`, not `/sync`: `/sync` may reconcile a feature's status but never add to its row, so a session sent there would have done nothing and reported nothing.\",\"rejected_spans\":[\"because a sentence implying a control nobody can operate would be its one false claim (**AC-8**)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Features 11, 13 and 14 each add their own recipient registry entry as part of their own build. **Recorded on all three rows on 2026-09-01** by `/scope`, not `/sync` (same reason as the item above). Enforced by the AC-5 test for any that add an `src/env.ts` key, which is every one of them that arrives with a credential; spec 0009's definition of \\\"reaches\\\" is the rule for classifying the rest of that feature's keys.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Before features 13 and 14 send profile content to a model provider, read that provider's terms on retention and training, and update the notice's claim to match. Still owed, and it is owed at build time rather than now; recorded on row 14 on 2026-09-01. This is the one obligation here that no test can catch, because it depends on a document held by somebody else.\",\"rejected_spans\":[\"since 14 is the feature that actually sends a person's profile and written summary\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Two recipient registry entries were wrong. Found by the cross check on this revision and fixed the same day, 2026-09-01.** `NEXT_PUBLIC_VERCEL_ENV` sat in `ENV_KEYS_WITH_NO_RECIPIENT` saying it \\\"carries nothing outward\\\", which was false: both Sentry configs pass it as `environment`, so Sentry stamps it on every event, and it now sits in Sentry's `envKeys`. `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`'s reason claimed it tags a Sentry event, but the SDK infers the release from the separate unprefixed `VERCEL_GIT_COMMIT_SHA` and the declared key is read nowhere under `src/`; the classification was right and only the reason was wrong. **The weakness behind them is now guarded**: `recipients.test.ts` now fails when a key filed as reaching nobody is read inside a module that configures a company's SDK, proved by restoring the original bug and watching it fail.\",\"rejected_spans\":[\"Neither was ever visible on the page, since that list is not rendered, so both were a weakened guard rather than a false public claim.\",\"which matters more than either fix: nothing validated a `why` string, so a wrong classification hid behind prose that read plausibly and took a different model to notice\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The scope row for feature 21 carries no `Design it (spec)` box, although the scope's own legend says every feature has exactly one. **Done**: the box was added and ticked when this spec was written on 2026-09-01, and it records why nothing had flagged the missing spec earlier.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If the terms change materially before feature 9 ships, revisit recording acceptance,\",\"rejected_spans\":[\"since there is no record of which version anyone agreed to.\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"A lawyer's review is the only thing here that manages legal risk rather than reducing factual error. Deferred as a reasonable call for a free portfolio project, recorded so the deferral is visible.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**AC-14's cookie disclosure was found false on the live site, 2026-09-18.** The privacy notice stated \\\"One cookie is set, and it is the session cookie that keeps you signed in\\\", which was wrong: `rememberReturnPath()` in `src/features/auth/actions.ts` writes a second cookie, `jobhunt_return_path` (spec 0008 AC-5b), whenever a signed out visitor follows a protected deep link, cleared by the callback at `src/app/auth/callback/route.ts:73`. It is first party, `httpOnly`, short lived (600 seconds) and strictly necessary, so the fix is accuracy rather than a consent question.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Resolved in this revision.** AC-14 now names three cookie kinds (struck through above, replaced), and AC-24 adds the drift guard: a `CookieDisclosure` registry, an integration test asserting real response cookies against it (primary), and a unit level source scan (secondary, explicitly excluding the two things in this codebase that resemble a cookie setting call in source text but are not one). The prose correction (Build plan 7a) ships promptly and alone, since the false claim is live on `/privacy` today; the registry, the render from it, and both guards (7b) follow separately.\",\"rejected_spans\":[\"**Why nobody noticed is the more important half.** The recipient list, the field list, the Sentry configuration and the no analytics claim are each pinned by a test that fails when reality drifts (AC-5, AC-23, AC-4, AC-14's tracking half). The cookie claim had no such guard: the only legal test mentioning cookies, `sentry-claim.test.ts`, is about Sentry's own configuration, not the page's cookie disclosure. Spec 0008 added a cookie in review, correctly, and the privacy page silently went stale the same day, because nothing compared what the page claimed against what the code actually does.\",\"**A cross check the same day found the first draft of this correction still wrong, twice.** First, AC-14's replacement text named only two cookie kinds; `@supabase/ssr` also writes short lived PKCE verifier cookies during the OAuth handshake, a fact already documented in this repo (`src/features/auth/AGENTS.md:29`, \\\"the PKCE code verifier is a host only cookie\\\") but never carried to the page a visitor reads, which is itself the clearest argument for AC-24's registry being the one place both the code's real behaviour and the notice's prose draw from. Second, AC-24's first draft proposed registering `src/features/demo/refresh-session.ts` as a cookie that reaches nobody: verified against the actual code, that module never touches an HTTP cookie store at all, `createCookieJar()` holds its state in a plain `Map`, so it was about to be named, even as an undisclosed one, in a legal document it has nothing to do with. A guard built by scanning source text is exactly what proposed that; it is why AC-24's primary guard asserts the real `Set-Cookie` names a browser receives rather than trusting what the source appears to do, with the source scan kept only as a cheap secondary net.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"phrase\":\"**Resolved in this revision.**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-5b\",\"mention\":\"spec 0008 AC-5b\"},\"phrase\":\"`jobhunt_return_path` (spec 0008 AC-5b)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"Features 11, 13 and 14\"},\"phrase\":\"each add their own recipient registry entry as part of their own build\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 13\",\"id\":null,\"mention\":\"Features 11, 13 and 14\"},\"phrase\":\"each add their own recipient registry entry as part of their own build\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"mention\":\"Features 11, 13 and 14\"},\"phrase\":\"each add their own recipient registry entry as part of their own build\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**This item was written on a false premise, corrected 2026-09-01.** It said feature 27's scope row does not mention account deletion. It does, and always did: that row's `Done when` clause reads \"account settings covers deletion\". The obligation that is genuinely missing runs the other way, and it is now recorded on row 27. This notice describes deletion as a request emailed to the published address and fulfilled by hand, phrased that way deliberately. The day feature 27 ships a real control, the same prose becomes false in the opposite direction by understating what a reader can do, so rewriting it is part of that build. No test guards it, because the wording is prose. Recorded by `/scope`, not `/sync`: `/sync` may reconcile a feature's status but never add to its row, so a session sent there would have done nothing and reported nothing.",
+        "rejected_spans": [
+          "because a sentence implying a control nobody can operate would be its one false claim (**AC-8**)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Features 11, 13 and 14 each add their own recipient registry entry as part of their own build. **Recorded on all three rows on 2026-09-01** by `/scope`, not `/sync` (same reason as the item above). Enforced by the AC-5 test for any that add an `src/env.ts` key, which is every one of them that arrives with a credential; spec 0009's definition of \"reaches\" is the rule for classifying the rest of that feature's keys.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Before features 13 and 14 send profile content to a model provider, read that provider's terms on retention and training, and update the notice's claim to match. Still owed, and it is owed at build time rather than now; recorded on row 14 on 2026-09-01. This is the one obligation here that no test can catch, because it depends on a document held by somebody else.",
+        "rejected_spans": [
+          "since 14 is the feature that actually sends a person's profile and written summary"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Two recipient registry entries were wrong. Found by the cross check on this revision and fixed the same day, 2026-09-01.** `NEXT_PUBLIC_VERCEL_ENV` sat in `ENV_KEYS_WITH_NO_RECIPIENT` saying it \"carries nothing outward\", which was false: both Sentry configs pass it as `environment`, so Sentry stamps it on every event, and it now sits in Sentry's `envKeys`. `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`'s reason claimed it tags a Sentry event, but the SDK infers the release from the separate unprefixed `VERCEL_GIT_COMMIT_SHA` and the declared key is read nowhere under `src/`; the classification was right and only the reason was wrong. **The weakness behind them is now guarded**: `recipients.test.ts` now fails when a key filed as reaching nobody is read inside a module that configures a company's SDK, proved by restoring the original bug and watching it fail.",
+        "rejected_spans": [
+          "Neither was ever visible on the page, since that list is not rendered, so both were a weakened guard rather than a false public claim.",
+          "which matters more than either fix: nothing validated a `why` string, so a wrong classification hid behind prose that read plausibly and took a different model to notice"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The scope row for feature 21 carries no `Design it (spec)` box, although the scope's own legend says every feature has exactly one. **Done**: the box was added and ticked when this spec was written on 2026-09-01, and it records why nothing had flagged the missing spec earlier.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If the terms change materially before feature 9 ships, revisit recording acceptance,",
+        "rejected_spans": [
+          "since there is no record of which version anyone agreed to."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "A lawyer's review is the only thing here that manages legal risk rather than reducing factual error. Deferred as a reasonable call for a free portfolio project, recorded so the deferral is visible.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**AC-14's cookie disclosure was found false on the live site, 2026-09-18.** The privacy notice stated \"One cookie is set, and it is the session cookie that keeps you signed in\", which was wrong: `rememberReturnPath()` in `src/features/auth/actions.ts` writes a second cookie, `jobhunt_return_path` (spec 0008 AC-5b), whenever a signed out visitor follows a protected deep link, cleared by the callback at `src/app/auth/callback/route.ts:73`. It is first party, `httpOnly`, short lived (600 seconds) and strictly necessary, so the fix is accuracy rather than a consent question.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Resolved in this revision.** AC-14 now names three cookie kinds (struck through above, replaced), and AC-24 adds the drift guard: a `CookieDisclosure` registry, an integration test asserting real response cookies against it (primary), and a unit level source scan (secondary, explicitly excluding the two things in this codebase that resemble a cookie setting call in source text but are not one). The prose correction (Build plan 7a) ships promptly and alone, since the false claim is live on `/privacy` today; the registry, the render from it, and both guards (7b) follow separately.",
+        "rejected_spans": [
+          "**Why nobody noticed is the more important half.** The recipient list, the field list, the Sentry configuration and the no analytics claim are each pinned by a test that fails when reality drifts (AC-5, AC-23, AC-4, AC-14's tracking half). The cookie claim had no such guard: the only legal test mentioning cookies, `sentry-claim.test.ts`, is about Sentry's own configuration, not the page's cookie disclosure. Spec 0008 added a cookie in review, correctly, and the privacy page silently went stale the same day, because nothing compared what the page claimed against what the code actually does.",
+          "**A cross check the same day found the first draft of this correction still wrong, twice.** First, AC-14's replacement text named only two cookie kinds; `@supabase/ssr` also writes short lived PKCE verifier cookies during the OAuth handshake, a fact already documented in this repo (`src/features/auth/AGENTS.md:29`, \"the PKCE code verifier is a host only cookie\") but never carried to the page a visitor reads, which is itself the clearest argument for AC-24's registry being the one place both the code's real behaviour and the notice's prose draw from. Second, AC-24's first draft proposed registering `src/features/demo/refresh-session.ts` as a cookie that reaches nobody: verified against the actual code, that module never touches an HTTP cookie store at all, `createCookieJar()` holds its state in a plain `Map`, so it was about to be named, even as an undisclosed one, in a legal document it has nothing to do with. A guard built by scanning source text is exactly what proposed that; it is why AC-24's primary guard asserts the real `Set-Cookie` names a browser receives rather than trusting what the source appears to do, with the source scan kept only as a cheap secondary net."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "phrase": "**Resolved in this revision.**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-5b",
+          "label": null,
+          "mention": "spec 0008 AC-5b"
+        },
+        "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "Features 11, 13 and 14"
+        },
+        "phrase": "each add their own recipient registry entry as part of their own build",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 13",
+          "id": null,
+          "label": null,
+          "mention": "Features 11, 13 and 14"
+        },
+        "phrase": "each add their own recipient registry entry as part of their own build",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "Features 11, 13 and 14"
+        },
+        "phrase": "each add their own recipient registry entry as part of their own build",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

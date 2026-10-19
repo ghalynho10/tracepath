@@ -1,0 +1,1099 @@
+{
+  "record": "0008",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0008-app-shell-and-navigation/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-07T22:45:46+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 6787,
+  "output_tokens": 33330,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "20aaeee4868848f1bd723856b087a968",
+  "artifact_format_version": 3,
+  "unit_sha256": "3a0e3c113bdf71c971408fcb49cfe724aea90606c9a4fce6fc1900c2b9f4cb10",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want a header that tells me where I can go,\",\"rejected_spans\":[\"so that I never have to guess the app's routes.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed out visitor, I want a deep link I followed to survive sign in,\",\"rejected_spans\":[\"so that I end up on the page I asked for and not somewhere generic.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in visitor, I want `/` to stop inviting me to sign in,\",\"rejected_spans\":[\"so that the marketing page stops treating me as a stranger.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a first time user, I want to land on my profile when it is still empty,\",\"rejected_spans\":[\"so that the first thing I see asks for what the product needs from me.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The routes `/search`, `/profile` and `/applications` exist as real routes under the `(app)` route group, each rendering the shell. Only `/search` and `/profile` appear in the signed in navigation. `/applications` is reachable from a link on `/profile` (`COPY-6`). The group also holds `/health` (AC-22), which is a diagnostic rather than a product route and is deliberately unlinked.\",\"rejected_spans\":[\"per the settled decision in `docs/archive/app-shell-direction.md` lines 87 to 89, so no **product** route ships reachable only by typing its URL.\",\"so this list is not exhaustive of the group.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Each placeholder page renders an ordinary expected state, not a failure: the sentence from its copy slot (`COPY-1` to `COPY-3`), with no `role=\\\"alert\\\"` and no red border treatment. It does not carry the literal phrase \\\"coming soon\\\", nor any phrasing that will become **false** once the feature lands, which is what spec 0007 **AC-16** actually deleted from the sign in band. A sentence that truthfully says a route is not built yet is fine and is what these three are.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A header primitive lives in `src/components/ui/`. It is **chrome only**: lockup, navigation slot, action slot, layout. It imports nothing from `src/features/`. It holds no routing logic and reads no pathname; everything that varies arrives as children. The sign out form lives outside `src/components/ui/`.\",\"rejected_spans\":[\"so the design system gains no feature dependency and spec 0005's charter for that directory holds.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"AC-3a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Composition is per page on both sides, and the reason is a constraint rather than a preference.** The **signed in** variant is composed by **each route under `(app)`**, which passes its own `current` value. Not by the `(app)` layout. Four call sites, one line each. The **signed out** variant is composed by **each marketing page** rather than by a marketing layout. Reading the pathname in a client component to work around either case would put client JavaScript on `/sign-in`, whose own contract forbids it. A layout on either side may still exist for other shared chrome, but **it must not render the header**. The `(app)` layout keeps its session check and nothing else of the shell.\",\"rejected_spans\":[\"*Rewritten in revision 5; the signed in half previously said the `(app)` layout composes it once, which AC-5 makes impossible.*\",\"because AC-5 requires the current route to arrive as a prop rather than be computed, and a layout never learns the pathname (`layout.md` lines 238 to 242), so a layout composed header could never be told which page it is on\",\"for the same pathname reason plus AC-5a, which needs the navigation content itself to differ per page\",\"`/` already composes its header this way today, so that side is the existing shape kept rather than a new one.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The signed in shell renders no hamburger, no drawer and no tab bar at any width, and shows no horizontal overflow at 320 pixels. The overflow half is the checkable half; the absence half is a code review check, recorded here as intent.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\\\"page\\\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The marketing navigation varies by page. `EntryHeader`'s in page anchors (`#how-it-works`, `#reasoning`, `#about`) render **only on `/`**. `/sign-in` and `/ui-preview` render the header with an empty navigation slot. Observably: no marketing page renders an anchor whose target is not on that page.\",\"rejected_spans\":[\"because no other marketing route has those sections and a link that cannot work is forbidden by `src/features/entry-page/AGENTS.md`\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-5b\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Two new modules hold everything more than one caller needs.\\n  - `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here.\\n  - `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature.\\n  - The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`.\",\"rejected_spans\":[\"because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`.\",\"**Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build.\",\"because it queries that feature's table and belongs with the other queries against it.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed. A first time sign in is the expected case and must not move the failure ratio feature 9 will alert on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-7a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`. It **overwrites** any header of that name arriving on the request. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**. Omitting it falls through to the landing rule. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy.\",\"rejected_spans\":[\"so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434).\",\"so a client supplied value cannot be trusted forward.\",\"per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it.\",\"which is the honest outcome.\",\"so one number governs both.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The two existing assertions in `src/proxy.test.ts` pass **unmodified**: that the proxy treats a protected route exactly as it treats a public one (lines 49 to 62), and that it sets no cookies (lines 64 to 70).\",\"rejected_spans\":[\"This criterion exists because it is the mechanical guard on binding rule 6, and revision 1 of this spec broke both.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run. One `Headers` object built early and reused by reference would snapshot before the cookie loop, and the rebuilt request would carry the pathname but lose the refreshed session, so the same request's Server Components would read a stale session while the browser received a fresh one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10b\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. The branch keys on Next's `next-action` request header, **never on the route**. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination.\",\"rejected_spans\":[\"Added 2026-09-05 by spec [0014](../0014-apply-redirect-and-application-record/index.md) AC-20a, after a measured bug: a cookie mutated during an action makes Next re-render the current route into the action's response, and on `/search` that re-render re-runs the Adzuna search and spends one of 25 weekly calls.\",\"so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one.\",\"The cost is that the browser keeps its stale cookie until its next ordinary request; GoTrue's `refresh_token_reuse_interval` covers the reuse, driven as two applies sixteen seconds apart with no request between them, which is the shape that leaves the interval; both succeeded and the session survived (corrected 2026-09-05 after a review found the original measurement spaced its applies inside the interval and so proved less than it claimed).\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-10a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The test for AC-10 asserts **both** halves after a refresh: the pathname header is present, and the forwarded request carries the refreshed session cookie. A test asserting only the pathname passes while the second bug ships. The vehicle is whichever suite can drive a real refresh: `src/proxy.test.ts` records that its unit half works only because `getClaims()` returns early with no session, so this likely belongs in `test/integration/`. A mock whose `setAll` merely rebuilds the response would encode the same assumption as the code under test and is forbidden by AGENTS.md.\",\"rejected_spans\":[\"which is the whole reason this criterion is split out.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The `(app)` layout, at the moment it redirects an unauthenticated visitor, reads the header through `headers()` and appends the value as a `next` query parameter on `/sign-in`, percent encoded so a nested query string survives intact. When the header is absent it redirects to a bare `/sign-in` and nothing fails.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"One Zod schema validates the return path, and it is parsed at all three boundaries it crosses: the `next` query parameter on `/sign-in`, the hidden form field reaching the Server Action, and the cookie read by the callback. It accepts only a safe single leading slash path. It rejects a protocol relative `//`, a backslash, a scheme, control characters, and any value over **2048 characters** (the shared cap of AC-8). It rejects `/sign-in`, `/auth/callback` and `/go` as return targets: `/sign-in` and `/auth/callback` would loop, and `/go` would not loop but would resolve straight back to the landing rule, making the deep link a no op that looks honoured. It keeps the query string and drops the fragment. A rejected value falls back to the landing rule. A unit test names each hostile string, including one that is harmless before percent decoding and hostile after.\",\"rejected_spans\":[\"which is a property of the validator in isolation, since a browser never sends the fragment and the value can now also arrive typed into `?next=`.\"],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"`/sign-in` parses `next` at its boundary and renders the accepted value into a hidden field inside each provider form. A rejected value is dropped and never echoed onto the page.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Each provider Server Action reads the hidden field and validates it again. When the value is accepted it writes the return cookie **before** the call that produces the provider URL. When the value is rejected or absent it writes no cookie and proceeds, and sign in works normally without a deep link. The cookie is `httpOnly`, `SameSite=Lax`, `Path` scoped to `/auth/callback`, with a max age of 10 minutes, and its value is percent encoded on write and decoded before validation on read. `redirectTo` is unchanged and still carries nothing but `currentOrigin()` and the callback path.\",\"rejected_spans\":[\"so the cookie is already on the response whichever way that call goes.\",\"so spec 0007's safeguard 3 stands.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-14a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The deep link survives a failed sign in attempt, on both error paths, or the spec says it does not. When `startProviderSignIn` fails, `signInWithGoogle` and `signInWithGitHub` redirect to `signInErrorPath(code)` (`src/features/auth/actions.ts:53` and `:79`); that path carries the accepted `next` value so the retry keeps it. When the callback fails it redirects to `/sign-in?error=...` and AC-15 has already cleared the cookie, so that path carries the value forward on the redirect too.\",\"rejected_spans\":[\"Without this the two error paths behave differently by accident and a visitor who retries loses the link they followed, which is the silent discard the error model forbids.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The callback consumes, validates and clears the cookie on **every** path through it, including when validation fails and when the provider returned an error. The clear repeats the same `Path` the cookie was written with, or it silently fails to match and the value survives.\",\"rejected_spans\":[\"so a stale value cannot fire at a later sign in.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-15a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"`completeSignIn()` returns the resolved claims alongside `{ signedIn: true }`, and the callback passes them into the landing rule rather than building a second Supabase client to re-read them. Whether a second client constructed later in the same request would observe cookies written earlier in that request is the same snapshot question AC-10 exists for, and this avoids having to answer it. It also means the session is read once per callback rather than twice.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A door route at `/go` (a GET route handler placed outside `src/app/api/`, the same placement `/auth/callback` uses) sends a signed in visitor to the landing rule and a signed out visitor to `/sign-in`. Its responses carry `Cache-Control: no-store`. They also carry `X-Robots-Tag: noindex`.\",\"rejected_spans\":[\"because the destination differs per user and a cached redirect would send one visitor to another visitor's landing target.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-17a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A session read that **errors** is a third state, distinct from signed out, and both routes that read the session enumerate it. The read is wrapped in `attempt()` per binding rule 5. At `/go` an errored read sends the visitor to `/sign-in`, the same as signed out. At the `/sign-in` bounce an errored read means **do not bounce**, and the page renders normally. Both routes fail toward showing the sign in surface, never toward assuming a session.\",\"rejected_spans\":[\"so the failure reports.\",\"running the landing rule for a caller whose identity was never confirmed is the one outcome to avoid.\",\"The asymmetry is deliberate and is why this is written down: treating an error as signed in at the bounce would throw a genuinely signed out visitor off the only page that lets them sign in, so nobody could authenticate until the error cleared.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-18\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"`/` renders **zero** `<form>` elements and shows no sign in invitation anywhere on the page. `SignInControls` is rendered twice today, in `src/features/entry-page/hero-section.tsx:216` and `src/features/entry-page/sign-in-band.tsx:56`, and both are replaced by the door CTA (`COPY-4`), a plain anchor that does not prefetch. The signed out header's control changes from a `#start` jump to the door (`COPY-5`).\",\"rejected_spans\":[\"because the band it jumped to no longer signs anyone in.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-19\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"`/` remains a static page that reads no session, mounts no Supabase client, and reads no user data, holding spec 0006's accepted security model and its AC-4 intact.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-20\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"A signed in visitor at `/sign-in` is bounced instead of seeing the provider buttons again. The bounce honours an accepted `next` value and sends them there, falling back to the landing rule when there is none. The bounce **does not fire when an `error` parameter is present**.\",\"rejected_spans\":[\"so a valid deep link is not discarded by the bounce that exists to help them.\",\"because `signInErrorPath(code)` sends a failed callback to `/sign-in?error=...` and bouncing would discard the message the person needs to see.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-21\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Header sign out uses the existing Server Action in `src/features/auth/actions.ts` and returns the visitor to `/`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-22\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"`/health` survives as an internal diagnostic, with one change. It stays under `(app)`, and AC-2's ban on failure treatment does not extend to it. It is not in the navigation. Its own inline sign out form at `src/app/(app)/health/page.tsx:104-108` is **removed**.\",\"rejected_spans\":[\"so it inherits the shell\",\"because showing a failure is its entire job.\",\"because AC-21 puts sign out in the header above it and two sign out controls on one page is the kind of residue this feature exists to clear rather than inherit.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-23\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Signed in routes stay unindexed by inheritance from the root layout, which already sets `robots: { index: false, follow: false }` at `src/app/layout.tsx:60`. A comment in the `(app)` layout records that as chosen rather than accidental. **This is a code review check, not a testable criterion**: no code change could make it fail.\",\"rejected_spans\":[\"and it is recorded here as intent, the same way AC-4's absence half is.\"],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"AC-24\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"The door route, the `/sign-in` bounce and the landing rule each open a named span as their **first statement**, before any guard clause or early return, per binding rule 4. The names are `door.decide`, `sign_in.bounce` and `landing_rule.decide`, following the `<domain>.<verb>` convention the existing rows in `docs/observability/spans.md` use, and all three are registered there. The bounce's span wraps the session read as well as the decision that follows it, so the operation whose failure rate is measured is \\\"decide whether to bounce\\\" rather than \\\"render `/sign-in`\\\", and a signed out render is outside it entirely.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-24a\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48.\",\"rejected_spans\":[\"so a call inside either records the operation as having failed when it succeeded.\",\"this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-22\"},\"phrase\":\"The group also holds `/health` (AC-22)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":\"AC-16\",\"mention\":\"spec 0007 **AC-16**\"},\"phrase\":\"which is what spec 0007 **AC-16** actually deleted from the sign in band\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"mention\":\"spec 0005's charter for that directory\"},\"phrase\":\"spec 0005's charter for that directory holds\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3a\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"phrase\":\"which AC-5 makes impossible\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3a\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5a\"},\"phrase\":\"plus AC-5a, which needs the navigation content itself to differ per page\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-3a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5b\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-12\"},\"phrase\":\"the AC-12 Zod schema\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5b\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-6\"},\"phrase\":\"exports the one function of AC-6\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5b\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"phrase\":\"The existence read of AC-7\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-5b\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 9\",\"id\":null,\"mention\":\"feature 9\"},\"phrase\":\"the failure ratio feature 9 will alert on\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-7a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7a\"},\"target\":{\"kind\":\"reference\",\"record\":null,\"id\":null,\"label\":\"binding rule 5\",\"mention\":\"binding rule 5\"},\"phrase\":\"per binding rule 5\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-8\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-12\"},\"phrase\":\"defined beside the AC-12 validator\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"target\":{\"kind\":\"reference\",\"record\":null,\"id\":null,\"label\":\"binding rule 6\",\"mention\":\"binding rule 6\"},\"phrase\":\"the mechanical guard on binding rule 6\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10b\"},\"phrase\":null,\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10b\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-20a\",\"mention\":\"spec 0014 AC-20a\"},\"phrase\":\"Added 2026-09-05 by spec 0014 AC-20a, after a measured bug\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10b\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"phrase\":\"so AC-9's guard is untouched\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-10a\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"phrase\":\"The test for AC-10 asserts\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-12\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-8\"},\"phrase\":\"the shared cap of AC-8\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0007\",\"id\":null,\"label\":\"safeguard 3\",\"mention\":\"spec 0007's safeguard 3\"},\"phrase\":\"spec 0007's safeguard 3 stands\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-14a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-14a\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-15\"},\"phrase\":\"AC-15 has already cleared the cookie\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-15\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-15a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-15a\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"phrase\":\"the same snapshot question AC-10 exists for\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-17\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-17a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-17a\"},\"target\":{\"kind\":\"reference\",\"record\":null,\"id\":null,\"label\":\"binding rule 5\",\"mention\":\"binding rule 5\"},\"phrase\":\"per binding rule 5\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"spec 0006's accepted security model and its AC-4\"},\"phrase\":\"spec 0006's accepted security model and its AC-4 intact\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-22\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-2\"},\"phrase\":\"AC-2's ban on failure treatment does not extend to it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-22\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-21\"},\"phrase\":\"AC-21 puts sign out in the header above it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-23\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"phrase\":\"the same way AC-4's absence half is\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-24\"},\"target\":{\"kind\":\"reference\",\"record\":null,\"id\":null,\"label\":\"binding rule 4\",\"mention\":\"binding rule 4\"},\"phrase\":\"per binding rule 4\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-24\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-24a\"},\"phrase\":null,\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want a header that tells me where I can go,",
+        "rejected_spans": [
+          "so that I never have to guess the app's routes."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed out visitor, I want a deep link I followed to survive sign in,",
+        "rejected_spans": [
+          "so that I end up on the page I asked for and not somewhere generic."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in visitor, I want `/` to stop inviting me to sign in,",
+        "rejected_spans": [
+          "so that the marketing page stops treating me as a stranger."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a first time user, I want to land on my profile when it is still empty,",
+        "rejected_spans": [
+          "so that the first thing I see asks for what the product needs from me."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The routes `/search`, `/profile` and `/applications` exist as real routes under the `(app)` route group, each rendering the shell. Only `/search` and `/profile` appear in the signed in navigation. `/applications` is reachable from a link on `/profile` (`COPY-6`). The group also holds `/health` (AC-22), which is a diagnostic rather than a product route and is deliberately unlinked.",
+        "rejected_spans": [
+          "per the settled decision in `docs/archive/app-shell-direction.md` lines 87 to 89, so no **product** route ships reachable only by typing its URL.",
+          "so this list is not exhaustive of the group."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Each placeholder page renders an ordinary expected state, not a failure: the sentence from its copy slot (`COPY-1` to `COPY-3`), with no `role=\"alert\"` and no red border treatment. It does not carry the literal phrase \"coming soon\", nor any phrasing that will become **false** once the feature lands, which is what spec 0007 **AC-16** actually deleted from the sign in band. A sentence that truthfully says a route is not built yet is fine and is what these three are.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A header primitive lives in `src/components/ui/`. It is **chrome only**: lockup, navigation slot, action slot, layout. It imports nothing from `src/features/`. It holds no routing logic and reads no pathname; everything that varies arrives as children. The sign out form lives outside `src/components/ui/`.",
+        "rejected_spans": [
+          "so the design system gains no feature dependency and spec 0005's charter for that directory holds."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**Composition is per page on both sides, and the reason is a constraint rather than a preference.** The **signed in** variant is composed by **each route under `(app)`**, which passes its own `current` value. Not by the `(app)` layout. Four call sites, one line each. The **signed out** variant is composed by **each marketing page** rather than by a marketing layout. Reading the pathname in a client component to work around either case would put client JavaScript on `/sign-in`, whose own contract forbids it. A layout on either side may still exist for other shared chrome, but **it must not render the header**. The `(app)` layout keeps its session check and nothing else of the shell.",
+        "rejected_spans": [
+          "*Rewritten in revision 5; the signed in half previously said the `(app)` layout composes it once, which AC-5 makes impossible.*",
+          "because AC-5 requires the current route to arrive as a prop rather than be computed, and a layout never learns the pathname (`layout.md` lines 238 to 242), so a layout composed header could never be told which page it is on",
+          "for the same pathname reason plus AC-5a, which needs the navigation content itself to differ per page",
+          "`/` already composes its header this way today, so that side is the existing shape kept rather than a new one."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The signed in shell renders no hamburger, no drawer and no tab bar at any width, and shows no horizontal overflow at 320 pixels. The overflow half is the checkable half; the absence half is a code review check, recorded here as intent.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The marketing navigation varies by page. `EntryHeader`'s in page anchors (`#how-it-works`, `#reasoning`, `#about`) render **only on `/`**. `/sign-in` and `/ui-preview` render the header with an empty navigation slot. Observably: no marketing page renders an anchor whose target is not on that page.",
+        "rejected_spans": [
+          "because no other marketing route has those sections and a link that cannot work is forbidden by `src/features/entry-page/AGENTS.md`"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5b",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Two new modules hold everything more than one caller needs.\n  - `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here.\n  - `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature.\n  - The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`.",
+        "rejected_spans": [
+          "because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`.",
+          "**Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build.",
+          "because it queries that feature's table and belongs with the other queries against it."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed. A first time sign in is the expected case and must not move the failure ratio feature 9 will alert on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`. It **overwrites** any header of that name arriving on the request. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**. Omitting it falls through to the landing rule. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy.",
+        "rejected_spans": [
+          "so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434).",
+          "so a client supplied value cannot be trusted forward.",
+          "per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it.",
+          "which is the honest outcome.",
+          "so one number governs both."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The two existing assertions in `src/proxy.test.ts` pass **unmodified**: that the proxy treats a protected route exactly as it treats a public one (lines 49 to 62), and that it sets no cookies (lines 64 to 70).",
+        "rejected_spans": [
+          "This criterion exists because it is the mechanical guard on binding rule 6, and revision 1 of this spec broke both."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run. One `Headers` object built early and reused by reference would snapshot before the cookie loop, and the rebuilt request would carry the pathname but lose the refreshed session, so the same request's Server Components would read a stale session while the browser received a fresh one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10b",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. The branch keys on Next's `next-action` request header, **never on the route**. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination.",
+        "rejected_spans": [
+          "Added 2026-09-05 by spec [0014](../0014-apply-redirect-and-application-record/index.md) AC-20a, after a measured bug: a cookie mutated during an action makes Next re-render the current route into the action's response, and on `/search` that re-render re-runs the Adzuna search and spends one of 25 weekly calls.",
+          "so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one.",
+          "The cost is that the browser keeps its stale cookie until its next ordinary request; GoTrue's `refresh_token_reuse_interval` covers the reuse, driven as two applies sixteen seconds apart with no request between them, which is the shape that leaves the interval; both succeeded and the session survived (corrected 2026-09-05 after a review found the original measurement spaced its applies inside the interval and so proved less than it claimed)."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The test for AC-10 asserts **both** halves after a refresh: the pathname header is present, and the forwarded request carries the refreshed session cookie. A test asserting only the pathname passes while the second bug ships. The vehicle is whichever suite can drive a real refresh: `src/proxy.test.ts` records that its unit half works only because `getClaims()` returns early with no session, so this likely belongs in `test/integration/`. A mock whose `setAll` merely rebuilds the response would encode the same assumption as the code under test and is forbidden by AGENTS.md.",
+        "rejected_spans": [
+          "which is the whole reason this criterion is split out."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The `(app)` layout, at the moment it redirects an unauthenticated visitor, reads the header through `headers()` and appends the value as a `next` query parameter on `/sign-in`, percent encoded so a nested query string survives intact. When the header is absent it redirects to a bare `/sign-in` and nothing fails.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "One Zod schema validates the return path, and it is parsed at all three boundaries it crosses: the `next` query parameter on `/sign-in`, the hidden form field reaching the Server Action, and the cookie read by the callback. It accepts only a safe single leading slash path. It rejects a protocol relative `//`, a backslash, a scheme, control characters, and any value over **2048 characters** (the shared cap of AC-8). It rejects `/sign-in`, `/auth/callback` and `/go` as return targets: `/sign-in` and `/auth/callback` would loop, and `/go` would not loop but would resolve straight back to the landing rule, making the deep link a no op that looks honoured. It keeps the query string and drops the fragment. A rejected value falls back to the landing rule. A unit test names each hostile string, including one that is harmless before percent decoding and hostile after.",
+        "rejected_spans": [
+          "which is a property of the validator in isolation, since a browser never sends the fragment and the value can now also arrive typed into `?next=`."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`/sign-in` parses `next` at its boundary and renders the accepted value into a hidden field inside each provider form. A rejected value is dropped and never echoed onto the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Each provider Server Action reads the hidden field and validates it again. When the value is accepted it writes the return cookie **before** the call that produces the provider URL. When the value is rejected or absent it writes no cookie and proceeds, and sign in works normally without a deep link. The cookie is `httpOnly`, `SameSite=Lax`, `Path` scoped to `/auth/callback`, with a max age of 10 minutes, and its value is percent encoded on write and decoded before validation on read. `redirectTo` is unchanged and still carries nothing but `currentOrigin()` and the callback path.",
+        "rejected_spans": [
+          "so the cookie is already on the response whichever way that call goes.",
+          "so spec 0007's safeguard 3 stands."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The deep link survives a failed sign in attempt, on both error paths, or the spec says it does not. When `startProviderSignIn` fails, `signInWithGoogle` and `signInWithGitHub` redirect to `signInErrorPath(code)` (`src/features/auth/actions.ts:53` and `:79`); that path carries the accepted `next` value so the retry keeps it. When the callback fails it redirects to `/sign-in?error=...` and AC-15 has already cleared the cookie, so that path carries the value forward on the redirect too.",
+        "rejected_spans": [
+          "Without this the two error paths behave differently by accident and a visitor who retries loses the link they followed, which is the silent discard the error model forbids."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The callback consumes, validates and clears the cookie on **every** path through it, including when validation fails and when the provider returned an error. The clear repeats the same `Path` the cookie was written with, or it silently fails to match and the value survives.",
+        "rejected_spans": [
+          "so a stale value cannot fire at a later sign in."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`completeSignIn()` returns the resolved claims alongside `{ signedIn: true }`, and the callback passes them into the landing rule rather than building a second Supabase client to re-read them. Whether a second client constructed later in the same request would observe cookies written earlier in that request is the same snapshot question AC-10 exists for, and this avoids having to answer it. It also means the session is read once per callback rather than twice.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A door route at `/go` (a GET route handler placed outside `src/app/api/`, the same placement `/auth/callback` uses) sends a signed in visitor to the landing rule and a signed out visitor to `/sign-in`. Its responses carry `Cache-Control: no-store`. They also carry `X-Robots-Tag: noindex`.",
+        "rejected_spans": [
+          "because the destination differs per user and a cached redirect would send one visitor to another visitor's landing target."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A session read that **errors** is a third state, distinct from signed out, and both routes that read the session enumerate it. The read is wrapped in `attempt()` per binding rule 5. At `/go` an errored read sends the visitor to `/sign-in`, the same as signed out. At the `/sign-in` bounce an errored read means **do not bounce**, and the page renders normally. Both routes fail toward showing the sign in surface, never toward assuming a session.",
+        "rejected_spans": [
+          "so the failure reports.",
+          "running the landing rule for a caller whose identity was never confirmed is the one outcome to avoid.",
+          "The asymmetry is deliberate and is why this is written down: treating an error as signed in at the bounce would throw a genuinely signed out visitor off the only page that lets them sign in, so nobody could authenticate until the error cleared."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-18",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`/` renders **zero** `<form>` elements and shows no sign in invitation anywhere on the page. `SignInControls` is rendered twice today, in `src/features/entry-page/hero-section.tsx:216` and `src/features/entry-page/sign-in-band.tsx:56`, and both are replaced by the door CTA (`COPY-4`), a plain anchor that does not prefetch. The signed out header's control changes from a `#start` jump to the door (`COPY-5`).",
+        "rejected_spans": [
+          "because the band it jumped to no longer signs anyone in."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-19",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`/` remains a static page that reads no session, mounts no Supabase client, and reads no user data, holding spec 0006's accepted security model and its AC-4 intact.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-20",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "A signed in visitor at `/sign-in` is bounced instead of seeing the provider buttons again. The bounce honours an accepted `next` value and sends them there, falling back to the landing rule when there is none. The bounce **does not fire when an `error` parameter is present**.",
+        "rejected_spans": [
+          "so a valid deep link is not discarded by the bounce that exists to help them.",
+          "because `signInErrorPath(code)` sends a failed callback to `/sign-in?error=...` and bouncing would discard the message the person needs to see."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-21",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Header sign out uses the existing Server Action in `src/features/auth/actions.ts` and returns the visitor to `/`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-22",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "`/health` survives as an internal diagnostic, with one change. It stays under `(app)`, and AC-2's ban on failure treatment does not extend to it. It is not in the navigation. Its own inline sign out form at `src/app/(app)/health/page.tsx:104-108` is **removed**.",
+        "rejected_spans": [
+          "so it inherits the shell",
+          "because showing a failure is its entire job.",
+          "because AC-21 puts sign out in the header above it and two sign out controls on one page is the kind of residue this feature exists to clear rather than inherit."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-23",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Signed in routes stay unindexed by inheritance from the root layout, which already sets `robots: { index: false, follow: false }` at `src/app/layout.tsx:60`. A comment in the `(app)` layout records that as chosen rather than accidental. **This is a code review check, not a testable criterion**: no code change could make it fail.",
+        "rejected_spans": [
+          "and it is recorded here as intent, the same way AC-4's absence half is."
+        ],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-24",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "The door route, the `/sign-in` bounce and the landing rule each open a named span as their **first statement**, before any guard clause or early return, per binding rule 4. The names are `door.decide`, `sign_in.bounce` and `landing_rule.decide`, following the `<domain>.<verb>` convention the existing rows in `docs/observability/spans.md` use, and all three are registered there. The bounce's span wraps the session read as well as the decision that follows it, so the operation whose failure rate is measured is \"decide whether to bounce\" rather than \"render `/sign-in`\", and a signed out render is outside it entirely.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-24a",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48.",
+        "rejected_spans": [
+          "so a call inside either records the operation as having failed when it succeeded.",
+          "this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-22"
+        },
+        "phrase": "The group also holds `/health` (AC-22)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": "AC-16",
+          "label": null,
+          "mention": "spec 0007 **AC-16**"
+        },
+        "phrase": "which is what spec 0007 **AC-16** actually deleted from the sign in band",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": null,
+          "mention": "spec 0005's charter for that directory"
+        },
+        "phrase": "spec 0005's charter for that directory holds",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3a"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "phrase": "which AC-5 makes impossible",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-3a"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5a"
+        },
+        "phrase": "plus AC-5a, which needs the navigation content itself to differ per page",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5b"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "phrase": "the AC-12 Zod schema",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5b"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-6"
+        },
+        "phrase": "exports the one function of AC-6",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5b"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "phrase": "The existence read of AC-7",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-5b"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 9",
+          "id": null,
+          "label": null,
+          "mention": "feature 9"
+        },
+        "phrase": "the failure ratio feature 9 will alert on",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-7a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-7a"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": "binding rule 5",
+          "mention": "binding rule 5"
+        },
+        "phrase": "per binding rule 5",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "phrase": "defined beside the AC-12 validator",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": "binding rule 6",
+          "mention": "binding rule 6"
+        },
+        "phrase": "the mechanical guard on binding rule 6",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10b"
+        },
+        "phrase": null,
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10b"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-20a",
+          "label": null,
+          "mention": "spec 0014 AC-20a"
+        },
+        "phrase": "Added 2026-09-05 by spec 0014 AC-20a, after a measured bug",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10b"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "phrase": "so AC-9's guard is untouched",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-10a"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "phrase": "The test for AC-10 asserts",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "phrase": "the shared cap of AC-8",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0007",
+          "id": null,
+          "label": "safeguard 3",
+          "mention": "spec 0007's safeguard 3"
+        },
+        "phrase": "spec 0007's safeguard 3 stands",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-14a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-14a"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "phrase": "AC-15 has already cleared the cookie",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-15"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-15a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-15a"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "phrase": "the same snapshot question AC-10 exists for",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-17"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-17a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-17a"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": "binding rule 5",
+          "mention": "binding rule 5"
+        },
+        "phrase": "per binding rule 5",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "spec 0006's accepted security model and its AC-4"
+        },
+        "phrase": "spec 0006's accepted security model and its AC-4 intact",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-22"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "phrase": "AC-2's ban on failure treatment does not extend to it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-22"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-21"
+        },
+        "phrase": "AC-21 puts sign out in the header above it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-23"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "phrase": "the same way AC-4's absence half is",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": null,
+          "id": null,
+          "label": "binding rule 4",
+          "mention": "binding rule 4"
+        },
+        "phrase": "per binding rule 4",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-24"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-24a"
+        },
+        "phrase": null,
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

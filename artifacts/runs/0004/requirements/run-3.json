@@ -1,0 +1,242 @@
+{
+  "record": "0004",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0004-test-foundation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T05:14:26+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1254,
+  "output_tokens": 2290,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b1635731b1b54538880a97c05daaf51c",
+  "artifact_format_version": 3,
+  "unit_sha256": "72b86b49c6a39354788b723d61c39b6d6d5c6d79e2a34e84640ca4a1a608c6bd",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a developer writing a test, I want to sign in as any fixture user without driving a browser,\",\"rejected_spans\":[\"so I can prove real isolation against the real policies.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a developer, I want external services exercised against a real recorded response,\",\"rejected_spans\":[\"so a test cannot pass because it mocked the same wrong assumption twice.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As an operator, I want the session mint hard blocked outside development,\",\"rejected_spans\":[\"so the secret key path can never mint a session on a deployed site.\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a reviewer, I want fixtures that carry no real personal identifier,\",\"rejected_spans\":[\"so a committed test can never leak real data.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: A test can sign in as fixture user A, write data, switch to fixture user B, and prove B cannot read A's data. The write goes through the request scoped client, not through a Server Action; driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: An external service call can be exercised against a real recorded response (captured once from the real service) rather than a hand written mock.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: The session mint refuses to create a session whenever development is not explicitly enabled (`DEV_SESSION_ENABLED` absent or false), failing closed, and a test proves the refusal.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: No fixture anywhere (seeded users, recorded responses, on demand mints) contains a real personal identifier; fixture identities are obviously fake and use the reserved `.test` domain.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Vitest runs unit and integration tests, and integration tests run against the local Supabase stack with the real policies applied, not a mock. No end to end runner is installed by this feature.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: The seeded fixture pool is replaced with users whose ids satisfy `z.uuid()` (valid version and variant), the third fixture user with no profile row survives, and the profile parser tightens from `z.guid()` to `z.uuid()`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: CI runs the integration suite against a local Supabase stack started with the Supabase CLI in Docker.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: Record and replay are toggled by an explicit mode; normal runs replay from files and never touch the network, and record mode is an opt in that warns.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: Replay of a missing fixture fails loudly, naming the missing file and the command that records it, and never silently hits the live network.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: Nothing leaves the process during a test run, and the reporting contract is proved rather than assumed. The test setup installs an in memory transport, and a test constructing a `failure()` asserts the captured event carries the `[\\\"failure\\\", <kind>]` fingerprint, the `failure.kind` and `failure.severity` tags, and the level its severity implies (`error` for unexpected, `info` for expected). Leaving Sentry uninitialised does not satisfy this: every assertion would pass without proving the reporting works.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: Tests that write data use a fresh on demand fixture user per test,\",\"rejected_spans\":[\"so no test contaminates another.\"],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `pnpm test` runs unit tests without requiring the stack, and `pnpm test:integration` runs the integration suite and fails with a clear message when the local stack is not running.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: A recording committed to git never carries a credential. Record mode redacts at write time, keeping only the headers named on an allow list and replacing every other header value with a fixed placeholder, and scrubbing the credential carrying query parameters and body fields the service declares. A test proves a recording captured from a request carrying an API key, a bearer token and a `set-cookie` header comes out holding none of the three.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":null,\"mention\":\"spec 0001's third constraint\"},\"phrase\":\"driving one of those without a browser is spec 0001's third constraint\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a developer writing a test, I want to sign in as any fixture user without driving a browser,",
+        "rejected_spans": [
+          "so I can prove real isolation against the real policies."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a developer, I want external services exercised against a real recorded response,",
+        "rejected_spans": [
+          "so a test cannot pass because it mocked the same wrong assumption twice."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As an operator, I want the session mint hard blocked outside development,",
+        "rejected_spans": [
+          "so the secret key path can never mint a session on a deployed site."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a reviewer, I want fixtures that carry no real personal identifier,",
+        "rejected_spans": [
+          "so a committed test can never leak real data."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: A test can sign in as fixture user A, write data, switch to fixture user B, and prove B cannot read A's data. The write goes through the request scoped client, not through a Server Action; driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: An external service call can be exercised against a real recorded response (captured once from the real service) rather than a hand written mock.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: The session mint refuses to create a session whenever development is not explicitly enabled (`DEV_SESSION_ENABLED` absent or false), failing closed, and a test proves the refusal.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: No fixture anywhere (seeded users, recorded responses, on demand mints) contains a real personal identifier; fixture identities are obviously fake and use the reserved `.test` domain.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Vitest runs unit and integration tests, and integration tests run against the local Supabase stack with the real policies applied, not a mock. No end to end runner is installed by this feature.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: The seeded fixture pool is replaced with users whose ids satisfy `z.uuid()` (valid version and variant), the third fixture user with no profile row survives, and the profile parser tightens from `z.guid()` to `z.uuid()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: CI runs the integration suite against a local Supabase stack started with the Supabase CLI in Docker.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: Record and replay are toggled by an explicit mode; normal runs replay from files and never touch the network, and record mode is an opt in that warns.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: Replay of a missing fixture fails loudly, naming the missing file and the command that records it, and never silently hits the live network.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: Nothing leaves the process during a test run, and the reporting contract is proved rather than assumed. The test setup installs an in memory transport, and a test constructing a `failure()` asserts the captured event carries the `[\"failure\", <kind>]` fingerprint, the `failure.kind` and `failure.severity` tags, and the level its severity implies (`error` for unexpected, `info` for expected). Leaving Sentry uninitialised does not satisfy this: every assertion would pass without proving the reporting works.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: Tests that write data use a fresh on demand fixture user per test,",
+        "rejected_spans": [
+          "so no test contaminates another."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `pnpm test` runs unit tests without requiring the stack, and `pnpm test:integration` runs the integration suite and fails with a clear message when the local stack is not running.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: A recording committed to git never carries a credential. Record mode redacts at write time, keeping only the headers named on an allow list and replacing every other header value with a fixed placeholder, and scrubbing the credential carrying query parameters and body fields the service declares. A test proves a recording captured from a request carrying an API key, a bearer token and a `set-cookie` header comes out holding none of the three.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001's third constraint"
+        },
+        "phrase": "driving one of those without a browser is spec 0001's third constraint",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

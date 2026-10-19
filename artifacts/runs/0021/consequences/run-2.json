@@ -1,0 +1,195 @@
+{
+  "record": "0021",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1513,
+  "output_tokens": 2230,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "665f4ded580148488760e0b9e70e9dd4",
+  "artifact_format_version": 3,
+  "unit_sha256": "9e633fb99107a21e2046bf45a4a23ce78d59b13c7530c81b018fd98ec17d70be",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A visitor sees real listings scored for real, which is evidence the ranking works rather than a\\n  curated illustration of it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The two candidate personas are now the only fabricated element, disclosed in full on the page,\",\"rejected_spans\":[\"which closes the exact objection (\\\"picked to flatter it\\\") that ended the fabricated version.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The refresh reuses every existing gated code path (`searchListings()`, `scoreListings()`,\\n  `checkFitScore()`, `checkUsageGate()`) unchanged, so this feature adds no new vendor call shape\\n  to reason about, only a new caller of the existing ones.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The refresh introduces a production session minting path where the only prior one was hard\\n  blocked outside development (spec 0001, caller 1). The blast radius is bounded (the identity\\n  holds no profile or application row and only this route can trigger it), but it is a genuinely\\n  new kind of thing in this codebase and the first route handler under `src/app/api/` to write\\n  anything.\",\"rejected_spans\":[\"This was weighed against triggering the refresh from a local script instead, and the\\n  route was kept because the alternative moves the far more dangerous `SUPABASE_SECRET_KEY` onto a\\n  personal machine for a routine task (**Security model**, `rationale.md`).\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A refresh spends up to 16 `ai_scoring` calls and up to 16 chained `ai_check` calls (32 model\\n  calls total) plus two Adzuna searches (revised 2026-09-15; the model call\\n  count is unchanged, since the kept total is still at most 8), not the 16 scoring calls alone;\\n  still negligible against the shared caps at a weekly cadence. Two searches is 2 against\\n  `job_search`'s global day cap of 66 and 2 against the refresh identity's own account week cap of\\n  25 (`supabase/migrations/20260902120000_usage_gating.sql`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two Adzuna ids carrying one posting both appear on `/demo`, since de-duplication is by id only.\\n  The first real refresh had exactly this: Everpure, Inc. under ids `5883839578` and `5883870504`,\\n  with byte identical snippets but different titles. It stays visible until feature 19 decides the\\n  dedup key (`## Follow-up`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Changing a query after seeing one run's results is the move this spec otherwise forbids. It is\\n  accepted once, on a criterion about the cards' information (no matched skills for either\\n  persona) rather than about which bands came back, and it is bounded by a stopping rule\\n  (`## Follow-up`) whose answer is to leave the queries alone (`rationale.md`, \\\"Revision,\\n  2026-09-15\\\").\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh\\n  leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what\\n  keeps honest rather than silent.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A real employer's name now appears on a public portfolio page next to a `weak_match` or\\n  `not_a_match` band (AC-19), an editorial exposure spec 0021's fabricated version never carried\\n  and Adzuna's terms do not govern either way.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A flaky `ai_check` vendor call blocks an otherwise successful refresh entirely, since a check\\n  failure or refusal now aborts the whole run rather than writing the listing without its\\n  ungrounded skills flag (**Feature design**, AC-17). Accepted deliberately: refreshes are manual\\n  and retryable, this is the same shape AC-17 already accepts for a scoring failure,\",\"rejected_spans\":[\"and the\\n  alternative was writing a row whose check never actually finished as if it had passed clean,\\n  which is the exact misrepresentation `ungrounded_skills` exists to prevent.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No scheduler exists yet, so staying current is a manual, easy to forget action; automating it on\\n  a cron is explicitly deferred (see `docs/scope/scope.md`).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`demo_result`'s shape changes (four new columns, a changed check constraint, two type changes)\\n  but the table and its access pattern (secret key client only) are unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One new table (`demo_refresh`), no relationship to the rest of the schema.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No migration plan section: the original migration never applied to a hosted project, so this is\\n  edited in place with no live data to transform and no rollback window to plan for.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A visitor sees real listings scored for real, which is evidence the ranking works rather than a\n  curated illustration of it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The two candidate personas are now the only fabricated element, disclosed in full on the page,",
+        "rejected_spans": [
+          "which closes the exact objection (\"picked to flatter it\") that ended the fabricated version."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The refresh reuses every existing gated code path (`searchListings()`, `scoreListings()`,\n  `checkFitScore()`, `checkUsageGate()`) unchanged, so this feature adds no new vendor call shape\n  to reason about, only a new caller of the existing ones.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The refresh introduces a production session minting path where the only prior one was hard\n  blocked outside development (spec 0001, caller 1). The blast radius is bounded (the identity\n  holds no profile or application row and only this route can trigger it), but it is a genuinely\n  new kind of thing in this codebase and the first route handler under `src/app/api/` to write\n  anything.",
+        "rejected_spans": [
+          "This was weighed against triggering the refresh from a local script instead, and the\n  route was kept because the alternative moves the far more dangerous `SUPABASE_SECRET_KEY` onto a\n  personal machine for a routine task (**Security model**, `rationale.md`)."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A refresh spends up to 16 `ai_scoring` calls and up to 16 chained `ai_check` calls (32 model\n  calls total) plus two Adzuna searches (revised 2026-09-15; the model call\n  count is unchanged, since the kept total is still at most 8), not the 16 scoring calls alone;\n  still negligible against the shared caps at a weekly cadence. Two searches is 2 against\n  `job_search`'s global day cap of 66 and 2 against the refresh identity's own account week cap of\n  25 (`supabase/migrations/20260902120000_usage_gating.sql`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two Adzuna ids carrying one posting both appear on `/demo`, since de-duplication is by id only.\n  The first real refresh had exactly this: Everpure, Inc. under ids `5883839578` and `5883870504`,\n  with byte identical snippets but different titles. It stays visible until feature 19 decides the\n  dedup key (`## Follow-up`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Changing a query after seeing one run's results is the move this spec otherwise forbids. It is\n  accepted once, on a criterion about the cards' information (no matched skills for either\n  persona) rather than about which bands came back, and it is bounded by a stopping rule\n  (`## Follow-up`) whose answer is to leave the queries alone (`rationale.md`, \"Revision,\n  2026-09-15\").",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh\n  leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what\n  keeps honest rather than silent.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A real employer's name now appears on a public portfolio page next to a `weak_match` or\n  `not_a_match` band (AC-19), an editorial exposure spec 0021's fabricated version never carried\n  and Adzuna's terms do not govern either way.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A flaky `ai_check` vendor call blocks an otherwise successful refresh entirely, since a check\n  failure or refusal now aborts the whole run rather than writing the listing without its\n  ungrounded skills flag (**Feature design**, AC-17). Accepted deliberately: refreshes are manual\n  and retryable, this is the same shape AC-17 already accepts for a scoring failure,",
+        "rejected_spans": [
+          "and the\n  alternative was writing a row whose check never actually finished as if it had passed clean,\n  which is the exact misrepresentation `ungrounded_skills` exists to prevent."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No scheduler exists yet, so staying current is a manual, easy to forget action; automating it on\n  a cron is explicitly deferred (see `docs/scope/scope.md`).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`demo_result`'s shape changes (four new columns, a changed check constraint, two type changes)\n  but the table and its access pattern (secret key client only) are unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One new table (`demo_refresh`), no relationship to the rest of the schema.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No migration plan section: the original migration never applied to a hosted project, so this is\n  edited in place with no live data to transform and no rollback window to plan for.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

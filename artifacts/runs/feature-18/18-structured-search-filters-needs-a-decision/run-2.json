@@ -1,0 +1,161 @@
+{
+  "record": "feature-18",
+  "section": "18. Structured search filters \u00b7 needs a decision",
+  "section_slug": "18-structured-search-filters-needs-a-decision",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 586,
+  "output_tokens": 1239,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "a91e489edf864245928e6ee5803b0ead",
+  "artifact_format_version": 3,
+  "unit_sha256": "0b29c4a777ff5afcbfec8f863b65ac05c82eccbd22ef1102ad832d02a2c91dfb",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Thicken the search segment: seniority, remote or hybrid, job type, salary range, and listing recency, on top of the title and location already there. The underlying source already supports most of these; the gap in the reference project was its own implementation. There is no structured remote field, so remote is handled by a text heuristic over title and description for now.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** each filter changes the result set as stated,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"filter state is reflected in the URL so a search is shareable and survives a reload,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"the remote heuristic's limits are visible to the user rather than presented as certain,\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and a repeat search does not wipe the visible results.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Owes a decision on what a repeat view costs. The last **Done when** clause, \\\"a repeat search does not wipe the visible results\\\", is the one at risk, and nothing today satisfies it. Feature 11 measured, against a production build, that every request carrying `q` or `where` spends one gate check and one Adzuna call: a reload, a shared link and a **browser back navigation** alike. There is no client side cache, so returning to a result set costs budget every time, against an account cap of 25 a week. So this feature has to decide what a repeat view costs, whether that is holding results through a filter change without refetching or accepting a fresh gated call each time, and each filter added multiplies the question.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Do not test this under `pnpm dev`, which makes back navigation look free for a development only reason spec 0013's Consequences explains.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect structured search filters`\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"The last **Done when** clause, \\\"a repeat search does not wipe the visible results\\\", is the one at risk\",\"date\":\"2026-09-04\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 11\",\"id\":null,\"mention\":\"Feature 11\"},\"phrase\":\"Feature 11 measured, against a production build, that every request carrying `q` or `where` spends one gate check and one Adzuna call\",\"date\":\"2026-09-04\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Thicken the search segment: seniority, remote or hybrid, job type, salary range, and listing recency, on top of the title and location already there. The underlying source already supports most of these; the gap in the reference project was its own implementation. There is no structured remote field, so remote is handled by a text heuristic over title and description for now.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** each filter changes the result set as stated,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "filter state is reflected in the URL so a search is shareable and survives a reload,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "the remote heuristic's limits are visible to the user rather than presented as certain,",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and a repeat search does not wipe the visible results.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Owes a decision on what a repeat view costs. The last **Done when** clause, \"a repeat search does not wipe the visible results\", is the one at risk, and nothing today satisfies it. Feature 11 measured, against a production build, that every request carrying `q` or `where` spends one gate check and one Adzuna call: a reload, a shared link and a **browser back navigation** alike. There is no client side cache, so returning to a result set costs budget every time, against an account cap of 25 a week. So this feature has to decide what a repeat view costs, whether that is holding results through a filter change without refetching or accepting a fresh gated call each time, and each filter added multiplies the question.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Do not test this under `pnpm dev`, which makes back navigation look free for a development only reason spec 0013's Consequences explains.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect structured search filters`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "The last **Done when** clause, \"a repeat search does not wipe the visible results\", is the one at risk",
+        "date": "2026-09-04",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 11",
+          "id": null,
+          "label": null,
+          "mention": "Feature 11"
+        },
+        "phrase": "Feature 11 measured, against a production build, that every request carrying `q` or `where` spends one gate check and one Adzuna call",
+        "date": "2026-09-04",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

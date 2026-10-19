@@ -1,0 +1,404 @@
+{
+  "record": "0007",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0007-auth-and-per-user-isolation/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-05T21:38:39+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2869,
+  "output_tokens": 13526,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57494,
+  "run_id": "124e38edd6804e99967f2a4d00030aaf",
+  "artifact_format_version": 2,
+  "unit_sha256": "58a102e18885e809619a81e277a15505e3de35f0b2eaa2f1c3c590d1d87ca0bd",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a job seeker, I want to sign in with the Google or GitHub account I already have, so that I do not create another password and my account is tied to a real identity rather than a burner address.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a returning user, I want to reach my own data whichever of the two providers I pick, so that forgetting which one I used first does not read as my data being gone.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As a signed in user, I want to sign out from wherever I am signed in.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As someone whose sign in fails, I want to be told plainly what happened, in a sentence written by this product, rather than landing on an empty page or reading a provider's raw error text.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the operator, I want the development only password path gone from the product rather than switched off,\",\"rejected_spans\":[\"so that no environment can be one variable away from accepting a password.\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session.\",\"rejected_spans\":[\"The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6, which is Accepted and shipped, so the replacement is what the product does today.\",\"This spec already flagged its literal `/health` redirect as the single most likely thing here to calcify by accident, and feature 32 is the feature that was always going to replace it.\",\"What replaces it: a shared landing rule sending a user with no profile row to `/profile` and everyone else to `/search`.\",\"What survives untouched: the rest of this criterion, including the sign out destination.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: The whole handshake is server side. No file reachable from `/` or from `/sign-in` carries `\\\"use client\\\"`, so spec 0006 **AC-4** still holds after this feature ships, and both provider controls are `<form action={...}>` submits.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: The return leg lives at `src/app/auth/callback/route.ts`. No route handler under `src/app/api/` reads or writes user data, so binding rule 6 is untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\\n- **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`.\\n- **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`.\",\"rejected_spans\":[\"Documented expected behaviour, not a misconfiguration.\",\"because binding rule 6 confines the proxy to refreshing the session cookie and a host redirect there would widen it\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: Every failure path redirects to `/sign-in?error=<code>` and the page renders this product's own sentence for that code, verbatim from `## Copy`, **above the two provider forms**. There are **five** codes, four raised by the callback and one by the sign in actions, listed in `## Feature design` under **Failure codes**. The provider's `error_description` reaches Sentry and never reaches the page.\",\"rejected_spans\":[\"The position is part of the criterion because five of the six sentences say \\\"below\\\" or \\\"from here\\\" and are wrong anywhere else.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: Each of the five codes carries the kind and severity given in the **Failure codes** table. A cancelled consent and a refused signup are `expected` and raise no alert; a failed exchange and an unreachable provider are `unexpected`. Every one is built by `failure()`, with no log line written beside it.\",\"rejected_spans\":[\"so an ordinary denial never competes with an outage\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: The `error` query value is parsed with Zod as a closed enum of exactly those five codes. An unrecognised value renders the one generic sentence (`COPY-6`) and is never echoed back to the page.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: A person who signs in with one provider and later with the other, on the same verified email address, reaches the same account and sees the same rows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: When linking does not happen, no empty second account is created. The signup is refused with a named reason that tells the person which provider owns that email address.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: The hook **rejects on its own internal error too**, with its own distinct message, rather than failing open and admitting the signup. That case is proved separately from the case the hook exists to catch, against the real local stack, and the spec's one step rollback is written down rather than improvised.\",\"rejected_spans\":[\"A hook that failed open would reintroduce exactly the silent failure this design exists to prevent.\"],\"known_trap_flags\":[]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: Sign out is a Server Action in `src/features/auth/`, opens its registered span as its first statement, and **constructs** a `failure()` on the failing path, which reports, before redirecting either way. `src/app/(app)/health/page.tsx` imports it from there.\",\"rejected_spans\":[\"It does not return one: `redirect()` works by throwing, so no caller ever regains control to read a returned value.\"],\"known_trap_flags\":[]},{\"id\":\"AC-12\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-12**: `src/features/dev-session/` no longer exists, `signInWithDevPassword` no longer exists, `src/lib/supabase/browser.ts` no longer exists, and `/sign-in` renders the real page in every environment rather than a 404 outside development.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-13\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-13**: `DEV_SESSION_ENABLED` survives with exactly one remaining job, guarding the test mint in `test/helpers/admin.ts`. It is no longer set on Vercel Preview, `src/env.ts`'s comment about it says so, and spec 0002's configuration table matches.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-14\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-14**: An unauthenticated request to any route under `(app)` redirects to `/sign-in` and never renders an empty page that reads like success.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-15\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-15**: Two real OAuth accounts see only their own rows, proved against the running app rather than only against the seeded fixture pool.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-16\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-16**: The entry page's two provider controls are real submits. `COPY-1` and both `Chip state=\\\"status\\\"` labels are gone. Spec 0006 **AC-17**, the inert apply control, is untouched and its half of the \\\"no dead controls\\\" test still runs.\",\"rejected_spans\":[\"because they become false for every visitor the moment this ships\",\"The first sentence is SUPERSEDED, 2026-08-31, by spec 0008 AC-18, which is Accepted and shipped, so the replacement is what the product does today.\",\"Spec 0008 removes every provider form from `/`, which leaves the page with zero `<form>` elements, so the claim about the entry page's provider controls has nothing left to describe.\",\"**The substance survives where the controls move to**: they are still real submits, working with JavaScript switched off, on `/sign-in`.\",\"What replaces them on `/` is a plain anchor to a door route, which keeps that page static and session free.\",\"The deletion of `COPY-1` and the two status labels stands and is not affected.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-17\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-17**: `auth.sign_in`, `auth.callback` and `auth.sign_out` are registered in docs/observability/spans.md, and `dev_session.sign_in` is removed from it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-18\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-18**: `supabase/config.toml` declares both providers with environment variable substitution, its local site and redirect URLs match what `currentOrigin()` actually returns locally, and both `pnpm db:start` and CI's `supabase start` still succeed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-19\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-19**: The session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments (local, the development project, the production project), not read off `config.toml` alone, which governs only the local stack.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-20\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-20**: Prerequisites **P1 to P9** are confirmed before the build starts, each marked verified with what was read, not assumed. **P10 is carved out by name and is not part of this criterion**: it is verified at milestone 4, and both answers are already handled, so neither blocks the build.\",\"rejected_spans\":[\"because it is only answerable once the hook exists\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-6\",\"mention\":\"spec 0008 AC-6\"},\"phrase\":\"The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6\",\"date\":\"2026-08-31\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0006\",\"id\":\"AC-4\",\"mention\":\"spec 0006 **AC-4**\"},\"phrase\":\"so spec 0006 **AC-4** still holds after this feature ships\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"label\":\"binding rule 6\",\"mention\":\"binding rule 6\"},\"phrase\":\"because binding rule 6 confines the proxy to refreshing the session cookie and a host redirect there would widen it\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0002\",\"id\":null,\"mention\":\"spec 0002's configuration table\"},\"phrase\":\"spec 0002's configuration table matches\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"AC-16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0008\",\"id\":\"AC-18\",\"mention\":\"spec 0008 AC-18\"},\"phrase\":\"The first sentence is SUPERSEDED, 2026-08-31, by spec 0008 AC-18\",\"date\":\"2026-08-31\",\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a job seeker, I want to sign in with the Google or GitHub account I already have, so that I do not create another password and my account is tied to a real identity rather than a burner address.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a returning user, I want to reach my own data whichever of the two providers I pick, so that forgetting which one I used first does not read as my data being gone.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As a signed in user, I want to sign out from wherever I am signed in.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As someone whose sign in fails, I want to be told plainly what happened, in a sentence written by this product, rather than landing on an empty page or reading a provider's raw error text.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the operator, I want the development only password path gone from the product rather than switched off,",
+        "rejected_spans": [
+          "so that no environment can be one variable away from accepting a password."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session.",
+        "rejected_spans": [
+          "The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6, which is Accepted and shipped, so the replacement is what the product does today.",
+          "This spec already flagged its literal `/health` redirect as the single most likely thing here to calcify by accident, and feature 32 is the feature that was always going to replace it.",
+          "What replaces it: a shared landing rule sending a user with no profile row to `/profile` and everyone else to `/search`.",
+          "What survives untouched: the rest of this criterion, including the sign out destination."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: The whole handshake is server side. No file reachable from `/` or from `/sign-in` carries `\"use client\"`, so spec 0006 **AC-4** still holds after this feature ships, and both provider controls are `<form action={...}>` submits.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: The return leg lives at `src/app/auth/callback/route.ts`. No route handler under `src/app/api/` reads or writes user data, so binding rule 6 is untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\n- **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`.\n- **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`.",
+        "rejected_spans": [
+          "Documented expected behaviour, not a misconfiguration.",
+          "because binding rule 6 confines the proxy to refreshing the session cookie and a host redirect there would widen it"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: Every failure path redirects to `/sign-in?error=<code>` and the page renders this product's own sentence for that code, verbatim from `## Copy`, **above the two provider forms**. There are **five** codes, four raised by the callback and one by the sign in actions, listed in `## Feature design` under **Failure codes**. The provider's `error_description` reaches Sentry and never reaches the page.",
+        "rejected_spans": [
+          "The position is part of the criterion because five of the six sentences say \"below\" or \"from here\" and are wrong anywhere else."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: Each of the five codes carries the kind and severity given in the **Failure codes** table. A cancelled consent and a refused signup are `expected` and raise no alert; a failed exchange and an unreachable provider are `unexpected`. Every one is built by `failure()`, with no log line written beside it.",
+        "rejected_spans": [
+          "so an ordinary denial never competes with an outage"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: The `error` query value is parsed with Zod as a closed enum of exactly those five codes. An unrecognised value renders the one generic sentence (`COPY-6`) and is never echoed back to the page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: A person who signs in with one provider and later with the other, on the same verified email address, reaches the same account and sees the same rows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: When linking does not happen, no empty second account is created. The signup is refused with a named reason that tells the person which provider owns that email address.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: The hook **rejects on its own internal error too**, with its own distinct message, rather than failing open and admitting the signup. That case is proved separately from the case the hook exists to catch, against the real local stack, and the spec's one step rollback is written down rather than improvised.",
+        "rejected_spans": [
+          "A hook that failed open would reintroduce exactly the silent failure this design exists to prevent."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: Sign out is a Server Action in `src/features/auth/`, opens its registered span as its first statement, and **constructs** a `failure()` on the failing path, which reports, before redirecting either way. `src/app/(app)/health/page.tsx` imports it from there.",
+        "rejected_spans": [
+          "It does not return one: `redirect()` works by throwing, so no caller ever regains control to read a returned value."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-12",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-12**: `src/features/dev-session/` no longer exists, `signInWithDevPassword` no longer exists, `src/lib/supabase/browser.ts` no longer exists, and `/sign-in` renders the real page in every environment rather than a 404 outside development.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-13",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-13**: `DEV_SESSION_ENABLED` survives with exactly one remaining job, guarding the test mint in `test/helpers/admin.ts`. It is no longer set on Vercel Preview, `src/env.ts`'s comment about it says so, and spec 0002's configuration table matches.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-14",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-14**: An unauthenticated request to any route under `(app)` redirects to `/sign-in` and never renders an empty page that reads like success.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-15",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-15**: Two real OAuth accounts see only their own rows, proved against the running app rather than only against the seeded fixture pool.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-16",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-16**: The entry page's two provider controls are real submits. `COPY-1` and both `Chip state=\"status\"` labels are gone. Spec 0006 **AC-17**, the inert apply control, is untouched and its half of the \"no dead controls\" test still runs.",
+        "rejected_spans": [
+          "because they become false for every visitor the moment this ships",
+          "The first sentence is SUPERSEDED, 2026-08-31, by spec 0008 AC-18, which is Accepted and shipped, so the replacement is what the product does today.",
+          "Spec 0008 removes every provider form from `/`, which leaves the page with zero `<form>` elements, so the claim about the entry page's provider controls has nothing left to describe.",
+          "**The substance survives where the controls move to**: they are still real submits, working with JavaScript switched off, on `/sign-in`.",
+          "What replaces them on `/` is a plain anchor to a door route, which keeps that page static and session free.",
+          "The deletion of `COPY-1` and the two status labels stands and is not affected."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-17",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-17**: `auth.sign_in`, `auth.callback` and `auth.sign_out` are registered in docs/observability/spans.md, and `dev_session.sign_in` is removed from it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-18",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-18**: `supabase/config.toml` declares both providers with environment variable substitution, its local site and redirect URLs match what `currentOrigin()` actually returns locally, and both `pnpm db:start` and CI's `supabase start` still succeed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-19",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-19**: The session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments (local, the development project, the production project), not read off `config.toml` alone, which governs only the local stack.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-20",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-20**: Prerequisites **P1 to P9** are confirmed before the build starts, each marked verified with what was read, not assumed. **P10 is carved out by name and is not part of this criterion**: it is verified at milestone 4, and both answers are already handled, so neither blocks the build.",
+        "rejected_spans": [
+          "because it is only answerable once the hook exists"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-6",
+          "label": null,
+          "mention": "spec 0008 AC-6"
+        },
+        "phrase": "The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6",
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0006",
+          "id": "AC-4",
+          "label": null,
+          "mention": "spec 0006 **AC-4**"
+        },
+        "phrase": "so spec 0006 **AC-4** still holds after this feature ships",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": "binding rule 6",
+          "mention": "binding rule 6"
+        },
+        "phrase": "because binding rule 6 confines the proxy to refreshing the session cookie and a host redirect there would widen it",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0002",
+          "id": null,
+          "label": null,
+          "mention": "spec 0002's configuration table"
+        },
+        "phrase": "spec 0002's configuration table matches",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "AC-16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0008",
+          "id": "AC-18",
+          "label": null,
+          "mention": "spec 0008 AC-18"
+        },
+        "phrase": "The first sentence is SUPERSEDED, 2026-08-31, by spec 0008 AC-18",
+        "date": "2026-08-31",
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

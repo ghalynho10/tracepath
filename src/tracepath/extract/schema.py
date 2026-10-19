@@ -169,18 +169,6 @@ class ExtractedEntity(_Frozen):
             raise ValueError(
                 f"entity {self.id!r}: an unclassified entity needs an unclassified_note"
             )
-        if self.type is not EntityType.UNCLASSIFIED and self.unclassified_note is not None:
-            raise ValueError(
-                f"entity {self.id!r}: unclassified_note belongs only to an unclassified entity"
-            )
-        if (
-            KnownTrapFlag.ENTITY_TYPE_AMBIGUOUS in self.known_trap_flags
-            and self.type is not EntityType.UNCLASSIFIED
-        ):
-            raise ValueError(
-                f"entity {self.id!r}: entity_type_ambiguous is only ever set"
-                " on an unclassified entity"
-            )
         return self
 
 

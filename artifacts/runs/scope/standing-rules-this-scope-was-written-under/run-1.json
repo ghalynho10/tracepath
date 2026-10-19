@@ -1,0 +1,205 @@
+{
+  "record": "scope",
+  "section": "Standing rules this scope was written under",
+  "section_slug": "standing-rules-this-scope-was-written-under",
+  "file": "scope/scope.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 782,
+  "output_tokens": 3668,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "1cd0de1eafc54c42b95ee37c8f07cac6",
+  "artifact_format_version": 3,
+  "unit_sha256": "7ac9680d237a89658b52eb40ebeea1f3a3f1e288559120651dd0ce7ac24e8d5c",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The v1 completion test.** v1 is done when a user can enter a profile, search, see ranked results with the reasoning shown, click through to apply, and record that they applied.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Check every proposed addition against this, not against whether it is individually reasonable.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Met and confirmed in production 2026-09-17; v1 is complete.**\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"entity_type_ambiguous\"],\"unclassified_note\":\"A status record that the v1 completion test was met on a date. It states no requirement, consequence, build step or test, so no named type fits.\"},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The named risk retention rule.** Anything in scope because of a specific named real risk (features 10 and 7 here) is removed only by explicitly deciding that risk is acceptable, never as a side effect of trimming for time.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"The named risk retention rule\"},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Search results never persist.** Only an applied record, and later a discard, makes a job stick.\",\"rejected_spans\":[\"This is what avoids a staleness state machine.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Accepted trade off: jobs merely seen but not acted on are not deduplicated against, deliberately, to avoid a growing seen jobs ledger.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No silent failures anywhere.** A failed fetch, a failed auth check or a failed scoring call is visible, never swallowed into a default that looks like success.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No silent failures anywhere\"},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Real dependency tests.** Every external dependency gets at least one test that actually calls it or replays a real recorded response, never a mock encoding the same assumption as the code under test.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Real dependency tests\"},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Quality, not just shape.** Anything that scores, ranks or generates needs expected ranges, not only schema validation.\",\"rejected_spans\":[\"A schema check proves shape, not usefulness.\"],\"known_trap_flags\":[],\"label\":\"Quality, not just shape\"},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Raw in, formatted at render.** Store raw values;\",\"rejected_spans\":[\"a formatted string frozen into a column cannot be fixed by fixing the formatter.\"],\"known_trap_flags\":[],\"label\":\"Raw in, formatted at render\"},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Cross model review before merge**, and cross vendor self check inside the AI pipeline: the same principle at two layers.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Fixtures never carry real personal data.** Obviously fake identifiers only, even for convenience.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Fixtures never carry real personal data\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No billing.** Cost exposure is handled by usage gating, not monetization.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"No billing\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Responsive throughout, designed desktop first**, and WCAG 2.2 AA on the v1 loop.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Write the data and control flow from memory** at the end of each feature before calling it done.\",\"rejected_spans\":[\"Understanding erodes silently under scope pressure, and a stated intention does not catch that.\"],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The v1 completion test.** v1 is done when a user can enter a profile, search, see ranked results with the reasoning shown, click through to apply, and record that they applied.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Check every proposed addition against this, not against whether it is individually reasonable.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**Met and confirmed in production 2026-09-17; v1 is complete.**",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A status record that the v1 completion test was met on a date. It states no requirement, consequence, build step or test, so no named type fits.",
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The named risk retention rule.** Anything in scope because of a specific named real risk (features 10 and 7 here) is removed only by explicitly deciding that risk is acceptable, never as a side effect of trimming for time.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "The named risk retention rule"
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Search results never persist.** Only an applied record, and later a discard, makes a job stick.",
+        "rejected_spans": [
+          "This is what avoids a staleness state machine."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Accepted trade off: jobs merely seen but not acted on are not deduplicated against, deliberately, to avoid a growing seen jobs ledger.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No silent failures anywhere.** A failed fetch, a failed auth check or a failed scoring call is visible, never swallowed into a default that looks like success.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No silent failures anywhere"
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Real dependency tests.** Every external dependency gets at least one test that actually calls it or replays a real recorded response, never a mock encoding the same assumption as the code under test.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Real dependency tests"
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Quality, not just shape.** Anything that scores, ranks or generates needs expected ranges, not only schema validation.",
+        "rejected_spans": [
+          "A schema check proves shape, not usefulness."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Quality, not just shape"
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Raw in, formatted at render.** Store raw values;",
+        "rejected_spans": [
+          "a formatted string frozen into a column cannot be fixed by fixing the formatter."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Raw in, formatted at render"
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Cross model review before merge**, and cross vendor self check inside the AI pipeline: the same principle at two layers.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Fixtures never carry real personal data.** Obviously fake identifiers only, even for convenience.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Fixtures never carry real personal data"
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No billing.** Cost exposure is handled by usage gating, not monetization.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "No billing"
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Responsive throughout, designed desktop first**, and WCAG 2.2 AA on the v1 loop.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Write the data and control flow from memory** at the end of each feature before calling it done.",
+        "rejected_spans": [
+          "Understanding erodes silently under scope pressure, and a stated intention does not catch that."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

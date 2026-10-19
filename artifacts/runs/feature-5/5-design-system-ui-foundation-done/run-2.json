@@ -1,0 +1,433 @@
+{
+  "record": "feature-5",
+  "section": "5. Design system & UI foundation \u00b7 done",
+  "section_slug": "5-design-system-ui-foundation-done",
+  "file": "scope/scope.md",
+  "unit_kind": "FeatureRow",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T07:25:40+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1782,
+  "output_tokens": 3927,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "8df3c244886d4c1fa24f6d9bfc056bc5",
+  "artifact_format_version": 3,
+  "unit_sha256": "9fbc4f7953724ff48825728006e88457bb322014a692773d3f96cf5e4e1736da",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"Port the locked visual decisions (seven token palette, finalized logo, Space Grotesk and JetBrains Mono typography) into a real token layer and a set of base components. Sets the responsive posture and the accessibility floor for every screen built after this.\",\"rejected_spans\":[\"These are inherited decisions, not open questions.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**Done when:** the tokens, type scale and base components exist as code;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"every base component is keyboard reachable with a visible focus state and a proper label;\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"and the components hold up from phone width to desktop.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Design it (spec): `/architect design system & UI foundation`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build it: `/develop design system & UI foundation`\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Token layer: the seven token palette plus the new `--surface-sunken` token, font loading, the type scale, and the native accessibility CSS (`:focus-visible`, `forced-colors`, `prefers-contrast`, `prefers-reduced-motion`), satisfies AC-1, AC-2, AC-12\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Tooling and primitives: `tailwind-variants` plus the narrow lint rule, the icon set, `Text`/`Heading`, `Button`, satisfies AC-6, AC-11, AC-15\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`Card` (elevated/flat, the compound slots, the attribution slot), `Chip`, `MatchBar`, satisfies AC-3, AC-7, AC-9, AC-10\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"`Section` (rhythm, background alternation, divider) and the 60/40 grid utility, satisfies AC-4, AC-5, AC-8\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Keyboard, focus, and responsive verification pass across every component, satisfies AC-13, AC-14 \u00b7 run 2026-08-27 in a real browser at 1440px and 320px: all 8 controls keyboard reachable with a 2px teal `:focus-visible` ring and a real name, zero horizontal overflow at 320px, `prefers-contrast: more` / `forced-colors: active` / `prefers-reduced-motion` each confirmed by measured computed style. **The reduced motion half of that was wrong**, corrected 2026-08-28: the step read the animation duration only, which collapsed as designed, while the delay survived and left match cells invisible for up to 350ms. Found by feature 6's browser pass, fixed in `globals.css` and locked by [globals.test.ts](../../src/app/globals.test.ts); the step now reads the cells' opacity instead of the property\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Verify it: `/check verify design system & UI foundation` \u00b7 PASS on 2026-08-27, all 15 acceptance criteria met against the running app at `/ui-preview`. Measured, not eyeballed: the full type scale, both card idioms, both match bar proportions, the 3fr/2fr grid, the three rhythm tiers, the divider adjacency rule across four sections, 8 of 8 controls keyboard reachable with an instant teal ring, zero overflow at 320px with the attribution at exactly 116 by 23, and `prefers-contrast` / `forced-colors` / `prefers-reduced-motion` each confirmed by computed style. **One of those confirmations did not hold:** the reduced motion step checked the animation duration rather than whether the cells were actually visible, so it passed over a real bug. Corrected and fixed 2026-08-28, see the step's own note in verify.md. One step in `verify.md` was found to be a bad check and is flagged there for replacement; the fact it was meant to prove holds under a corrected canary. Same model wrote the code and ran this, so a fresh model `/check review` is still worth doing.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Test it: `/test design system & UI foundation` \u00b7 done 2026-08-28. 113 unit tests across eight files beside the components, all passing. Written in the `node` project with no jsdom and no testing library: every base component here is a stateless server component, so calling it IS its behaviour and the element it returns is its whole output, which keeps spec 0004's just in time install rule intact. The load bearing one is tv.test.ts: it reads the type scale out of `globals.css` and checks the merger keeps each size beside a colour, so a seventh size added to the scale and forgotten in `tv.ts` fails on its own. Three claims were checked for vacuousness rather than trusted: adding `--text-huge` to the scale fails the drift guard, flipping the block to `@theme inline` fails the inline guard, and the stock `tv` straight from the package is asserted to DROP the size, which is the bug the config exists to prevent. What is deliberately not here: anything needing a browser (computed sizes, focus rings, media queries, layout, overflow) stays in verify.md, proved by `/check verify`, rather than being faked in jsdom.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A stage line that only reports a check rather than delivering one.\"}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-1\",\"mention\":\"AC-1\"},\"phrase\":\"satisfies AC-1, AC-2, AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"satisfies AC-1, AC-2, AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-12\",\"mention\":\"AC-12\"},\"phrase\":\"satisfies AC-1, AC-2, AC-12\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-6\",\"mention\":\"AC-6\"},\"phrase\":\"satisfies AC-6, AC-11, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-11\",\"mention\":\"AC-11\"},\"phrase\":\"satisfies AC-6, AC-11, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"satisfies AC-6, AC-11, AC-15\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-3\",\"mention\":\"AC-3\"},\"phrase\":\"satisfies AC-3, AC-7, AC-9, AC-10\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"satisfies AC-3, AC-7, AC-9, AC-10\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"satisfies AC-3, AC-7, AC-9, AC-10\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-10\",\"mention\":\"AC-10\"},\"phrase\":\"satisfies AC-3, AC-7, AC-9, AC-10\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-4\",\"mention\":\"AC-4\"},\"phrase\":\"satisfies AC-4, AC-5, AC-8\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-5\",\"mention\":\"AC-5\"},\"phrase\":\"satisfies AC-4, AC-5, AC-8\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-8\",\"mention\":\"AC-8\"},\"phrase\":\"satisfies AC-4, AC-5, AC-8\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-13\",\"mention\":\"AC-13\"},\"phrase\":\"satisfies AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":\"AC-14\",\"mention\":\"AC-14\"},\"phrase\":\"satisfies AC-13, AC-14\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "Port the locked visual decisions (seven token palette, finalized logo, Space Grotesk and JetBrains Mono typography) into a real token layer and a set of base components. Sets the responsive posture and the accessibility floor for every screen built after this.",
+        "rejected_spans": [
+          "These are inherited decisions, not open questions."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**Done when:** the tokens, type scale and base components exist as code;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "every base component is keyboard reachable with a visible focus state and a proper label;",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "and the components hold up from phone width to desktop.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Design it (spec): `/architect design system & UI foundation`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build it: `/develop design system & UI foundation`",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Token layer: the seven token palette plus the new `--surface-sunken` token, font loading, the type scale, and the native accessibility CSS (`:focus-visible`, `forced-colors`, `prefers-contrast`, `prefers-reduced-motion`), satisfies AC-1, AC-2, AC-12",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Tooling and primitives: `tailwind-variants` plus the narrow lint rule, the icon set, `Text`/`Heading`, `Button`, satisfies AC-6, AC-11, AC-15",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`Card` (elevated/flat, the compound slots, the attribution slot), `Chip`, `MatchBar`, satisfies AC-3, AC-7, AC-9, AC-10",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "`Section` (rhythm, background alternation, divider) and the 60/40 grid utility, satisfies AC-4, AC-5, AC-8",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Keyboard, focus, and responsive verification pass across every component, satisfies AC-13, AC-14 \u00b7 run 2026-08-27 in a real browser at 1440px and 320px: all 8 controls keyboard reachable with a 2px teal `:focus-visible` ring and a real name, zero horizontal overflow at 320px, `prefers-contrast: more` / `forced-colors: active` / `prefers-reduced-motion` each confirmed by measured computed style. **The reduced motion half of that was wrong**, corrected 2026-08-28: the step read the animation duration only, which collapsed as designed, while the delay survived and left match cells invisible for up to 350ms. Found by feature 6's browser pass, fixed in `globals.css` and locked by [globals.test.ts](../../src/app/globals.test.ts); the step now reads the cells' opacity instead of the property",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Verify it: `/check verify design system & UI foundation` \u00b7 PASS on 2026-08-27, all 15 acceptance criteria met against the running app at `/ui-preview`. Measured, not eyeballed: the full type scale, both card idioms, both match bar proportions, the 3fr/2fr grid, the three rhythm tiers, the divider adjacency rule across four sections, 8 of 8 controls keyboard reachable with an instant teal ring, zero overflow at 320px with the attribution at exactly 116 by 23, and `prefers-contrast` / `forced-colors` / `prefers-reduced-motion` each confirmed by computed style. **One of those confirmations did not hold:** the reduced motion step checked the animation duration rather than whether the cells were actually visible, so it passed over a real bug. Corrected and fixed 2026-08-28, see the step's own note in verify.md. One step in `verify.md` was found to be a bad check and is flagged there for replacement; the fact it was meant to prove holds under a corrected canary. Same model wrote the code and ran this, so a fresh model `/check review` is still worth doing.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Test it: `/test design system & UI foundation` \u00b7 done 2026-08-28. 113 unit tests across eight files beside the components, all passing. Written in the `node` project with no jsdom and no testing library: every base component here is a stateless server component, so calling it IS its behaviour and the element it returns is its whole output, which keeps spec 0004's just in time install rule intact. The load bearing one is tv.test.ts: it reads the type scale out of `globals.css` and checks the merger keeps each size beside a colour, so a seventh size added to the scale and forgotten in `tv.ts` fails on its own. Three claims were checked for vacuousness rather than trusted: adding `--text-huge` to the scale fails the drift guard, flipping the block to `@theme inline` fails the inline guard, and the stock `tv` straight from the package is asserted to DROP the size, which is the bug the config exists to prevent. What is deliberately not here: anything needing a browser (computed sizes, focus rings, media queries, layout, overflow) stays in verify.md, proved by `/check verify`, rather than being faked in jsdom.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A stage line that only reports a check rather than delivering one.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-1",
+          "label": null,
+          "mention": "AC-1"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-12",
+          "label": null,
+          "mention": "AC-12"
+        },
+        "phrase": "satisfies AC-1, AC-2, AC-12",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6"
+        },
+        "phrase": "satisfies AC-6, AC-11, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-11",
+          "label": null,
+          "mention": "AC-11"
+        },
+        "phrase": "satisfies AC-6, AC-11, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "satisfies AC-6, AC-11, AC-15",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-3",
+          "label": null,
+          "mention": "AC-3"
+        },
+        "phrase": "satisfies AC-3, AC-7, AC-9, AC-10",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "satisfies AC-3, AC-7, AC-9, AC-10",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "satisfies AC-3, AC-7, AC-9, AC-10",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "satisfies AC-3, AC-7, AC-9, AC-10",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-4",
+          "label": null,
+          "mention": "AC-4"
+        },
+        "phrase": "satisfies AC-4, AC-5, AC-8",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-5",
+          "label": null,
+          "mention": "AC-5"
+        },
+        "phrase": "satisfies AC-4, AC-5, AC-8",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-8",
+          "label": null,
+          "mention": "AC-8"
+        },
+        "phrase": "satisfies AC-4, AC-5, AC-8",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-13",
+          "label": null,
+          "mention": "AC-13"
+        },
+        "phrase": "satisfies AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": "AC-14",
+          "label": null,
+          "mention": "AC-14"
+        },
+        "phrase": "satisfies AC-13, AC-14",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
