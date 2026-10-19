@@ -75,6 +75,7 @@ This spec adds one command, `tracepath eval`, that runs every question of an eva
 - **AC-28b**: `eval/held-out.json` carries `"held_out": true` (a test).
 - **AC-29**: With `--release-held-out`, the output opens with `Held out check (spec 0006): a check of the choices features 13 and 11 made, not a measurement.` and reports each question on its own, under AC-7.
 - **AC-30**: `eval/held-out.json` is committed before the first commit of feature 13's spec, and no run artifact exists for any unit holding a line it cites.
+  - **Note, 2026-10-19**: the second clause (no run artifact exists for any unit holding a line it cites) ended by design when feature 9 extracted the whole corpus, after features 11 and 13 had locked their choices. Its test, `test_ac_30_no_unit_the_held_out_file_cites_has_a_run_artifact`, is skipped with that reason. The criterion text above is unchanged.
 
 *The extraction for questions 1, 2, 4 and 5*
 - **AC-31**: Before any paid call, `extract --dry-run` is run over the eight units in Feature design, and the engineer gives a go and a ceiling after reading its measured figures and the output assumption with its source.

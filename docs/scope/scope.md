@@ -38,7 +38,7 @@ _Recorded 2026-10-13._ v1 is done when: "You ask tracepath a why question about 
 **v1 needs, in this order:**
 1. Feature 13 step one closed after the engineer's stage one rulings, whatever their result. There is no fourth unit, and the code pass stays off. _Done._
 2. Feature 11. _Done 2026-10-18 (spec 0008 accepted, merged in `c4b9970`)._
-3. Feature 9, as a full re extraction of the whole corpus (see feature 9).
+3. Feature 9, as a full re extraction of the whole corpus (see feature 9). _Done._
 4. The two held out questions: the engineer checks their expected chains against the corpus at `2e40bcf` and commits any correction, then they are run. The run is free once feature 9's extraction exists.
 5. Feature 5, which closes with the first passing question that spans two or more Records, then its `/check verify`.
 6. Feature 15 step one, which still needs `/architect`.
