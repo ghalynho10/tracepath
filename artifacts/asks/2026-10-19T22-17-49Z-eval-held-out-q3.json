@@ -1,0 +1,1080 @@
+{
+  "asked_at": "2026-10-19T22:17:49+00:00",
+  "question": "control-one-gap passed its confirming run by only 3 to 2 (possible_match over good_match). Why can't it be given acceptableBands [good_match, possible_match] so it stops sitting one rerun away from having no majority?",
+  "eval_file": "eval/held-out.json",
+  "eval_question": 3,
+  "called": true,
+  "search_words": [
+    "control-one-gap",
+    "control",
+    "one",
+    "gap",
+    "passed",
+    "confirming",
+    "run",
+    "only",
+    "3",
+    "2",
+    "possible_match",
+    "possible",
+    "match",
+    "over",
+    "good_match",
+    "good",
+    "can't",
+    "given",
+    "acceptablebands",
+    "stops",
+    "sitting",
+    "rerun",
+    "away",
+    "having",
+    "majority"
+  ],
+  "items": [
+    {
+      "id": "0018#follow-up:4",
+      "line": "0018#follow-up:4  FollowUp  accepted  specs/0018-band-anchor-review/index.md:106  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Should `control-one-gap` keep its `control` tag?** This pair no longer behaves that way: `possible_match` won it 4 to 1, then 5 to 0, then 3 to 2 on the confirming run, so it now passes on the narrowest majority the harness accepts. Spec [0016](../0016-eval-ground-truth-set/index.md) draws this exact distinction when it explains why `mild-stretch-possible-match` carries \"no `acceptableBands` and the plain `control` tag rather than `boundary`\": the tag tracks whether the anchor text settles the pair, not how the model happens to answer. **Recorded here, not answered.** Whoever takes it up should know the two obvious moves are both constrained: retagging it `boundary` would concede that the anchors do not settle it, which contradicts this spec's own finding that they do, and widening it with `acceptableBands` is refused outright by the Key invariants above. `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`, so the retag and the tolerance are not independent choices."
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:16",
+      "line": "feature-16#16-eval-harness-runner:16  unclassified  held  HISTORY  scope/scope.md:329  hit",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "feature-16#16-eval-harness-runner:17"
+      ],
+      "hop": 0,
+      "text": "Across two full sixteen pair runs on 2026-09-08, read per pair from each report's `distribution` field: `control-one-gap` returned `good_match` 1 and `possible_match` 4 in the 07:30 run and `possible_match` 5 in the 07:35 run, against an expected `good_match`, so it failed both; `key-domain-mismatch` returned `weak_match` 3 and `not_a_match` 2, then `not_a_match` 5, against an expected `not_a_match`, so it failed the first and passed the second."
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:17",
+      "line": "feature-16#16-eval-harness-runner:17  unclassified  held  scope/scope.md:329  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`control-one-gap` is corrected to `possible_match` and no anchor changes."
+    },
+    {
+      "id": "0018#follow-up:1",
+      "line": "0018#follow-up:1  FollowUp  accepted  specs/0018-band-anchor-review/index.md:103  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The `weak_match` and `not_a_match` boundary is still undefined and is still recorded as a gap in spec [0016](../0016-eval-ground-truth-set/index.md)'s Follow up. **Three pairs sit on it, not two**, across thirty reruns: `key-domain-mismatch` (3 to 2, then 0 to 5), `weak-match-shallow-overlap` (4 to 1, then 3 to 2) and `boundary-seniority-gap` (`weak_match` 4 of 5 both runs, passing only through its widened tolerance). The one to watch is `weak-match-shallow-overlap`: it carries no tolerance and at 3 to 2 is a single rerun away from having no majority at all, so it is the pair most likely to fail next and the failure would be the boundary, not the pair. What would justify acting is repeated flipping, not one split."
+    },
+    {
+      "id": "0017/AC-4",
+      "line": "0017/AC-4  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:31  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: A pair tagged `stability-probe` is judged differently, but only once AC-3's own 3 of 5 successes floor is met (fewer than 3 successes is still `inconclusive` under AC-3, unchanged). With 3 or more successes, `expectedBand` is not consulted and no majority is computed: the pair passes only if every one of its successful reruns' band is inside `acceptableBands`. One success landing outside that set fails the pair even if every other success matched, since this pair's whole point is that no single run should be trusted as the answer. Because there may be no single winning band, this pair's verdict is always reported as its observed distribution (e.g. `{ strong_match: 3, possible_match: 2 }`), never a lone band."
+    },
+    {
+      "id": "0018#follow-up:5",
+      "line": "0018#follow-up:5  FollowUp  accepted  specs/0018-band-anchor-review/index.md:108  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Two bands now rest on a single pair each, not one.** Counting the committed set after this spec's correction: `strong_match` 7, `possible_match` 4, `not_a_match` 3, `good_match` 1, `weak_match` 1, sixteen pairs. `good-match-adjacent` holds the only exact `good_match` expectation, and `good_match` was already the thinnest observed band at 4 and 5 occurrences of 80. `weak-match-shallow-overlap` holds the only exact `weak_match` expectation. For either band, if its one pair moves, the band loses its exact expectation and `ground-truth.test.ts` names it, which is the guard working, but the set would want a second pair for that band before then. **`weak_match` is the more exposed of the two**, and the ground is this spec's own first Follow up item above: it puts `weak-match-shallow-overlap` on the still undefined `weak_match` and `not_a_match` boundary, records it moving 4 to 1 and then 3 to 2 across thirty reruns, and calls it the pair most likely to fail next. So the band with the thinner margin of safety is the one whose only holder this spec already predicts will move, while nothing similar is recorded against `good-match-adjacent`, which sat at `good_match` 4 of 5 in both runs."
+    },
+    {
+      "id": "0018#build-plan:2",
+      "line": "0018#build-plan:2  BuildStep  accepted  specs/0018-band-anchor-review/index.md:76  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Correct `control-one-gap` in `src/features/scoring/eval/pairs.ts`: `expectedBand` to `possible_match`, no `acceptableBands`, and rewrite its `rationale` to argue from the existing `possible_match` anchor text and from the posting's own \"what sets this role apart\" wording, stating that it was re-argued on 2026-09-08 and on what independent ground. Then amend the file header so its \"before any model was asked\" claim names this one exception. Satisfies **AC-1**, **AC-1b**."
+    },
+    {
+      "id": "0017/AC-6",
+      "line": "0017/AC-6  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:36  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-6**: Every printed and reported verdict names its own denominator (e.g. \"good_match, 3 of 3 succeeded\" or, for a distribution shaped verdict, \"3 strong_match / 2 possible_match, 5 of 5 succeeded\"), never just a band on its own,"
+    },
+    {
+      "id": "feature-33#33-band-anchor-review-done:2",
+      "line": "feature-33#33-band-anchor-review-done:2  AcceptanceCriterion  accepted  scope/scope.md:348  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done when:** `control-one-gap` expects `possible_match` and passes a real run,"
+    },
+    {
+      "id": "0016/AC-2",
+      "line": "0016/AC-2  AcceptanceCriterion  accepted  specs/0016-eval-ground-truth-set/index.md:23  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-2**: Across the full pair set, every one of the five bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`) appears as the `expectedBand` or inside the `acceptableBands` of at least one pair. Wherever `rubric.ts`'s written anchor text alone can support one confident answer, the pair states a single exact `expectedBand`, not a range."
+    },
+    {
+      "id": "0018/AC-4b",
+      "line": "0018/AC-4b  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4b**: Spec 0016's two now stale references to `control-one-gap` are corrected: its table row at line 141 lists the pair as `good_match`, and its Follow up at line 182 quotes that pair's rationale saying \"That is good_match's wording\" as present tense evidence of how the set was authored. The row is updated and the Follow up quote is marked as historical, true of the set as authored and superseded here. Both are recording edits, not changes to what spec 0016 decides."
+    },
+    {
+      "id": "0018#review-findings:3",
+      "line": "0018#review-findings:3  Consequence  held  specs/0018-band-anchor-review/index.md:45  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Finding 1, `control-one-gap` is a wrong expectation, and the anchors already settle it.** `possible_match`'s existing text is a better fit with no new rule needed: \"The candidate covers a real part of what the visible posting asks for, and a real part is unproven. Applying would mean arguing that the experience transfers rather than pointing at it.\" The model returned `possible_match` as its verdict on both runs."
+    },
+    {
+      "id": "feature-33#33-band-anchor-review-done:8",
+      "line": "feature-33#33-band-anchor-review-done:8  BuildStep  accepted  scope/scope.md:352  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Correct the pair and its file's own claim: `control-one-gap` to `possible_match` argued from the existing `possible_match` anchor text, and `pairs.ts`'s \"before any model was asked\" header amended to name its one exception, satisfies AC-1, AC-1b"
+    },
+    {
+      "id": "0015#follow-up:7",
+      "line": "0015#follow-up:7  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:205  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "If feature 16's eval harness later shows the five bands clustering rather than spreading (the condition **AC-2** defers to that harness), the band anchors in `rubric.ts` are the first thing to revise, not the vendor or any of this prompt's other instructions. **Still open, and its trigger has not fired.** Feature 16's harness ran the full sixteen pairs twice on 2026-09-08 and both runs observed all five bands, `strong_match` 35, `good_match` 5, `possible_match` 21, `weak_match` 11, `not_a_match` 8 in the first and 35, 4, 21, 8, 12 in the second, so the bands spread rather than clustered and AC-2's bar of at least three of five was already met. Spec 0018 did review the anchors, but for a different reason, two pairs disagreeing with their recorded expectation, and it concluded that `BAND_ANCHORS` holds and one committed expectation was wrong. No anchor changed and the hash is still `1b45f524b356`. So this item is neither satisfied nor superseded by that review; it is waiting on a clustering condition that has not been seen."
+    },
+    {
+      "id": "0015/AC-1",
+      "line": "0015/AC-1  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:23  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,"
+    },
+    {
+      "id": "0018/AC-1",
+      "line": "0018/AC-1  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:20  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-1**: `control-one-gap`'s `expectedBand` in `src/features/scoring/eval/pairs.ts` is `possible_match`, with no `acceptableBands`, and its `rationale` argues that from the existing `possible_match` anchor text rather than from any new rule. The rationale also states plainly that this band was re-argued on 2026-09-08 after two runs disagreed, and names the ground that makes it independent of those runs: the posting's own sentence calling the infrastructure half what sets the role apart, written before any model was asked."
+    },
+    {
+      "id": "0016",
+      "line": "0016  record  accepted  specs/0016-eval-ground-truth-set/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Eval ground truth set"
+    },
+    {
+      "id": "0017#build-plan:3",
+      "line": "0017#build-plan:3  BuildStep  accepted  specs/0017-eval-harness-runner/index.md:104  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Export `resolvedModel()` from `src/lib/ai/tiers.ts`, and add `bandAnchorsHash()` as a small pure function in `src/features/scoring/eval/band-anchors-hash.ts`. Write the pure verdict logic in `test/helpers/eval-verdict.ts`: the three way outcome classification (refusal, rerun failure, scored success) from AC-3, the majority vote with the 3 of 5 inconclusive floor and the no majority/`acceptableBands` exception, the distinct `stability-probe` \"every success inside `acceptableBands`\" rule (AC-4), and the `preference-isolation` baseline comparison (AC-5). Wire `test/helpers/eval-verdict.test.ts` against constructed fixtures for each rule, no vendor call involved. Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**."
+    },
+    {
+      "id": "0017#requirements:7",
+      "line": "0017#requirements:7  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:30  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "A pair's verdict needs at least 3 of its 5 reruns to be scored successes; with fewer than 3, the pair is `inconclusive` (sub reason `insufficient-successes`), reporting whatever successes did land, never silently folded into a pass or a fail. With 3 or more successes, and the pair is not tagged `stability-probe` (AC-4 covers that case separately): compute how many of the successes landed on each band. If one band holds a strict majority (more than half of the successes), that is the pair's verdict band, and the pair passes if that band equals `expectedBand`, or, when `acceptableBands` is present, if it is one of them. If no band holds a strict majority (e.g. a 2 and 2 split out of 4 successes, or a 1, 1, 1 split out of 3), the pair is `inconclusive` (sub reason `no-majority`) UNLESS `acceptableBands` is present and every successful rerun's band is inside it, in which case the pair passes with no single verdict band, reporting the full observed split instead"
+    },
+    {
+      "id": "0017/AC-3",
+      "line": "0017/AC-3  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:25  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-3**: `scoreListing()` can return three kinds of outcome, and each is handled differently:"
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:8",
+      "line": "feature-16#16-eval-harness-runner:8  BuildStep  accepted  scope/scope.md:321  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Verdict logic: the pure rerun outcome classification, majority vote with its no majority and `acceptableBands` exception, the `stability-probe` rule, and the `preference-isolation` baseline comparison, each proved against constructed fixtures with no vendor call, satisfies AC-3, AC-4, AC-5, AC-6."
+    },
+    {
+      "id": "0018/AC-1b",
+      "line": "0018/AC-1b  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:21  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1b**: `pairs.ts`'s header no longer claims without exception that every `expectedBand` was argued before any model was asked. It names the exception and why the exception is not the accommodation the header warns about."
+    },
+    {
+      "id": "0017#feature-design:14",
+      "line": "0017#feature-design:14  TestScenario  accepted  specs/0017-eval-harness-runner/index.md:92  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: `pnpm eval -t control-direct-match` scores that one pair for real, five sequential reruns under the one minted session, and prints a passing verdict with its denominator (e.g. \"strong_match, 5 of 5 succeeded\"), verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**."
+    },
+    {
+      "id": "0016#build-plan:4",
+      "line": "0016#build-plan:4  BuildStep  accepted  specs/0016-eval-ground-truth-set/index.md:117  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Author the one baseline pair (`control-direct-match`, table below) in `pairs.ts` against the now committed archetype. Wire `ground-truth.test.ts` to call `validateGroundTruth()` against this one archetype and one pair, including the deliberately malformed fixture assertions **AC-8** requires, and get it green under `pnpm test`. Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**."
+    },
+    {
+      "id": "0016#build-plan:6",
+      "line": "0016#build-plan:6  BuildStep  accepted  specs/0016-eval-ground-truth-set/index.md:119  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Author the remaining single band accuracy pairs (control and clean cases in the pair table below) across all four archetypes. Satisfies the rest of **AC-2**."
+    },
+    {
+      "id": "feature-15#15-eval-ground-truth-set-done:10",
+      "line": "feature-15#15-eval-ground-truth-set-done:10  BuildStep  accepted  scope/scope.md:306  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The remaining three archetypes and every single band accuracy pair, covering all five bands (AC-1, AC-2)"
+    },
+    {
+      "id": "feature-15#15-eval-ground-truth-set-done:9",
+      "line": "feature-15#15-eval-ground-truth-set-done:9  BuildStep  accepted  scope/scope.md:305  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The thin thread: one archetype (`direct-fit-control`, committed on its own first) and its one baseline pair, with `ground-truth.test.ts` green against both the real data and deliberately malformed fixtures (AC-1, AC-2, AC-7, AC-8)"
+    },
+    {
+      "id": "0018#build-plan:3",
+      "line": "0018#build-plan:3  BuildStep  accepted  specs/0018-band-anchor-review/index.md:77  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Correct the misread evidence at `docs/scope/scope.md:326`, stating the per pair distributions rather than the summary line and dropping the \"stable disagreement\" inference. Then correct spec 0016's table row at line 141 and mark its Follow up quote at line 182 as historical. Satisfies **AC-4**, **AC-4b**."
+    },
+    {
+      "id": "feature-33#33-band-anchor-review-done:9",
+      "line": "feature-33#33-band-anchor-review-done:9  BuildStep  accepted  scope/scope.md:353  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Correct the record: the misread evidence at `scope.md:326`, plus spec 0016's stale table row and its Follow up quote that reads as present tense, satisfies AC-4, AC-4b"
+    },
+    {
+      "id": "0018",
+      "line": "0018  record  accepted  specs/0018-band-anchor-review/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Band anchor review"
+    },
+    {
+      "id": "0015#build-plan:2",
+      "line": "0015#build-plan:2  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:156  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against."
+    },
+    {
+      "id": "0015#feature-design:20",
+      "line": "0015#feature-design:20  TestScenario  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:140  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `scoreListing()` with a real bounded profile and a real fixture listing returns a parsed `FitScore` whose `band` is one of the five defined values, verifies **AC-1**, **AC-3**."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15  BuildStep  accepted  scope/scope.md:288  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)"
+    },
+    {
+      "id": "0018#review-findings:12",
+      "line": "0018#review-findings:12  TestScenario  accepted  specs/0018-band-anchor-review/index.md:68  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The corrected pair scores `possible_match` against the real scorer, verifies **AC-1**, **AC-5**."
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0017#feature-design:15",
+      "line": "0017#feature-design:15  TestScenario  accepted  specs/0017-eval-harness-runner/index.md:93  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: a pair whose five reruns come back as 2 scored and 3 vendor failures is reported `inconclusive` (`insufficient-successes`) rather than a false pass or fail, the run's own exit code is non zero, and the other pairs in the same run still complete, verifies **AC-3**, **AC-7**."
+    },
+    {
+      "id": "0017#feature-design:16",
+      "line": "0017#feature-design:16  TestScenario  accepted  specs/0017-eval-harness-runner/index.md:94  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Abort case: constructed against `test/helpers/eval-verdict.test.ts`'s own fixtures, the first rerun outcome carrying `allowed: false` (any `UsageGateReason`) stops the run from counting it toward any denominator and marks the run `aborted`, verifies **AC-3**."
+    },
+    {
+      "id": "0017/AC-5",
+      "line": "0017/AC-5  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:32  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: The three `preference-isolation` tagged pairs (`preference-match`, `preference-violation`, `preference-title-conflict`) are each judged individually by AC-3 first, exactly like any other pair, with no special treatment of their own verdicts. Once all three have a verdict that is neither `inconclusive` nor missing (skipped by a `-t` filter that excluded one of them, in which case the check below is skipped and reported as `leak-check-skipped`), the run additionally compares `preference-match`'s verdict band against `preference-violation`'s and against `preference-title-conflict`'s:"
+    },
+    {
+      "id": "0017/AC-7",
+      "line": "0017/AC-7  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The command's own exit code is non zero if any pair fails, any pair is `inconclusive`, a preference leak is reported, or the run aborted on a usage gate refusal (AC-3); zero only when every pair that ran passed cleanly and nothing aborted."
+    },
+    {
+      "id": "0017/AC-1",
+      "line": "0017/AC-1  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: One command (`pnpm eval`) runs every pair in feature 15's committed set and prints, for each pair, a pass, fail, or inconclusive verdict together with the actual band(s) observed. Before minting any session or spending any vendor call, a top level `beforeAll` runs `validateGroundTruth()` against the committed `ARCHETYPES` and `PAIRS`; if it returns any issue, the run throws with every issue printed, one per line, and exits non zero. This check runs even under a `-t` filtered invocation (AC-8),"
+    },
+    {
+      "id": "0017/AC-2",
+      "line": "0017/AC-2  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: Every pair is scored through the real `scoreListing()` path, passing the run's one minted fixture session (`session.jar`) as its `cookieAdapter` argument, exactly the shape `test/integration/fit-scoring-live.test.ts` already uses. One session is minted once for the whole run (not once per pair), reused by every call. A pair's five reruns happen one after another inside that pair's own test body (never fired at once), because they exist to measure how much the same input moves between separate calls; different pairs' test bodies may run at the same time as each other, bounded by an explicit concurrency limit (Build plan, step 1)."
+    },
+    {
+      "id": "0017/AC-9",
+      "line": "0017/AC-9  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: The command writes a JSON report every run, in addition to the console table, to a directory this repository does not track, at `test/eval/.output/<ISO timestamp with colons replaced by dashes>.json`, creating that directory if it does not exist. Each report is a single `EvalReport` object (defined in `test/eval/report.ts`) recording: the filter used (if any) and every skipped pair id; per pair, its status (`pass`/`fail`/`inconclusive`), sub reason where relevant, denominator, and every observed band (or band distribution); the preference leak check's own outcome; the run's overall status and aborted reason if any; and, once per report, which model answered (via the shared `resolvedModel()` guard on `TIERS.ai_scoring.model`, never a name typed into the harness) and a hash of `BAND_ANCHORS`'s current text (`bandAnchorsHash()`, defined once and shared with the AC-10 test, so \"the same way\" is true by construction rather than by two separate implementations agreeing)."
+    },
+    {
+      "id": "0016/AC-1",
+      "line": "0016/AC-1  AcceptanceCriterion  accepted  specs/0016-eval-ground-truth-set/index.md:22  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: `src/features/scoring/eval/archetypes.ts` defines at least four candidate archetypes. Each is a fully invented person: no real name, no real employer, no text traced back to any real person's history. Each clears spec 0015's AC-7 scoring gate (at least one skill or one work history entry). Each represents a plainly different career shape from the others (documented in a short `description` field, separate from the `summary` text actually sent to the model)."
+    },
+    {
+      "id": "0016/AC-7",
+      "line": "0016/AC-7  AcceptanceCriterion  accepted  specs/0016-eval-ground-truth-set/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The archetypes and pairs live as typed TypeScript modules under `src/features/scoring/eval/`, not inside a `.test.ts` file and not embedded in feature 16's own harness code,"
+    },
+    {
+      "id": "0016/AC-8",
+      "line": "0016/AC-8  AcceptanceCriterion  accepted  specs/0016-eval-ground-truth-set/index.md:40  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: A pure `validateGroundTruth()` function catches what TypeScript's structural typing cannot: a duplicate id, a pair whose `archetypeId` names no real archetype, a band missing from every pair's `expectedBand` and `acceptableBands`, a `descriptionSnippet` longer than 500 characters, an `acceptableBands` that omits its own `expectedBand` or holds fewer than two bands, a `stability-probe` tagged pair whose `descriptionSnippet` does not end in the literal U+2026 character, and the absence of a `preference-isolation` or `stability-probe` tagged pair. Each returned issue names which check failed and which id, band, or tag triggered it (the `GroundTruthIssue` shape below). A committed guard test asserts it returns no issues for the current, real data, and separately asserts, against deliberately malformed inline fixtures, that each of these checks actually fires on its own broken case, not only that the real data happens to pass. Running under `pnpm test`,"
+    },
+    {
+      "id": "0018/AC-4",
+      "line": "0018/AC-4  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The misread run evidence is corrected everywhere it appears. Searched and found at `docs/scope/scope.md:326`, added in commit `b51cb83` (`docs(scope): record the eval harness verification and its first finding`), which also layers the inference \"a stable disagreement rather than noise\" on top of the misread and closes by handing the question to `/architect`. The correction states the per pair distributions rather than a summary line, removes the \"stable disagreement\" inference, and points at this spec. `docs/experiments/0016-eval-ground-truth-set.md` is a recorded transcript and stays as it is."
+    },
+    {
+      "id": "0015/AC-12",
+      "line": "0015/AC-12  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them."
+    },
+    {
+      "id": "0015/AC-13",
+      "line": "0015/AC-13  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:35  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: The prompt built from the caller's profile is bounded regardless of how much the user wrote: the full `summary` (already capped at 4000 characters, spec 0010 AC-3), at most 50 skills (in `readProfileSections()`'s own `lower(name)` ascending order, the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9), the full `job_preference` row when present (already bounded by spec 0010 AC-9's own limits, no new cap needed), and at most the 5 most recent `work_experience` entries in the order `readProfileSections()` already returns them, each entry's own `description` truncated to 300 characters before it enters the prompt. When a listing's own `descriptionSnippet` is absent (an optional field, spec 0013), the prompt states plainly that no description was returned for this posting and the model reasons from the title alone."
+    },
+    {
+      "id": "0015/AC-2",
+      "line": "0015/AC-2  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: Across the genuinely varied listings feature 15's ground truth set will author, scored results spread across at least three of the five bands rather than clustering on one. This is exercised by feature 16's eval harness once feature 15 exists, not by this feature's own unit tests,"
+    },
+    {
+      "id": "0015/AC-3",
+      "line": "0015/AC-3  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:25  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: `callTier(\"ai_scoring\", …)` is called exactly once per listing, never batched across listings in one call, matching spec 0012's settled call shape."
+    },
+    {
+      "id": "0015/AC-4",
+      "line": "0015/AC-4  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:26  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \"…\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either."
+    },
+    {
+      "id": "0015/AC-5",
+      "line": "0015/AC-5  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \"missing skills\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`)."
+    },
+    {
+      "id": "0015/AC-6",
+      "line": "0015/AC-6  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: A `sponsorshipSignal` field is a required enum of `sponsors`, `does_not_sponsor`, or `not_stated`, resolved from whether the listing's visible text states a sponsorship stance explicitly. `not_stated` renders nothing on the card, the same visible outcome an absent field would have had, The signal is never used to compute or adjust the band, and when present (`sponsors` or `does_not_sponsor`) it renders as its own separate badge, distinct from the band badge (`COPY-6`)."
+    },
+    {
+      "id": "0018/AC-5",
+      "line": "0018/AC-5  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:26  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: `pnpm eval -t control-one-gap` passes, confirming the corrected expectation against the real scorer for five vendor calls rather than eighty."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0016",
+      "target": "0018/AC-4b",
+      "phrase": "Both are recording edits, not changes to what spec 0016 decides.",
+      "held": true
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "feature-16#16-eval-harness-runner:16",
+      "target": "feature-16#16-eval-harness-runner:17",
+      "phrase": "**This line was corrected on 2026-09-08.**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-13",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-4",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-5",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-6",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0016#build-plan:4",
+      "target": "0016/AC-1",
+      "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0016#build-plan:4",
+      "target": "0016/AC-2",
+      "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0016#build-plan:4",
+      "target": "0016/AC-7",
+      "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0016#build-plan:4",
+      "target": "0016/AC-8",
+      "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0016#build-plan:6",
+      "target": "0016/AC-2",
+      "phrase": "Satisfies the rest of **AC-2**.",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-3",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-4",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-5",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-6",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:2",
+      "target": "0018/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-1b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:2",
+      "target": "0018/AC-1b",
+      "phrase": "Satisfies **AC-1**, **AC-1b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:3",
+      "target": "0018/AC-4",
+      "phrase": "Satisfies **AC-4**, **AC-4b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:3",
+      "target": "0018/AC-4b",
+      "phrase": "Satisfies **AC-4**, **AC-4b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-1",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-12",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-13",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-2",
+      "phrase": "the anchor wording AC-2 is later measured against",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-4",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-5",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-6",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:10",
+      "target": "0016/AC-1",
+      "phrase": "(AC-1, AC-2)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:10",
+      "target": "0016/AC-2",
+      "phrase": "(AC-1, AC-2)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:9",
+      "target": "0016/AC-1",
+      "phrase": "(AC-1, AC-2, AC-7, AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:9",
+      "target": "0016/AC-2",
+      "phrase": "(AC-1, AC-2, AC-7, AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:9",
+      "target": "0016/AC-7",
+      "phrase": "(AC-1, AC-2, AC-7, AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-15#15-eval-ground-truth-set-done:9",
+      "target": "0016/AC-8",
+      "phrase": "(AC-1, AC-2, AC-7, AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-3",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-4",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-5",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-6",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:8",
+      "target": "0018/AC-1",
+      "phrase": "satisfies AC-1, AC-1b",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:8",
+      "target": "0018/AC-1b",
+      "phrase": "satisfies AC-1, AC-1b",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:9",
+      "target": "0018/AC-4",
+      "phrase": "satisfies AC-4, AC-4b",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:9",
+      "target": "0018/AC-4b",
+      "phrase": "satisfies AC-4, AC-4b",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-2",
+      "phrase": "is the anchor wording **AC-2** is later measured against",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017#requirements:7",
+      "target": "0017/AC-4",
+      "phrase": "AC-4 covers that case separately",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-4",
+      "target": "0017/AC-3",
+      "phrase": "only once AC-3's own 3 of 5 successes floor is met",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-5",
+      "target": "0017/AC-3",
+      "phrase": "are each judged individually by AC-3 first",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-7",
+      "target": "0017/AC-3",
+      "phrase": "the run aborted on a usage gate refusal (AC-3)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:1",
+      "target": "0016",
+      "phrase": "still recorded as a gap in spec 0016's Follow up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:4",
+      "target": "0016",
+      "phrase": "Spec 0016 draws this exact distinction",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:5",
+      "target": "0018#follow-up:1",
+      "phrase": "the ground is this spec's own first Follow up item above",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018/AC-1b",
+      "target": "0018/AC-1",
+      "phrase": "because after AC-1 that is untrue of one pair",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-16#16-eval-harness-runner:17",
+      "target": "0018",
+      "phrase": "Taken up by spec 0018",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0016",
+      "phrase": "spec 0016's Consequences already names the switching cost",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0015#feature-design:20",
+      "target": "0015/AC-1",
+      "phrase": "verifies **AC-1**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0015#feature-design:20",
+      "target": "0015/AC-3",
+      "phrase": "verifies **AC-1**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:14",
+      "target": "0017/AC-1",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:14",
+      "target": "0017/AC-2",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:14",
+      "target": "0017/AC-6",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:14",
+      "target": "0017/AC-9",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:15",
+      "target": "0017/AC-3",
+      "phrase": "verifies **AC-3**, **AC-7**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:15",
+      "target": "0017/AC-7",
+      "phrase": "verifies **AC-3**, **AC-7**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:16",
+      "target": "0017/AC-3",
+      "phrase": "verifies **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0018#review-findings:12",
+      "target": "0018/AC-1",
+      "phrase": "verifies **AC-1**, **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0018#review-findings:12",
+      "target": "0018/AC-5",
+      "phrase": "verifies **AC-1**, **AC-5**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 15843,
+  "bound_usd": 0.191686,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-1",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"partly\",\"claims\":[{\"text\":\"Widening `control-one-gap` with `acceptableBands` is refused outright by the Key invariants of spec 0018, and `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`.\",\"cites\":[\"0018#follow-up:4\"],\"basis\":\"text\"},{\"text\":\"Retagging the pair `boundary` is not a way out either, because it would concede the anchors do not settle the pair, which contradicts spec 0018's finding that they do. So the retag and the tolerance are not independent choices.\",\"cites\":[\"0018#follow-up:4\"],\"basis\":\"text\"},{\"text\":\"The pair's expectation is `possible_match` with no `acceptableBands`, argued from the existing `possible_match` anchor text.\",\"cites\":[\"0018/AC-1\",\"0018#review-findings:3\"],\"basis\":\"text\"},{\"text\":\"The earlier expectation of `good_match` is HISTORY: it was corrected to `possible_match` by feature-16#16-eval-harness-runner:17, so a range containing `good_match` would reintroduce the expectation that was dropped.\",\"cites\":[\"feature-16#16-eval-harness-runner:16\",\"feature-16#16-eval-harness-runner:17\"],\"basis\":\"link\"},{\"text\":\"Under the harness rules, a 3 to 2 result still counts as a strict majority and passes. With no `acceptableBands`, a rerun with no majority would be `inconclusive` (`no-majority`).\",\"cites\":[\"0017#requirements:7\"],\"basis\":\"text\"},{\"text\":\"The follow-up records the question of whether the pair keeps its `control` tag as recorded but not answered.\",\"cites\":[\"0018#follow-up:4\"],\"basis\":\"text\"}],\"missing\":[\"Text of the Key invariants section of spec 0018, which the follow-up cites as the reason `acceptableBands` is refused for control pairs\",\"Any decision on whether `control-one-gap` keeps its `control` tag\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "partly",
+  "missing": [
+    "Text of the Key invariants section of spec 0018, which the follow-up cites as the reason `acceptableBands` is refused for control pairs",
+    "Any decision on whether `control-one-gap` keeps its `control` tag"
+  ],
+  "claims": [
+    {
+      "text": "Widening `control-one-gap` with `acceptableBands` is refused outright by the Key invariants of spec 0018, and `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`.",
+      "cites": [
+        "0018#follow-up:4"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Retagging the pair `boundary` is not a way out either, because it would concede the anchors do not settle the pair, which contradicts spec 0018's finding that they do. So the retag and the tolerance are not independent choices.",
+      "cites": [
+        "0018#follow-up:4"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The pair's expectation is `possible_match` with no `acceptableBands`, argued from the existing `possible_match` anchor text.",
+      "cites": [
+        "0018/AC-1",
+        "0018#review-findings:3"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0018#review-findings:3"
+      ]
+    },
+    {
+      "text": "The earlier expectation of `good_match` is HISTORY: it was corrected to `possible_match` by feature-16#16-eval-harness-runner:17, so a range containing `good_match` would reintroduce the expectation that was dropped.",
+      "cites": [
+        "feature-16#16-eval-harness-runner:16",
+        "feature-16#16-eval-harness-runner:17"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": true,
+      "held_ids": [
+        "feature-16#16-eval-harness-runner:16",
+        "feature-16#16-eval-harness-runner:17"
+      ]
+    },
+    {
+      "text": "Under the harness rules, a 3 to 2 result still counts as a strict majority and passes. With no `acceptableBands`, a rerun with no majority would be `inconclusive` (`no-majority`).",
+      "cites": [
+        "0017#requirements:7"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The follow-up records the question of whether the pair keeps its `control` tag as recorded but not answered.",
+      "cites": [
+        "0018#follow-up:4"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 15843,
+    "output_tokens": 666,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.038346,
+  "recorded_usd": 0.038346
+}
