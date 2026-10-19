@@ -195,6 +195,7 @@ and a short note listing the files you opened.
 
 **Key invariants**:
 1. Spec 0004's walk rules (AC-20 to AC-30), matching rule (AC-35, AC-36) and reason rules (AC-38) are unchanged. Only two things are added beside them: a start rule where AC-34 would refuse, and a result built from the findings.
+   - **Note, 2026-10-19**: spec 0004's matching rule (AC-36) gained a one line tolerance in `8fbaf90`, recorded under spec 0004 AC-36. The invariant's text above is otherwise unchanged.
 2. `walk.py` and the Cypher read are not edited, and the walk never reads `eval/` (spec 0004 AC-31). `report.py` stays the only code that reads `eval/`, and `eval/runner.json` is read there.
 3. No result is a total. No line anywhere counts questions passed (AC-7).
 4. `INCONCLUSIVE` is never `PASS`. An absence only counts when the graph holds the item (AC-17).
