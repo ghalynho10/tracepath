@@ -1,0 +1,67 @@
+{
+  "record": "0019",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0019-cross-vendor-self-check/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 307,
+  "output_tokens": 412,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "83999de2c6b6410eb44041793727c4aa",
+  "artifact_format_version": 3,
+  "unit_sha256": "720c2d857c8804150a96615027138322e2f09c533bb5f58a7ca5a52bd38705aa",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"**Chosen option**: Option 1, a narrow grounding check on the claimed matched skills, chained per listing inside the same reveal wait scoring already has.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":null},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`) is consulted indirectly only, matching spec 0015's own precedent\",\"rejected_spans\":[\"since this feature calls spec 0012's router rather than the AI SDK directly\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the extended `scoring.score_listings` span attributes.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "**Chosen option**: Option 1, a narrow grounding check on the claimed matched skills, chained per listing inside the same reveal wait scoring already has.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`) is consulted indirectly only, matching spec 0015's own precedent",
+        "rejected_spans": [
+          "since this feature calls spec 0012's router rather than the AI SDK directly"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the extended `scoring.score_listings` span attributes.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

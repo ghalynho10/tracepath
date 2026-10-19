@@ -1,0 +1,1173 @@
+{
+  "record": "0021",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 14064,
+  "output_tokens": 16010,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "56cd81c78c4149238a4cf4b766d1ca4a",
+  "artifact_format_version": 3,
+  "unit_sha256": "8a31ca2352f32a569fe2bb9ddc5b864444365480b54c20e0bb7dd281101c9b7d",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`demo_result` (evolved from the original table; the original migration never applied to a hosted project, so it is edited in place rather than superseded by a second migration; if it ever applied to any local or preview database, `pnpm db:reset` is required there, and a genuinely hosted application of the old migration would need a second migration instead, which is not this project's situation today):\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Unique on `(persona_slug, source_job_id)`. Row level security enabled and forced with zero policies.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Grants: `select` (unchanged), plus `insert` and `delete` (new, for the refresh's wholesale replace) to `service_role` only; still nothing to `anon`/`authenticated`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Same row level security shape: enabled and forced, zero policies, `select` and (new) `update` granted to `service_role` only.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The migration inserts the singleton row with `refreshed_at` left `null`, mirroring `app_settings`'s own insert-before-force ordering.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"That seed row's `search_titles` carries both fixed queries' own terms, `array['backend engineer', 'frontend engineer']`\",\"rejected_spans\":[\"for the same reason the current migration's comment gives for seeding the real term rather than a placeholder (revised 2026-09-15; it seeds `'software engineer'` today)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No foreign key between the two tables: the two are only ever written together by the same atomic function below.\",\"rejected_spans\":[\"`demo_refresh` is metadata about the last run, not a parent of the result rows, and\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`public.replace_demo_results(p_results jsonb, p_search_titles text[], p_search_location text default null)`, `security invoker`, `set search_path = ''`. It runs as its caller, and the only caller is the secret key client authenticating as `service_role`, which already carries `BYPASSRLS`\",\"rejected_spans\":[\"This is a deliberate change from an earlier draft that specified `security definer`: this table's row level security is enabled and forced with zero policies, and whether a `security definer` function's owning role carries `BYPASSRLS` in a hosted project is exactly the question that migration's own comment says this repository cannot confirm; `security invoker` sidesteps the question entirely, since `service_role`'s own privilege is what does the work, and needs only the ordinary table grants above.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`p_results` is a JSON array, one element per `demo_result` row to insert, with exactly these keys, matching the table's own columns: `persona_slug`, `source_job_id`, `sort_order`, `search_title`, `title`, `company_name`, `location`, `salary_min`, `salary_max`, `salary_currency`, `salary_is_predicted`, `description_snippet`, `band`, `matched_skills`, `not_mentioned_skills`, `ungrounded_skills`, `reasoning`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"In one transaction the function deletes every row in `demo_result`, inserts the rows via `insert into public.demo_result (...) select ... from jsonb_to_recordset(p_results)`, and updates the singleton `demo_refresh` row's `search_titles`, `search_location`, and `refreshed_at = now()` via `insert ... on conflict (id) do update` (never a bare `update`)\",\"rejected_spans\":[\"so a missing singleton row cannot leave `refreshed_at` stuck `null` beside sixteen freshly written result rows\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Called once, after every score for the whole refresh has already come back allowed in application code (AC-17), so a mid refresh failure never reaches this function at all and the existing data is left untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Seed content**: no longer seeded in a migration. The two persona profiles are typed constants in `src/features/demo/personas.ts` (extended, not a new table), shaped as `ScoringProfile` (`src/features/scoring/rubric.ts`)\",\"rejected_spans\":[\"per the same reasoning that file's own doc comment already gives: \\\"only ever two, fixed by the spec ... a second table to hold two rows would add a read that can fail\\\"\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both employers named in each persona's own work history are deliberately fictional (the candidate is the disclosed fabrication, not the listings)\",\"rejected_spans\":[\"following the same \\\"obviously fictional\\\" naming style AC-3 originally required of listings\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The dedicated refresh identity**: a permanent `auth.users` row at a fixed, reserved domain address, `demo-refresh@example.test` (RFC 2606, the same convention `test/helpers/fixture-user.ts` already uses for addresses that must never resolve to a real mailbox and can never collide with a real OAuth account\",\"rejected_spans\":[\"since no real provider can verify an address on a reserved, non resolvable domain)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This is a plain module constant, not an environment variable\",\"rejected_spans\":[\"knowing the address grants nothing without `SUPABASE_SECRET_KEY`, which only this feature's refresh code and its read path already hold\"],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The refresh ensures the identity exists before minting a session for it each run: `admin.getUserByEmail` (or an equivalent lookup), and if absent, `admin.createUser({ email, email_confirm: true })`\",\"rejected_spans\":[\"matching `mintFixtureUser()`'s own reasoning that an unconfirmed user cannot complete the magiclink exchange\"],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This identity holds no `profile` or `application` row and is never used to sign in anywhere a real visitor can reach.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The fixed search query**: title `\\\"software engineer\\\"`, no location (nationwide within the already configured `ADZUNA_COUNTRY`).\",\"rejected_spans\":[\"Broad enough to return a mix of backend, frontend, and full stack postings so the two personas plausibly land on different bands, without being selected or adjusted after the fact based on what came back.\"],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The fixed search queries** (revised 2026-09-15): two searches per refresh, both nationwide within the already configured `ADZUNA_COUNTRY`, each matching one persona's own first desired title (**Seed content**): title `\\\"backend engineer\\\"`, then title `\\\"frontend engineer\\\"`. The backend search runs first; a refusal or failure of the backend search ends the refresh before the frontend search runs (**Refresh outcomes**). A refused or failed frontend search aborts the refresh too, even though the backend search succeeded: only a search that *succeeds and returns nothing* is the \\\"publish the other search's listings\\\" case below, never a search that did not complete. Each query is paired with the persona whose own role it names. These two queries are fixed from here on and are not re-tuned per run\",\"rejected_spans\":[\"Two opposed queries give each persona its own strong matches and its own mismatches, so AC-16's cross persona line shows differences in both directions, where a single role query leans toward whichever persona it names.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The kept listing count**: the first 8 listings Adzuna returns for that search, in Adzuna's own order, after de-duplicating by `sourceJobId` (Adzuna can return the same advert twice; first occurrence wins, still in Adzuna's own order). If de-duplication or Adzuna's own response leaves fewer than 8, the refresh proceeds with however many remain rather than aborting, retrying, or padding.\",\"rejected_spans\":[\"**SUPERSEDED 2026-09-15**\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The kept listing count** (revised 2026-09-15): up to 4 listings from each search, so up to 8 in total and up to 16 `demo_result` rows, both personas scored against the exact same kept set. The kept set is decided by one walk, before any scoring call:\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The two result lists take alternating turns, backend first: backend, frontend, backend, frontend, and so on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"On its turn a search keeps its next listing in its own Adzuna order whose `sourceJobId` neither search has already kept, skipping past any that has been. So a duplicate costs that search nothing: it takes its own next listing rather than borrowing one from the other search.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A search stops taking turns once it has kept 4, or once its own results run out. The other continues alone until it too has kept 4 or runs out.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A search that ends with fewer than 4 is never topped up from the other search, never retried, and never widened. It publishes what it has.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A listing both searches returned is kept once, by whichever search reaches it first in the walk, and its rows store that search's title as `search_title`. At equal rank that is the backend search, since it takes the first turn.\",\"rejected_spans\":[\"This is fixed before any score exists, so it cannot be a selection by outcome.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`sort_order` is the order the walk kept each listing, 1 based, so the stored order interleaves the two searches (backend 1, frontend 1, backend 2, frontend 2, ...)\",\"rejected_spans\":[\"and neither query's listings cluster at the top of a band's ties (AC-7)\"],\"known_trap_flags\":[]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"If the walk keeps zero listings in total, the refresh aborts (**Refresh outcomes**). If one search keeps zero and the other keeps any, the refresh publishes the other's listings, under the same \\\"publish what came back\\\" rule.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The walk is a pure, exported function**, `keepListings(backend, frontend)`, taking the two searches' already parsed listings and returning the kept listings with their `search_title` and `sort_order`. It is unit tested directly over fixture lists, including the zero case (two empty lists return an empty result)\",\"rejected_spans\":[\"so no test has to mock `searchListings()` or the session mint\"],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"De-duplication is by Adzuna's own `sourceJobId` only, never by content. Two Adzuna ids carrying the same posting therefore both appear.\",\"rejected_spans\":[\"Collapsing those is feature 19's dedup key decision, not this feature's (`## Follow-up`), and doing it here by matching content would be this feature choosing which real listings a reader sees.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`skillCounts`** (added 2026-09-15, for the stopping rule in `## Follow-up`): computed by `refreshDemoResults()` from the rows it is about to write, never from a later read, as four numbers.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:32\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**A gate refusal is a success carrying `completed: false`, never a `Failure`, and it is reported at info level.** Nothing is written either way.\",\"rejected_spans\":[\"Spec 0001 binding rule 3 states a gate refusal is never a `Failure` at any severity, because `failure()` fails the active span whatever the severity, and a correct refusal must never enter `demo.refresh`'s failure ratio. AC-17 still asks for the refusal to be reported at a severity distinct from a genuine failure, so it goes through `Sentry.captureMessage` at info directly, which is the level `failure()` itself uses for `expected`, without the span side effect.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:33\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**A refresh that keeps zero listings aborts, and this is not a departure from \\\"publish whatever comes back\\\".** Any total from one upward publishes as is.\",\"rejected_spans\":[\"Publishing an empty set would delete the previous run's real results and stamp a fresh `refreshed_at` over them. That state has no copy: it is not AC-15's \\\"no refresh has ever run\\\", because one just did, and not AC-12's read failure, because nothing failed to read. Aborting leaves the page in a state this spec does describe.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:34\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: `demo_result` and `demo_refresh` are replaced wholesale by each refresh (AC-17); no row is ever individually updated.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:35\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**On the route handler writing** (a scope clarification, not an exception, recorded 2026-09-14): this refresh runs with no session at all, triggered by an external, non interactive caller a Server Action structurally cannot serve; `demo_result` and `demo_refresh` are already classified as holding no personal data (`chore(legal)` commit `54d2d06`), so the root `AGENTS.md` restrictions on route handlers need not be read as covering it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:36\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Refresh authentication, mechanically** (AC-18): the refresh mints a session for the dedicated identity using `admin.generateLink({ type: \\\"magiclink\\\", email })` followed by `verifyOtp({ token_hash, type: \\\"email\\\" })`, with an in memory cookie jar created first, `verifyOtp` called on a request scoped client built from it, and the jar asserted non empty before use. `test/helpers/session.ts` itself is not imported; this mint is a small, separate implementation under `src/features/demo/`. The jar is passed as the `cookieAdapter` argument to `checkUsageGate()`, `searchListings()`, and `scoreListings()`.\",\"rejected_spans\":[\"root `AGENTS.md` places test helpers outside `src/` specifically so no application module can import one\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:37\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No visitor facing control ever writes to the database (AC-4); the only writer is the refresh, reachable only by the route's shared secret.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:38\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The refresh either lands every kept listing's score and grounding check under both personas as a clean, allowed outcome, or changes nothing (AC-17); an unfinished check is never written as if it had passed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:39\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every row read from `demo_result` or `demo_refresh` is parsed before it reaches a card, the same \\\"parse at every boundary\\\" rule the rest of the project follows.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:40\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A real employer's name and a real listing's content are never hidden or altered by a score (AC-19).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:41\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Whatever one refresh returns is what gets published; nothing about the kept listing count, de-duplication, or selection depends on how any score turned out (**Feature design**, \\\"The kept listing count\\\").\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:42\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A read failure (AC-12) and an empty, never refreshed table (AC-15) are different facts and render differently; neither is inferred from the other.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:43\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: no authentication and no session for any *visitor* to `/demo`. Because no write path exists at all, there is nothing to authorize: a visitor cannot corrupt the data for the next visitor by construction, not because a check happens to catch them.\",\"rejected_spans\":[\"**SUPERSEDED 2026-09-14.**\"],\"known_trap_flags\":[]},{\"id\":\"derived:44\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A write path now exists, on purpose: the refresh. A visitor still cannot corrupt the data for the next visitor, but that guarantee no longer comes from there being no writer at all; it comes from the refresh being reachable only by a secret no visitor holds (AC-18), and from the refresh authenticating as a dedicated identity that holds no `profile` or `application` row. `demo_result` and `demo_refresh` keep row level security enabled and forced with zero policies exactly as before; the secret key client remains the only reader and the only writer, through the one `security invoker` function above. **This is a deliberately accepted, named risk, not an unremarked one**\",\"rejected_spans\":[\"the alternative (a local script run by the engineer) would have kept spec 0001's already development-only test mint exactly as blocked as it is today, but at the cost of putting `SUPABASE_SECRET_KEY`, the BYPASSRLS credential over every user's table, onto a personal machine for a routine weekly task. A compromised refresh endpoint's worst case is spending this feature's own capped, dedicated budget; a compromised laptop holding the secret key's worst case is every user's data. The route was kept for that reason (`rationale.md`, \\\"Rework\\\").\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:45\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`DEMO_REFRESH_SECRET`: server only, the shared secret `/api/demo/refresh` compares its caller against (as a SHA-256 digest, never a raw length sensitive comparison). New in `src/env.ts`; must be set in every Vercel environment this branch deploys to before the pull request opens, and added to both the unit test job's and the integration job's `env:` blocks in `.github/workflows/ci.yml` with a placeholder value\",\"rejected_spans\":[\"which would either leak timing information or throw on a mismatched length\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:46\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Reuses `SUPABASE_SECRET_KEY` (feature 3), unchanged.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:47\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a visitor opens `/demo` with no session, sees the first profile's real results ordered by band, each card naming the other persona's band, both search queries and the refresh time visible, and both attributions where they apply. Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:48\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, happy path: `POST /api/demo/refresh` with the correct secret runs two searches (revised 2026-09-15), scores up to 16 listings across both personas, and replaces both tables atomically. Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:49\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The kept walk (new 2026-09-15), a unit test of `keepListings()`: a backend list of 2 and a frontend list of 6 whose first entry repeats backend's first `sourceJobId`. The walk keeps backend 1, frontend 2 (frontend 1 is the repeat, skipped), backend 2, frontend 3, then frontend 4 and 5 alone, stopping at 4 kept for frontend and never topping backend up; `sort_order` is 1 to 6 in that order, and each kept listing's `search_title` names the search that kept it. Verifies **AC-7**, **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:50\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The kept walk, zero (new 2026-09-15), a unit test of `keepListings()`: two empty lists return an empty result. `refreshDemoResults()` then returns a `Failure` of kind `record_not_found` and never calls `replace_demo_results()`. Verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:51\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, a failed second search (new 2026-09-15): the backend search succeeds and the frontend search returns a `Failure`; the refresh aborts with nothing written and the failure's context names `\\\"frontend engineer\\\"`. Verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:52\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, skill counts (new 2026-09-15): on a completed refresh, `ownRoleRows` plus `crossRoleRows` equals `rows`, and recomputing both pairs from `demo_result` with SQL gives the same four numbers the route returned. Verifies the stopping rule's input (`## Follow-up`).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:53\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, a search refusal (new 2026-09-15): the backend search is gate refused; the frontend search never runs, the result is `completed: false`, the route answers `503`, and the span is not failed. Verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:54\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, a scoring refusal: one of the sixteen `ai_scoring` calls comes back gate refused (the shared global cap); nothing is written and the previous data still renders unchanged, and the refusal is reported at a lower severity than a failure. Verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:55\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The refresh, a check failure: an `ai_check` call for one listing fails outright after every score already succeeded; the refresh aborts and writes nothing, and the previous run's data still renders unchanged. Verifies **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:56\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Not yet refreshed: a fresh database with the migration applied but no refresh ever run shows AC-15's distinct visible state, not AC-12's failure wording and not a blank page. Verifies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Not yet refreshed\"},{\"id\":\"derived:57\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth: `POST /api/demo/refresh` with a wrong or missing secret is refused before any Adzuna or scoring call happens. Verifies **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth\"},{\"id\":\"derived:58\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Cross profile: switching `?persona=` shows the same real listing scored differently, and each card's compact line names the band the switch would reveal before the reader switches. Verifies **AC-5**, **AC-6**, **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Cross profile\"},{\"id\":\"derived:59\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Ungrounded skill: a listing whose check flags a claimed skill renders that skill removed from the matched list, with the same two sentences the real card shows. Verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Ungrounded skill\"},{\"id\":\"derived:60\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Honesty: a listing whose band is `weak_match` or `not_a_match` still renders its real employer name, unhidden. Verifies **AC-19**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Honesty\"}],\"relationships\":[{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"phrase\":\"**SUPERSEDED 2026-09-15**, by the two queries below\",\"date\":\"2026-09-15\",\"known_trap_flags\":[]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"phrase\":\"**SUPERSEDED 2026-09-15**, by the per search count below\",\"date\":\"2026-09-15\",\"known_trap_flags\":[]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:43\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:44\"},\"phrase\":\"**SUPERSEDED 2026-09-14.**\",\"date\":\"2026-09-14\",\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:47\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:48\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:48\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:48\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:48\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:49\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Verifies **AC-7**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:49\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-7**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:50\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:51\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:53\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:54\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:55\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Verifies **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:56\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:57\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Verifies **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:58\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Verifies **AC-5**, **AC-6**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:58\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Verifies **AC-5**, **AC-6**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:58\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Verifies **AC-5**, **AC-6**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:59\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:60\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-19\",\"mention\":\"**AC-19**\"},\"phrase\":\"Verifies **AC-19**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`demo_result` (evolved from the original table; the original migration never applied to a hosted project, so it is edited in place rather than superseded by a second migration; if it ever applied to any local or preview database, `pnpm db:reset` is required there, and a genuinely hosted application of the old migration would need a second migration instead, which is not this project's situation today):",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Unique on `(persona_slug, source_job_id)`. Row level security enabled and forced with zero policies.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Grants: `select` (unchanged), plus `insert` and `delete` (new, for the refresh's wholesale replace) to `service_role` only; still nothing to `anon`/`authenticated`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Same row level security shape: enabled and forced, zero policies, `select` and (new) `update` granted to `service_role` only.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The migration inserts the singleton row with `refreshed_at` left `null`, mirroring `app_settings`'s own insert-before-force ordering.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "That seed row's `search_titles` carries both fixed queries' own terms, `array['backend engineer', 'frontend engineer']`",
+        "rejected_spans": [
+          "for the same reason the current migration's comment gives for seeding the real term rather than a placeholder (revised 2026-09-15; it seeds `'software engineer'` today)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No foreign key between the two tables: the two are only ever written together by the same atomic function below.",
+        "rejected_spans": [
+          "`demo_refresh` is metadata about the last run, not a parent of the result rows, and"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`public.replace_demo_results(p_results jsonb, p_search_titles text[], p_search_location text default null)`, `security invoker`, `set search_path = ''`. It runs as its caller, and the only caller is the secret key client authenticating as `service_role`, which already carries `BYPASSRLS`",
+        "rejected_spans": [
+          "This is a deliberate change from an earlier draft that specified `security definer`: this table's row level security is enabled and forced with zero policies, and whether a `security definer` function's owning role carries `BYPASSRLS` in a hosted project is exactly the question that migration's own comment says this repository cannot confirm; `security invoker` sidesteps the question entirely, since `service_role`'s own privilege is what does the work, and needs only the ordinary table grants above."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`p_results` is a JSON array, one element per `demo_result` row to insert, with exactly these keys, matching the table's own columns: `persona_slug`, `source_job_id`, `sort_order`, `search_title`, `title`, `company_name`, `location`, `salary_min`, `salary_max`, `salary_currency`, `salary_is_predicted`, `description_snippet`, `band`, `matched_skills`, `not_mentioned_skills`, `ungrounded_skills`, `reasoning`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "In one transaction the function deletes every row in `demo_result`, inserts the rows via `insert into public.demo_result (...) select ... from jsonb_to_recordset(p_results)`, and updates the singleton `demo_refresh` row's `search_titles`, `search_location`, and `refreshed_at = now()` via `insert ... on conflict (id) do update` (never a bare `update`)",
+        "rejected_spans": [
+          "so a missing singleton row cannot leave `refreshed_at` stuck `null` beside sixteen freshly written result rows"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Called once, after every score for the whole refresh has already come back allowed in application code (AC-17), so a mid refresh failure never reaches this function at all and the existing data is left untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Seed content**: no longer seeded in a migration. The two persona profiles are typed constants in `src/features/demo/personas.ts` (extended, not a new table), shaped as `ScoringProfile` (`src/features/scoring/rubric.ts`)",
+        "rejected_spans": [
+          "per the same reasoning that file's own doc comment already gives: \"only ever two, fixed by the spec ... a second table to hold two rows would add a read that can fail\""
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both employers named in each persona's own work history are deliberately fictional (the candidate is the disclosed fabrication, not the listings)",
+        "rejected_spans": [
+          "following the same \"obviously fictional\" naming style AC-3 originally required of listings"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The dedicated refresh identity**: a permanent `auth.users` row at a fixed, reserved domain address, `demo-refresh@example.test` (RFC 2606, the same convention `test/helpers/fixture-user.ts` already uses for addresses that must never resolve to a real mailbox and can never collide with a real OAuth account",
+        "rejected_spans": [
+          "since no real provider can verify an address on a reserved, non resolvable domain)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This is a plain module constant, not an environment variable",
+        "rejected_spans": [
+          "knowing the address grants nothing without `SUPABASE_SECRET_KEY`, which only this feature's refresh code and its read path already hold"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The refresh ensures the identity exists before minting a session for it each run: `admin.getUserByEmail` (or an equivalent lookup), and if absent, `admin.createUser({ email, email_confirm: true })`",
+        "rejected_spans": [
+          "matching `mintFixtureUser()`'s own reasoning that an unconfirmed user cannot complete the magiclink exchange"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This identity holds no `profile` or `application` row and is never used to sign in anywhere a real visitor can reach.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The fixed search query**: title `\"software engineer\"`, no location (nationwide within the already configured `ADZUNA_COUNTRY`).",
+        "rejected_spans": [
+          "Broad enough to return a mix of backend, frontend, and full stack postings so the two personas plausibly land on different bands, without being selected or adjusted after the fact based on what came back."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The fixed search queries** (revised 2026-09-15): two searches per refresh, both nationwide within the already configured `ADZUNA_COUNTRY`, each matching one persona's own first desired title (**Seed content**): title `\"backend engineer\"`, then title `\"frontend engineer\"`. The backend search runs first; a refusal or failure of the backend search ends the refresh before the frontend search runs (**Refresh outcomes**). A refused or failed frontend search aborts the refresh too, even though the backend search succeeded: only a search that *succeeds and returns nothing* is the \"publish the other search's listings\" case below, never a search that did not complete. Each query is paired with the persona whose own role it names. These two queries are fixed from here on and are not re-tuned per run",
+        "rejected_spans": [
+          "Two opposed queries give each persona its own strong matches and its own mismatches, so AC-16's cross persona line shows differences in both directions, where a single role query leans toward whichever persona it names."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The kept listing count**: the first 8 listings Adzuna returns for that search, in Adzuna's own order, after de-duplicating by `sourceJobId` (Adzuna can return the same advert twice; first occurrence wins, still in Adzuna's own order). If de-duplication or Adzuna's own response leaves fewer than 8, the refresh proceeds with however many remain rather than aborting, retrying, or padding.",
+        "rejected_spans": [
+          "**SUPERSEDED 2026-09-15**"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The kept listing count** (revised 2026-09-15): up to 4 listings from each search, so up to 8 in total and up to 16 `demo_result` rows, both personas scored against the exact same kept set. The kept set is decided by one walk, before any scoring call:",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The two result lists take alternating turns, backend first: backend, frontend, backend, frontend, and so on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "On its turn a search keeps its next listing in its own Adzuna order whose `sourceJobId` neither search has already kept, skipping past any that has been. So a duplicate costs that search nothing: it takes its own next listing rather than borrowing one from the other search.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A search stops taking turns once it has kept 4, or once its own results run out. The other continues alone until it too has kept 4 or runs out.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A search that ends with fewer than 4 is never topped up from the other search, never retried, and never widened. It publishes what it has.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A listing both searches returned is kept once, by whichever search reaches it first in the walk, and its rows store that search's title as `search_title`. At equal rank that is the backend search, since it takes the first turn.",
+        "rejected_spans": [
+          "This is fixed before any score exists, so it cannot be a selection by outcome."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`sort_order` is the order the walk kept each listing, 1 based, so the stored order interleaves the two searches (backend 1, frontend 1, backend 2, frontend 2, ...)",
+        "rejected_spans": [
+          "and neither query's listings cluster at the top of a band's ties (AC-7)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "If the walk keeps zero listings in total, the refresh aborts (**Refresh outcomes**). If one search keeps zero and the other keeps any, the refresh publishes the other's listings, under the same \"publish what came back\" rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The walk is a pure, exported function**, `keepListings(backend, frontend)`, taking the two searches' already parsed listings and returning the kept listings with their `search_title` and `sort_order`. It is unit tested directly over fixture lists, including the zero case (two empty lists return an empty result)",
+        "rejected_spans": [
+          "so no test has to mock `searchListings()` or the session mint"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "De-duplication is by Adzuna's own `sourceJobId` only, never by content. Two Adzuna ids carrying the same posting therefore both appear.",
+        "rejected_spans": [
+          "Collapsing those is feature 19's dedup key decision, not this feature's (`## Follow-up`), and doing it here by matching content would be this feature choosing which real listings a reader sees."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`skillCounts`** (added 2026-09-15, for the stopping rule in `## Follow-up`): computed by `refreshDemoResults()` from the rows it is about to write, never from a later read, as four numbers.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:32",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**A gate refusal is a success carrying `completed: false`, never a `Failure`, and it is reported at info level.** Nothing is written either way.",
+        "rejected_spans": [
+          "Spec 0001 binding rule 3 states a gate refusal is never a `Failure` at any severity, because `failure()` fails the active span whatever the severity, and a correct refusal must never enter `demo.refresh`'s failure ratio. AC-17 still asks for the refusal to be reported at a severity distinct from a genuine failure, so it goes through `Sentry.captureMessage` at info directly, which is the level `failure()` itself uses for `expected`, without the span side effect."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:33",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**A refresh that keeps zero listings aborts, and this is not a departure from \"publish whatever comes back\".** Any total from one upward publishes as is.",
+        "rejected_spans": [
+          "Publishing an empty set would delete the previous run's real results and stamp a fresh `refreshed_at` over them. That state has no copy: it is not AC-15's \"no refresh has ever run\", because one just did, and not AC-12's read failure, because nothing failed to read. Aborting leaves the page in a state this spec does describe."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:34",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: `demo_result` and `demo_refresh` are replaced wholesale by each refresh (AC-17); no row is ever individually updated.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:35",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**On the route handler writing** (a scope clarification, not an exception, recorded 2026-09-14): this refresh runs with no session at all, triggered by an external, non interactive caller a Server Action structurally cannot serve; `demo_result` and `demo_refresh` are already classified as holding no personal data (`chore(legal)` commit `54d2d06`), so the root `AGENTS.md` restrictions on route handlers need not be read as covering it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:36",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Refresh authentication, mechanically** (AC-18): the refresh mints a session for the dedicated identity using `admin.generateLink({ type: \"magiclink\", email })` followed by `verifyOtp({ token_hash, type: \"email\" })`, with an in memory cookie jar created first, `verifyOtp` called on a request scoped client built from it, and the jar asserted non empty before use. `test/helpers/session.ts` itself is not imported; this mint is a small, separate implementation under `src/features/demo/`. The jar is passed as the `cookieAdapter` argument to `checkUsageGate()`, `searchListings()`, and `scoreListings()`.",
+        "rejected_spans": [
+          "root `AGENTS.md` places test helpers outside `src/` specifically so no application module can import one"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:37",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No visitor facing control ever writes to the database (AC-4); the only writer is the refresh, reachable only by the route's shared secret.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:38",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The refresh either lands every kept listing's score and grounding check under both personas as a clean, allowed outcome, or changes nothing (AC-17); an unfinished check is never written as if it had passed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:39",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every row read from `demo_result` or `demo_refresh` is parsed before it reaches a card, the same \"parse at every boundary\" rule the rest of the project follows.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:40",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A real employer's name and a real listing's content are never hidden or altered by a score (AC-19).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:41",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Whatever one refresh returns is what gets published; nothing about the kept listing count, de-duplication, or selection depends on how any score turned out (**Feature design**, \"The kept listing count\").",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:42",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A read failure (AC-12) and an empty, never refreshed table (AC-15) are different facts and render differently; neither is inferred from the other.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:43",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: no authentication and no session for any *visitor* to `/demo`. Because no write path exists at all, there is nothing to authorize: a visitor cannot corrupt the data for the next visitor by construction, not because a check happens to catch them.",
+        "rejected_spans": [
+          "**SUPERSEDED 2026-09-14.**"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:44",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A write path now exists, on purpose: the refresh. A visitor still cannot corrupt the data for the next visitor, but that guarantee no longer comes from there being no writer at all; it comes from the refresh being reachable only by a secret no visitor holds (AC-18), and from the refresh authenticating as a dedicated identity that holds no `profile` or `application` row. `demo_result` and `demo_refresh` keep row level security enabled and forced with zero policies exactly as before; the secret key client remains the only reader and the only writer, through the one `security invoker` function above. **This is a deliberately accepted, named risk, not an unremarked one**",
+        "rejected_spans": [
+          "the alternative (a local script run by the engineer) would have kept spec 0001's already development-only test mint exactly as blocked as it is today, but at the cost of putting `SUPABASE_SECRET_KEY`, the BYPASSRLS credential over every user's table, onto a personal machine for a routine weekly task. A compromised refresh endpoint's worst case is spending this feature's own capped, dedicated budget; a compromised laptop holding the secret key's worst case is every user's data. The route was kept for that reason (`rationale.md`, \"Rework\")."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:45",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`DEMO_REFRESH_SECRET`: server only, the shared secret `/api/demo/refresh` compares its caller against (as a SHA-256 digest, never a raw length sensitive comparison). New in `src/env.ts`; must be set in every Vercel environment this branch deploys to before the pull request opens, and added to both the unit test job's and the integration job's `env:` blocks in `.github/workflows/ci.yml` with a placeholder value",
+        "rejected_spans": [
+          "which would either leak timing information or throw on a mismatched length"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:46",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Reuses `SUPABASE_SECRET_KEY` (feature 3), unchanged.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:47",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a visitor opens `/demo` with no session, sees the first profile's real results ordered by band, each card naming the other persona's band, both search queries and the refresh time visible, and both attributions where they apply. Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:48",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, happy path: `POST /api/demo/refresh` with the correct secret runs two searches (revised 2026-09-15), scores up to 16 listings across both personas, and replaces both tables atomically. Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:49",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The kept walk (new 2026-09-15), a unit test of `keepListings()`: a backend list of 2 and a frontend list of 6 whose first entry repeats backend's first `sourceJobId`. The walk keeps backend 1, frontend 2 (frontend 1 is the repeat, skipped), backend 2, frontend 3, then frontend 4 and 5 alone, stopping at 4 kept for frontend and never topping backend up; `sort_order` is 1 to 6 in that order, and each kept listing's `search_title` names the search that kept it. Verifies **AC-7**, **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:50",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The kept walk, zero (new 2026-09-15), a unit test of `keepListings()`: two empty lists return an empty result. `refreshDemoResults()` then returns a `Failure` of kind `record_not_found` and never calls `replace_demo_results()`. Verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:51",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, a failed second search (new 2026-09-15): the backend search succeeds and the frontend search returns a `Failure`; the refresh aborts with nothing written and the failure's context names `\"frontend engineer\"`. Verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:52",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, skill counts (new 2026-09-15): on a completed refresh, `ownRoleRows` plus `crossRoleRows` equals `rows`, and recomputing both pairs from `demo_result` with SQL gives the same four numbers the route returned. Verifies the stopping rule's input (`## Follow-up`).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:53",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, a search refusal (new 2026-09-15): the backend search is gate refused; the frontend search never runs, the result is `completed: false`, the route answers `503`, and the span is not failed. Verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:54",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, a scoring refusal: one of the sixteen `ai_scoring` calls comes back gate refused (the shared global cap); nothing is written and the previous data still renders unchanged, and the refusal is reported at a lower severity than a failure. Verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:55",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The refresh, a check failure: an `ai_check` call for one listing fails outright after every score already succeeded; the refresh aborts and writes nothing, and the previous run's data still renders unchanged. Verifies **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:56",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Not yet refreshed: a fresh database with the migration applied but no refresh ever run shows AC-15's distinct visible state, not AC-12's failure wording and not a blank page. Verifies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Not yet refreshed"
+      },
+      {
+        "id": "derived:57",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth: `POST /api/demo/refresh` with a wrong or missing secret is refused before any Adzuna or scoring call happens. Verifies **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth"
+      },
+      {
+        "id": "derived:58",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Cross profile: switching `?persona=` shows the same real listing scored differently, and each card's compact line names the band the switch would reveal before the reader switches. Verifies **AC-5**, **AC-6**, **AC-16**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Cross profile"
+      },
+      {
+        "id": "derived:59",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Ungrounded skill: a listing whose check flags a claimed skill renders that skill removed from the matched list, with the same two sentences the real card shows. Verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Ungrounded skill"
+      },
+      {
+        "id": "derived:60",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Honesty: a listing whose band is `weak_match` or `not_a_match` still renders its real employer name, unhidden. Verifies **AC-19**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Honesty"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "phrase": "**SUPERSEDED 2026-09-15**, by the two queries below",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "phrase": "**SUPERSEDED 2026-09-15**, by the per search count below",
+        "date": "2026-09-15",
+        "known_trap_flags": []
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:43"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:44"
+        },
+        "phrase": "**SUPERSEDED 2026-09-14.**",
+        "date": "2026-09-14",
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:47"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:48"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:48"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:48"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:48"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:49"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Verifies **AC-7**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:49"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-7**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:50"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:51"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:53"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:54"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:55"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Verifies **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:56"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Verifies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:57"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Verifies **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:58"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:58"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:58"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:59"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:60"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-19",
+          "label": null,
+          "mention": "**AC-19**"
+        },
+        "phrase": "Verifies **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,932 @@
+{
+  "record": "0020",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2590,
+  "output_tokens": 9668,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "6991c0cccb4a489a92296e66b5d8f6a3",
+  "artifact_format_version": 3,
+  "unit_sha256": "b2e40770284f570d6a0296d5845a82def2d30b8c9b4686aafe05fda20f5ffeb1",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Tracer Bullet, this project's own build approach: the whole read path, database to page, is built as one thin end to end slice\",\"rejected_spans\":[\"since the display scope decision (job_search only) already keeps this to a single counter\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Migration: add `get_job_search_usage_summary()`, taking no parameter, `security definer`, read only, matching `check_usage_gate`'s hardening (`set search_path = ''`, `execute` revoked from `public`, granted to `authenticated`), and its `period_start` expression exactly. No new grant on `usage_gate_counter`. Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build `getJobSearchUsageSummary()` in `src/lib/usage-gating/queries.ts`: `getClaims()` verification, the RPC call wrapped in `attempt()`, the response parsed with Zod rather than trusted (matching `gate.ts`'s own treatment of `check_usage_gate`'s row), a named span `usage_gate.read_summary` opened first and registered in `docs/observability/spans.md` (binding rule 3). Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `COPY-1` and `COPY-2`. Satisfies **AC-1**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the rendered notice in `src/features/search/`, calling `getJobSearchUsageSummary()` and wired into `SearchPage` above the `hasQuery` conditional in `src/app/(app)/search/page.tsx`, a plain `await`, no `Suspense` boundary of its own. Satisfies **AC-1**, **AC-6**.\",\"rejected_spans\":[\"since the read is fast and unrelated to the slower scoring path already Suspended below it\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Export `RESULTS_PER_PAGE` from `src/features/search/adzuna.ts`, then write the cap arithmetic invariant test as an integration test that reads the real `usage_cap` rows through the Data API (never the direct database helper) and imports the real `RESULTS_PER_PAGE`, asserting the relationship for all three window scopes. Satisfies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct `src/features/legal/stored-fields.ts` lines 76 and 370 so neither claims or implies `usage_cap` or `usage_gate_counter.call_type` count job search calls only. Satisfies **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Integration tests: the Critical test scenarios above, covering **AC-1** through **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No migration, no SQL change, no new function.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Lift the search call and pass it down: move `await searchListings()` from `SearchResults` into `SearchPage`, give `UsageNotice` a `searchResult` prop carrying that awaited value (`undefined` on a bare visit), and pass the already resolved result into `SearchResults` rather than letting it fetch. `UsageNotice` keeps its own `getJobSearchUsageSummary()` call, unchanged, inside itself. Nothing reads a value out of the prop; it exists to order the render, so the component opens with `void searchResult;` and a comment saying why. Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**.\",\"rejected_spans\":[\"(see the Decision: the underscore rename does not work here and a disable comment would be the first in `src/`)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Tests: the boundary case end to end, a kill switch refusal render, a search that fails at Adzuna after passing the gate, and the bare visit. Each asserts the rendered figure, not just that a read happened. Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the grant test for both `security definer` functions, `check_usage_gate` and `get_job_search_usage_summary`, asserting `anon` is refused. Satisfies **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct the `usage_cap` half of AC-10 at its source and confirm it there rather than on `/privacy`. Already applied in the shipped code; this step is the confirmation, not a new edit. Satisfies **AC-10**.\",\"rejected_spans\":[\"since `NON_PERSONAL_TABLES[].why` renders nowhere\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Behaviour does not change: the same figure renders on every path, and the existing tests are the proof of that, which is why they must pass unchanged rather than be edited to fit.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Pass the promise instead of the resolved value: in `SearchPage`, call `searchListings()` without `await`; hand the promise to both `UsageNotice` and `SearchResults`. Widen `SearchResults`'s `result` prop from `Awaited<ReturnType<typeof searchListings>>` to `ReturnType<typeof searchListings>` and await it as its first statement; `SearchOutcome`'s own prop stays the awaited type. The `searchResult === undefined` branch at the call site still routes the bare visit correctly. Satisfies **AC-11**.\",\"rejected_spans\":[\"because a promise is never `undefined`\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Make `UsageNotice` await its prop: rename it to `searchInFlight`, type it `Promise<unknown> | undefined`, drop the now unneeded `import type { searchListings }`, and replace `void searchResult;` with `if (searchInFlight !== undefined) await searchInFlight;` as the component's first statement. `Promise<unknown>` on purpose. Delete the paragraph defending an unread prop. Satisfies **AC-11**, **AC-12**.\",\"rejected_spans\":[\": the notice waits on the search and must not grow a dependency on what it returns\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Correct EVERY comment that states the false mechanism, not just the two the first draft of this step named. In `src/app/(app)/search/page.tsx`: the block at line 87 (\\\"Awaiting it here is what lets the resolved value become a prop\\\"), line 112 (\\\"Removing the prop ... quietly brings the boundary bug back\\\"), line 122 (the `searchResult` branch comment) and line 188 (\\\"ALREADY RESOLVED, BY `SearchPage`\\\"). In `src/features/search/usage-notice.tsx`: the header, and the prop's own doc comment (\\\"already resolved ... Never read\\\"). Each must say where the ordering lives and what guards it, and the component header must name the `Promise.all` fold as the forbidden edit. No comment may claim a refactor cannot undo the ordering. Satisfies **AC-11**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Prove both guards bite, and prove the forbidden edit is caught: with the inner `await` deleted, the three ordering tests must fail AND `pnpm lint` must report the prop unused; with the two awaits folded into one `Promise.all`, lint must stay clean and those same three tests must still fail. Run the existing suites UNCHANGED, all 74 page tests and the integration files. Satisfies **AC-11**, **AC-13**, **AC-14**.\",\"rejected_spans\":[\"They pass without edits because `renderDeepAsync` resolves sibling arrays through `Promise.all` and every `searchListings` mock already returns a promise, so an unawaited call flows through and each child awaits it; do not \\\"fix\\\" the tests to await the mock.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-1**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-1**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-2\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-3\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-4\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-5\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-6\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-7\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-8\",\"mention\":\"**AC-1** through **AC-8**\"},\"phrase\":\"**AC-1** through **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-11**, **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-11**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-11**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-11**, **AC-13**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Tracer Bullet, this project's own build approach: the whole read path, database to page, is built as one thin end to end slice",
+        "rejected_spans": [
+          "since the display scope decision (job_search only) already keeps this to a single counter"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Migration: add `get_job_search_usage_summary()`, taking no parameter, `security definer`, read only, matching `check_usage_gate`'s hardening (`set search_path = ''`, `execute` revoked from `public`, granted to `authenticated`), and its `period_start` expression exactly. No new grant on `usage_gate_counter`. Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build `getJobSearchUsageSummary()` in `src/lib/usage-gating/queries.ts`: `getClaims()` verification, the RPC call wrapped in `attempt()`, the response parsed with Zod rather than trusted (matching `gate.ts`'s own treatment of `check_usage_gate`'s row), a named span `usage_gate.read_summary` opened first and registered in `docs/observability/spans.md` (binding rule 3). Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `COPY-1` and `COPY-2`. Satisfies **AC-1**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the rendered notice in `src/features/search/`, calling `getJobSearchUsageSummary()` and wired into `SearchPage` above the `hasQuery` conditional in `src/app/(app)/search/page.tsx`, a plain `await`, no `Suspense` boundary of its own. Satisfies **AC-1**, **AC-6**.",
+        "rejected_spans": [
+          "since the read is fast and unrelated to the slower scoring path already Suspended below it"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Export `RESULTS_PER_PAGE` from `src/features/search/adzuna.ts`, then write the cap arithmetic invariant test as an integration test that reads the real `usage_cap` rows through the Data API (never the direct database helper) and imports the real `RESULTS_PER_PAGE`, asserting the relationship for all three window scopes. Satisfies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct `src/features/legal/stored-fields.ts` lines 76 and 370 so neither claims or implies `usage_cap` or `usage_gate_counter.call_type` count job search calls only. Satisfies **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Integration tests: the Critical test scenarios above, covering **AC-1** through **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No migration, no SQL change, no new function.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Lift the search call and pass it down: move `await searchListings()` from `SearchResults` into `SearchPage`, give `UsageNotice` a `searchResult` prop carrying that awaited value (`undefined` on a bare visit), and pass the already resolved result into `SearchResults` rather than letting it fetch. `UsageNotice` keeps its own `getJobSearchUsageSummary()` call, unchanged, inside itself. Nothing reads a value out of the prop; it exists to order the render, so the component opens with `void searchResult;` and a comment saying why. Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**.",
+        "rejected_spans": [
+          "(see the Decision: the underscore rename does not work here and a disable comment would be the first in `src/`)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Tests: the boundary case end to end, a kill switch refusal render, a search that fails at Adzuna after passing the gate, and the bare visit. Each asserts the rendered figure, not just that a read happened. Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the grant test for both `security definer` functions, `check_usage_gate` and `get_job_search_usage_summary`, asserting `anon` is refused. Satisfies **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct the `usage_cap` half of AC-10 at its source and confirm it there rather than on `/privacy`. Already applied in the shipped code; this step is the confirmation, not a new edit. Satisfies **AC-10**.",
+        "rejected_spans": [
+          "since `NON_PERSONAL_TABLES[].why` renders nowhere"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Behaviour does not change: the same figure renders on every path, and the existing tests are the proof of that, which is why they must pass unchanged rather than be edited to fit.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Pass the promise instead of the resolved value: in `SearchPage`, call `searchListings()` without `await`; hand the promise to both `UsageNotice` and `SearchResults`. Widen `SearchResults`'s `result` prop from `Awaited<ReturnType<typeof searchListings>>` to `ReturnType<typeof searchListings>` and await it as its first statement; `SearchOutcome`'s own prop stays the awaited type. The `searchResult === undefined` branch at the call site still routes the bare visit correctly. Satisfies **AC-11**.",
+        "rejected_spans": [
+          "because a promise is never `undefined`"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Make `UsageNotice` await its prop: rename it to `searchInFlight`, type it `Promise<unknown> | undefined`, drop the now unneeded `import type { searchListings }`, and replace `void searchResult;` with `if (searchInFlight !== undefined) await searchInFlight;` as the component's first statement. `Promise<unknown>` on purpose. Delete the paragraph defending an unread prop. Satisfies **AC-11**, **AC-12**.",
+        "rejected_spans": [
+          ": the notice waits on the search and must not grow a dependency on what it returns"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Correct EVERY comment that states the false mechanism, not just the two the first draft of this step named. In `src/app/(app)/search/page.tsx`: the block at line 87 (\"Awaiting it here is what lets the resolved value become a prop\"), line 112 (\"Removing the prop ... quietly brings the boundary bug back\"), line 122 (the `searchResult` branch comment) and line 188 (\"ALREADY RESOLVED, BY `SearchPage`\"). In `src/features/search/usage-notice.tsx`: the header, and the prop's own doc comment (\"already resolved ... Never read\"). Each must say where the ordering lives and what guards it, and the component header must name the `Promise.all` fold as the forbidden edit. No comment may claim a refactor cannot undo the ordering. Satisfies **AC-11**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Prove both guards bite, and prove the forbidden edit is caught: with the inner `await` deleted, the three ordering tests must fail AND `pnpm lint` must report the prop unused; with the two awaits folded into one `Promise.all`, lint must stay clean and those same three tests must still fail. Run the existing suites UNCHANGED, all 74 page tests and the integration files. Satisfies **AC-11**, **AC-13**, **AC-14**.",
+        "rejected_spans": [
+          "They pass without edits because `renderDeepAsync` resolves sibling arrays through `Promise.all` and every `searchListings` mock already returns a promise, so an unawaited call flows through and each child awaits it; do not \"fix\" the tests to await the mock."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-1** through **AC-8**"
+        },
+        "phrase": "**AC-1** through **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

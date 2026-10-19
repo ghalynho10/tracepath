@@ -1,0 +1,199 @@
+{
+  "record": "0019",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0019-cross-vendor-self-check/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1465,
+  "output_tokens": 2234,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "9d23e64b98fa4f48bae3f1f6a7435ed5",
+  "artifact_format_version": 3,
+  "unit_sha256": "eb68ca7c0e5630800f0f0372b61156a103e4cc5fa30c03eac0714fa82a5e0f2a",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Record the measured `ai_check` latencies (at least 5 live calls) and the resulting `timeoutMs` here once this feature's build plan step 3 runs, per AC-6's derivation rule.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done 2026-09-09.** Five live calls through `checkFitScore()` against `google.generative-ai/gemini-3.5-flash-lite` (with `ai_scoring` resolving to `openai.responses/gpt-5.6-luna` on the same run, asserted to be a different vendor) returned **928, 677, 684, 5905 and 5272 milliseconds**. Applying AC-6's rule: slowest 5905 x 3 = 17715, rounded up to the nearest 5 seconds = 20000, clamped between 15000 and 30000 leaves it unchanged, so **`ai_check.timeoutMs` is now 20000**, down from the 30000 it had shared with `ai_scoring`. Run via `TEST_LIVE_MODEL_CALLS_ENABLED=true pnpm test:integration -t \\\"ai_check latency\\\"`; the raw artifact is written to the gitignored `test/integration/.output/ai-check-latency.json`. Corroborated independently of the printed line: `usage_gate_counter`'s `ai_check` global day row moved 7 to 12, read through the database container rather than the Data API\",\"rejected_spans\":[\"(spec 0011 leaves that table without a row level security policy, so PostgREST cannot see it)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The `-t` filter is load bearing.** Only `\\\"ai_check latency\\\"` selects this run alone, proved empirically by running with the flag on and an invalid key: one test in one file ran, nineteen files skipped.\",\"rejected_spans\":[\"`-t \\\"real vendor\\\"`, the form spec 0015's own live file documents, matches three describe blocks and would have spent `ai_scoring` budget on OpenAI while deriving this vendor's timeout from the wrong one; `-t \\\"ai_check\\\"` also selects the router file's single call case.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The first paid run of this measurement was lost entirely.** It printed the line with `console.log`, and this project's integration runs do not surface `console.log` to the reporter at all (proved by a free probe on a passing test making no vendor call; nothing in `vitest.config.mts` or the setup files suppresses it deliberately). The run passed and discarded its own deliverable, and the only way back to the numbers was to spend the money again.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The test now writes the JSON artifact BEFORE its assertions run and uses `process.stdout.write`;\",\"rejected_spans\":[\"the file is the fix, since a stream can be swallowed by a reporter or a pipe\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The two sub second latencies were checked rather than assumed.** 677ms and 684ms sit close to the 647ms of an earlier auth rejected run, but all five calls returned a parsed `ungroundedSkills` array, and the test throws on `isFailure` before recording any latency, so a rejected call cannot reach the array; the 647ms figure was a whole run that died on its first call, not a per call baseline.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If a future change ever lowers the check tier's sample rate below 1.0, gives `ai_scoring` and `ai_check` different `usage_cap` ceilings, or adds any `ai_check` caller outside this feature's own scored-then-checked chain, AC-9's decision to skip a page level notice for a check refusal must be revisited;\",\"rejected_spans\":[\"the four named ways this can break are stated in Key invariants specifically so they can be checked again, including the UTC window boundary case.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"The check does not cover a fabricated claim living only in the written `reasoning` text rather than in `matchedSkills` (see Consequences). Revisit only if real usage shows this gap matters;\",\"rejected_spans\":[\"Option 2 in rationale.md's Options considered explains why it was not built now.\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"A page level notice for an all unverifiable batch (a misconfigured `ai_check` tier) was considered and rejected in favour of per card only rendering plus Sentry's own individual reporting (see Consequences). Revisit only if this occurs in production and proves hard to diagnose from Sentry alone;\",\"rejected_spans\":[\"the fix on that day is more likely to be correcting the configuration than adding a UI state for it.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"phrase\":\"**Done 2026-09-09.**\",\"date\":\"2026-09-09\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-6\",\"mention\":\"AC-6's derivation rule\"},\"phrase\":\"per AC-6's derivation rule\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"AC-9's decision to skip a page level notice for a check refusal\"},\"phrase\":\"AC-9's decision to skip a page level notice for a check refusal must be revisited\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Record the measured `ai_check` latencies (at least 5 live calls) and the resulting `timeoutMs` here once this feature's build plan step 3 runs, per AC-6's derivation rule.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done 2026-09-09.** Five live calls through `checkFitScore()` against `google.generative-ai/gemini-3.5-flash-lite` (with `ai_scoring` resolving to `openai.responses/gpt-5.6-luna` on the same run, asserted to be a different vendor) returned **928, 677, 684, 5905 and 5272 milliseconds**. Applying AC-6's rule: slowest 5905 x 3 = 17715, rounded up to the nearest 5 seconds = 20000, clamped between 15000 and 30000 leaves it unchanged, so **`ai_check.timeoutMs` is now 20000**, down from the 30000 it had shared with `ai_scoring`. Run via `TEST_LIVE_MODEL_CALLS_ENABLED=true pnpm test:integration -t \"ai_check latency\"`; the raw artifact is written to the gitignored `test/integration/.output/ai-check-latency.json`. Corroborated independently of the printed line: `usage_gate_counter`'s `ai_check` global day row moved 7 to 12, read through the database container rather than the Data API",
+        "rejected_spans": [
+          "(spec 0011 leaves that table without a row level security policy, so PostgREST cannot see it)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The `-t` filter is load bearing.** Only `\"ai_check latency\"` selects this run alone, proved empirically by running with the flag on and an invalid key: one test in one file ran, nineteen files skipped.",
+        "rejected_spans": [
+          "`-t \"real vendor\"`, the form spec 0015's own live file documents, matches three describe blocks and would have spent `ai_scoring` budget on OpenAI while deriving this vendor's timeout from the wrong one; `-t \"ai_check\"` also selects the router file's single call case."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The first paid run of this measurement was lost entirely.** It printed the line with `console.log`, and this project's integration runs do not surface `console.log` to the reporter at all (proved by a free probe on a passing test making no vendor call; nothing in `vitest.config.mts` or the setup files suppresses it deliberately). The run passed and discarded its own deliverable, and the only way back to the numbers was to spend the money again.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The test now writes the JSON artifact BEFORE its assertions run and uses `process.stdout.write`;",
+        "rejected_spans": [
+          "the file is the fix, since a stream can be swallowed by a reporter or a pipe"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The two sub second latencies were checked rather than assumed.** 677ms and 684ms sit close to the 647ms of an earlier auth rejected run, but all five calls returned a parsed `ungroundedSkills` array, and the test throws on `isFailure` before recording any latency, so a rejected call cannot reach the array; the 647ms figure was a whole run that died on its first call, not a per call baseline.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If a future change ever lowers the check tier's sample rate below 1.0, gives `ai_scoring` and `ai_check` different `usage_cap` ceilings, or adds any `ai_check` caller outside this feature's own scored-then-checked chain, AC-9's decision to skip a page level notice for a check refusal must be revisited;",
+        "rejected_spans": [
+          "the four named ways this can break are stated in Key invariants specifically so they can be checked again, including the UTC window boundary case."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "The check does not cover a fabricated claim living only in the written `reasoning` text rather than in `matchedSkills` (see Consequences). Revisit only if real usage shows this gap matters;",
+        "rejected_spans": [
+          "Option 2 in rationale.md's Options considered explains why it was not built now."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "A page level notice for an all unverifiable batch (a misconfigured `ai_check` tier) was considered and rejected in favour of per card only rendering plus Sentry's own individual reporting (see Consequences). Revisit only if this occurs in production and proves hard to diagnose from Sentry alone;",
+        "rejected_spans": [
+          "the fix on that day is more likely to be correcting the configuration than adding a UI state for it."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "phrase": "**Done 2026-09-09.**",
+        "date": "2026-09-09",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-6",
+          "label": null,
+          "mention": "AC-6's derivation rule"
+        },
+        "phrase": "per AC-6's derivation rule",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9's decision to skip a page level notice for a check refusal"
+        },
+        "phrase": "AC-9's decision to skip a page level notice for a check refusal must be revisited",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,628 @@
+{
+  "record": "0019",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0019-cross-vendor-self-check/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4084,
+  "output_tokens": 8264,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "3d5424be92f54d7dbcb8efb8f2a39be2",
+  "artifact_format_version": 3,
+  "unit_sha256": "c3df34dc1ae8d2d71fbae47221f31b2c38e73baa695aba845045edd6c2ca2193",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new database table. Like the score itself (spec 0015), a check outcome is computed in memory for one render and handed to the UI. Its shape follows this project's own error model directly rather than inventing a parallel status field:\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. The check is stateless per render, matching spec 0012's router and spec 0015's own score.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`checkFitScore()` never sees the candidate's profile summary, work history, or stated preferences, only the claimed skill names (AC-2).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Its privacy footprint is strictly smaller than `ai_scoring`'s own, already covered by the existing `google-ai` `DATA_RECIPIENTS` entry (spec 0012 AC-9); no registry change is needed.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A check's own refusal and a check's own failure stay two structurally distinct `Result` shapes, exactly as spec 0012's key invariant already requires for `ai_scoring`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"AC-7 and AC-9 are rendering decisions that treat both the same way at the card level; they do not collapse the underlying types into one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**AC-9's stated assumption, made explicit and falsifiable**: because `checkFitScore()` for a listing is only ever called after that listing's own `scoreListing()` succeeds (AC-5), and `usage_cap`'s seeded ceilings are identical for `ai_scoring` and `ai_check` at every cadence (spec 0012 AC-8), the check tier's budget cannot be exhausted while the scoring tier's own budget still has room, PROVIDED every `ai_check` call in production is one this feature dispatches. Four named ways this can break, any one of which is reason to revisit AC-9: (1) this feature's sample rate is ever lowered below 1.0; (2) `usage_cap`'s two tiers are ever set to different ceilings; (3) a batch straddles a `usage_cap` window boundary (the daily and monthly caps reset on a UTC clock), since a listing scored just before the boundary can be checked just after it, spending against the new window's `ai_check` cap while the matching `ai_scoring` spend landed in the window that just closed, breaking the same window assumption even though the per listing ordering (score, then check) never does; (4) any future caller dispatches an `ai_check` call outside this feature's own scored-then-checked chain (a live test, a future eval of the check itself), which would consume budget this invariant does not account for.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"],\"label\":\"**AC-9's stated assumption, made explicit and falsifiable**\"},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A caught fabrication is corrected only in what renders. The score's own raw `matchedSkills` and `reasoning` are never mutated; the correction is a render time computation over the raw values and the check's own verdict. `COPY-11`'s caveat (AC-13) is rendered as a separate element, never spliced into or prepended onto the `reasoning` string itself.\",\"rejected_spans\":[\"(this project's store raw, format at render rule, applied to an in memory value rather than a database column)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No check outcome ever moves a listing between bands or changes the batch's sort order (AC-12); the one time re-sort (spec 0015 AC-9) is complete before any check outcome is known to exist.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: No new authorisation model. `checkUsageGate()` verifies the caller through `getClaims()` before this feature's calls are reached at all, inherited unchanged from `callTier()`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No new credential; `GOOGLE_GENERATIVE_AI_API_KEY` is already declared and validated (spec 0012 AC-10).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The check's input surface (listing title and description, plus a list of skill name strings already entered by the user) carries no new PII beyond what spec 0012's existing `google-ai` recipient entry already covers.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none new. This feature reuses `GOOGLE_GENERATIVE_AI_API_KEY`, already declared and validated by spec 0012.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `checkFitScore()` with a real bounded listing and a real claimed skill list returns a parsed `ungroundedSkills` array and measures real latency for AC-6, verifies **AC-1**, **AC-2**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, drift: a unit test builds both `buildScoringPrompt()`'s listing block and `checkFitScore()`'s listing block from the same fixture listing and asserts they are identical, verifies **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, drift\"},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, stray name: a constructed `ai_check` response naming a skill absent from the claimed list is filtered out before it reaches `ungroundedSkills`, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, stray name\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, empty skip: a listing whose score returns `matchedSkills: []` never dispatches `checkFitScore()`, and the batch span records it under `checkSkippedEmpty`, not `checked`, verifies **AC-4**, **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, empty skip\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case, unverifiable: a constructed `ai_check` vendor error and a zeroed `ai_check` `usage_cap` row both resolve to the AC-7 unverifiable state on the affected card, with the displayed matched skills unchanged, verifies **AC-7**, **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case, unverifiable\"},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Flagged card, reasoning untouched: a listing whose check flags a skill renders `COPY-11` above an unedited `reasoning` string (byte for byte equal to the score's own raw value) and `COPY-9` naming the removed skill or skills, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Flagged card, reasoning untouched\"},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: `checkFitScore()` called with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth/permission\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"(AC-2)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-9\",\"mention\":\"spec 0012 AC-9\"},\"phrase\":\"(spec 0012 AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":null,\"mention\":\"spec 0012's key invariant\"},\"phrase\":\"exactly as spec 0012's key invariant already requires for `ai_scoring`\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-7\",\"mention\":\"AC-7\"},\"phrase\":\"AC-7 and AC-9 are rendering decisions\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"AC-7 and AC-9 are rendering decisions\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-5\",\"mention\":\"(AC-5)\"},\"phrase\":\"only ever called after that listing's own `scoreListing()` succeeds (AC-5)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-8\",\"mention\":\"spec 0012 AC-8\"},\"phrase\":\"(spec 0012 AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"any one of which is reason to revisit AC-9\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-13\",\"mention\":\"(AC-13)\"},\"phrase\":\"`COPY-11`'s caveat (AC-13)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-12\",\"mention\":\"(AC-12)\"},\"phrase\":\"(AC-12)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-9\",\"mention\":\"spec 0015 AC-9\"},\"phrase\":\"the one time re-sort (spec 0015 AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-10\",\"mention\":\"spec 0012 AC-10\"},\"phrase\":\"(spec 0012 AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-4**, **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-7**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0019\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new database table. Like the score itself (spec 0015), a check outcome is computed in memory for one render and handed to the UI. Its shape follows this project's own error model directly rather than inventing a parallel status field:",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. The check is stateless per render, matching spec 0012's router and spec 0015's own score.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`checkFitScore()` never sees the candidate's profile summary, work history, or stated preferences, only the claimed skill names (AC-2).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Its privacy footprint is strictly smaller than `ai_scoring`'s own, already covered by the existing `google-ai` `DATA_RECIPIENTS` entry (spec 0012 AC-9); no registry change is needed.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A check's own refusal and a check's own failure stay two structurally distinct `Result` shapes, exactly as spec 0012's key invariant already requires for `ai_scoring`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "AC-7 and AC-9 are rendering decisions that treat both the same way at the card level; they do not collapse the underlying types into one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**AC-9's stated assumption, made explicit and falsifiable**: because `checkFitScore()` for a listing is only ever called after that listing's own `scoreListing()` succeeds (AC-5), and `usage_cap`'s seeded ceilings are identical for `ai_scoring` and `ai_check` at every cadence (spec 0012 AC-8), the check tier's budget cannot be exhausted while the scoring tier's own budget still has room, PROVIDED every `ai_check` call in production is one this feature dispatches. Four named ways this can break, any one of which is reason to revisit AC-9: (1) this feature's sample rate is ever lowered below 1.0; (2) `usage_cap`'s two tiers are ever set to different ceilings; (3) a batch straddles a `usage_cap` window boundary (the daily and monthly caps reset on a UTC clock), since a listing scored just before the boundary can be checked just after it, spending against the new window's `ai_check` cap while the matching `ai_scoring` spend landed in the window that just closed, breaking the same window assumption even though the per listing ordering (score, then check) never does; (4) any future caller dispatches an `ai_check` call outside this feature's own scored-then-checked chain (a live test, a future eval of the check itself), which would consume budget this invariant does not account for.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": "**AC-9's stated assumption, made explicit and falsifiable**"
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A caught fabrication is corrected only in what renders. The score's own raw `matchedSkills` and `reasoning` are never mutated; the correction is a render time computation over the raw values and the check's own verdict. `COPY-11`'s caveat (AC-13) is rendered as a separate element, never spliced into or prepended onto the `reasoning` string itself.",
+        "rejected_spans": [
+          "(this project's store raw, format at render rule, applied to an in memory value rather than a database column)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No check outcome ever moves a listing between bands or changes the batch's sort order (AC-12); the one time re-sort (spec 0015 AC-9) is complete before any check outcome is known to exist.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: No new authorisation model. `checkUsageGate()` verifies the caller through `getClaims()` before this feature's calls are reached at all, inherited unchanged from `callTier()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No new credential; `GOOGLE_GENERATIVE_AI_API_KEY` is already declared and validated (spec 0012 AC-10).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The check's input surface (listing title and description, plus a list of skill name strings already entered by the user) carries no new PII beyond what spec 0012's existing `google-ai` recipient entry already covers.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none new. This feature reuses `GOOGLE_GENERATIVE_AI_API_KEY`, already declared and validated by spec 0012.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `checkFitScore()` with a real bounded listing and a real claimed skill list returns a parsed `ungroundedSkills` array and measures real latency for AC-6, verifies **AC-1**, **AC-2**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, drift: a unit test builds both `buildScoringPrompt()`'s listing block and `checkFitScore()`'s listing block from the same fixture listing and asserts they are identical, verifies **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, drift"
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, stray name: a constructed `ai_check` response naming a skill absent from the claimed list is filtered out before it reaches `ungroundedSkills`, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, stray name"
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, empty skip: a listing whose score returns `matchedSkills: []` never dispatches `checkFitScore()`, and the batch span records it under `checkSkippedEmpty`, not `checked`, verifies **AC-4**, **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, empty skip"
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case, unverifiable: a constructed `ai_check` vendor error and a zeroed `ai_check` `usage_cap` row both resolve to the AC-7 unverifiable state on the affected card, with the displayed matched skills unchanged, verifies **AC-7**, **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case, unverifiable"
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Flagged card, reasoning untouched: a listing whose check flags a skill renders `COPY-11` above an unedited `reasoning` string (byte for byte equal to the score's own raw value) and `COPY-9` naming the removed skill or skills, verifies **AC-13**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Flagged card, reasoning untouched"
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: `checkFitScore()` called with no valid session returns `session_missing` before any vendor is reached, inherited unchanged from `checkUsageGate()`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth/permission"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "(AC-2)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-9",
+          "label": null,
+          "mention": "spec 0012 AC-9"
+        },
+        "phrase": "(spec 0012 AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": null,
+          "label": null,
+          "mention": "spec 0012's key invariant"
+        },
+        "phrase": "exactly as spec 0012's key invariant already requires for `ai_scoring`",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7"
+        },
+        "phrase": "AC-7 and AC-9 are rendering decisions",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "AC-7 and AC-9 are rendering decisions",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-5",
+          "label": null,
+          "mention": "(AC-5)"
+        },
+        "phrase": "only ever called after that listing's own `scoreListing()` succeeds (AC-5)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-8",
+          "label": null,
+          "mention": "spec 0012 AC-8"
+        },
+        "phrase": "(spec 0012 AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "any one of which is reason to revisit AC-9",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-13",
+          "label": null,
+          "mention": "(AC-13)"
+        },
+        "phrase": "`COPY-11`'s caveat (AC-13)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-12",
+          "label": null,
+          "mention": "(AC-12)"
+        },
+        "phrase": "(AC-12)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-9",
+          "label": null,
+          "mention": "spec 0015 AC-9"
+        },
+        "phrase": "the one time re-sort (spec 0015 AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-10",
+          "label": null,
+          "mention": "spec 0012 AC-10"
+        },
+        "phrase": "(spec 0012 AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-4**, **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-7**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0019",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

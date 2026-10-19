@@ -1,0 +1,194 @@
+{
+  "record": "0016",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1238,
+  "output_tokens": 1984,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "90c206530dc040849915740ae1c5d775",
+  "artifact_format_version": 3,
+  "unit_sha256": "25f8a5dc43a863487cff4e2151f40acf4f1591562272a676fddaf61fdac4931f",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Spec 0015's `AC-2` (do the five bands actually spread real listings, deferred explicitly to this feature) finally has real evidence to run against once feature 16 exists.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No expected band in this set encodes a rule the rubric never wrote. Where the rubric's wording genuinely cannot decide alone, the data says so plainly (`acceptableBands`, the `boundary` tag) instead of quietly asserting an answer.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The preference isolation pair gives feature 16 a real, structural way to catch a preference leaking into the band, closing a gap spec 0015 itself named as untestable in its own build (`rubric.ts`'s own comment: \\\"nothing in the schema stops the model from letting a preference mismatch influence the band anyway\\\").\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No real personal data or real employer name reaches OpenAI through this set, in a repository anyone can read.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The severe seniority gap pair still has no single confident expected band; `acceptableBands` makes that honest, but it does not resolve it. The rubric ambiguity survives this spec and is handed to spec 0015 as a Follow up, not fixed here.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`stability-probe-generic`'s \\\"pass\\\" is not the ordinary one band match; feature 16's own build has to decide what to do with a pair like it (measure variance across reruns, most likely) rather than treating it as an ordinary accuracy check. This spec deliberately leaves that decision to feature 16.\",\"rejected_spans\":[\"since it is about harness behavior, not ground truth data\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Sixteen pairs across four archetypes is real, deliberate authoring work, not a small set; it was sized so every band is covered by at least one single, confident `expectedBand` pair, with more than one archetype touching most bands. `weak_match`'s second example is the `boundary-seniority-gap` pair's widened tolerance rather than a second exact match.\",\"rejected_spans\":[\"which is honest given that pair's own stated ambiguity, not a coverage shortcut\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The circumstance conflict pair varies three dimensions at once, so a band that moves on it says a preference leaked without saying which one. That is an accepted trade, not an oversight: bisecting afterwards costs one extra run of one pair. The title pair is the exception because its risk is different in kind, not because one dimension per pair is the rule (AC-4).\",\"rejected_spans\":[\"where splitting it into three permanent pairs would cost two extra vendor calls on every harness run forever\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`ai_scoring` leaves `temperature` unset (`tiers.ts:120`); the provider's own default then applies, which is not guaranteed deterministic. Even an exact `expectedBand` pair can therefore flip to an adjacent band on any single run for reasons that are not a regression. This spec's data does not solve that; it only flags it (Follow up) for feature 16 to decide how many reruns settle a real mismatch.\",\"rejected_spans\":[\"because the OpenAI API rejects `temperature: 0` at this reasoning effort\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"If the deferred \\\"fetch the full posting\\\" feature (`docs/scope/scope.md`, Deferred) ever ships, `buildScoringPrompt` would stop reading only a 500 character excerpt, and this set's `descriptionSnippet` values would stop matching what the model actually sees. That is not a mechanical rename: a full posting can resolve today's honestly labeled uncertainty (`notMentionedSkills`) into a confirmed gap and could shift some expected bands, the boundary pair most of all. This set should not be silently reused as \\\"the full posting\\\" if that ships; it needs its own deliberate re authoring pass.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-2\",\"mention\":\"Spec 0015's `AC-2`\"},\"phrase\":\"deferred explicitly to this feature\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":null,\"mention\":\"handed to spec 0015 as a Follow up\"},\"phrase\":\"handed to spec 0015 as a Follow up\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Spec 0015's `AC-2` (do the five bands actually spread real listings, deferred explicitly to this feature) finally has real evidence to run against once feature 16 exists.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No expected band in this set encodes a rule the rubric never wrote. Where the rubric's wording genuinely cannot decide alone, the data says so plainly (`acceptableBands`, the `boundary` tag) instead of quietly asserting an answer.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The preference isolation pair gives feature 16 a real, structural way to catch a preference leaking into the band, closing a gap spec 0015 itself named as untestable in its own build (`rubric.ts`'s own comment: \"nothing in the schema stops the model from letting a preference mismatch influence the band anyway\").",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No real personal data or real employer name reaches OpenAI through this set, in a repository anyone can read.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The severe seniority gap pair still has no single confident expected band; `acceptableBands` makes that honest, but it does not resolve it. The rubric ambiguity survives this spec and is handed to spec 0015 as a Follow up, not fixed here.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`stability-probe-generic`'s \"pass\" is not the ordinary one band match; feature 16's own build has to decide what to do with a pair like it (measure variance across reruns, most likely) rather than treating it as an ordinary accuracy check. This spec deliberately leaves that decision to feature 16.",
+        "rejected_spans": [
+          "since it is about harness behavior, not ground truth data"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Sixteen pairs across four archetypes is real, deliberate authoring work, not a small set; it was sized so every band is covered by at least one single, confident `expectedBand` pair, with more than one archetype touching most bands. `weak_match`'s second example is the `boundary-seniority-gap` pair's widened tolerance rather than a second exact match.",
+        "rejected_spans": [
+          "which is honest given that pair's own stated ambiguity, not a coverage shortcut"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The circumstance conflict pair varies three dimensions at once, so a band that moves on it says a preference leaked without saying which one. That is an accepted trade, not an oversight: bisecting afterwards costs one extra run of one pair. The title pair is the exception because its risk is different in kind, not because one dimension per pair is the rule (AC-4).",
+        "rejected_spans": [
+          "where splitting it into three permanent pairs would cost two extra vendor calls on every harness run forever"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`ai_scoring` leaves `temperature` unset (`tiers.ts:120`); the provider's own default then applies, which is not guaranteed deterministic. Even an exact `expectedBand` pair can therefore flip to an adjacent band on any single run for reasons that are not a regression. This spec's data does not solve that; it only flags it (Follow up) for feature 16 to decide how many reruns settle a real mismatch.",
+        "rejected_spans": [
+          "because the OpenAI API rejects `temperature: 0` at this reasoning effort"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "If the deferred \"fetch the full posting\" feature (`docs/scope/scope.md`, Deferred) ever ships, `buildScoringPrompt` would stop reading only a 500 character excerpt, and this set's `descriptionSnippet` values would stop matching what the model actually sees. That is not a mechanical rename: a full posting can resolve today's honestly labeled uncertainty (`notMentionedSkills`) into a confirmed gap and could shift some expected bands, the boundary pair most of all. This set should not be silently reused as \"the full posting\" if that ships; it needs its own deliberate re authoring pass.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-2",
+          "label": null,
+          "mention": "Spec 0015's `AC-2`"
+        },
+        "phrase": "deferred explicitly to this feature",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": null,
+          "label": null,
+          "mention": "handed to spec 0015 as a Follow up"
+        },
+        "phrase": "handed to spec 0015 as a Follow up",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

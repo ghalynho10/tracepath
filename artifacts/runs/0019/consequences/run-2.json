@@ -1,0 +1,154 @@
+{
+  "record": "0019",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0019-cross-vendor-self-check/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1005,
+  "output_tokens": 1529,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "07301f6a13ca4dbabe1869a575c06604",
+  "artifact_format_version": 3,
+  "unit_sha256": "f2a49e56ca147c91e51e473effdc459902c283f2de58fb0b67fced92df2e87df",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every claimed matched skill a user sees has either been independently checked by a different vendor, or is honestly marked as unverified; nothing reads as verified that was not.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No `usage_cap` migration is needed: spec 0012 already seeded `ai_check` at the sample rate of 1.0 this feature confirms.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Reuses `scoreListing()` and the concurrent dispatch shape of `scoreListings()` unchanged in their own logic; the only tested surface this feature touches is `scoreListings()`'s return type and its span attributes.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two chained vendor calls per listing raise the worst case wait before a card settles, from `ai_scoring`'s 30 seconds alone to somewhere between 45 and 60 seconds depending on AC-6's measured `ai_check` timeout. A reader watching a slow render can wait longer than they did before this feature, in exchange for what that wait now proves.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This stays within the platform's own function timeout: Vercel's default is 300 seconds on all plans, and this repo declares no `maxDuration` override and no `vercel.json` or `vercel.ts` (verified, neither file exists), so no platform level truncation risk is added by this feature and no `maxDuration` export is needed for this worst case.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The check only covers `matchedSkills`. A fabricated claim living only in the free text `reasoning`, never named as a matched skill, is not caught by this feature (Option 2's rejected scope). This is an accepted, named gap, not a closed one.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`scoreListings()`'s return type changes from `ScoreOutcome` to `ListingOutcome`, which is a breaking change to its own existing tests and to `page.tsx`'s and `score-card.tsx`'s consumption of it, even though `scoreListing()` and the scoring logic itself are untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`ai_check` has never been invoked in production; AC-6's timeout is derived from a handful of live calls made during this feature's own build, not a large sample.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A misconfigured `ai_check` tier (`usage_gate_misconfigured`, a `Failure` rather than a refusal) renders every checkable listing in a batch as AC-7's identical unverifiable note, with no page level explanation distinguishing it from an ordinary vendor outage. This is deliberately left as is: each occurrence is still reported to Sentry individually (this project's error model reports every `Failure` on construction)\",\"rejected_spans\":[\",and the correct response to a misconfigured tier is fixing the configuration, not designing a UI state for a bug that should not reach a real user.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A page level notice for this case was considered and rejected; see Follow-up.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`ai_check`'s measured timeout, once set, is a value future features reusing this tier should read from `tiers.ts` rather than assume; it is not derived from any vendor published figure.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every claimed matched skill a user sees has either been independently checked by a different vendor, or is honestly marked as unverified; nothing reads as verified that was not.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No `usage_cap` migration is needed: spec 0012 already seeded `ai_check` at the sample rate of 1.0 this feature confirms.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reuses `scoreListing()` and the concurrent dispatch shape of `scoreListings()` unchanged in their own logic; the only tested surface this feature touches is `scoreListings()`'s return type and its span attributes.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two chained vendor calls per listing raise the worst case wait before a card settles, from `ai_scoring`'s 30 seconds alone to somewhere between 45 and 60 seconds depending on AC-6's measured `ai_check` timeout. A reader watching a slow render can wait longer than they did before this feature, in exchange for what that wait now proves.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This stays within the platform's own function timeout: Vercel's default is 300 seconds on all plans, and this repo declares no `maxDuration` override and no `vercel.json` or `vercel.ts` (verified, neither file exists), so no platform level truncation risk is added by this feature and no `maxDuration` export is needed for this worst case.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The check only covers `matchedSkills`. A fabricated claim living only in the free text `reasoning`, never named as a matched skill, is not caught by this feature (Option 2's rejected scope). This is an accepted, named gap, not a closed one.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`scoreListings()`'s return type changes from `ScoreOutcome` to `ListingOutcome`, which is a breaking change to its own existing tests and to `page.tsx`'s and `score-card.tsx`'s consumption of it, even though `scoreListing()` and the scoring logic itself are untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`ai_check` has never been invoked in production; AC-6's timeout is derived from a handful of live calls made during this feature's own build, not a large sample.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A misconfigured `ai_check` tier (`usage_gate_misconfigured`, a `Failure` rather than a refusal) renders every checkable listing in a batch as AC-7's identical unverifiable note, with no page level explanation distinguishing it from an ordinary vendor outage. This is deliberately left as is: each occurrence is still reported to Sentry individually (this project's error model reports every `Failure` on construction)",
+        "rejected_spans": [
+          ",and the correct response to a misconfigured tier is fixing the configuration, not designing a UI state for a bug that should not reach a real user."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A page level notice for this case was considered and rejected; see Follow-up.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`ai_check`'s measured timeout, once set, is a value future features reusing this tier should read from `tiers.ts` rather than assume; it is not derived from any vendor published figure.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "record": "0018",
+  "section": "Review findings",
+  "section_slug": "review-findings",
+  "file": "specs/0018-band-anchor-review/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1786,
+  "output_tokens": 4239,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "637d1e164d5c4b8094afc53575b92108",
+  "artifact_format_version": 3,
+  "unit_sha256": "8df109f22bf6040865479e87012972f8ef3159e772bd6ae23a59e6ca324ec636",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Read `distribution`, never `summary`, when the question is how the reruns split.\",\"rejected_spans\":[\"Reading it as the band count is what produced the claim that both pairs were stable at 5 of 5, which the distributions above disprove.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The report's `summary` field reads like `\\\"possible_match, 5 of 5 succeeded\\\"`, and the `5 of 5` there is the **success denominator**, meaning all five reruns returned a band rather than failing. It is not the count landing on that band.\",\"rejected_spans\":[\"A caution that belongs in the record, because it caused a wrong conclusion once already.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Finding 1, `control-one-gap` is a wrong expectation, and the anchors already settle it.** The correction is to the pair, not to the anchors.\",\"rejected_spans\":[\"The posting covers Python, PostgreSQL and data pipelines, all of which the archetype has, and then says two things in its own words: \\\"What sets this role apart is the infrastructure half\\\", and \\\"Real production Kubernetes ownership is required, not just exposure to it\\\".\",\"The model returned `possible_match` as its verdict on both runs.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"entity_type_ambiguous\"],\"unclassified_note\":\"A review finding that diagnoses a pair's expectation as wrong; it is not a requirement, criterion, consequence, follow up, build step or test.\"},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**Finding 2, the `weak_match` and `not_a_match` line is still undefined, and there is still no good evidence about it.** The anchors genuinely say nothing about where this line falls, which spec 0016 recorded when it gave `boundary-seniority-gap` a widened tolerance, and that remains true and remains unfixed. It is left alone here\",\"rejected_spans\":[\"because a rule written now would be written from one noisy pair, and a rule that lowers real users' bands deserves better evidence than that\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"entity_type_ambiguous\"],\"unclassified_note\":\"A review finding that records an unresolved gap and the decision to leave it; it fits none of the named types.\"},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**What is unchanged and why it matters**: `BAND_ANCHORS`, the anchor hash `1b45f524b356`, the drift guard, `scoreListing()`, the response schema, the five `Band` values, and every other pair's expectation.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No table stores a band or a fit score, verified by searching every file in `supabase/migrations/` for `band` and `fit_score` and finding no match, so there is nothing to migrate and no stored score to become inconsistent.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A pair's recorded expectation must be defensible from the anchor text as written. Where the two disagree, one of them is wrong and the disagreement is resolved rather than absorbed by widening the pair.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`acceptableBands` widens a genuine ambiguity in the anchors. It is not a way to stop a pair failing\",\"rejected_spans\":[\"which is why `control-one-gap` is corrected outright rather than given a tolerance\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The anchors change only on evidence that the anchors are what is wrong. A pair disagreeing with the model is evidence that one of them is wrong, not automatically the anchors.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The corrected pair scores `possible_match` against the real scorer, verifies **AC-1**, **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The free suite still passes with the anchors untouched, including both drift assertions, verifies **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The updated set passes its data quality gate with every band still holding an exact expectation, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-1**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0018\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Read `distribution`, never `summary`, when the question is how the reruns split.",
+        "rejected_spans": [
+          "Reading it as the band count is what produced the claim that both pairs were stable at 5 of 5, which the distributions above disprove."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The report's `summary` field reads like `\"possible_match, 5 of 5 succeeded\"`, and the `5 of 5` there is the **success denominator**, meaning all five reruns returned a band rather than failing. It is not the count landing on that band.",
+        "rejected_spans": [
+          "A caution that belongs in the record, because it caused a wrong conclusion once already."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**Finding 1, `control-one-gap` is a wrong expectation, and the anchors already settle it.** The correction is to the pair, not to the anchors.",
+        "rejected_spans": [
+          "The posting covers Python, PostgreSQL and data pipelines, all of which the archetype has, and then says two things in its own words: \"What sets this role apart is the infrastructure half\", and \"Real production Kubernetes ownership is required, not just exposure to it\".",
+          "The model returned `possible_match` as its verdict on both runs."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A review finding that diagnoses a pair's expectation as wrong; it is not a requirement, criterion, consequence, follow up, build step or test.",
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**Finding 2, the `weak_match` and `not_a_match` line is still undefined, and there is still no good evidence about it.** The anchors genuinely say nothing about where this line falls, which spec 0016 recorded when it gave `boundary-seniority-gap` a widened tolerance, and that remains true and remains unfixed. It is left alone here",
+        "rejected_spans": [
+          "because a rule written now would be written from one noisy pair, and a rule that lowers real users' bands deserves better evidence than that"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A review finding that records an unresolved gap and the decision to leave it; it fits none of the named types.",
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**What is unchanged and why it matters**: `BAND_ANCHORS`, the anchor hash `1b45f524b356`, the drift guard, `scoreListing()`, the response schema, the five `Band` values, and every other pair's expectation.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No table stores a band or a fit score, verified by searching every file in `supabase/migrations/` for `band` and `fit_score` and finding no match, so there is nothing to migrate and no stored score to become inconsistent.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A pair's recorded expectation must be defensible from the anchor text as written. Where the two disagree, one of them is wrong and the disagreement is resolved rather than absorbed by widening the pair.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`acceptableBands` widens a genuine ambiguity in the anchors. It is not a way to stop a pair failing",
+        "rejected_spans": [
+          "which is why `control-one-gap` is corrected outright rather than given a tolerance"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The anchors change only on evidence that the anchors are what is wrong. A pair disagreeing with the model is evidence that one of them is wrong, not automatically the anchors.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The corrected pair scores `possible_match` against the real scorer, verifies **AC-1**, **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The free suite still passes with the anchors untouched, including both drift assertions, verifies **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The updated set passes its data quality gate with every band still holding an exact expectation, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-1**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0018",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

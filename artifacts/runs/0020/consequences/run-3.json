@@ -1,0 +1,208 @@
+{
+  "record": "0020",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1356,
+  "output_tokens": 2065,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "9dc839f438384aebbfa84dd4b15b9ac0",
+  "artifact_format_version": 3,
+  "unit_sha256": "7656c7bf3f4f141a6cb07e3443679b9a0e8fd6447e7a209b76119c350533fc38",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A refusal on `/search` is never the first time a person learns they were close to their cap; the number is already on the same page, every time.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Both usage gating tables keep the exact access shape spec 0011 gave them: no policy, no grant beyond one `security definer` function per table's read need. A future reviewer still finds one true sentence per table, not two competing ones.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Clauses 2 and 3 of feature 28's Done when close with no new code, verified rather than assumed, which is itself the artifact worth keeping (see rationale.md).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The account week cap is now read on every `/search` render, bare visits included, not only when a search actually runs. At this app's real volume this is a negligible cost\",\"rejected_spans\":[\"matching the reasoning spec 0011 itself already applied to the gate's own row locks.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`job_search` alone is shown by a values dependent argument, not a structural one (see AC-9's invariant test). If Adzuna's `RESULTS_PER_PAGE`, `job_search`'s own cap, or either AI tier's cap changes, this scope decision must be revisited, not assumed to still hold.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"If this ever grows to show `ai_scoring` or `ai_check` usage too, a location decided for `job_search` alone (the search page) may need to move; accepted here as a small, later cost\",\"rejected_spans\":[\"rather than a reason to build for that case now.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`searchListings()` moves up into `SearchPage`, and `SearchResults` becomes a component that receives its data rather than fetching it. That is a real change to a file several specs describe, and their line references (this spec's own included) go stale the moment it lands.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The correctness of this feature now rests on a property that is invisible at the call site: that `UsageNotice`'s read lives inside `UsageNotice`. Someone optimising the page could hoist it for perfectly good reasons and silently reintroduce the bug. The invariants list says so, and the boundary test is what would catch it\",\"rejected_spans\":[\"which is why that test asserts the rendered figure rather than that a read occurred.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One extra round trip on a search render, the summary read after the Adzuna call. Negligible against an 8 second Adzuna timeout on a page that already blocks on it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The gate still cannot tell anyone what a single call cost. If a later feature needs that (a per call spend breakdown, an audit line), it will have to reopen the option dropped here and pay the cost then, with the collision and grant hazards this spec recorded.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A shipped, verified and tested feature is being reshaped to fix a comment. The behaviour does not change and the tests do not change, which bounds the risk, but it is still churn on working code and it is fair to call it that.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`SearchPage` no longer awaits the search, so it returns its tree sooner, but there is NO latency gain: `UsageNotice` is unsuspended and now awaits the search itself, so nothing reaches the reader any earlier. The benefit is only that a later `Suspense` boundary becomes an additive change rather than one that silently breaks the usage line.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two consumers now await one promise. That is fine in React Server Components and needs no cache, but it is one more thing a reader has to hold: the promise is created once and awaited twice, and neither consumer owns it.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The ordering has two guards with DIFFERENT reach, not two independent ones. Lint catches deletion only, and it does so indirectly, because a deleted `await` leaves a prop unused rather than because it understands ordering. The tests catch reordering, including the `Promise.all` fold that lint waves through.\",\"rejected_spans\":[\"Stating this precisely matters: the previous wording implied a belt and braces the code does not have.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The privacy notice correction (AC-10) is a factual fix uncovered while designing this feature, not a new decision inside spec 0009's territory; spec 0009 itself is untouched.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A refusal on `/search` is never the first time a person learns they were close to their cap; the number is already on the same page, every time.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Both usage gating tables keep the exact access shape spec 0011 gave them: no policy, no grant beyond one `security definer` function per table's read need. A future reviewer still finds one true sentence per table, not two competing ones.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Clauses 2 and 3 of feature 28's Done when close with no new code, verified rather than assumed, which is itself the artifact worth keeping (see rationale.md).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The account week cap is now read on every `/search` render, bare visits included, not only when a search actually runs. At this app's real volume this is a negligible cost",
+        "rejected_spans": [
+          "matching the reasoning spec 0011 itself already applied to the gate's own row locks."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`job_search` alone is shown by a values dependent argument, not a structural one (see AC-9's invariant test). If Adzuna's `RESULTS_PER_PAGE`, `job_search`'s own cap, or either AI tier's cap changes, this scope decision must be revisited, not assumed to still hold.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "If this ever grows to show `ai_scoring` or `ai_check` usage too, a location decided for `job_search` alone (the search page) may need to move; accepted here as a small, later cost",
+        "rejected_spans": [
+          "rather than a reason to build for that case now."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`searchListings()` moves up into `SearchPage`, and `SearchResults` becomes a component that receives its data rather than fetching it. That is a real change to a file several specs describe, and their line references (this spec's own included) go stale the moment it lands.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The correctness of this feature now rests on a property that is invisible at the call site: that `UsageNotice`'s read lives inside `UsageNotice`. Someone optimising the page could hoist it for perfectly good reasons and silently reintroduce the bug. The invariants list says so, and the boundary test is what would catch it",
+        "rejected_spans": [
+          "which is why that test asserts the rendered figure rather than that a read occurred."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One extra round trip on a search render, the summary read after the Adzuna call. Negligible against an 8 second Adzuna timeout on a page that already blocks on it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The gate still cannot tell anyone what a single call cost. If a later feature needs that (a per call spend breakdown, an audit line), it will have to reopen the option dropped here and pay the cost then, with the collision and grant hazards this spec recorded.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A shipped, verified and tested feature is being reshaped to fix a comment. The behaviour does not change and the tests do not change, which bounds the risk, but it is still churn on working code and it is fair to call it that.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`SearchPage` no longer awaits the search, so it returns its tree sooner, but there is NO latency gain: `UsageNotice` is unsuspended and now awaits the search itself, so nothing reaches the reader any earlier. The benefit is only that a later `Suspense` boundary becomes an additive change rather than one that silently breaks the usage line.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two consumers now await one promise. That is fine in React Server Components and needs no cache, but it is one more thing a reader has to hold: the promise is created once and awaited twice, and neither consumer owns it.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The ordering has two guards with DIFFERENT reach, not two independent ones. Lint catches deletion only, and it does so indirectly, because a deleted `await` leaves a prop unused rather than because it understands ordering. The tests catch reordering, including the `Promise.all` fold that lint waves through.",
+        "rejected_spans": [
+          "Stating this precisely matters: the previous wording implied a belt and braces the code does not have."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The privacy notice correction (AC-10) is a factual fix uncovered while designing this feature, not a new decision inside spec 0009's territory; spec 0009 itself is untouched.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

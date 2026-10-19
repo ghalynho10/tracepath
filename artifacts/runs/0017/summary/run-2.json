@@ -1,0 +1,80 @@
+{
+  "record": "0017",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 286,
+  "output_tokens": 474,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "2e08bffa29c148228ecb115d50df7351",
+  "artifact_format_version": 3,
+  "unit_sha256": "2b65f6f2f835beb4b021765673b3d7d1031adf714d6f41b62632e4cb4b1515c3",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec defines the one command that runs feature 15's sixteen ground truth pairs against the real scorer and reports which ones held up.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Each pair is scored five times for real, and a pair only counts as passing when a clear majority of those five runs land on the expected answer.\",\"rejected_spans\":[\"since the scoring model's own randomness is not fixed\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Three kinds of pair need their own rule beyond a plain majority: a pair that measures instability on purpose, a trio of pairs that must stay consistent with each other, and a pair where too many runs failed outright to trust any answer at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The command prints a table and writes a JSON report every time it runs, and it lives behind its own explicit command rather than inside the free test suite.\",\"rejected_spans\":[\"it costs real money each time, so\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec defines the one command that runs feature 15's sixteen ground truth pairs against the real scorer and reports which ones held up.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Each pair is scored five times for real, and a pair only counts as passing when a clear majority of those five runs land on the expected answer.",
+        "rejected_spans": [
+          "since the scoring model's own randomness is not fixed"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Three kinds of pair need their own rule beyond a plain majority: a pair that measures instability on purpose, a trio of pairs that must stay consistent with each other, and a pair where too many runs failed outright to trust any answer at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The command prints a table and writes a JSON report every time it runs, and it lives behind its own explicit command rather than inside the free test suite.",
+        "rejected_spans": [
+          "it costs real money each time, so"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

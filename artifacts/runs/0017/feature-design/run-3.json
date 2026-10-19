@@ -1,0 +1,504 @@
+{
+  "record": "0017",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2877,
+  "output_tokens": 6860,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "e48d04b0735c4318bb0d911eaa38148c",
+  "artifact_format_version": 3,
+  "unit_sha256": "e88af432bba29045d930adcc4d715aae9ade25e420d37f412ffd622ed5f8721d",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Data model sketch**: none new. This feature reads feature 15's already committed `ARCHETYPES` and `PAIRS` (`src/features/scoring/eval/`) and writes only to a gitignored local file; no table, no migration.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none, a script run start to finish. Per pair verdict states: `pass` \u00b7 `fail` \u00b7 `inconclusive` (sub reasons `insufficient-successes`, `no-majority`). Run level states: `completed` \u00b7 `aborted` (carrying a `UsageGateReason`).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**API surface**: not a request surface. The one \\\"endpoint\\\" is the command line:\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A pair's five reruns are never fired concurrently with each other; only different pairs' test bodies may overlap (AC-2), bounded by `maxConcurrency` (Build plan, step 1).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A verdict is never printed or reported without its denominator alongside it (AC-6).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`pnpm eval` is never reachable from `pnpm test` or `pnpm test:integration`: it is its own Vitest project, selected only by explicit `--project eval` (which the `pnpm eval` script wraps)\",\"rejected_spans\":[\", so no existing command starts spending real vendor calls by accident\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing under `test/eval/` or `test/helpers/eval-verdict.ts` names a vendor package or a model id; every real call goes through `scoreListing()`, and the reported model id goes through the shared `resolvedModel()` guard (AC-11).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The `BAND_ANCHORS` drift assertions (AC-10) live in the ordinary unit suite (`pnpm test`), never behind a vendor call\",\"rejected_spans\":[\", so a rubric edit is caught on every push, not only when someone happens to run the harness\"],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The minted fixture user is deleted (`deleteFixtureUser`) after the report is written, in an `afterAll`. Cleanup runs after the report write, in that order\",\"rejected_spans\":[\"matching `test/helpers/fixture-user.ts`'s own reason for existing: an undeleted fixture user otherwise accumulates in the local database on every run, the same way `fit-scoring-live.test.ts` already avoids it\",\"so a cleanup failure can never destroy the run's own output\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"One session is expected to outlive the whole run (sixteen pairs, bounded concurrency, five sequential calls each): this is assumed to comfortably fit inside Supabase's session lifetime today, and is not re verified per call.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If feature 15's set grows large enough, or `ai_scoring` itself grows slower, to approach that lifetime, this assumption needs revisiting (Follow up).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: No user facing surface and no user data.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The fixture session this feature mints is the same development only, `DEV_SESSION_ENABLED` gated path `test/helpers/session.ts` and `test/helpers/fixture-user.ts` already use for `fit-scoring-live.test.ts`; nothing new is added to that gate.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The one real exposure is that every archetype's `summary`, `skills`, and `experience` text reaches OpenAI on every run of this command\",\"rejected_spans\":[\", which is exactly spec 0016's own AC-1 (no real person, no real employer) doing its job here too\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none new. Reuses `OPENAI_API_KEY`, `SUPABASE_SECRET_KEY`, and `DEV_SESSION_ENABLED`, already validated by `src/env.ts` and already required for the local Supabase stack this command needs running.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: `pnpm eval -t control-direct-match` scores that one pair for real, five sequential reruns under the one minted session, and prints a passing verdict with its denominator (e.g. \\\"strong_match, 5 of 5 succeeded\\\"), verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a pair whose five reruns come back as 2 scored and 3 vendor failures is reported `inconclusive` (`insufficient-successes`) rather than a false pass or fail, the run's own exit code is non zero, and the other pairs in the same run still complete, verifies **AC-3**, **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case\"},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Abort case: constructed against `test/helpers/eval-verdict.test.ts`'s own fixtures, the first rerun outcome carrying `allowed: false` (any `UsageGateReason`) stops the run from counting it toward any denominator and marks the run `aborted`, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Abort case\"},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Data quality gate: `validateGroundTruth()` returning even one issue against a deliberately broken fixture set stops the command before any vendor call is made, verifies **AC-1**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Data quality gate\"},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Cross pair check: constructed verdicts where `preference-match` lands on `strong_match` but `preference-violation` lands on `good_match` (with `preference-title-conflict` unchanged) trip `preference-leak-suspected`, while all three landing together on `good_match` instead trips `baseline-drift`, verified against `test/helpers/eval-verdict.test.ts`'s own fixtures rather than a real run, verifies **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Cross pair check\"},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Drift guard: editing `BAND_ANCHORS`'s text fails the AC-10 test by name, under the ordinary free `pnpm test`, verifies **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Drift guard\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-2\",\"mention\":\"(AC-2)\"},\"phrase\":\"(AC-2)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-6\",\"mention\":\"(AC-6)\"},\"phrase\":\"(AC-6)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-11\",\"mention\":\"(AC-11)\"},\"phrase\":\"(AC-11)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-10\",\"mention\":\"(AC-10)\"},\"phrase\":\"(AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:16\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-3**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:19\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:20\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"verifies **AC-10**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Data model sketch**: none new. This feature reads feature 15's already committed `ARCHETYPES` and `PAIRS` (`src/features/scoring/eval/`) and writes only to a gitignored local file; no table, no migration.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none, a script run start to finish. Per pair verdict states: `pass` \u00b7 `fail` \u00b7 `inconclusive` (sub reasons `insufficient-successes`, `no-majority`). Run level states: `completed` \u00b7 `aborted` (carrying a `UsageGateReason`).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**API surface**: not a request surface. The one \"endpoint\" is the command line:",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A pair's five reruns are never fired concurrently with each other; only different pairs' test bodies may overlap (AC-2), bounded by `maxConcurrency` (Build plan, step 1).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A verdict is never printed or reported without its denominator alongside it (AC-6).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`pnpm eval` is never reachable from `pnpm test` or `pnpm test:integration`: it is its own Vitest project, selected only by explicit `--project eval` (which the `pnpm eval` script wraps)",
+        "rejected_spans": [
+          ", so no existing command starts spending real vendor calls by accident"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing under `test/eval/` or `test/helpers/eval-verdict.ts` names a vendor package or a model id; every real call goes through `scoreListing()`, and the reported model id goes through the shared `resolvedModel()` guard (AC-11).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The `BAND_ANCHORS` drift assertions (AC-10) live in the ordinary unit suite (`pnpm test`), never behind a vendor call",
+        "rejected_spans": [
+          ", so a rubric edit is caught on every push, not only when someone happens to run the harness"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The minted fixture user is deleted (`deleteFixtureUser`) after the report is written, in an `afterAll`. Cleanup runs after the report write, in that order",
+        "rejected_spans": [
+          "matching `test/helpers/fixture-user.ts`'s own reason for existing: an undeleted fixture user otherwise accumulates in the local database on every run, the same way `fit-scoring-live.test.ts` already avoids it",
+          "so a cleanup failure can never destroy the run's own output"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "One session is expected to outlive the whole run (sixteen pairs, bounded concurrency, five sequential calls each): this is assumed to comfortably fit inside Supabase's session lifetime today, and is not re verified per call.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If feature 15's set grows large enough, or `ai_scoring` itself grows slower, to approach that lifetime, this assumption needs revisiting (Follow up).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: No user facing surface and no user data.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The fixture session this feature mints is the same development only, `DEV_SESSION_ENABLED` gated path `test/helpers/session.ts` and `test/helpers/fixture-user.ts` already use for `fit-scoring-live.test.ts`; nothing new is added to that gate.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The one real exposure is that every archetype's `summary`, `skills`, and `experience` text reaches OpenAI on every run of this command",
+        "rejected_spans": [
+          ", which is exactly spec 0016's own AC-1 (no real person, no real employer) doing its job here too"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none new. Reuses `OPENAI_API_KEY`, `SUPABASE_SECRET_KEY`, and `DEV_SESSION_ENABLED`, already validated by `src/env.ts` and already required for the local Supabase stack this command needs running.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: `pnpm eval -t control-direct-match` scores that one pair for real, five sequential reruns under the one minted session, and prints a passing verdict with its denominator (e.g. \"strong_match, 5 of 5 succeeded\"), verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a pair whose five reruns come back as 2 scored and 3 vendor failures is reported `inconclusive` (`insufficient-successes`) rather than a false pass or fail, the run's own exit code is non zero, and the other pairs in the same run still complete, verifies **AC-3**, **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case"
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Abort case: constructed against `test/helpers/eval-verdict.test.ts`'s own fixtures, the first rerun outcome carrying `allowed: false` (any `UsageGateReason`) stops the run from counting it toward any denominator and marks the run `aborted`, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Abort case"
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Data quality gate: `validateGroundTruth()` returning even one issue against a deliberately broken fixture set stops the command before any vendor call is made, verifies **AC-1**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Data quality gate"
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Cross pair check: constructed verdicts where `preference-match` lands on `strong_match` but `preference-violation` lands on `good_match` (with `preference-title-conflict` unchanged) trip `preference-leak-suspected`, while all three landing together on `good_match` instead trips `baseline-drift`, verified against `test/helpers/eval-verdict.test.ts`'s own fixtures rather than a real run, verifies **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Cross pair check"
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Drift guard: editing `BAND_ANCHORS`'s text fails the AC-10 test by name, under the ordinary free `pnpm test`, verifies **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Drift guard"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-2",
+          "label": null,
+          "mention": "(AC-2)"
+        },
+        "phrase": "(AC-2)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-6",
+          "label": null,
+          "mention": "(AC-6)"
+        },
+        "phrase": "(AC-6)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-11",
+          "label": null,
+          "mention": "(AC-11)"
+        },
+        "phrase": "(AC-11)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-10",
+          "label": null,
+          "mention": "(AC-10)"
+        },
+        "phrase": "(AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:16"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-3**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:19"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:20"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "verifies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

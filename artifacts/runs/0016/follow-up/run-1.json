@@ -1,0 +1,208 @@
+{
+  "record": "0016",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2202,
+  "output_tokens": 2684,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "2f4c0cd018de4b2a92be3ce6fd506fd0",
+  "artifact_format_version": 3,
+  "unit_sha256": "1a2378c42bed58ca337bf10d726a7995334492a197542c4fd97f9759ebea264c",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Spec 0015's `BAND_ANCHORS` names a seniority expectation only inside `strong_match` and states nothing about how a severe experience or seniority shortfall elsewhere should weigh against a genuinely overlapping named skill. The `boundary-seniority-gap` pair surfaced this as a real gap, not a hypothetical one; consider revising the anchors to state it explicitly, per spec 0015's own Follow up direction to revise anchors from evidence rather than from this session's guess.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 16 (eval harness runner, not yet designed) needs to decide, as part of its own spec: how many times each pair reruns before a mismatch counts as a real regression rather than ordinary model noise (an earlier working note suggested 3 to 5 reruns per pair as a starting point); what counts as a pass for a `stability-probe` tagged pair (band variance across reruns, not a single match); and what each value in `tags` and the presence of `acceptableBands` should mean to its own pass or fail logic. This spec defines the data shape only, not the harness's interpretation of it.\",\"rejected_spans\":[\"since `ai_scoring` leaves `temperature` unset and the provider's own default is not guaranteed deterministic\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Settled by spec 0017, accepted 2026-09-08**, and all three were decided: five reruns per pair, a `stability-probe` pair passing only when every rerun succeeds, and `tags` plus `acceptableBands` feeding a strict majority with a 3 of 5 floor, where `acceptableBands` is the exception applied when no majority forms.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If feature 16's harness later shows `possible_match` pairs clustering toward the optimistic side of that band rather than reading as a genuine coin flip, that is a question about `BAND_ANCHORS`'s wording for spec 0015 to take up, not a question about this ground truth data.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`BAND_ANCHORS`'s own comment (`rubric.ts:63-67`) states its wording \\\"is expected to change\\\". Every `expectedBand` and `rationale` in this set is derived from today's wording. Feature 16's own harness spec should decide how to detect when the anchors it checks against have drifted since this data was authored (a test pinning a snapshot of `BAND_ANCHORS`, failing with a message naming this dataset, is one concrete way)\",\"rejected_spans\":[\"rather than silently scoring tomorrow's rubric against yesterday's expectations\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done by spec 0017's AC-10**, and by the concrete way this item names: `src/features/scoring/eval/band-anchors.test.ts` pins the anchor wording, and its failure message names this dataset and `pairs.ts` by path, telling the reader to re-argue each affected pair rather than update the expectation. A second assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report, so a change to the hash function alone is caught as well. It runs in the free unit suite, so drift is caught by `pnpm test`.\",\"rejected_spans\":[\"the two were proved distinct by changing only the separator, which fails the hash assertion while the text one still passes\",\"rather than only by someone remembering to compare two paid reports\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`BAND_ANCHORS` says nothing about a degree or a certification requirement, the same class of silence this spec surfaced for a severe seniority shortfall. `good-match-adjacent` touches this at the pair level (a missing certification is its one named stretch), but no archetype isolates it the way `severe-experience-gap` isolates the seniority question. AC-1's \\\"at least four\\\" does not require a fifth archetype now; this is recorded as a known gap rather than an oversight, for whoever next extends this set.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"This set was authored by reading `BAND_ANCHORS` directly, never independently of it, which narrows what feature 16's harness can be said to prove. The anchors were never bent to fit these pairs, since their text never changed, but these pairs were written from the anchors. The consequence is that feature 16's harness proves the scorer reads `BAND_ANCHORS` the way a careful human reader of that same text would, not that `BAND_ANCHORS` reflects valid real world judgment about job fit. This is a scope limitation rather than a defect and nothing needs fixing now. What would actually close it is a genuinely blind second opinion, a person or a model scoring the same raw postings and profiles with `BAND_ANCHORS` withheld entirely, and the two sets of answers then compared; rewriting the existing set would not close it, since any rewrite inherits the same anchors.\",\"rejected_spans\":[\"The anchors landed in `e22ba02` on 2026-09-06 and their wording has never moved since: a `git log -S` search on one anchor's own sentence returns only the commit that created it, and the single later commit touching `rubric.ts`, `294ae9a`, is this spec's own one line export of `ADZUNA_SNIPPET_CHARACTERS` and leaves every anchor untouched.\",\"because the project holds no independent source of fit judgment to check against, no real hiring outcomes and no outside recruiter panel, so there is nothing the set could have been made independent of\",\"Distinct from the anchor drift item above, which is about the wording moving after this data was authored: this one is about the data never having been independent of that wording in the first place.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"phrase\":\"**Settled by spec 0017, accepted 2026-09-08**\",\"date\":\"2026-09-08\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"phrase\":\"**Done by spec 0017's AC-10**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-10\",\"mention\":\"spec 0017's AC-10\"},\"phrase\":\"**Done by spec 0017's AC-10**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":null,\"mention\":\"spec 0017, accepted 2026-09-08\"},\"phrase\":\"**Settled by spec 0017, accepted 2026-09-08**\",\"date\":\"2026-09-08\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Spec 0015's `BAND_ANCHORS` names a seniority expectation only inside `strong_match` and states nothing about how a severe experience or seniority shortfall elsewhere should weigh against a genuinely overlapping named skill. The `boundary-seniority-gap` pair surfaced this as a real gap, not a hypothetical one; consider revising the anchors to state it explicitly, per spec 0015's own Follow up direction to revise anchors from evidence rather than from this session's guess.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 16 (eval harness runner, not yet designed) needs to decide, as part of its own spec: how many times each pair reruns before a mismatch counts as a real regression rather than ordinary model noise (an earlier working note suggested 3 to 5 reruns per pair as a starting point); what counts as a pass for a `stability-probe` tagged pair (band variance across reruns, not a single match); and what each value in `tags` and the presence of `acceptableBands` should mean to its own pass or fail logic. This spec defines the data shape only, not the harness's interpretation of it.",
+        "rejected_spans": [
+          "since `ai_scoring` leaves `temperature` unset and the provider's own default is not guaranteed deterministic"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Settled by spec 0017, accepted 2026-09-08**, and all three were decided: five reruns per pair, a `stability-probe` pair passing only when every rerun succeeds, and `tags` plus `acceptableBands` feeding a strict majority with a 3 of 5 floor, where `acceptableBands` is the exception applied when no majority forms.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If feature 16's harness later shows `possible_match` pairs clustering toward the optimistic side of that band rather than reading as a genuine coin flip, that is a question about `BAND_ANCHORS`'s wording for spec 0015 to take up, not a question about this ground truth data.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`BAND_ANCHORS`'s own comment (`rubric.ts:63-67`) states its wording \"is expected to change\". Every `expectedBand` and `rationale` in this set is derived from today's wording. Feature 16's own harness spec should decide how to detect when the anchors it checks against have drifted since this data was authored (a test pinning a snapshot of `BAND_ANCHORS`, failing with a message naming this dataset, is one concrete way)",
+        "rejected_spans": [
+          "rather than silently scoring tomorrow's rubric against yesterday's expectations"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done by spec 0017's AC-10**, and by the concrete way this item names: `src/features/scoring/eval/band-anchors.test.ts` pins the anchor wording, and its failure message names this dataset and `pairs.ts` by path, telling the reader to re-argue each affected pair rather than update the expectation. A second assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report, so a change to the hash function alone is caught as well. It runs in the free unit suite, so drift is caught by `pnpm test`.",
+        "rejected_spans": [
+          "the two were proved distinct by changing only the separator, which fails the hash assertion while the text one still passes",
+          "rather than only by someone remembering to compare two paid reports"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`BAND_ANCHORS` says nothing about a degree or a certification requirement, the same class of silence this spec surfaced for a severe seniority shortfall. `good-match-adjacent` touches this at the pair level (a missing certification is its one named stretch), but no archetype isolates it the way `severe-experience-gap` isolates the seniority question. AC-1's \"at least four\" does not require a fifth archetype now; this is recorded as a known gap rather than an oversight, for whoever next extends this set.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "This set was authored by reading `BAND_ANCHORS` directly, never independently of it, which narrows what feature 16's harness can be said to prove. The anchors were never bent to fit these pairs, since their text never changed, but these pairs were written from the anchors. The consequence is that feature 16's harness proves the scorer reads `BAND_ANCHORS` the way a careful human reader of that same text would, not that `BAND_ANCHORS` reflects valid real world judgment about job fit. This is a scope limitation rather than a defect and nothing needs fixing now. What would actually close it is a genuinely blind second opinion, a person or a model scoring the same raw postings and profiles with `BAND_ANCHORS` withheld entirely, and the two sets of answers then compared; rewriting the existing set would not close it, since any rewrite inherits the same anchors.",
+        "rejected_spans": [
+          "The anchors landed in `e22ba02` on 2026-09-06 and their wording has never moved since: a `git log -S` search on one anchor's own sentence returns only the commit that created it, and the single later commit touching `rubric.ts`, `294ae9a`, is this spec's own one line export of `ADZUNA_SNIPPET_CHARACTERS` and leaves every anchor untouched.",
+          "because the project holds no independent source of fit judgment to check against, no real hiring outcomes and no outside recruiter panel, so there is nothing the set could have been made independent of",
+          "Distinct from the anchor drift item above, which is about the wording moving after this data was authored: this one is about the data never having been independent of that wording in the first place."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "phrase": "**Settled by spec 0017, accepted 2026-09-08**",
+        "date": "2026-09-08",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "**Done by spec 0017's AC-10**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-10",
+          "label": null,
+          "mention": "spec 0017's AC-10"
+        },
+        "phrase": "**Done by spec 0017's AC-10**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": null,
+          "label": null,
+          "mention": "spec 0017, accepted 2026-09-08"
+        },
+        "phrase": "**Settled by spec 0017, accepted 2026-09-08**",
+        "date": "2026-09-08",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

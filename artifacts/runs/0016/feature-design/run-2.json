@@ -1,0 +1,319 @@
+{
+  "record": "0016",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0016-eval-ground-truth-set/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2525,
+  "output_tokens": 4144,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "f8a68a76d8984e6d866199b088f52cfb",
+  "artifact_format_version": 3,
+  "unit_sha256": "9835b3c55abc132384ca5c169fc018413cac0a378b8ec2facf5496d074fb0dd1",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No database table. No migration.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing here is read at request time; it is committed data read only by feature 16's own harness command.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none, static authored data.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No archetype or pair ever contains a real person's data or a real employer name; every organization named is invented (AC-1).\",\"rejected_spans\":[\"This matters beyond the project's own fixtures rule: every archetype is sent to OpenAI on every harness run, from a public repository.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every archetype clears spec 0015's AC-7 gate (at least one skill or one work history entry);\",\"rejected_spans\":[\"an archetype clearing neither would never be scored and would produce no usable pair.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`expectedBand` and any `acceptableBands` are decided by reading `BAND_ANCHORS`'s written text alone, before any model call is made against that pair. No pair encodes a rule the anchors do not state (in particular, no seniority ceiling beyond what `strong_match`'s own wording names).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Archetypes are authored and committed in full before any posting that pairs with them is written.** This is a process invariant, not one code can check:\",\"rejected_spans\":[\"writing a profile and its matching posting together risks tuning the posting to a profile that is still open for editing, especially for a control pair whose whole point is an unforced, honestly independent match.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`acceptableBands`, when present, always includes its own `expectedBand` and holds at least two bands; it is used only where the anchor text itself cannot honestly narrow to one band (AC-3), never as a way to avoid reasoning a pair through carefully.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A `descriptionSnippet` is always frozen literal text, never a live Adzuna fetch, and never exceeds 500 characters.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: No user data, no session, no database access. Every value here is either static authored text or read by feature 16's own harness command, never by a request path. The only real exposure is that every archetype's `summary`, `skills`, and `experience` text reaches OpenAI on every harness run,\",\"rejected_spans\":[\"which is why AC-1's no real data rule is load bearing rather than a formality.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none new.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: `validateGroundTruth(ARCHETYPES, PAIRS)` returns no issues against the committed data, verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a pair referencing an `archetypeId` that names no real archetype, or a band absent from every pair's `expectedBand` and `acceptableBands`, is caught by `validateGroundTruth()` and fails the guard test, verifies **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case\"},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Data shape: a pair whose `descriptionSnippet` is not a string, or whose `expectedBand` is not one of `BANDS`, fails at compile time rather than at runtime, verifies **AC-6**, **AC-7**.\",\"rejected_spans\":[\"since both are typed directly against `rubric.ts`'s own exports\"],\"known_trap_flags\":[\"rationale_boundary_call\"],\"label\":\"Data shape\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-1\",\"mention\":\"(AC-1)\"},\"phrase\":\"(AC-1)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"spec 0015's AC-7 gate\"},\"phrase\":\"Every archetype clears spec 0015's AC-7 gate\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-3\",\"mention\":\"(AC-3)\"},\"phrase\":\"(AC-3)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"verifies **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0016\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-6**, **AC-7**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No database table. No migration.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing here is read at request time; it is committed data read only by feature 16's own harness command.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none, static authored data.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No archetype or pair ever contains a real person's data or a real employer name; every organization named is invented (AC-1).",
+        "rejected_spans": [
+          "This matters beyond the project's own fixtures rule: every archetype is sent to OpenAI on every harness run, from a public repository."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every archetype clears spec 0015's AC-7 gate (at least one skill or one work history entry);",
+        "rejected_spans": [
+          "an archetype clearing neither would never be scored and would produce no usable pair."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`expectedBand` and any `acceptableBands` are decided by reading `BAND_ANCHORS`'s written text alone, before any model call is made against that pair. No pair encodes a rule the anchors do not state (in particular, no seniority ceiling beyond what `strong_match`'s own wording names).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Archetypes are authored and committed in full before any posting that pairs with them is written.** This is a process invariant, not one code can check:",
+        "rejected_spans": [
+          "writing a profile and its matching posting together risks tuning the posting to a profile that is still open for editing, especially for a control pair whose whole point is an unforced, honestly independent match."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`acceptableBands`, when present, always includes its own `expectedBand` and holds at least two bands; it is used only where the anchor text itself cannot honestly narrow to one band (AC-3), never as a way to avoid reasoning a pair through carefully.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A `descriptionSnippet` is always frozen literal text, never a live Adzuna fetch, and never exceeds 500 characters.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: No user data, no session, no database access. Every value here is either static authored text or read by feature 16's own harness command, never by a request path. The only real exposure is that every archetype's `summary`, `skills`, and `experience` text reaches OpenAI on every harness run,",
+        "rejected_spans": [
+          "which is why AC-1's no real data rule is load bearing rather than a formality."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none new.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: `validateGroundTruth(ARCHETYPES, PAIRS)` returns no issues against the committed data, verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a pair referencing an `archetypeId` that names no real archetype, or a band absent from every pair's `expectedBand` and `acceptableBands`, is caught by `validateGroundTruth()` and fails the guard test, verifies **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case"
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Data shape: a pair whose `descriptionSnippet` is not a string, or whose `expectedBand` is not one of `BANDS`, fails at compile time rather than at runtime, verifies **AC-6**, **AC-7**.",
+        "rejected_spans": [
+          "since both are typed directly against `rubric.ts`'s own exports"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": "Data shape"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-1",
+          "label": null,
+          "mention": "(AC-1)"
+        },
+        "phrase": "(AC-1)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "spec 0015's AC-7 gate"
+        },
+        "phrase": "Every archetype clears spec 0015's AC-7 gate",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-3",
+          "label": null,
+          "mention": "(AC-3)"
+        },
+        "phrase": "(AC-3)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "verifies **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0016",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-6**, **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

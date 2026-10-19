@@ -1,0 +1,696 @@
+{
+  "record": "0020",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4214,
+  "output_tokens": 9639,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "9d0cd4aaf4b743b6ada9ab12d08c2edb",
+  "artifact_format_version": 3,
+  "unit_sha256": "2a493d6b54ad8dd6bbc236022eaf508ed405ffdd26f9a0264f3a13476d4387b0",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Data model sketch**: no new tables and no new columns.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Both `usage_cap` and `usage_gate_counter` keep row level security enabled and forced with zero policies, exactly as spec 0011 shipped them; this feature adds one new function, nothing else, to their read surface.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Copy**: text left for the engineer to write, matching the convention this project already uses for user facing sentences.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The read path is strictly read only. `get_job_search_usage_summary` contains no `insert`, `update`, or `delete` statement anywhere in its body\",\"rejected_spans\":[\", unlike `check_usage_gate`, which upserts window rows into existence as part of deciding.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`period_start` is computed with the exact same expression `check_usage_gate` uses.\",\"rejected_spans\":[\"If the two ever diverge, the number shown and the number enforced disagree at the one moment, a week boundary, a usage display is most likely to be read.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The comparison always uses `consumed_count`, never `attempt_count` (AC-2).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`usage_gate_counter` stays reachable only through a `security definer` function, by construction: this migration adds no grant to `anon`, `authenticated`, or `service_role` on that table.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`usage_cap` keeps its existing, unrelated `select` grant to `service_role` for dashboard debugging; the new function reads it through its own definer privilege, not through a widened grant.\",\"rejected_spans\":[\"These are two different facts about two different tables, not one shared claim.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A render never displays a usage figure that predates its own search.\",\"rejected_spans\":[\"This is the invariant the whole 2026-09-12 revision exists to hold.\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`UsageNotice` awaits its `searchInFlight` prop before it reads usage. That `await` IS the ordering. Delete it and the boundary bug returns; lint and the page tests both fire.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**`Promise.all` is the forbidden edit.** Folding the two awaits together (`await Promise.all([searchInFlight, getJobSearchUsageSummary()])`) uses the prop, typechecks and lints clean, and restores the bug. Only the three ordering tests catch it.\",\"rejected_spans\":[\"It is named here and in the component's own header because it is the edit a reader would reach for to save a round trip, and it is the same edit that was used to reject Option 2.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SearchPage` does not await the search. Prefer leaving the await where the dependency is.\",\"rejected_spans\":[\"If a later edit reintroduces an `await` there, the ordering still holds, but it then holds twice for two different reasons, and the weaker one is invisible.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`UsageNotice` has exactly one read, used on every path. A second source appearing here, for any reason, reintroduces the class of bug this revision fixed\",\"rejected_spans\":[\"because two sources need a rule choosing between them and that rule is where the missed paths hide.\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither `security definer` function is executable by `anon`. Pinned by a test (AC-15) rather than by a grant somebody read once.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Showing `job_search` alone is correct only because of today's cap values, not as a structural guarantee: `ai_scoring` and `ai_check` each spend at most one call per listing, `RESULTS_PER_PAGE` (20) listings are fetched per search, and both AI tiers' account week caps (500) equal `job_search`'s own account week cap (25) times 20. A test pins this relationship (AC-9); if either side of it ever changes, the test fails and this scope decision needs a fresh look, not a silent drift.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: identical in shape to `check_usage_gate`'s own. `get_job_search_usage_summary` is `security definer`, `set search_path = ''`, `execute` revoked from `public` and granted to `authenticated` only. The account scope is `auth.uid()`, read inside the function, never a client supplied value; `getJobSearchUsageSummary()` additionally verifies the caller with `getClaims()` first, the same defense in depth every existing reader in this codebase already follows. A signed out caller never reaches `getJobSearchUsageSummary()` at all.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The 2026-09-12 revision changes no security property at all. No function is created, altered, or recreated; no grant moves; `check_usage_gate` is not touched. The change is entirely in which React component performs an existing call and when.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The one security item it adds is AC-15's test, which pins a grant that was already correct but unproven on both `security definer` functions.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none. No new environment variable and no new secret.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Critical test scenarios**, driven through the Data API with a real minted test session, matching spec 0011's own convention, never through `test/helpers/database.ts` as the acting identity:\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a minted account with some `job_search` usage already recorded this week reads back the exact `consumed_count` and `cap_value` through the real RPC, verifies **AC-1**, **AC-2**, **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Read only proof: a fresh minted account with no `job_search` calls this week reads back `consumed_count = 0`, and a direct database check afterward (via `test/helpers/database.ts`, only to observe, never to act as the caller) confirms no `usage_gate_counter` row was created as a side effect of the read, verifies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Read only proof\"},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Week boundary consistency: the two `period_start` expressions, this function's and `check_usage_gate`'s, are proven to agree for the same instant, verifies **AC-4**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Week boundary consistency\"},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth: a caller with no valid session gets `session_missing` before any RPC call happens, and a second account can never read a first account's usage, verifies **AC-7**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth\"},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a forced RPC failure renders the visible inline notice and the search form still renders underneath it, verifies **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Failure case\"},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"The boundary case, driven end to end, verifies **AC-11**, **AC-13**. An account seeded to one below its cap runs its last allowed search; the rendered line must read the post increment figure (`25 of 25`, not `24 of 25`), and the following search must be refused.\",\"rejected_spans\":[\"This is the exact scenario `/check verify` used to find the defect on 2026-09-11, so it is the one that proves the fix rather than merely exercising it. A test that only asserts the number moved would pass against the old code too.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Bare visit, verifies **AC-12**: the line renders with no search having run, through the same read.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"A refused search render, verifies **AC-13**'s refused half: the figure is unchanged and states the true cap position beside the refusal. Drive at least one KILL SWITCH refusal here, not only a cap refusal,\",\"rejected_spans\":[\"because the kill switch path never reaches `check_usage_gate` and is the path the dropped option would have got wrong.\"],\"known_trap_flags\":[]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"A search that passes the gate and then fails at Adzuna, verifies **AC-14**: the figure includes the increment even though the search returned a failure and the gate decision was discarded.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Grant retention, verifies **AC-15**: `anon` cannot execute `check_usage_gate` or `get_job_search_usage_summary`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Integration test, against the real `usage_cap` rows: the cap arithmetic invariant behind **AC-9**, `ai_scoring`'s and `ai_check`'s caps each at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, checked for all three window scopes (account week, global day, global month), not only the one this feature displays.\",\"rejected_spans\":[],\"known_trap_flags\":[\"relationship_type_ambiguous\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-2\",\"mention\":\"AC-2\"},\"phrase\":\"(AC-2)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"Pinned by a test (AC-15)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-9\",\"mention\":\"AC-9\"},\"phrase\":\"A test pins this relationship (AC-9)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:18\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-15\",\"mention\":\"AC-15\"},\"phrase\":\"AC-15's test\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:21\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-1**, **AC-2**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:22\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"verifies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:23\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:24\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"verifies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:25\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"verifies **AC-11**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:26\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-11**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"verifies **AC-12**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**'s refused half\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"verifies **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"verifies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0020\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"the cap arithmetic invariant behind **AC-9**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Data model sketch**: no new tables and no new columns.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Both `usage_cap` and `usage_gate_counter` keep row level security enabled and forced with zero policies, exactly as spec 0011 shipped them; this feature adds one new function, nothing else, to their read surface.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Copy**: text left for the engineer to write, matching the convention this project already uses for user facing sentences.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The read path is strictly read only. `get_job_search_usage_summary` contains no `insert`, `update`, or `delete` statement anywhere in its body",
+        "rejected_spans": [
+          ", unlike `check_usage_gate`, which upserts window rows into existence as part of deciding."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`period_start` is computed with the exact same expression `check_usage_gate` uses.",
+        "rejected_spans": [
+          "If the two ever diverge, the number shown and the number enforced disagree at the one moment, a week boundary, a usage display is most likely to be read."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The comparison always uses `consumed_count`, never `attempt_count` (AC-2).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`usage_gate_counter` stays reachable only through a `security definer` function, by construction: this migration adds no grant to `anon`, `authenticated`, or `service_role` on that table.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`usage_cap` keeps its existing, unrelated `select` grant to `service_role` for dashboard debugging; the new function reads it through its own definer privilege, not through a widened grant.",
+        "rejected_spans": [
+          "These are two different facts about two different tables, not one shared claim."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A render never displays a usage figure that predates its own search.",
+        "rejected_spans": [
+          "This is the invariant the whole 2026-09-12 revision exists to hold."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`UsageNotice` awaits its `searchInFlight` prop before it reads usage. That `await` IS the ordering. Delete it and the boundary bug returns; lint and the page tests both fire.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**`Promise.all` is the forbidden edit.** Folding the two awaits together (`await Promise.all([searchInFlight, getJobSearchUsageSummary()])`) uses the prop, typechecks and lints clean, and restores the bug. Only the three ordering tests catch it.",
+        "rejected_spans": [
+          "It is named here and in the component's own header because it is the edit a reader would reach for to save a round trip, and it is the same edit that was used to reject Option 2."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SearchPage` does not await the search. Prefer leaving the await where the dependency is.",
+        "rejected_spans": [
+          "If a later edit reintroduces an `await` there, the ordering still holds, but it then holds twice for two different reasons, and the weaker one is invisible."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`UsageNotice` has exactly one read, used on every path. A second source appearing here, for any reason, reintroduces the class of bug this revision fixed",
+        "rejected_spans": [
+          "because two sources need a rule choosing between them and that rule is where the missed paths hide."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither `security definer` function is executable by `anon`. Pinned by a test (AC-15) rather than by a grant somebody read once.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Showing `job_search` alone is correct only because of today's cap values, not as a structural guarantee: `ai_scoring` and `ai_check` each spend at most one call per listing, `RESULTS_PER_PAGE` (20) listings are fetched per search, and both AI tiers' account week caps (500) equal `job_search`'s own account week cap (25) times 20. A test pins this relationship (AC-9); if either side of it ever changes, the test fails and this scope decision needs a fresh look, not a silent drift.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: identical in shape to `check_usage_gate`'s own. `get_job_search_usage_summary` is `security definer`, `set search_path = ''`, `execute` revoked from `public` and granted to `authenticated` only. The account scope is `auth.uid()`, read inside the function, never a client supplied value; `getJobSearchUsageSummary()` additionally verifies the caller with `getClaims()` first, the same defense in depth every existing reader in this codebase already follows. A signed out caller never reaches `getJobSearchUsageSummary()` at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The 2026-09-12 revision changes no security property at all. No function is created, altered, or recreated; no grant moves; `check_usage_gate` is not touched. The change is entirely in which React component performs an existing call and when.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The one security item it adds is AC-15's test, which pins a grant that was already correct but unproven on both `security definer` functions.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none. No new environment variable and no new secret.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Critical test scenarios**, driven through the Data API with a real minted test session, matching spec 0011's own convention, never through `test/helpers/database.ts` as the acting identity:",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a minted account with some `job_search` usage already recorded this week reads back the exact `consumed_count` and `cap_value` through the real RPC, verifies **AC-1**, **AC-2**, **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Read only proof: a fresh minted account with no `job_search` calls this week reads back `consumed_count = 0`, and a direct database check afterward (via `test/helpers/database.ts`, only to observe, never to act as the caller) confirms no `usage_gate_counter` row was created as a side effect of the read, verifies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Read only proof"
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Week boundary consistency: the two `period_start` expressions, this function's and `check_usage_gate`'s, are proven to agree for the same instant, verifies **AC-4**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Week boundary consistency"
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth: a caller with no valid session gets `session_missing` before any RPC call happens, and a second account can never read a first account's usage, verifies **AC-7**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth"
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a forced RPC failure renders the visible inline notice and the search form still renders underneath it, verifies **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Failure case"
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "The boundary case, driven end to end, verifies **AC-11**, **AC-13**. An account seeded to one below its cap runs its last allowed search; the rendered line must read the post increment figure (`25 of 25`, not `24 of 25`), and the following search must be refused.",
+        "rejected_spans": [
+          "This is the exact scenario `/check verify` used to find the defect on 2026-09-11, so it is the one that proves the fix rather than merely exercising it. A test that only asserts the number moved would pass against the old code too."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Bare visit, verifies **AC-12**: the line renders with no search having run, through the same read.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "A refused search render, verifies **AC-13**'s refused half: the figure is unchanged and states the true cap position beside the refusal. Drive at least one KILL SWITCH refusal here, not only a cap refusal,",
+        "rejected_spans": [
+          "because the kill switch path never reaches `check_usage_gate` and is the path the dropped option would have got wrong."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "A search that passes the gate and then fails at Adzuna, verifies **AC-14**: the figure includes the increment even though the search returned a failure and the gate decision was discarded.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Grant retention, verifies **AC-15**: `anon` cannot execute `check_usage_gate` or `get_job_search_usage_summary`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Integration test, against the real `usage_cap` rows: the cap arithmetic invariant behind **AC-9**, `ai_scoring`'s and `ai_check`'s caps each at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, checked for all three window scopes (account week, global day, global month), not only the one this feature displays.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-2",
+          "label": null,
+          "mention": "AC-2"
+        },
+        "phrase": "(AC-2)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "Pinned by a test (AC-15)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-9",
+          "label": null,
+          "mention": "AC-9"
+        },
+        "phrase": "A test pins this relationship (AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:18"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-15",
+          "label": null,
+          "mention": "AC-15"
+        },
+        "phrase": "AC-15's test",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:21"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:22"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "verifies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:23"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:24"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "verifies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:25"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "verifies **AC-11**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:26"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-11**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "verifies **AC-12**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**'s refused half",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "verifies **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "verifies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0020",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "the cap arithmetic invariant behind **AC-9**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

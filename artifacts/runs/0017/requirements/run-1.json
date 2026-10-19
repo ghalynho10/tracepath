@@ -1,0 +1,390 @@
+{
+  "record": "0017",
+  "section": "Requirements",
+  "section_slug": "requirements",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3279,
+  "output_tokens": 5126,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "de4206fdb04d4bda9e290a3dee097adf",
+  "artifact_format_version": 3,
+  "unit_sha256": "348be9e6877afada2f08561cd8f27da62761e2174dc88b803604db6525d6e9cf",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person maintaining the scoring rubric, I want one command that scores every ground truth pair for real and tells me which ones no longer match,\",\"rejected_spans\":[\"so a prompt or model change is checked against real expectations rather than a fresh read of the output.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person running this command, I want to iterate on one pair or one tag cheaply,\",\"rejected_spans\":[\"so debugging a single failing pair does not spend the whole weekly allowance.\"],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"As the person reading a report later, I want it to record which model and which rubric wording it was measured against,\",\"rejected_spans\":[\"so a report from three weeks ago can tell \\\"the scorer changed\\\" apart from \\\"the rubric changed\\\".\"],\"known_trap_flags\":[]},{\"id\":\"AC-1\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-1**: One command (`pnpm eval`) runs every pair in feature 15's committed set and prints, for each pair, a pass, fail, or inconclusive verdict together with the actual band(s) observed. Before minting any session or spending any vendor call, a top level `beforeAll` runs `validateGroundTruth()` against the committed `ARCHETYPES` and `PAIRS`; if it returns any issue, the run throws with every issue printed, one per line, and exits non zero. This check runs even under a `-t` filtered invocation (AC-8),\",\"rejected_spans\":[\"since a `beforeAll` is not itself filtered out the way an `it` would be.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-2\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-2**: Every pair is scored through the real `scoreListing()` path, passing the run's one minted fixture session (`session.jar`) as its `cookieAdapter` argument, exactly the shape `test/integration/fit-scoring-live.test.ts` already uses. One session is minted once for the whole run (not once per pair), reused by every call. A pair's five reruns happen one after another inside that pair's own test body (never fired at once), because they exist to measure how much the same input moves between separate calls; different pairs' test bodies may run at the same time as each other, bounded by an explicit concurrency limit (Build plan, step 1).\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"AC-3\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-3**: `scoreListing()` can return three kinds of outcome, and each is handled differently:\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**A usage gate refusal** (`Result` success carrying `allowed: false`, any of the five `UsageGateReason` values) is never counted toward any pair's denominator. The FIRST refusal seen anywhere in the run aborts the entire run immediately: every other pair's in flight or not yet started test fails with the refusal's own reason named, the partial report is still written (marked `aborted: \\\"<reason>\\\"`, carrying whatever pair verdicts had already completed), and the run exits non zero.\",\"rejected_spans\":[\"A budget or kill switch stop is an operator condition, not evidence about the rubric, and must never be read as sixteen ordinary `inconclusive` verdicts.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**A rerun failure** (a `Result` failure: a vendor timeout or a malformed response) counts against that one pair's own denominator only and never aborts the run.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"**A scored success** (`allowed: true`, a real band) is what the verdict rule below counts.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"A pair's verdict needs at least 3 of its 5 reruns to be scored successes; with fewer than 3, the pair is `inconclusive` (sub reason `insufficient-successes`), reporting whatever successes did land, never silently folded into a pass or a fail. With 3 or more successes, and the pair is not tagged `stability-probe` (AC-4 covers that case separately): compute how many of the successes landed on each band. If one band holds a strict majority (more than half of the successes), that is the pair's verdict band, and the pair passes if that band equals `expectedBand`, or, when `acceptableBands` is present, if it is one of them. If no band holds a strict majority (e.g. a 2 and 2 split out of 4 successes, or a 1, 1, 1 split out of 3), the pair is `inconclusive` (sub reason `no-majority`) UNLESS `acceptableBands` is present and every successful rerun's band is inside it, in which case the pair passes with no single verdict band, reporting the full observed split instead\",\"rejected_spans\":[\"(this is what makes `boundary-seniority-gap`'s own honest, anchor stated ambiguity, e.g. a 2 and 2 `weak_match`/`not_a_match` split, a pass rather than a false `inconclusive`)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"AC-4\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-4**: A pair tagged `stability-probe` is judged differently, but only once AC-3's own 3 of 5 successes floor is met (fewer than 3 successes is still `inconclusive` under AC-3, unchanged). With 3 or more successes, `expectedBand` is not consulted and no majority is computed: the pair passes only if every one of its successful reruns' band is inside `acceptableBands`. One success landing outside that set fails the pair even if every other success matched, since this pair's whole point is that no single run should be trusted as the answer. Because there may be no single winning band, this pair's verdict is always reported as its observed distribution (e.g. `{ strong_match: 3, possible_match: 2 }`), never a lone band.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-5\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-5**: The three `preference-isolation` tagged pairs (`preference-match`, `preference-violation`, `preference-title-conflict`) are each judged individually by AC-3 first, exactly like any other pair, with no special treatment of their own verdicts. Once all three have a verdict that is neither `inconclusive` nor missing (skipped by a `-t` filter that excluded one of them, in which case the check below is skipped and reported as `leak-check-skipped`), the run additionally compares `preference-match`'s verdict band against `preference-violation`'s and against `preference-title-conflict`'s:\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"If `preference-match`'s band equals both conflict pairs' bands, nothing further is reported; each pair's own individual pass or fail already stands.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"If all three bands equal each other but none of them equals `strong_match` (`expectedBand`), the run reports `baseline-drift`\",\"rejected_spans\":[\": something moved the band for every pairing equally, which is a rubric or model question, not a leak, since nothing about the conflicting posting text distinguished itself.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"AcceptanceCriterion\",\"span\":\"If `preference-match`'s band differs from either conflict pair's band, the run reports `preference-leak-suspected`, distinctly from an ordinary mismatch\",\"rejected_spans\":[\": the skill and experience content is identical across all three, so a divergence here can only be explained by the preference text that does differ between them.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"AC-6\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-6**: Every printed and reported verdict names its own denominator (e.g. \\\"good_match, 3 of 3 succeeded\\\" or, for a distribution shaped verdict, \\\"3 strong_match / 2 possible_match, 5 of 5 succeeded\\\"), never just a band on its own,\",\"rejected_spans\":[\"so a reader can tell a verdict resting on the minimum 3 successes apart from one resting on all 5, and can see a split even where the pair still passed.\"],\"known_trap_flags\":[]},{\"id\":\"AC-7\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-7**: The command's own exit code is non zero if any pair fails, any pair is `inconclusive`, a preference leak is reported, or the run aborted on a usage gate refusal (AC-3); zero only when every pair that ran passed cleanly and nothing aborted.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"AC-8\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-8**: A subset of pairs can be run without spending calls on the rest of the set, by reusing the test runner's own name filter against each pair's test name, which is generated as `` `${pair.id} [${pair.tags.join(\\\" \\\")}]` `` (e.g. `control-direct-match [control]`, `stability-probe-generic [stability-probe]`), so `pnpm eval -t control-direct-match` matches one pair by id and `pnpm eval -t stability-probe` matches every pair carrying that tag. A filtered run still writes a JSON report; it records which filter produced it and lists every pair that did not run as `skipped`, never silently absent. Filters can overlap (e.g. `-t control` also matches every pair whose id happens to start with `control-`); this is an accepted property of substring matching, not a bug to design around.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-9\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-9**: The command writes a JSON report every run, in addition to the console table, to a directory this repository does not track, at `test/eval/.output/<ISO timestamp with colons replaced by dashes>.json`, creating that directory if it does not exist. Each report is a single `EvalReport` object (defined in `test/eval/report.ts`) recording: the filter used (if any) and every skipped pair id; per pair, its status (`pass`/`fail`/`inconclusive`), sub reason where relevant, denominator, and every observed band (or band distribution); the preference leak check's own outcome; the run's overall status and aborted reason if any; and, once per report, which model answered (via the shared `resolvedModel()` guard on `TIERS.ai_scoring.model`, never a name typed into the harness) and a hash of `BAND_ANCHORS`'s current text (`bandAnchorsHash()`, defined once and shared with the AC-10 test, so \\\"the same way\\\" is true by construction rather than by two separate implementations agreeing).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-10\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-10**: A committed test (no vendor call, runs under the ordinary free unit suite) asserts `BAND_ANCHORS` literally equals today's text (`toEqual` against the five strings written inline in the test, never a snapshot file, which a routine `vitest -u` could silently rewrite) and that `bandAnchorsHash(BAND_ANCHORS)` equals today's computed hash, both failing by name and naming spec 0016's dataset, the moment either changes,\",\"rejected_spans\":[\"so a rubric edit is caught at commit time rather than only by a human comparing two JSON reports later.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"AC-11\",\"id_source\":\"verbatim\",\"type\":\"AcceptanceCriterion\",\"span\":\"**AC-11**: The command works against a changed model with no code edit to this feature: nothing here names a vendor or a model id directly, every call goes through the existing `scoreListing()` / `TIERS` path exactly as the rest of the app does, and the model id reported (AC-9) is read off that same resolved config.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-1\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-8\"},\"phrase\":\"under a `-t` filtered invocation (AC-8)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"phrase\":\"AC-4 covers that case separately\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-4\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"phrase\":\"only once AC-3's own 3 of 5 successes floor is met\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-5\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"phrase\":\"are each judged individually by AC-3 first\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-7\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-3\"},\"phrase\":\"the run aborted on a usage gate refusal (AC-3)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-10\"},\"phrase\":\"shared with the AC-10 test\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"AC-11\"},\"target\":{\"kind\":\"local\",\"id\":\"AC-9\"},\"phrase\":\"the model id reported (AC-9)\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person maintaining the scoring rubric, I want one command that scores every ground truth pair for real and tells me which ones no longer match,",
+        "rejected_spans": [
+          "so a prompt or model change is checked against real expectations rather than a fresh read of the output."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person running this command, I want to iterate on one pair or one tag cheaply,",
+        "rejected_spans": [
+          "so debugging a single failing pair does not spend the whole weekly allowance."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "As the person reading a report later, I want it to record which model and which rubric wording it was measured against,",
+        "rejected_spans": [
+          "so a report from three weeks ago can tell \"the scorer changed\" apart from \"the rubric changed\"."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-1",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-1**: One command (`pnpm eval`) runs every pair in feature 15's committed set and prints, for each pair, a pass, fail, or inconclusive verdict together with the actual band(s) observed. Before minting any session or spending any vendor call, a top level `beforeAll` runs `validateGroundTruth()` against the committed `ARCHETYPES` and `PAIRS`; if it returns any issue, the run throws with every issue printed, one per line, and exits non zero. This check runs even under a `-t` filtered invocation (AC-8),",
+        "rejected_spans": [
+          "since a `beforeAll` is not itself filtered out the way an `it` would be."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-2",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-2**: Every pair is scored through the real `scoreListing()` path, passing the run's one minted fixture session (`session.jar`) as its `cookieAdapter` argument, exactly the shape `test/integration/fit-scoring-live.test.ts` already uses. One session is minted once for the whole run (not once per pair), reused by every call. A pair's five reruns happen one after another inside that pair's own test body (never fired at once), because they exist to measure how much the same input moves between separate calls; different pairs' test bodies may run at the same time as each other, bounded by an explicit concurrency limit (Build plan, step 1).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-3",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-3**: `scoreListing()` can return three kinds of outcome, and each is handled differently:",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**A usage gate refusal** (`Result` success carrying `allowed: false`, any of the five `UsageGateReason` values) is never counted toward any pair's denominator. The FIRST refusal seen anywhere in the run aborts the entire run immediately: every other pair's in flight or not yet started test fails with the refusal's own reason named, the partial report is still written (marked `aborted: \"<reason>\"`, carrying whatever pair verdicts had already completed), and the run exits non zero.",
+        "rejected_spans": [
+          "A budget or kill switch stop is an operator condition, not evidence about the rubric, and must never be read as sixteen ordinary `inconclusive` verdicts."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**A rerun failure** (a `Result` failure: a vendor timeout or a malformed response) counts against that one pair's own denominator only and never aborts the run.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "**A scored success** (`allowed: true`, a real band) is what the verdict rule below counts.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "A pair's verdict needs at least 3 of its 5 reruns to be scored successes; with fewer than 3, the pair is `inconclusive` (sub reason `insufficient-successes`), reporting whatever successes did land, never silently folded into a pass or a fail. With 3 or more successes, and the pair is not tagged `stability-probe` (AC-4 covers that case separately): compute how many of the successes landed on each band. If one band holds a strict majority (more than half of the successes), that is the pair's verdict band, and the pair passes if that band equals `expectedBand`, or, when `acceptableBands` is present, if it is one of them. If no band holds a strict majority (e.g. a 2 and 2 split out of 4 successes, or a 1, 1, 1 split out of 3), the pair is `inconclusive` (sub reason `no-majority`) UNLESS `acceptableBands` is present and every successful rerun's band is inside it, in which case the pair passes with no single verdict band, reporting the full observed split instead",
+        "rejected_spans": [
+          "(this is what makes `boundary-seniority-gap`'s own honest, anchor stated ambiguity, e.g. a 2 and 2 `weak_match`/`not_a_match` split, a pass rather than a false `inconclusive`)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-4",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-4**: A pair tagged `stability-probe` is judged differently, but only once AC-3's own 3 of 5 successes floor is met (fewer than 3 successes is still `inconclusive` under AC-3, unchanged). With 3 or more successes, `expectedBand` is not consulted and no majority is computed: the pair passes only if every one of its successful reruns' band is inside `acceptableBands`. One success landing outside that set fails the pair even if every other success matched, since this pair's whole point is that no single run should be trusted as the answer. Because there may be no single winning band, this pair's verdict is always reported as its observed distribution (e.g. `{ strong_match: 3, possible_match: 2 }`), never a lone band.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-5",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-5**: The three `preference-isolation` tagged pairs (`preference-match`, `preference-violation`, `preference-title-conflict`) are each judged individually by AC-3 first, exactly like any other pair, with no special treatment of their own verdicts. Once all three have a verdict that is neither `inconclusive` nor missing (skipped by a `-t` filter that excluded one of them, in which case the check below is skipped and reported as `leak-check-skipped`), the run additionally compares `preference-match`'s verdict band against `preference-violation`'s and against `preference-title-conflict`'s:",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "If `preference-match`'s band equals both conflict pairs' bands, nothing further is reported; each pair's own individual pass or fail already stands.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "If all three bands equal each other but none of them equals `strong_match` (`expectedBand`), the run reports `baseline-drift`",
+        "rejected_spans": [
+          ": something moved the band for every pairing equally, which is a rubric or model question, not a leak, since nothing about the conflicting posting text distinguished itself."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "AcceptanceCriterion",
+        "span": "If `preference-match`'s band differs from either conflict pair's band, the run reports `preference-leak-suspected`, distinctly from an ordinary mismatch",
+        "rejected_spans": [
+          ": the skill and experience content is identical across all three, so a divergence here can only be explained by the preference text that does differ between them."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-6",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-6**: Every printed and reported verdict names its own denominator (e.g. \"good_match, 3 of 3 succeeded\" or, for a distribution shaped verdict, \"3 strong_match / 2 possible_match, 5 of 5 succeeded\"), never just a band on its own,",
+        "rejected_spans": [
+          "so a reader can tell a verdict resting on the minimum 3 successes apart from one resting on all 5, and can see a split even where the pair still passed."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-7",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-7**: The command's own exit code is non zero if any pair fails, any pair is `inconclusive`, a preference leak is reported, or the run aborted on a usage gate refusal (AC-3); zero only when every pair that ran passed cleanly and nothing aborted.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-8",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-8**: A subset of pairs can be run without spending calls on the rest of the set, by reusing the test runner's own name filter against each pair's test name, which is generated as `` `${pair.id} [${pair.tags.join(\" \")}]` `` (e.g. `control-direct-match [control]`, `stability-probe-generic [stability-probe]`), so `pnpm eval -t control-direct-match` matches one pair by id and `pnpm eval -t stability-probe` matches every pair carrying that tag. A filtered run still writes a JSON report; it records which filter produced it and lists every pair that did not run as `skipped`, never silently absent. Filters can overlap (e.g. `-t control` also matches every pair whose id happens to start with `control-`); this is an accepted property of substring matching, not a bug to design around.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-9",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-9**: The command writes a JSON report every run, in addition to the console table, to a directory this repository does not track, at `test/eval/.output/<ISO timestamp with colons replaced by dashes>.json`, creating that directory if it does not exist. Each report is a single `EvalReport` object (defined in `test/eval/report.ts`) recording: the filter used (if any) and every skipped pair id; per pair, its status (`pass`/`fail`/`inconclusive`), sub reason where relevant, denominator, and every observed band (or band distribution); the preference leak check's own outcome; the run's overall status and aborted reason if any; and, once per report, which model answered (via the shared `resolvedModel()` guard on `TIERS.ai_scoring.model`, never a name typed into the harness) and a hash of `BAND_ANCHORS`'s current text (`bandAnchorsHash()`, defined once and shared with the AC-10 test, so \"the same way\" is true by construction rather than by two separate implementations agreeing).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-10",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-10**: A committed test (no vendor call, runs under the ordinary free unit suite) asserts `BAND_ANCHORS` literally equals today's text (`toEqual` against the five strings written inline in the test, never a snapshot file, which a routine `vitest -u` could silently rewrite) and that `bandAnchorsHash(BAND_ANCHORS)` equals today's computed hash, both failing by name and naming spec 0016's dataset, the moment either changes,",
+        "rejected_spans": [
+          "so a rubric edit is caught at commit time rather than only by a human comparing two JSON reports later."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "AC-11",
+        "id_source": "verbatim",
+        "type": "AcceptanceCriterion",
+        "span": "**AC-11**: The command works against a changed model with no code edit to this feature: nothing here names a vendor or a model id directly, every call goes through the existing `scoreListing()` / `TIERS` path exactly as the rest of the app does, and the model id reported (AC-9) is read off that same resolved config.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-8"
+        },
+        "phrase": "under a `-t` filtered invocation (AC-8)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "phrase": "AC-4 covers that case separately",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "phrase": "only once AC-3's own 3 of 5 successes floor is met",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "phrase": "are each judged individually by AC-3 first",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-3"
+        },
+        "phrase": "the run aborted on a usage gate refusal (AC-3)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-10"
+        },
+        "phrase": "shared with the AC-10 test",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "AC-11"
+        },
+        "target": {
+          "kind": "local",
+          "id": "AC-9"
+        },
+        "phrase": "the model id reported (AC-9)",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

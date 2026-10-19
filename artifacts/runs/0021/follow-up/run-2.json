@@ -1,0 +1,342 @@
+{
+  "record": "0021",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3233,
+  "output_tokens": 7893,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b6945b7e40d1481d9f1535ab7ac42b98",
+  "artifact_format_version": 3,
+  "unit_sha256": "6d3858a1706d68dee295b21abca6f54dfb2595bebf043841c51b467d479d3bce",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Revisit the fixed search query and kept listing count if, after a few refreshes, the two personas consistently land on the same band (no visible differential),\",\"rejected_spans\":[\"which would undercut AC-6/AC-16's whole point.\"],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Revisited 2026-09-15 on a different trigger than this item names**: after one refresh, not a few, because 15 of 16 rows carried zero matched skills. The query and the count were both revised (**Feature design**). The band differential this item watched for is now covered by the stopping rule below and by AC-16.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The stopping rule for the queries** (2026-09-15): read the next completed refresh's `skillCounts` (**Feature design**, \\\"Refresh outcomes\\\"). If **5 or more of its own role rows** (`ownRoleEmpty` of up to 8 `ownRoleRows`) carry zero matched skills, the cause is Adzuna's 500 character snippet, and the queries do not change again. **The denominator is own role rows only, deliberately.** `crossRoleEmpty` is recorded beside it so the two are never confused. The snippet limitation is already recorded in spec 0013's Consequences, and any fix belongs there, not in a third query.\",\"rejected_spans\":[\"which the three first run snippets read on 2026-09-15 suggest (each is a company introduction cut off before any requirement)\",\"Each persona is also scored against the other role's postings, where zero matched skills is often the correct result, so up to 8 of the 16 rows can be empty by design; counting across all 16 would fire on almost any run and freeze the queries for the wrong reason.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Fired twice, on two environments and two different sets of real postings, 2026-09-16.** The rule asked for one completed refresh's `skillCounts` and got two, both above its threshold of 5: **6 of 8 own role rows empty** on the local stack on 2026-09-15, and **7 of 8** on production (`https://usejobhunt.dev`) on 2026-09-16, with `crossRoleEmpty` at 8 of 8 in both. So **the cause is Adzuna's 500 character snippet and the two queries do not change again**, which is what this item said it would conclude. This ticks what the rule concluded, it does not decide anything new: the fix still belongs to spec 0013's Consequences and to `docs/scope/scope.md`'s deferred full posting text item, which now carries both numbers.\",\"rejected_spans\":[\"A single run left open that the postings happened to be unusual; two independent runs closing the same way, more strongly the second time, does not.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"(1) Everpure, Inc. appears twice under Adzuna ids `5883839578` and `5883870504`, byte identical snippets with different titles (\\\"Software Engineering Manager, Platform\\\" and \\\"Software Engineer\\\"). That different title is exactly the risk feature 19's row names for a dedup key.\",\"rejected_spans\":[\"recorded here because `/demo` is where a visitor sees them\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"(2) PNC Financial Services Group's snippet (id `5854960477`) carries literal `\\\\n` character sequences, rendered as text.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 19's scope row does not yet name this second defect (its row covers duplicates, the equal salary range and outliers; `docs/session-notes.md` is the only other place it is mentioned), so this pointer is not a claim that it is already scoped; adding it there is `/scope`'s.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**No longer true as of 2026-09-16**: the `/scope` pass this sentence was waiting on has run, and feature 19's row now names the escaped character defect in both its intent and its **Done when**, with an evidence paragraph for each of the two defects. It also widened that feature in the process, from de-duplicating incoming listings to **normalising** their text as well, which is the change this defect forced and which the row now states outright.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This spec fixes neither: `/demo` renders listings exactly as returned (AC-19),\",\"rejected_spans\":[\"and a demo only cleanup would make `/demo` differ from `/search`.\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Automating the refresh on a schedule (a cron calling `/api/demo/refresh`) is a later increment; no scheduler exists in this project today.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Re-verify Adzuna's terms of service before this ships and periodically after,\",\"rejected_spans\":[\"since Adzuna may change them at any time (see `rationale.md`, References)\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"`verify.md` was written against the fabricated design (AC-1 to AC-12 as they read before 2026-09-14) and needs a fresh pass against the acceptance criteria above before the next `/check verify` run; its existing steps are kept for history, not deleted.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Done 2026-09-14 by `/develop`**: a new dated section covering AC-1 to AC-19, plus one step per row of the Value sourcing table, is appended below the superseded one, which is left intact.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"If check failures turn out to abort refreshes often enough to matter in practice, revisit whether `ai_check` should become best effort here after all (as it is on `/search`),\",\"rejected_spans\":[\"against the reasoning that ruled that out this pass (**Feature design**, AC-17)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Open question, not a decision: is one failed call worth discarding about thirty paid ones?** **the calls already made when the run aborts are still billed.** A run makes up to 32 vendor calls and one failure discards all of them. The question this leaves open, deliberately unanswered here: **should the one failed call be retried before the run aborts**, rather than the choice being only between aborting everything and writing an unchecked row? Costs to weigh against it: a retry doubles the worst case latency of the slowest call, spends more money on a vendor already failing, and needs a bound so a persistently broken vendor cannot loop.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The status card's `planned` row now needs a new claim each time the last one ships, which is a recurring obligation the mechanism did not previously have** (2026-09-17). From now on, every feature that moves this claim into `working` must either choose the next one or delete the row and rewrite the paragraph beside it, and nothing enforces that choice except `about-section.test.ts`'s exact match on a single element array.\",\"rejected_spans\":[\"**That is not a cosmetic problem**: the third about paragraph, on the same screen, promises \\\"anything not built yet is labeled as such on this page, not implied\\\", and a card with no `planned` side makes that sentence false where a visitor can read both at once.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"phrase\":\"**Revisited 2026-09-15 on a different trigger than this item names**\",\"date\":\"2026-09-15\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"phrase\":\"**Fired twice, on two environments and two different sets of real postings, 2026-09-16.**\",\"date\":\"2026-09-16\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 19\",\"id\":null,\"mention\":\"feature 19's\"},\"phrase\":\"both feature 19's\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 19\",\"id\":null,\"mention\":\"feature 19's\"},\"phrase\":\"both feature 19's\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"superseded-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"phrase\":\"**No longer true as of 2026-09-16**\",\"date\":\"2026-09-16\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:13\"},\"phrase\":\"**Done 2026-09-14 by `/develop`**\",\"date\":\"2026-09-14\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:15\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"phrase\":\"**Related but not the same as the `ai_check` best effort item above**\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Revisit the fixed search query and kept listing count if, after a few refreshes, the two personas consistently land on the same band (no visible differential),",
+        "rejected_spans": [
+          "which would undercut AC-6/AC-16's whole point."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Revisited 2026-09-15 on a different trigger than this item names**: after one refresh, not a few, because 15 of 16 rows carried zero matched skills. The query and the count were both revised (**Feature design**). The band differential this item watched for is now covered by the stopping rule below and by AC-16.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The stopping rule for the queries** (2026-09-15): read the next completed refresh's `skillCounts` (**Feature design**, \"Refresh outcomes\"). If **5 or more of its own role rows** (`ownRoleEmpty` of up to 8 `ownRoleRows`) carry zero matched skills, the cause is Adzuna's 500 character snippet, and the queries do not change again. **The denominator is own role rows only, deliberately.** `crossRoleEmpty` is recorded beside it so the two are never confused. The snippet limitation is already recorded in spec 0013's Consequences, and any fix belongs there, not in a third query.",
+        "rejected_spans": [
+          "which the three first run snippets read on 2026-09-15 suggest (each is a company introduction cut off before any requirement)",
+          "Each persona is also scored against the other role's postings, where zero matched skills is often the correct result, so up to 8 of the 16 rows can be empty by design; counting across all 16 would fire on almost any run and freeze the queries for the wrong reason."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Fired twice, on two environments and two different sets of real postings, 2026-09-16.** The rule asked for one completed refresh's `skillCounts` and got two, both above its threshold of 5: **6 of 8 own role rows empty** on the local stack on 2026-09-15, and **7 of 8** on production (`https://usejobhunt.dev`) on 2026-09-16, with `crossRoleEmpty` at 8 of 8 in both. So **the cause is Adzuna's 500 character snippet and the two queries do not change again**, which is what this item said it would conclude. This ticks what the rule concluded, it does not decide anything new: the fix still belongs to spec 0013's Consequences and to `docs/scope/scope.md`'s deferred full posting text item, which now carries both numbers.",
+        "rejected_spans": [
+          "A single run left open that the postings happened to be unusual; two independent runs closing the same way, more strongly the second time, does not."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "(1) Everpure, Inc. appears twice under Adzuna ids `5883839578` and `5883870504`, byte identical snippets with different titles (\"Software Engineering Manager, Platform\" and \"Software Engineer\"). That different title is exactly the risk feature 19's row names for a dedup key.",
+        "rejected_spans": [
+          "recorded here because `/demo` is where a visitor sees them"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "(2) PNC Financial Services Group's snippet (id `5854960477`) carries literal `\\n` character sequences, rendered as text.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 19's scope row does not yet name this second defect (its row covers duplicates, the equal salary range and outliers; `docs/session-notes.md` is the only other place it is mentioned), so this pointer is not a claim that it is already scoped; adding it there is `/scope`'s.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**No longer true as of 2026-09-16**: the `/scope` pass this sentence was waiting on has run, and feature 19's row now names the escaped character defect in both its intent and its **Done when**, with an evidence paragraph for each of the two defects. It also widened that feature in the process, from de-duplicating incoming listings to **normalising** their text as well, which is the change this defect forced and which the row now states outright.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This spec fixes neither: `/demo` renders listings exactly as returned (AC-19),",
+        "rejected_spans": [
+          "and a demo only cleanup would make `/demo` differ from `/search`."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Automating the refresh on a schedule (a cron calling `/api/demo/refresh`) is a later increment; no scheduler exists in this project today.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Re-verify Adzuna's terms of service before this ships and periodically after,",
+        "rejected_spans": [
+          "since Adzuna may change them at any time (see `rationale.md`, References)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "`verify.md` was written against the fabricated design (AC-1 to AC-12 as they read before 2026-09-14) and needs a fresh pass against the acceptance criteria above before the next `/check verify` run; its existing steps are kept for history, not deleted.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Done 2026-09-14 by `/develop`**: a new dated section covering AC-1 to AC-19, plus one step per row of the Value sourcing table, is appended below the superseded one, which is left intact.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "If check failures turn out to abort refreshes often enough to matter in practice, revisit whether `ai_check` should become best effort here after all (as it is on `/search`),",
+        "rejected_spans": [
+          "against the reasoning that ruled that out this pass (**Feature design**, AC-17)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Open question, not a decision: is one failed call worth discarding about thirty paid ones?** **the calls already made when the run aborts are still billed.** A run makes up to 32 vendor calls and one failure discards all of them. The question this leaves open, deliberately unanswered here: **should the one failed call be retried before the run aborts**, rather than the choice being only between aborting everything and writing an unchecked row? Costs to weigh against it: a retry doubles the worst case latency of the slowest call, spends more money on a vendor already failing, and needs a bound so a persistently broken vendor cannot loop.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The status card's `planned` row now needs a new claim each time the last one ships, which is a recurring obligation the mechanism did not previously have** (2026-09-17). From now on, every feature that moves this claim into `working` must either choose the next one or delete the row and rewrite the paragraph beside it, and nothing enforces that choice except `about-section.test.ts`'s exact match on a single element array.",
+        "rejected_spans": [
+          "**That is not a cosmetic problem**: the third about paragraph, on the same screen, promises \"anything not built yet is labeled as such on this page, not implied\", and a card with no `planned` side makes that sentence false where a visitor can read both at once."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "phrase": "**Revisited 2026-09-15 on a different trigger than this item names**",
+        "date": "2026-09-15",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "phrase": "**Fired twice, on two environments and two different sets of real postings, 2026-09-16.**",
+        "date": "2026-09-16",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 19",
+          "id": null,
+          "label": null,
+          "mention": "feature 19's"
+        },
+        "phrase": "both feature 19's",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 19",
+          "id": null,
+          "label": null,
+          "mention": "feature 19's"
+        },
+        "phrase": "both feature 19's",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "superseded-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "phrase": "**No longer true as of 2026-09-16**",
+        "date": "2026-09-16",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:13"
+        },
+        "phrase": "**Done 2026-09-14 by `/develop`**",
+        "date": "2026-09-14",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:15"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "phrase": "**Related but not the same as the `ai_check` best effort item above**",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

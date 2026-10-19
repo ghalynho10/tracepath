@@ -1,0 +1,68 @@
+{
+  "record": "0019",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0019-cross-vendor-self-check/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 307,
+  "output_tokens": 482,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d817c32d2fe342babe2ded45a7cb4adc",
+  "artifact_format_version": 3,
+  "unit_sha256": "720c2d857c8804150a96615027138322e2f09c533bb5f58a7ca5a52bd38705aa",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1, a narrow grounding check on the claimed matched skills, chained per listing inside the same reveal wait scoring already has.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A record of which design option was chosen; it states a decision, not a requirement, outcome, build step or test, so no named type fits.\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`) is consulted indirectly only, since this feature calls spec 0012's router rather than the AI SDK directly, matching spec 0015's own precedent\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"],\"label\":null},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the extended `scoring.score_listings` span attributes.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1, a narrow grounding check on the claimed matched skills, chained per listing inside the same reveal wait scoring already has.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A record of which design option was chosen; it states a decision, not a requirement, outcome, build step or test, so no named type fits.",
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`) is consulted indirectly only, since this feature calls spec 0012's router rather than the AI SDK directly, matching spec 0015's own precedent",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the extended `scoring.score_listings` span attributes.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

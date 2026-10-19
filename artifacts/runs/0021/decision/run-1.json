@@ -1,0 +1,58 @@
+{
+  "record": "0021",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 248,
+  "output_tokens": 328,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "db72c515500048288c0567db9f645d7d",
+  "artifact_format_version": 3,
+  "unit_sha256": "b28deac88a782e371e3f42ec4b2ffc3ac82bd8e9bf675becad965994b8ebaa75",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key client already reserved for this feature) and extend it with a manually triggered, atomic refresh that populates that table from real data, rather than switching to a different storage or read strategy.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The refresh authenticates as a dedicated internal identity and is triggered by a protected route handler;\",\"rejected_spans\":[\"both are new decisions this rework required, weighed in `rationale.md` against the alternatives (triggering under the engineer's own session, bypassing the usage gate, and a local script) and against the original options this decision still rests on.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Keep spec 0021's original mechanism decision (a dedicated table, read through the secret key client already reserved for this feature) and extend it with a manually triggered, atomic refresh that populates that table from real data, rather than switching to a different storage or read strategy.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The refresh authenticates as a dedicated internal identity and is triggered by a protected route handler;",
+        "rejected_spans": [
+          "both are new decisions this rework required, weighed in `rationale.md` against the alternatives (triggering under the engineer's own session, bypassing the usage gate, and a local script) and against the original options this decision still rests on."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

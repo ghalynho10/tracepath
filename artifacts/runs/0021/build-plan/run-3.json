@@ -1,0 +1,796 @@
+{
+  "record": "0021",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0021-seeded-demo-account/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 4172,
+  "output_tokens": 9853,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "424a83681aa54e50b2baf8c81bb36263",
+  "artifact_format_version": 3,
+  "unit_sha256": "5b9ea59cd8a297ab38457061b0806921470137bb8fd2e514b008f177e02b39b2",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Ordered by this project's Tracer Bullet approach: stand up the whole real pipe end to end (the real searches, two since 2026-09-15, both personas scored including the grounding check, one atomic write, one real render) before thickening it with the polish items (attribution sizing, copy, the entry page link, which stays deliberately unbuilt). Both personas are the load bearing unit from the first slice,\",\"rejected_spans\":[\"since the refresh's atomic write and AC-6/AC-16 both require both personas from the same run; there is no meaningful single persona thin thread here.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Edit `supabase/migrations/20260913120000_demo_result.sql` in place (never applied to a hosted project, confirmed 2026-09-14): update `demo_result`'s check constraints, change `salary_min`/`salary_max` to `numeric(12, 2)`, and add `source_job_id`, `salary_currency` (with its pairing check), `salary_is_predicted`, and `ungrounded_skills`; remove the twelve seeded `insert` statements; grant `insert`/`delete` on `demo_result` to `service_role` alongside the existing `select`. Add the new `demo_refresh` table (singleton pattern, row level security enabled and forced, zero policies, `service_role` select and update only), inserting its one row with `refreshed_at` null. Add `replace_demo_results()` (`security invoker`, one transaction: delete, `jsonb_to_recordset` insert, `insert ... on conflict (id) do update` on `demo_refresh`). Run `pnpm db:types` after. Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Extend `src/features/demo/personas.ts` with the two `ScoringProfile` shaped constants named in **Seed content**, replacing `product-designer` with `frontend-engineer` everywhere its slug is referenced (including the doc comment's cross reference to the migration's check constraint). Satisfies **AC-3**, **AC-5**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The legal registry pass: reclassify `demo_result` in `src/features/legal/stored-fields.ts` (its current `why` states it describes no real employer or posting, which AC-3/AC-19 reverse) and add `demo_refresh` to `NON_PERSONAL_TABLES` (a search query string and a timestamp, no personal data).\",\"rejected_spans\":[\"`stored-fields.test.ts` fails on an unclassified table, so this cannot be deferred past the migration landing.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Build the refresh core under `src/features/demo/`: `demo-refresh@example.test`'s existence ensured (create if absent), the admin mint (jar first, `createClient(jar)`, `verifyOtp` on that client, assert the jar is non empty, reimplemented rather than importing `test/helpers/session.ts`), the fixed query call into `searchListings()`, de-duplicating and keeping the first 8 by `sourceJobId` (both revised to two searches and the kept walk by step 10), `scoreListings()` called once per persona with the matching `ScoringProfile` and the minted `cookieAdapter`, checking every outcome's score and, when attempted, its chained check both came back clean and allowed (aborting otherwise, on either kind of failure or refusal), and the single call to `replace_demo_results()` once every score and check has landed clean. A named span (`demo.refresh`) opens first (binding rule 4), registered in `docs/observability/spans.md`. Satisfies **AC-2**, **AC-17**, **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add `src/app/api/demo/refresh/route.ts` (`POST`), reading `Authorization: Bearer <secret>`, comparing SHA-256 digests, calling the refresh core and returning its outcome; document the route write scope clarification (**Feature design**) in the file's own doc comment. Add `DEMO_REFRESH_SECRET` to `src/env.ts` and both `.github/workflows/ci.yml` `env:` blocks. Satisfies **AC-17**, **AC-18**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Update `readDemoResults()` (or a renamed equivalent) in `src/features/demo/queries.ts`: one query reads every `demo_result` row (both personas) ordered by `sort_order`, parsed (including the new columns), paired by `source_job_id` into `{ own: DemoResult; otherBand: Band }` for the active persona's ordered list (re-sorted by band then `sort_order` within that persona's subset); a second, separate query reads the `demo_refresh` singleton row. An empty `demo_result` with `demo_refresh.refreshed_at is null` returns a normal success value carrying that fact, never a `Failure`; a genuine database or parse fault still returns a `Failure` exactly as before. Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Update the demo card component: add the compact other persona band line (AC-16), the ungrounded skills rendering (removed from the matched list, `SCORING_COPY.removedSkills(...)` and `.reasoningCaveat` reused verbatim), render `AdzunaAttribution` unconditionally and the `(estimated)` label plus `JobsworthAttribution` together when `salary_is_predicted` (AC-9), and make the not mentioned skills caption conditional on the snippet actually being truncated. Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**The wording pass**: update `src/app/(marketing)/demo/page.tsx`'s `metadata.description`, `<h1>`, and intro copy; `DEMO_COPY`'s banner and read-failed strings (plus a new \\\"not yet refreshed\\\" string for AC-15); and `DemoCard`'s own doc comment, none of which may still assert the page is fabricated. Add the search query and last refreshed line (AC-14), both personas' full profiles shown somewhere on the page (AC-14), and AC-15's distinct visible state alongside AC-12's. Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**AC-13 stays deliberately unbuilt.** Do not touch `hero-section.tsx` or `about-section.tsx` in this pass; recorded in `docs/scope/scope.md` on 2026-09-14.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"**The 2026-09-15 revision** (two searches, the kept walk, the migration comment), for `/develop`. First reconfirm `supabase/migrations/20260913120000_demo_result.sql` has still not applied to any hosted project, since editing it in place rests on that; if it has, this step needs a second migration instead. Each file below was located by a repo search on 2026-09-15 for `DEMO_SEARCH_TITLE`, `search_title` and `software engineer`: the migration `supabase/migrations/20260913120000_demo_result.sql` gets `demo_refresh.search_title` replaced with `search_titles text[] not null`, `demo_result.search_title` added, the singleton seeded with `array['backend engineer', 'frontend engineer']`, `replace_demo_results()` changed to take `p_search_titles text[]`, the `revoke execute` and `grant execute` statements at lines 390 to 391 changed to the new signature, the stale one-search comments corrected, and the `where true` comment heading replaced, then `pnpm db:reset` and `pnpm db:types`; `src/features/demo/refresh.ts` runs both searches in order, backend first, replaces `keepListings()` with the exported pure walk, writes `search_title` on every row, returns `skillCounts`, passes `p_search_titles`, and changes `KEPT_LISTING_COUNT`'s **value from 8 to 4**; `src/app/api/demo/refresh/route.ts` adds the four `skillCounts` values to the `200` body; `src/features/demo/queries.ts` parses `search_titles` as exactly two non empty strings and each row's `search_title`; `src/features/demo/copy.ts` and `src/app/(marketing)/demo/page.tsx` change `searchedFor`; the stale one-search comments in `demo-card.tsx`, `personas.ts`, `stored-fields.ts` and `docs/observability/spans.md` are corrected. **Not this step's to edit, and owed**: `docs/scope/scope.md` lines 447 to 459 (feature 31) still say \\\"one Adzuna search\\\" and \\\"one real search\\\". That file is `/scope`'s. Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**, **AC-5**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-3**, **AC-5**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-3**, **AC-5**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"phrase\":\"both revised to two searches and the kept walk by step 10\",\"date\":\"2026-09-15\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-2**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies **AC-2**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Satisfies **AC-2**, **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-18\",\"mention\":\"**AC-18**\"},\"phrase\":\"Satisfies **AC-17**, **AC-18**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-19\",\"mention\":\"**AC-19**\"},\"phrase\":\"Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0021\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Ordered by this project's Tracer Bullet approach: stand up the whole real pipe end to end (the real searches, two since 2026-09-15, both personas scored including the grounding check, one atomic write, one real render) before thickening it with the polish items (attribution sizing, copy, the entry page link, which stays deliberately unbuilt). Both personas are the load bearing unit from the first slice,",
+        "rejected_spans": [
+          "since the refresh's atomic write and AC-6/AC-16 both require both personas from the same run; there is no meaningful single persona thin thread here."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Edit `supabase/migrations/20260913120000_demo_result.sql` in place (never applied to a hosted project, confirmed 2026-09-14): update `demo_result`'s check constraints, change `salary_min`/`salary_max` to `numeric(12, 2)`, and add `source_job_id`, `salary_currency` (with its pairing check), `salary_is_predicted`, and `ungrounded_skills`; remove the twelve seeded `insert` statements; grant `insert`/`delete` on `demo_result` to `service_role` alongside the existing `select`. Add the new `demo_refresh` table (singleton pattern, row level security enabled and forced, zero policies, `service_role` select and update only), inserting its one row with `refreshed_at` null. Add `replace_demo_results()` (`security invoker`, one transaction: delete, `jsonb_to_recordset` insert, `insert ... on conflict (id) do update` on `demo_refresh`). Run `pnpm db:types` after. Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Extend `src/features/demo/personas.ts` with the two `ScoringProfile` shaped constants named in **Seed content**, replacing `product-designer` with `frontend-engineer` everywhere its slug is referenced (including the doc comment's cross reference to the migration's check constraint). Satisfies **AC-3**, **AC-5**, **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The legal registry pass: reclassify `demo_result` in `src/features/legal/stored-fields.ts` (its current `why` states it describes no real employer or posting, which AC-3/AC-19 reverse) and add `demo_refresh` to `NON_PERSONAL_TABLES` (a search query string and a timestamp, no personal data).",
+        "rejected_spans": [
+          "`stored-fields.test.ts` fails on an unclassified table, so this cannot be deferred past the migration landing."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Build the refresh core under `src/features/demo/`: `demo-refresh@example.test`'s existence ensured (create if absent), the admin mint (jar first, `createClient(jar)`, `verifyOtp` on that client, assert the jar is non empty, reimplemented rather than importing `test/helpers/session.ts`), the fixed query call into `searchListings()`, de-duplicating and keeping the first 8 by `sourceJobId` (both revised to two searches and the kept walk by step 10), `scoreListings()` called once per persona with the matching `ScoringProfile` and the minted `cookieAdapter`, checking every outcome's score and, when attempted, its chained check both came back clean and allowed (aborting otherwise, on either kind of failure or refusal), and the single call to `replace_demo_results()` once every score and check has landed clean. A named span (`demo.refresh`) opens first (binding rule 4), registered in `docs/observability/spans.md`. Satisfies **AC-2**, **AC-17**, **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `src/app/api/demo/refresh/route.ts` (`POST`), reading `Authorization: Bearer <secret>`, comparing SHA-256 digests, calling the refresh core and returning its outcome; document the route write scope clarification (**Feature design**) in the file's own doc comment. Add `DEMO_REFRESH_SECRET` to `src/env.ts` and both `.github/workflows/ci.yml` `env:` blocks. Satisfies **AC-17**, **AC-18**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Update `readDemoResults()` (or a renamed equivalent) in `src/features/demo/queries.ts`: one query reads every `demo_result` row (both personas) ordered by `sort_order`, parsed (including the new columns), paired by `source_job_id` into `{ own: DemoResult; otherBand: Band }` for the active persona's ordered list (re-sorted by band then `sort_order` within that persona's subset); a second, separate query reads the `demo_refresh` singleton row. An empty `demo_result` with `demo_refresh.refreshed_at is null` returns a normal success value carrying that fact, never a `Failure`; a genuine database or parse fault still returns a `Failure` exactly as before. Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Update the demo card component: add the compact other persona band line (AC-16), the ungrounded skills rendering (removed from the matched list, `SCORING_COPY.removedSkills(...)` and `.reasoningCaveat` reused verbatim), render `AdzunaAttribution` unconditionally and the `(estimated)` label plus `JobsworthAttribution` together when `salary_is_predicted` (AC-9), and make the not mentioned skills caption conditional on the snippet actually being truncated. Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**The wording pass**: update `src/app/(marketing)/demo/page.tsx`'s `metadata.description`, `<h1>`, and intro copy; `DEMO_COPY`'s banner and read-failed strings (plus a new \"not yet refreshed\" string for AC-15); and `DemoCard`'s own doc comment, none of which may still assert the page is fabricated. Add the search query and last refreshed line (AC-14), both personas' full profiles shown somewhere on the page (AC-14), and AC-15's distinct visible state alongside AC-12's. Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**AC-13 stays deliberately unbuilt.** Do not touch `hero-section.tsx` or `about-section.tsx` in this pass; recorded in `docs/scope/scope.md` on 2026-09-14.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "**The 2026-09-15 revision** (two searches, the kept walk, the migration comment), for `/develop`. First reconfirm `supabase/migrations/20260913120000_demo_result.sql` has still not applied to any hosted project, since editing it in place rests on that; if it has, this step needs a second migration instead. Each file below was located by a repo search on 2026-09-15 for `DEMO_SEARCH_TITLE`, `search_title` and `software engineer`: the migration `supabase/migrations/20260913120000_demo_result.sql` gets `demo_refresh.search_title` replaced with `search_titles text[] not null`, `demo_result.search_title` added, the singleton seeded with `array['backend engineer', 'frontend engineer']`, `replace_demo_results()` changed to take `p_search_titles text[]`, the `revoke execute` and `grant execute` statements at lines 390 to 391 changed to the new signature, the stale one-search comments corrected, and the `where true` comment heading replaced, then `pnpm db:reset` and `pnpm db:types`; `src/features/demo/refresh.ts` runs both searches in order, backend first, replaces `keepListings()` with the exported pure walk, writes `search_title` on every row, returns `skillCounts`, passes `p_search_titles`, and changes `KEPT_LISTING_COUNT`'s **value from 8 to 4**; `src/app/api/demo/refresh/route.ts` adds the four `skillCounts` values to the `200` body; `src/features/demo/queries.ts` parses `search_titles` as exactly two non empty strings and each row's `search_title`; `src/features/demo/copy.ts` and `src/app/(marketing)/demo/page.tsx` change `searchedFor`; the stale one-search comments in `demo-card.tsx`, `personas.ts`, `stored-fields.ts` and `docs/observability/spans.md` are corrected. **Not this step's to edit, and owed**: `docs/scope/scope.md` lines 447 to 459 (feature 31) still say \"one Adzuna search\" and \"one real search\". That file is `/scope`'s. Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "phrase": "both revised to two searches and the kept walk by step 10",
+        "date": "2026-09-15",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-18",
+          "label": null,
+          "mention": "**AC-18**"
+        },
+        "phrase": "Satisfies **AC-17**, **AC-18**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-19",
+          "label": null,
+          "mention": "**AC-19**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0021",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "record": "0018",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0018-band-anchor-review/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 752,
+  "output_tokens": 1222,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b329ba59d24b4c6fa34b695ac6f15554",
+  "artifact_format_version": 3,
+  "unit_sha256": "31c84ac2e61e33a4c69e33738d7998f5b18ae0bf7ff240d48f39877af23364d7",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Live scoring does not change. No user sees a different band, and the anchor hash stays put,\",\"rejected_spans\":[\"so the two baseline runs remain comparable with every run after this.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A committed expectation that contradicted its own anchor text is fixed, and `control-one-gap` becomes a pair that passes for the right reason rather than one that fails for a recorded mistake.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The anchors were examined against two real runs for the first time and held, which is worth recording even though it changes nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Note carefully that this does **not** close spec 0015's Follow up on revising the anchors: that item is conditional on the harness showing the bands clustering rather than spreading, and both runs observed all five bands, so its trigger never fired. It stays open, and this spec should be noted beside it as a review that happened for a different reason.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Confirming the fix costs five vendor calls instead of eighty,\",\"rejected_spans\":[\"because only one pair's expectation moved.\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The `weak_match` and `not_a_match` line stays undefined. `key-domain-mismatch` can still flip between runs, and `boundary-seniority-gap` keeps a tolerance that means it cannot fail. Two of sixteen pairs remain unable to catch a regression on that axis.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The question of what a stated requirement does to a band is left unanswered **as a general rule**. What stays undefined is the rule for any posting that does not name the weight that plainly, so the next one phrased \\\"required, not just exposure\\\" gets whatever the model decides.\",\"rejected_spans\":[\"This pair is settled by `possible_match`'s existing \\\"a real part is unproven\\\" applied to a posting that names the unproven area as half the role, which is the anchors doing the work.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This spec produces no improvement to the product. It corrects a measurement instrument and records a rejected idea, which is worth doing and is not the same as making scoring better.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No migration, no feature flag, no environment variable, no schema change, and nothing to backfill.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The rejected rule is recorded rather than discarded.\",\"rejected_spans\":[\"If a real posting later produces the failure it was meant to prevent, the reasoning is there to pick up rather than rederive.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Live scoring does not change. No user sees a different band, and the anchor hash stays put,",
+        "rejected_spans": [
+          "so the two baseline runs remain comparable with every run after this."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A committed expectation that contradicted its own anchor text is fixed, and `control-one-gap` becomes a pair that passes for the right reason rather than one that fails for a recorded mistake.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The anchors were examined against two real runs for the first time and held, which is worth recording even though it changes nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Note carefully that this does **not** close spec 0015's Follow up on revising the anchors: that item is conditional on the harness showing the bands clustering rather than spreading, and both runs observed all five bands, so its trigger never fired. It stays open, and this spec should be noted beside it as a review that happened for a different reason.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Confirming the fix costs five vendor calls instead of eighty,",
+        "rejected_spans": [
+          "because only one pair's expectation moved."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The `weak_match` and `not_a_match` line stays undefined. `key-domain-mismatch` can still flip between runs, and `boundary-seniority-gap` keeps a tolerance that means it cannot fail. Two of sixteen pairs remain unable to catch a regression on that axis.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The question of what a stated requirement does to a band is left unanswered **as a general rule**. What stays undefined is the rule for any posting that does not name the weight that plainly, so the next one phrased \"required, not just exposure\" gets whatever the model decides.",
+        "rejected_spans": [
+          "This pair is settled by `possible_match`'s existing \"a real part is unproven\" applied to a posting that names the unproven area as half the role, which is the anchors doing the work."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This spec produces no improvement to the product. It corrects a measurement instrument and records a rejected idea, which is worth doing and is not the same as making scoring better.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No migration, no feature flag, no environment variable, no schema change, and nothing to backfill.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The rejected rule is recorded rather than discarded.",
+        "rejected_spans": [
+          "If a real posting later produces the failure it was meant to prevent, the reasoning is there to pick up rather than rederive."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

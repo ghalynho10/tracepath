@@ -1,0 +1,330 @@
+{
+  "record": "0020",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0020-spend-visibility-and-gating-polish/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 3960,
+  "output_tokens": 4298,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d8984baca1984e379280fb77b290abd7",
+  "artifact_format_version": 3,
+  "unit_sha256": "c950b4c29d74906e6d190032b2d7aa39138d373e547c3cdff2efe0183be5655a",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1: a new, strictly read only `security definer` function.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A signed in user's own usage reaches the page through a new Postgres function, `get_job_search_usage_summary`, that mirrors `check_usage_gate`'s own shape: it derives the caller from `auth.uid()` internally, computes `period_start` with the identical expression, and returns only `job_search`'s account week window `consumed_count` and the matching `cap_value`. It takes no parameter.\",\"rejected_spans\":[\"a cross check on this design found that a `call_type` parameter would let any signed in caller read `usage_cap` and the `configured` state for a call type this feature never shows, a wider readable surface than the unchanged table grants suggest\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The function reads `job_search` only, by construction, the same closed by design treatment `UsageGateReason` already gets in `gate.ts`; showing a second call type later is a spec change, not a parameter another caller could reach.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Neither `usage_gate_counter` nor `usage_cap` gets a new grant or a new row level security policy.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: `SearchPage` starts the search without awaiting it, and `UsageNotice` awaits that promise itself before reading usage.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`searchListings()` lifts out of `SearchResults` and into `SearchPage`, which calls it and does NOT await it. The promise passes to `UsageNotice` and to `SearchResults`; each awaits it where it needs it. `UsageNotice` awaits it as its first statement, then makes its own `get_job_search_usage_summary()` call, which therefore cannot begin until the search resolved and its gate call committed. One mechanism covers every render: the bare visit, the allowed search, all five refusals, and every failure.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The ordering is an `await` inside `UsageNotice`, and it can be undone by editing that component. What protects it is not a guarantee, it is two guards with different reach:\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**The tests catch reordering.** The three ordering tests in `src/app/(app)/search/page.test.ts` fail on any composition that lets the usage read run before the search resolves, including the `Promise.all` fold below.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Lint catches deletion.** Removing the `await` leaves the prop unused and `pnpm lint` runs at `--max-warnings=0`.\",\"rejected_spans\":[\"Verified 2026-09-13 on a scratch build of this shape: with the `await` removed, three ordering tests fail and ESLint reports the prop unused (it read `'searchResult'` there, since the rename in step 13 had not happened yet).\"],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**THE FORBIDDEN EDIT, NAMED.** `await Promise.all([searchInFlight, getJobSearchUsageSummary()])` inside `UsageNotice` uses the prop, typechecks, lints clean, and restores the bug. Lint will not save you; only the three ordering tests will.\",\"rejected_spans\":[\"This is the same edit that was used to reject Option 2 on 2026-09-12, and it applies to the chosen option too. That is the honest measure of how much better this shape is than the one it replaces: it moves the risky edit from the page into one component and adds a lint guard on deletion, and it removes none of the risk of reordering.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**NO CLAIM IS MADE THAT A REFACTOR CANNOT UNDO THIS**, and that language is retired from this spec deliberately.\",\"rejected_spans\":[\"Two claims of structural enforcement have now been made about this single line, first that the prop held the ordering and then that a data dependency did, and both were false. What is recorded instead is where the ordering lives and what catches its removal.\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`searchListings()` returns a `Result` and does not reject for an expected failure, so a rejection here is a programmer bug (a throw from `cookies()` or the span wrapper) and belongs at the error boundary, exactly as before. What changes is that two components await the same rejected promise rather than one, so a single programmer bug reaches **three** reporting channels rather than two. Next logs it where `SearchResults` awaits and again where `UsageNotice` does, since awaiting an already rejected promise throws the same value again rather than a copy. Sentry then captures it a third time, independently of the render pipeline, through `onUnhandledRejectionIntegration()`, which is active because `src/sentry.server.config.ts` calls `Sentry.init({ dsn })` and passes no `integrations` key, so the Node defaults stand.\",\"rejected_spans\":[\"(verified 2026-09-13 against the installed `@sentry/node-core` 10.70.0, where that integration is listed in `getDefaultIntegrations()` under `Global Handlers`)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No test covers this path, and none is added: a trebled report of a programmer bug is noise, not a defect worth engineering around.\",\"rejected_spans\":[\"The count is stated exactly because \\\"twice\\\" was wrong once already, and an undercount here reads later as a measured figure.\"],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"That revision shipped a different shape, `SearchPage` awaiting the search and passing the RESOLVED value to `UsageNotice` as a prop that was never read, with a `void searchResult;` line to satisfy lint.\",\"rejected_spans\":[],\"known_trap_flags\":[\"granularity_boundary_call\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The shape now chosen survives that refactor because it already performs its first half, moving the `await` off the page and into the consumer. It does not deliver streaming: `UsageNotice` still has no `Suspense` boundary of its own (step 4 declined one deliberately) and it now awaits the search, so the shell still waits. A later boundary becomes an additive change rather than one that silently breaks this line.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The prop's type was the awaited result, so dropping the `await` while keeping the call in `SearchPage` was a type error. That is real but narrow: it is a tripwire for exactly one edit, it does not survive relocating the read or moving to streaming, and it was never the guarantee the spec claimed.\",\"rejected_spans\":[\"Verified 2026-09-13: the same edit errors at `page.tsx:119` AND `page.tsx:131`, because `SearchResults`'s own `result` prop catches it too, so `UsageNotice`'s prop added no tripwire the page did not already have.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The gate returning its own count was dropped: returning the count from the gate does not remove the second read, it adds a first one. Three paths have no gate figure to return.\",\"rejected_spans\":[\"The obvious framing, that `check_usage_gate` already computes the new `consumed_count` atomically and could just return it, is genuinely attractive and will be proposed again by anyone who has not read this paragraph.\",\"So the gate option ships two mechanisms plus a rule choosing between them, and pays for that with a drop and recreate of the atomic gate (Postgres cannot change a return type in place), an amendment to `Accepted` spec 0011, two fields on `UsageGateDecision` that `ai_scoring` and `ai_check` carry and ignore, and edits to four test files whose assertions pin the decision shape exactly. Its remaining advantage is provenance, knowing what one specific call cost rather than what the counter now reads, and no surface in this product consumes that. The cost is real and the benefit is currently unused, so it was dropped.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Both kill switch refusals return at `src/lib/usage-gating/gate.ts:135` and `:139`, before the `.rpc()` call at `:149`. Two of the five refusal reasons never reach the SQL function at all.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`validation_failed` (both search fields blank) returns from `searchListings()` before its `withUsageGate()` call, so no gate call happens on a render that `hasQuery` still reports as a search.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`withUsageGate()` discards the decision when the wrapped call fails (`src/lib/usage-gating/with-usage-gate.ts:50`), so a search that passed the gate, spent budget, and then failed at Adzuna loses the figure entirely.\",\"rejected_spans\":[\"That is the one path where a person paid for nothing, which is precisely where the number matters most.\"],\"known_trap_flags\":[]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A second collision would have made the gate option worse still: naming its output columns `consumed_count` and `cap_value` clashes with the six unqualified references to `consumed_count` already in the function body, and plpgsql raises `column reference \\\"consumed_count\\\" is ambiguous` at runtime.\",\"rejected_spans\":[\"Reproduced against this project's own database. Recorded here so a later revisit starts from the real cost.\"],\"known_trap_flags\":[]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`UsageNotice` now uses its prop for real, by awaiting it, so `@typescript-eslint/no-unused-vars` is satisfied honestly and no `eslint-disable` or underscore rename is needed. That the rule fires when the `await` is deleted is now a feature: it is a second guard on the ordering, at edit time, alongside the tests.\",\"rejected_spans\":[\"The `void searchResult;` line and the paragraph that chose it are gone with the shape they served.\",\"(Recorded for anyone revisiting: the underscore rename never worked here anyway, because the rule is configured with no `argsIgnorePattern`.)\"],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"corrected-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:14\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"phrase\":\"**Corrected 2026-09-13: what the 2026-09-12 revision got wrong.**\",\"date\":\"2026-09-13\",\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:17\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"mention\":\"an amendment to `Accepted` spec 0011\"},\"phrase\":\"an amendment to `Accepted` spec 0011\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1: a new, strictly read only `security definer` function.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A signed in user's own usage reaches the page through a new Postgres function, `get_job_search_usage_summary`, that mirrors `check_usage_gate`'s own shape: it derives the caller from `auth.uid()` internally, computes `period_start` with the identical expression, and returns only `job_search`'s account week window `consumed_count` and the matching `cap_value`. It takes no parameter.",
+        "rejected_spans": [
+          "a cross check on this design found that a `call_type` parameter would let any signed in caller read `usage_cap` and the `configured` state for a call type this feature never shows, a wider readable surface than the unchanged table grants suggest"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The function reads `job_search` only, by construction, the same closed by design treatment `UsageGateReason` already gets in `gate.ts`; showing a second call type later is a spec change, not a parameter another caller could reach.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Neither `usage_gate_counter` nor `usage_cap` gets a new grant or a new row level security policy.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: `SearchPage` starts the search without awaiting it, and `UsageNotice` awaits that promise itself before reading usage.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`searchListings()` lifts out of `SearchResults` and into `SearchPage`, which calls it and does NOT await it. The promise passes to `UsageNotice` and to `SearchResults`; each awaits it where it needs it. `UsageNotice` awaits it as its first statement, then makes its own `get_job_search_usage_summary()` call, which therefore cannot begin until the search resolved and its gate call committed. One mechanism covers every render: the bare visit, the allowed search, all five refusals, and every failure.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The ordering is an `await` inside `UsageNotice`, and it can be undone by editing that component. What protects it is not a guarantee, it is two guards with different reach:",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**The tests catch reordering.** The three ordering tests in `src/app/(app)/search/page.test.ts` fail on any composition that lets the usage read run before the search resolves, including the `Promise.all` fold below.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Lint catches deletion.** Removing the `await` leaves the prop unused and `pnpm lint` runs at `--max-warnings=0`.",
+        "rejected_spans": [
+          "Verified 2026-09-13 on a scratch build of this shape: with the `await` removed, three ordering tests fail and ESLint reports the prop unused (it read `'searchResult'` there, since the rename in step 13 had not happened yet)."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**THE FORBIDDEN EDIT, NAMED.** `await Promise.all([searchInFlight, getJobSearchUsageSummary()])` inside `UsageNotice` uses the prop, typechecks, lints clean, and restores the bug. Lint will not save you; only the three ordering tests will.",
+        "rejected_spans": [
+          "This is the same edit that was used to reject Option 2 on 2026-09-12, and it applies to the chosen option too. That is the honest measure of how much better this shape is than the one it replaces: it moves the risky edit from the page into one component and adds a lint guard on deletion, and it removes none of the risk of reordering."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**NO CLAIM IS MADE THAT A REFACTOR CANNOT UNDO THIS**, and that language is retired from this spec deliberately.",
+        "rejected_spans": [
+          "Two claims of structural enforcement have now been made about this single line, first that the prop held the ordering and then that a data dependency did, and both were false. What is recorded instead is where the ordering lives and what catches its removal."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`searchListings()` returns a `Result` and does not reject for an expected failure, so a rejection here is a programmer bug (a throw from `cookies()` or the span wrapper) and belongs at the error boundary, exactly as before. What changes is that two components await the same rejected promise rather than one, so a single programmer bug reaches **three** reporting channels rather than two. Next logs it where `SearchResults` awaits and again where `UsageNotice` does, since awaiting an already rejected promise throws the same value again rather than a copy. Sentry then captures it a third time, independently of the render pipeline, through `onUnhandledRejectionIntegration()`, which is active because `src/sentry.server.config.ts` calls `Sentry.init({ dsn })` and passes no `integrations` key, so the Node defaults stand.",
+        "rejected_spans": [
+          "(verified 2026-09-13 against the installed `@sentry/node-core` 10.70.0, where that integration is listed in `getDefaultIntegrations()` under `Global Handlers`)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No test covers this path, and none is added: a trebled report of a programmer bug is noise, not a defect worth engineering around.",
+        "rejected_spans": [
+          "The count is stated exactly because \"twice\" was wrong once already, and an undercount here reads later as a measured figure."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "That revision shipped a different shape, `SearchPage` awaiting the search and passing the RESOLVED value to `UsageNotice` as a prop that was never read, with a `void searchResult;` line to satisfy lint.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "granularity_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The shape now chosen survives that refactor because it already performs its first half, moving the `await` off the page and into the consumer. It does not deliver streaming: `UsageNotice` still has no `Suspense` boundary of its own (step 4 declined one deliberately) and it now awaits the search, so the shell still waits. A later boundary becomes an additive change rather than one that silently breaks this line.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The prop's type was the awaited result, so dropping the `await` while keeping the call in `SearchPage` was a type error. That is real but narrow: it is a tripwire for exactly one edit, it does not survive relocating the read or moving to streaming, and it was never the guarantee the spec claimed.",
+        "rejected_spans": [
+          "Verified 2026-09-13: the same edit errors at `page.tsx:119` AND `page.tsx:131`, because `SearchResults`'s own `result` prop catches it too, so `UsageNotice`'s prop added no tripwire the page did not already have."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The gate returning its own count was dropped: returning the count from the gate does not remove the second read, it adds a first one. Three paths have no gate figure to return.",
+        "rejected_spans": [
+          "The obvious framing, that `check_usage_gate` already computes the new `consumed_count` atomically and could just return it, is genuinely attractive and will be proposed again by anyone who has not read this paragraph.",
+          "So the gate option ships two mechanisms plus a rule choosing between them, and pays for that with a drop and recreate of the atomic gate (Postgres cannot change a return type in place), an amendment to `Accepted` spec 0011, two fields on `UsageGateDecision` that `ai_scoring` and `ai_check` carry and ignore, and edits to four test files whose assertions pin the decision shape exactly. Its remaining advantage is provenance, knowing what one specific call cost rather than what the counter now reads, and no surface in this product consumes that. The cost is real and the benefit is currently unused, so it was dropped."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Both kill switch refusals return at `src/lib/usage-gating/gate.ts:135` and `:139`, before the `.rpc()` call at `:149`. Two of the five refusal reasons never reach the SQL function at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`validation_failed` (both search fields blank) returns from `searchListings()` before its `withUsageGate()` call, so no gate call happens on a render that `hasQuery` still reports as a search.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`withUsageGate()` discards the decision when the wrapped call fails (`src/lib/usage-gating/with-usage-gate.ts:50`), so a search that passed the gate, spent budget, and then failed at Adzuna loses the figure entirely.",
+        "rejected_spans": [
+          "That is the one path where a person paid for nothing, which is precisely where the number matters most."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A second collision would have made the gate option worse still: naming its output columns `consumed_count` and `cap_value` clashes with the six unqualified references to `consumed_count` already in the function body, and plpgsql raises `column reference \"consumed_count\" is ambiguous` at runtime.",
+        "rejected_spans": [
+          "Reproduced against this project's own database. Recorded here so a later revisit starts from the real cost."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`UsageNotice` now uses its prop for real, by awaiting it, so `@typescript-eslint/no-unused-vars` is satisfied honestly and no `eslint-disable` or underscore rename is needed. That the rule fires when the `await` is deleted is now a feature: it is a second guard on the ordering, at edit time, alongside the tests.",
+        "rejected_spans": [
+          "The `void searchResult;` line and the paragraph that chose it are gone with the shape they served.",
+          "(Recorded for anyone revisiting: the underscore rename never worked here anyway, because the rule is configured with no `argsIgnorePattern`.)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "corrected-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:14"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "**Corrected 2026-09-13: what the 2026-09-12 revision got wrong.**",
+        "date": "2026-09-13",
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:17"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "an amendment to `Accepted` spec 0011"
+        },
+        "phrase": "an amendment to `Accepted` spec 0011",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

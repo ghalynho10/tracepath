@@ -1,0 +1,396 @@
+{
+  "record": "0017",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0017-eval-harness-runner/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:41:34+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1749,
+  "output_tokens": 4038,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c2f0e5bc12e24114ab03b36eb23208d7",
+  "artifact_format_version": 3,
+  "unit_sha256": "84820e576f5837fba7b4d2a41b6bf683d7314d115ba7788cd72562bc029cc792",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This project's default build approach is Tracer Bullet (a thin end to end slice proven before scaling). Applied here: prove the whole real path, real vendor call, real verdict, real report, on exactly one pair before scaling to all sixteen and the cross pair and aggregate logic.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the `eval` Vitest project to `vitest.config.mts`: `extends: true`, `include: [\\\"test/eval/**/*.test.ts\\\"]`, `environment: \\\"node\\\"`, the shared `setupFiles`, `globalSetup: [\\\"./test/setup/require-stack.ts\\\"]`, `testTimeout: 300_000`, `hookTimeout: 60_000`, `maxConcurrency: 4`, and `fileParallelism: false` scoped to this project alone. Add the `\\\"eval\\\": \\\"vitest run --project eval\\\"` script to `package.json`. Satisfies **AC-1**, **AC-2**, **AC-11**.\",\"rejected_spans\":[\"(pulls in the root `resolve.tsconfigPaths` and the `server-only` alias every other project already relies on; omitting it is exactly the failure Option 2 was rejected for, since `scoreListing()`'s own `import \\\"server-only\\\"` throws without it)\",\"(five sequential `ai_scoring` calls at its own 30 second `timeoutMs` ceiling each, plus headroom, since one pair's test body cannot finish faster than its slowest rerun)\",\"(the fixture user mint against a possibly cold stack)\",\"(a real, installed Vitest 4.1.11 option bounding how many pairs' test bodies run at once; set explicitly rather than left at whatever the installed version currently defaults to)\",\"the same reason `integration-serial` already carries it: this project is written to hold exactly one file sharing one minted session and one report writer, and a second file here would run in a separate worker by Vitest's own default, mint a second session, and race the first on the same report filename\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Export `resolvedModel()` from `src/lib/ai/tiers.ts`, and add `bandAnchorsHash()` as a small pure function in `src/features/scoring/eval/band-anchors-hash.ts`. Write the pure verdict logic in `test/helpers/eval-verdict.ts`: the three way outcome classification (refusal, rerun failure, scored success) from AC-3, the majority vote with the 3 of 5 inconclusive floor and the no majority/`acceptableBands` exception, the distinct `stability-probe` \\\"every success inside `acceptableBands`\\\" rule (AC-4), and the `preference-isolation` baseline comparison (AC-5). Wire `test/helpers/eval-verdict.test.ts` against constructed fixtures for each rule, no vendor call involved. Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**.\",\"rejected_spans\":[\"(lifted from the equivalent already written, but currently private to `src/lib/ai/tiers.test.ts`, which switches to importing it instead of keeping its own copy)\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The thin thread: `test/eval/harness.test.ts`, one `describe(\\\"eval harness\\\")`, a top level `beforeAll` running `validateGroundTruth()` (throwing with every issue if any, before anything else) then minting the one fixture session for the run; one `it.concurrent` per pair named `` `${pair.id} [${pair.tags.join(\\\" \\\")}]` ``, whose body awaits five sequential `scoreListing()` calls, feeds the outcomes to step 2's verdict function, stores the result in a module scoped `Map<string, PairVerdict>` keyed by pair id, and asserts that the verdict's status is `pass`, so `fail` and `inconclusive` both fail their own test with the denominator and distribution in the message; and a final `afterAll` that runs the preference leak check against the map, writes the JSON report (including the model id and anchors hash), then deletes the fixture user. Prove this against exactly `control-direct-match` (real vendor calls) before scaling: get `pnpm eval -t control-direct-match` green end to end. Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**.\",\"rejected_spans\":[\"(via the test context's own `expect`, required under `it.concurrent`)\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Scale to the full sixteen pairs, confirm `maxConcurrency` and `fileParallelism` behave as designed under a real, unfiltered `pnpm eval` run, and confirm the run's own exit code is non zero on a fail, an inconclusive pair, a leak, or an abort, and zero only when everything that ran passed cleanly. Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the committed `BAND_ANCHORS` drift test under `src/features/scoring/eval/` (the ordinary unit project, no vendor call): a literal `toEqual` pin of today's text plus a `bandAnchorsHash()` equality check, both failing by name, pointing at spec 0016's dataset, the moment either changes. Satisfies **AC-10**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add `/test/eval/.output/` to `.gitignore`. Satisfies **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"Satisfies **AC-1**, **AC-2**, **AC-11**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"Satisfies **AC-10**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0017\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies **AC-9**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This project's default build approach is Tracer Bullet (a thin end to end slice proven before scaling). Applied here: prove the whole real path, real vendor call, real verdict, real report, on exactly one pair before scaling to all sixteen and the cross pair and aggregate logic.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the `eval` Vitest project to `vitest.config.mts`: `extends: true`, `include: [\"test/eval/**/*.test.ts\"]`, `environment: \"node\"`, the shared `setupFiles`, `globalSetup: [\"./test/setup/require-stack.ts\"]`, `testTimeout: 300_000`, `hookTimeout: 60_000`, `maxConcurrency: 4`, and `fileParallelism: false` scoped to this project alone. Add the `\"eval\": \"vitest run --project eval\"` script to `package.json`. Satisfies **AC-1**, **AC-2**, **AC-11**.",
+        "rejected_spans": [
+          "(pulls in the root `resolve.tsconfigPaths` and the `server-only` alias every other project already relies on; omitting it is exactly the failure Option 2 was rejected for, since `scoreListing()`'s own `import \"server-only\"` throws without it)",
+          "(five sequential `ai_scoring` calls at its own 30 second `timeoutMs` ceiling each, plus headroom, since one pair's test body cannot finish faster than its slowest rerun)",
+          "(the fixture user mint against a possibly cold stack)",
+          "(a real, installed Vitest 4.1.11 option bounding how many pairs' test bodies run at once; set explicitly rather than left at whatever the installed version currently defaults to)",
+          "the same reason `integration-serial` already carries it: this project is written to hold exactly one file sharing one minted session and one report writer, and a second file here would run in a separate worker by Vitest's own default, mint a second session, and race the first on the same report filename"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Export `resolvedModel()` from `src/lib/ai/tiers.ts`, and add `bandAnchorsHash()` as a small pure function in `src/features/scoring/eval/band-anchors-hash.ts`. Write the pure verdict logic in `test/helpers/eval-verdict.ts`: the three way outcome classification (refusal, rerun failure, scored success) from AC-3, the majority vote with the 3 of 5 inconclusive floor and the no majority/`acceptableBands` exception, the distinct `stability-probe` \"every success inside `acceptableBands`\" rule (AC-4), and the `preference-isolation` baseline comparison (AC-5). Wire `test/helpers/eval-verdict.test.ts` against constructed fixtures for each rule, no vendor call involved. Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**.",
+        "rejected_spans": [
+          "(lifted from the equivalent already written, but currently private to `src/lib/ai/tiers.test.ts`, which switches to importing it instead of keeping its own copy)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The thin thread: `test/eval/harness.test.ts`, one `describe(\"eval harness\")`, a top level `beforeAll` running `validateGroundTruth()` (throwing with every issue if any, before anything else) then minting the one fixture session for the run; one `it.concurrent` per pair named `` `${pair.id} [${pair.tags.join(\" \")}]` ``, whose body awaits five sequential `scoreListing()` calls, feeds the outcomes to step 2's verdict function, stores the result in a module scoped `Map<string, PairVerdict>` keyed by pair id, and asserts that the verdict's status is `pass`, so `fail` and `inconclusive` both fail their own test with the denominator and distribution in the message; and a final `afterAll` that runs the preference leak check against the map, writes the JSON report (including the model id and anchors hash), then deletes the fixture user. Prove this against exactly `control-direct-match` (real vendor calls) before scaling: get `pnpm eval -t control-direct-match` green end to end. Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**.",
+        "rejected_spans": [
+          "(via the test context's own `expect`, required under `it.concurrent`)"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Scale to the full sixteen pairs, confirm `maxConcurrency` and `fileParallelism` behave as designed under a real, unfiltered `pnpm eval` run, and confirm the run's own exit code is non zero on a fail, an inconclusive pair, a leak, or an abort, and zero only when everything that ran passed cleanly. Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the committed `BAND_ANCHORS` drift test under `src/features/scoring/eval/` (the ordinary unit project, no vendor call): a literal `toEqual` pin of today's text plus a `bandAnchorsHash()` equality check, both failing by name, pointing at spec 0016's dataset, the moment either changes. Satisfies **AC-10**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add `/test/eval/.output/` to `.gitignore`. Satisfies **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-2**, **AC-11**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies the rest of **AC-1**, **AC-2**, **AC-7**, **AC-8**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "Satisfies **AC-10**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0017",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}
