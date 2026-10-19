@@ -17,17 +17,20 @@ from tracepath.artifacts import (
     GRAPH_BUILD,
     REVIEW_LOG,
     ArtifactCollisionError,
+    GraphBuildSummary,
     ManifestUnreadable,
     built_with_code_pass,
     built_with_held_view,
     built_with_narrow_hold,
     ensure_review_log,
+    graph_build_summary,
     now_utc,
     review_log_entries,
     review_queue_file,
     write_graph_build,
     write_review_queue,
 )
+from tracepath.ask.retrieve import build_pack, pack_lines
 from tracepath.config import (
     DEFAULT_MODEL,
     SettingsInvalid,
@@ -153,6 +156,13 @@ WITH_HELD_DEFAULT = True
 NO_HELD_ITEMS = (
     "--with-held: the graph holds no held item, so there is nothing held to show. "
     "Run `tracepath load --with-held` first, then trace again."
+)
+
+
+#: Why `ask` refuses a graph loaded without held items (spec 0009 AC-5b).
+ASK_NEEDS_HELD = (
+    "ask reads held items too, but the graph holds no held item. Run `tracepath load` "
+    "without --no-with-held first, then ask again."
 )
 
 
@@ -979,3 +989,76 @@ def extract(
         _say(line)
     if outcome.stop is not None:
         _fail(outcome.stop)
+
+
+def _ask_graph() -> GraphSlice:
+    """The graph `ask` reads: every item, held ones included (spec 0009 AC-5).
+
+    Raises:
+        SettingsInvalid: a Neo4j setting is missing.
+        GraphUnavailable: Neo4j cannot be reached.
+        SliceError: a node read back has no canonical id or no known label.
+    """
+    settings = load_neo4j_settings()
+    with connect(settings) as driver:
+        return read_graph(driver, settings.database, with_held=True)
+
+
+def _graph_line(built: GraphBuildSummary) -> str:
+    """How the graph was loaded, read from `artifacts/graph-build.json` (AC-5c)."""
+    held = "yes" if built.held_view else "no"
+    narrow = "yes" if built.narrow_hold else "no"
+    return f"Graph: held view {held}, narrow hold {narrow}, corpus {built.corpus_commit}."
+
+
+@app.command()
+def ask(
+    question: str | None = typer.Argument(
+        None, help='A why question in plain English, e.g. "Why does the landing rule hold?"'
+    ),
+    eval_question: int | None = typer.Option(
+        None, "--eval", help="Ask the question of eval entry N instead of a typed one."
+    ),
+    ceiling: float | None = typer.Option(
+        None, "--ceiling", help="The most this command may spend, in USD. Required."
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Find the items and price the call only: no call, no record."
+    ),
+    root: str = typer.Option(".", "--root", help="The repository root to read and write."),
+) -> None:
+    """Answer a why question from the graph, every claim citing the item it rests on.
+
+    Code finds the items, one model call reads them, and code checks every citation.
+    Prints the items first, then the answer, then what the call cost. Spends API credit
+    unless `--dry-run`.
+    """
+    if (question is None) == (eval_question is None):
+        _fail("give one QUESTION or --eval N, not both and not neither.")
+    if eval_question is not None:
+        _fail("ask --eval is not built yet (spec 0009 build plan step 5); type the question.")
+    if ceiling is None:
+        _fail("--ceiling USD is required: the most this command may spend.")
+    if not (math.isfinite(ceiling) and ceiling > 0):
+        _fail(f"--ceiling USD must be a finite number above 0, not {ceiling}.")
+    base = Path(root)
+    asked = str(question)
+    try:
+        built = graph_build_summary(base)
+        graph = _ask_graph()
+    except (ManifestUnreadable, SettingsInvalid, GraphUnavailable, SliceError) as exc:
+        _fail(str(exc))
+    if not _holds_held(graph):
+        _fail(ASK_NEEDS_HELD)
+
+    pack = build_pack(graph, asked)
+    _say(f"Question: {asked}")
+    _say(_graph_line(built))
+    for line in pack_lines(pack):
+        _say(line)
+    if not pack.items:
+        return
+    if dry_run:
+        _say("Dry run: no call made, no record written.")
+        return
+    _fail("the paid call is not built yet (spec 0009 build plan step 3), so no call is made.")

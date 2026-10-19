@@ -444,6 +444,35 @@ def built_with_held_view(root: Path) -> bool:
     return "held_view" in _manifest(root)
 
 
+@dataclass(frozen=True)
+class GraphBuildSummary:
+    """How the graph was loaded, as `ask` names it (spec 0009 AC-5c)."""
+
+    held_view: bool
+    narrow_hold: bool
+    corpus_commit: str
+
+
+def graph_build_summary(root: Path) -> GraphBuildSummary:
+    """The held view, the narrow hold setting and the corpus commit the last `load` wrote.
+
+    Raises:
+        ManifestUnreadable: the manifest is missing, not a JSON object, or names no
+            corpus commit, so an answer could not say which corpus it read.
+    """
+    if not (root / GRAPH_BUILD).exists():
+        raise ManifestUnreadable(f"{GRAPH_BUILD} does not exist: run `tracepath load` first")
+    manifest = _manifest(root)
+    commit = manifest.get("corpus_commit")
+    if not isinstance(commit, str):
+        raise ManifestUnreadable(f"{GRAPH_BUILD} names no corpus_commit")
+    return GraphBuildSummary(
+        held_view="held_view" in manifest,
+        narrow_hold=manifest.get("narrow_hold", False) is True,
+        corpus_commit=commit,
+    )
+
+
 def _built_with(root: Path, key: str) -> bool:
     """Whether the manifest holds `key` set to `true`; absent means false."""
     return _manifest(root).get(key, False) is True
