@@ -1,7 +1,7 @@
 # 0008. Review volume and routing policy
 
 **Date**: 2026-10-17
-**Status**: In Progress
+**Status**: Accepted
 **Amended**: 2026-10-17, before build plan step 5 (then renumbered step 6, the four way comparison) ran and before any measurement existed, per AC-14. The blind ruling packet (former AC-10 to AC-10e) is replaced by a visible marker: an item `--narrow-hold` releases now prints `RELEASED: narrow_hold` in `trace` and in the `eval`/`trace --eval` reports, the way a held item already prints `HELD:` (spec 0005), so a reader can always tell a released step from a plainly accepted one (AC-5f). AC-9's conditions (a) and (b) alone now decide the narrow hold rule's default flip; the amendment first rule is renumbered AC-9b. Reason: experiments 0012 and 0013 ruled 21 of 21 `known_trap_flag`/`endpoint_not_accepted` items of this kind agree, against 6 of 9 for experiment 0012's accepted controls; the project's standing rule favors visibility over a verification layer (`docs/scope/scope.md` line 10); and today a released item prints exactly like an accepted one, since `render.py` prints only `HELD:`. Most of those 21 items carried `multi_condition_split`, so the other known trap flags rest on the marker and AC-5's per flag counts rather than on a fresh blind ruling.
 
 **Corrected**: 2026-10-18, after the build and the measurement ([experiment 0014](../../../experiments/0014-review-volume-and-routing-policy/README.md)), as a note on what the text says, not an edit to AC-1 to AC-12 (AC-14). Three statements did not match the code:
@@ -60,6 +60,7 @@ This spec decides how to handle the review queue's size (990 rows against 29 uni
 
 *Adopting show with status as the default (`--with-held`)*
 - **AC-11**: `--with-held`'s default flips from off to on, across `load`, `trace`, and `eval` alike (the flag becomes an opt out, not an opt in), when, from AC-8's table comparing `--with-held` alone against baseline, at least one expected step moves from not reached to reached only as held. The count of held steps matching no expected item is reported beside this result as information; it is not itself part of the condition.
+  - **Note, 2026-10-18**: since `acff286`, `eval` and `trace --eval` with no held flag follow how the graph was loaded (`graph-build.json`'s `held_view`), which is still the held view after a plain `load`. An explicit `--with-held` or `--no-with-held` behaves as before. The criterion text above is unchanged.
 - **AC-11b**: Adopting show with status as the default changes spec 0002 AC-11 ("only accepted items are written to the graph by default") and spec 0005 AC-1 to AC-5 and its first key invariant ("no default path reads a held item"). The default flip is its own commit, preceded by a dated amendment to those criteria in both specs recording the new default, with every test tied to them updated in the same amendment commit, not left broken.
 
 *The outcome, whichever it is*
