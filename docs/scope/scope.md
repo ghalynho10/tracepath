@@ -50,6 +50,12 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 
 **Limit of the held out set:** all four of its questions sit in a small cluster of records (0004, 0010, 0016 to 0018). A pass there says little about the rest of the corpus.
 
+**Result, recorded 2026-10-19 (feature 16, spec [0009](../specs/0009-answer-at-question-time/index.md)):** the bar is met, judged by the engineer.
+- Eval questions 1 to 5: 5 of 5 right.
+- Held out questions 1 to 4: 3 of 4 right, and 1 partly right. Held out question 3's cause is retrieval: it did not reach 0018 line 63 (`0018#review-findings:10`), the invariant's text. Nothing was cut; the item sat beyond two hops.
+- Bar: at least 4 of 5 and at least 3 of 4, so met.
+- Cost: $0.3818 over nine calls on `claude-sonnet-5-5`, each question asked once, prompt `ask-1` frozen before the held out run (`8d28d1a`). Records in `artifacts/asks/` (`f7dbc7c`, `8977f29`, `6dd1aa1`).
+
 **What moves:** feature 15 folds into the new feature 16. Features 8 and 7 move to after v1 as retrieval improvements. Feature 5 (first traced chain) also moves to after v1: it closes only when the walk itself passes a question that spans two or more records, which is now the job of features 8 and 7.
 
 **History kept:** everything below this block is the earlier plan, left as recorded. Its 2026-10-19 fallback lines still stand as history, and its "v1 needs" list is superseded by feature 16.
@@ -229,7 +235,7 @@ _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to
   - [x] Gate: dry run over the five eval questions, the engineer's go and ceiling, then question 1 alone to measure one call's cost · done 2026-10-19: dry run bounds $0.1741 to $0.2086 (inputs 7,045 to 24,315 tokens); question 1 run once at ceiling $0.25, 22,681 in, 402 out, $0.0494 against its $0.2054 bound, record `artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json` (`f7dbc7c`)
   - [x] Eval wiring (`--eval`, the held out refusals, the one run guard; AC-29 to AC-33) · built 2026-10-19 (`946705e`), records named `<UTC time>-eval-<stem>-q<N>.json`; tested on temporary eval files only, no paid call
   - [x] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt · done 2026-10-19: each run once on prompt `ask-1` with no tuning, $0.2110 for the five calls, records in `artifacts/asks/` (`f7dbc7c`, `8977f29`); engineer's marks: all five right; **prompt `ask-1` frozen by the engineer on 2026-10-19**, this commit being the freeze commit the held out run follows
-  - [ ] Held out questions, once each, after the freeze; result reported against the bar
+  - [x] Held out questions, once each, after the freeze; result reported against the bar · done 2026-10-19 (`6dd1aa1`): 3 of 4 right and 1 partly right (question 3, retrieval), $0.1708 for the four calls; result recorded under the v1 finish line, bar met
 - [ ] Verify it: `/check verify answer at question time`
 - [ ] Test it: `/test answer at question time`
 
