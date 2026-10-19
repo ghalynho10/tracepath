@@ -54,6 +54,10 @@ _Order after feature 9 confirmed by the engineer 2026-10-18._ The held out run g
 
 **Question 4, corrected 2026-10-18.** The finish line above expects question 4 to stay inconclusive. Under the narrow hold default it reads `PASS`, its two items staying not reached (experiment 0014). The 2026-10-13 wording is left as recorded.
 
+**Question 4's count, 2026-10-19, written before feature 9's remaining units run.** Question 4's PASS (a proven absence) counts toward the 3 of 5, reported as "3 of 5, one of them a proven absence", strict reading first.
+
+**Fallback, 2026-10-19, decided before the full corpus run.** If fewer than 3 of 5 pass after feature 9 (counting question 4), v1 is still finished; the eval is reported as it is, with each failing question's cause from the 2026-10-19 diagnosis (a link the text does not state: questions 1 and 2; a link ending on a whole spec rather than an item: question 3; name resolution, feature 7: question 5), and those causes become the after v1 work.
+
 **Reconciled 2026-10-18:** feature 9's Done when used to say all five eval questions pass, which is stricter than this line. The engineer chose to match this line. Feature 9 no longer promises five of five, and the 3 of 5 bar lives here only.
 
 **Tripwire, before feature 9 starts:** look at how the released entity marks were ruled.
