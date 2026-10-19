@@ -30,6 +30,7 @@ REVIEW_LOG = ARTIFACTS_DIR / "review-log.json"
 #: it, until a measured result turns the pass on (spec 0007 AC-8, AC-8b).
 REVIEW_QUEUE_CODE_PASS = ARTIFACTS_DIR / "review-queue-code-pass.json"
 
+
 #: The build manifest every `load` rewrites (spec 0004 AC-17). Derived, like the graph,
 #: so it is replaced rather than appended to; it is not a run artifact.
 GRAPH_BUILD = ARTIFACTS_DIR / "graph-build.json"
@@ -351,6 +352,20 @@ class ManifestUnreadable(Exception):
     """The build manifest exists but cannot be read as a JSON object."""
 
 
+def review_queue_file(*, code_pass: bool, narrow_hold: bool, narrow_default: bool) -> Path:
+    """The queue file one `review-queue` routing writes, never over another routing's.
+
+    The default routing writes `review-queue.json`; each departure from it is named in
+    the file name, so `--code-pass` writes `review-queue-code-pass.json` (spec 0007
+    AC-8) and the narrow hold rule, when it is not the default, `-narrow-hold` (spec
+    0008 AC-5e), or `-without-narrow-hold` when it is and was turned off.
+    """
+    parts = ["code-pass"] if code_pass else []
+    if narrow_hold != narrow_default:
+        parts.append("narrow-hold" if narrow_hold else "without-narrow-hold")
+    return ARTIFACTS_DIR / ("-".join(["review-queue", *parts]) + ".json")
+
+
 def write_review_queue(
     root: Path, entries: list[dict[str, Any]], name: Path = REVIEW_QUEUE
 ) -> Path:
@@ -404,16 +419,48 @@ def built_with_code_pass(root: Path) -> bool:
     Raises:
         ManifestUnreadable: the manifest exists but is not a JSON object.
     """
+    return _built_with(root, "code_pass")
+
+
+def built_with_narrow_hold(root: Path) -> bool:
+    """Whether the last `load` applied the narrow hold rule (spec 0008 AC-5c, AC-5d).
+
+    A missing manifest, or one with no `narrow_hold` key, means it did not.
+
+    Raises:
+        ManifestUnreadable: the manifest exists but is not a JSON object.
+    """
+    return _built_with(root, "narrow_hold")
+
+
+def built_with_held_view(root: Path) -> bool:
+    """Whether the last `load` wrote held items: its manifest has a `held_view` key.
+
+    A missing manifest, or one with no `held_view` key, means it did not.
+
+    Raises:
+        ManifestUnreadable: the manifest exists but is not a JSON object.
+    """
+    return "held_view" in _manifest(root)
+
+
+def _built_with(root: Path, key: str) -> bool:
+    """Whether the manifest holds `key` set to `true`; absent means false."""
+    return _manifest(root).get(key, False) is True
+
+
+def _manifest(root: Path) -> dict[str, Any]:
+    """The build manifest as a JSON object; a missing manifest reads as empty."""
     path = root / GRAPH_BUILD
     if not path.exists():
-        return False
+        return {}
     try:
         manifest = json.loads(path.read_text())
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ManifestUnreadable(f"{GRAPH_BUILD} cannot be read ({exc})") from exc
     if not isinstance(manifest, dict):
         raise ManifestUnreadable(f"{GRAPH_BUILD} is not a JSON object")
-    return manifest.get("code_pass", False) is True
+    return manifest
 
 
 def write_graph_build(root: Path, manifest: dict[str, Any]) -> Path:

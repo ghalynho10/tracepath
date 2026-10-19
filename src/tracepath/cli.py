@@ -16,14 +16,15 @@ from tracepath import __version__
 from tracepath.artifacts import (
     GRAPH_BUILD,
     REVIEW_LOG,
-    REVIEW_QUEUE,
-    REVIEW_QUEUE_CODE_PASS,
     ArtifactCollisionError,
     ManifestUnreadable,
     built_with_code_pass,
+    built_with_held_view,
+    built_with_narrow_hold,
     ensure_review_log,
     now_utc,
     review_log_entries,
+    review_queue_file,
     write_graph_build,
     write_review_queue,
 )
@@ -79,10 +80,14 @@ from tracepath.pipeline import (
 )
 from tracepath.rebuild import (
     CodePassUnit,
+    NarrowHoldTally,
     RebuildFailed,
     apply_code_pass,
+    apply_narrow_hold,
     code_pass_report,
     committed_units,
+    narrow_hold_tally,
+    narrow_link_keys,
     partial_units,
     records_for_units,
     released_links,
@@ -129,11 +134,31 @@ CODE_PASS_HELP = (
     "its id and type is not held by a multi_condition_split flag alone. Off by default."
 )
 
+#: The help of every `--narrow-hold` option (spec 0008 AC-5b).
+NARROW_HOLD_HELP = (
+    "Route with the narrow hold rule of spec 0008: an item held only for known_trap_flag "
+    "or endpoint_not_accepted, its runs agreeing, is released once every entity it waits "
+    "on is accepted. On by default; --no-narrow-hold turns it off."
+)
+
+#: Whether the narrow hold rule applies to a command given neither `--narrow-hold` nor
+#: `--no-narrow-hold` (spec 0008 AC-9b, spec 0002 AC-11 as amended 2026-10-18).
+NARROW_HOLD_DEFAULT = True
+
+#: Whether held items are written and shown when a command is given neither
+#: `--with-held` nor `--no-with-held` (spec 0008 AC-11b, spec 0005 as amended 2026-10-18).
+WITH_HELD_DEFAULT = True
+
 #: Why `trace --with-held` refuses a graph a default load wrote (spec 0005 AC-26b).
 NO_HELD_ITEMS = (
     "--with-held: the graph holds no held item, so there is nothing held to show. "
     "Run `tracepath load --with-held` first, then trace again."
 )
+
+
+def _setting(given: bool | None, default: bool) -> bool:
+    """A two way flag's value: what the command was given, else the project default."""
+    return default if given is None else given
 
 
 def _say(text: str) -> None:
@@ -196,6 +221,9 @@ def review_queue(
         "Every other row names the model its unit's artifacts name.",
     ),
     code_pass: bool = typer.Option(False, "--code-pass", help=CODE_PASS_HELP),
+    narrow_hold: bool | None = typer.Option(
+        None, "--narrow-hold/--no-narrow-hold", help=NARROW_HOLD_HELP
+    ),
 ) -> None:
     """Rebuild the review queue from the committed run artifacts. No API call, no graph.
 
@@ -203,12 +231,15 @@ def review_queue(
     link sits in a file tracked in git is not true. The artifacts are the source of
     truth (spec 0001), so the queue is derived from them and never hand maintained.
     With `--code-pass`, the queue goes to its own file and the default one is left
-    alone (spec 0007 AC-8).
+    alone (spec 0007 AC-8). `--narrow-hold` does the same with its own file (spec 0008
+    AC-5e), and the two together write a third. The default routing always writes
+    the default file; each departure from it is named in the file it writes.
     """
     base = Path(root)
     corpus_snapshot = base / snapshot
+    narrow = _setting(narrow_hold, NARROW_HOLD_DEFAULT)
     try:
-        results = committed_units(base, corpus_snapshot, code_pass=code_pass)
+        results = committed_units(base, corpus_snapshot, code_pass=code_pass, narrow_hold=narrow)
     except RebuildFailed as exc:
         err_console.print(f"[red]✗[/red] {exc}")
         raise typer.Exit(code=1) from None
@@ -221,7 +252,9 @@ def review_queue(
     except ProvenanceMismatch as exc:
         _fail(str(exc))
 
-    queue = REVIEW_QUEUE_CODE_PASS if code_pass else REVIEW_QUEUE
+    queue = review_queue_file(
+        code_pass=code_pass, narrow_hold=narrow, narrow_default=NARROW_HOLD_DEFAULT
+    )
     write_review_queue(base, list(rows), queue)
     ensure_review_log(base)
     console.print(
@@ -237,12 +270,16 @@ def load_graph(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
-    with_held: bool = typer.Option(
-        False,
-        "--with-held",
-        help="Also write the items review holds back, each marked held (spec 0005).",
+    with_held: bool | None = typer.Option(
+        None,
+        "--with-held/--no-with-held",
+        help="Also write the items review holds back, each marked held (spec 0005). "
+        "On by default; --no-with-held writes accepted items only.",
     ),
     code_pass: bool = typer.Option(False, "--code-pass", help=CODE_PASS_HELP),
+    narrow_hold: bool | None = typer.Option(
+        None, "--narrow-hold/--no-narrow-hold", help=NARROW_HOLD_HELP
+    ),
 ) -> None:
     """Rebuild the graph from the committed run artifacts. No API call.
 
@@ -251,11 +288,18 @@ def load_graph(
     With `--with-held`, held items are written too, marked held; nothing is accepted.
     With `--code-pass`, units are routed with the code pass, each entity it released
     stamped `accepted_by` `code_pass`, and a report per unit says what it changed.
+    With `--narrow-hold`, the narrow hold rule of spec 0008 releases what it may, each
+    released entity and link stamped `accepted_by` `narrow_hold`, and the load prints
+    how many it released by reason and by flag.
     """
     base = Path(root)
     corpus_snapshot = base / snapshot
     held: HeldView | None = None
     report: tuple[CodePassUnit, ...] = ()
+    tally: NarrowHoldTally | None = None
+    narrow_links: frozenset[tuple[Any, str, str]] = frozenset()
+    narrow = _setting(narrow_hold, NARROW_HOLD_DEFAULT)
+    show_held = _setting(with_held, WITH_HELD_DEFAULT)
     try:
         settings = load_neo4j_settings()
         results = committed_units(base, corpus_snapshot)
@@ -268,7 +312,15 @@ def load_graph(
             results = apply_code_pass(results)
             corpus = resolve_accepted(results, records)
             report = code_pass_report(results, released_links(plain, corpus))
-        if with_held:
+        if narrow:
+            # Resolved both ways under the same code pass setting, so a link released
+            # in another unit is counted and stamped too (spec 0008 AC-5).
+            before = corpus
+            results = apply_narrow_hold(results, code_pass=code_pass)
+            corpus = resolve_accepted(results, records)
+            tally = narrow_hold_tally(before, results, corpus)
+            narrow_links = narrow_link_keys(before, corpus)
+        if show_held:
             held = build_held_view(results, corpus, records)
         provenances = [unit_provenance(result, ACCEPTED_BY) for result in results]
         manifest = graph_build(
@@ -280,6 +332,7 @@ def load_graph(
             unit_passes(base),
             held,
             code_pass=code_pass,
+            narrow_hold=tally.counts() if tally is not None else None,
         )
         with connect(settings) as driver:
             written = load(
@@ -292,6 +345,7 @@ def load_graph(
                 ACCEPTED_BY,
                 clear_first=True,
                 held=held,
+                narrow_links=narrow_links,
             )
     except (
         SettingsInvalid,
@@ -323,6 +377,9 @@ def load_graph(
         )
     for line in _code_pass_lines(report):
         _say(line)
+    if tally is not None:
+        for line in _narrow_hold_lines(tally):
+            _say(line)
     versions = ", ".join(f"{v}: {n}" for v, n in manifest["prompt_versions"].items())
     _say(f"Units per prompt version: {versions}.")
     # The graph mixes models until feature 9, so a load says which made what (spec 0007 AC-4).
@@ -359,6 +416,45 @@ def _code_pass_lines(report: Sequence[CodePassUnit]) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def _narrow_hold_lines(tally: NarrowHoldTally) -> tuple[str, ...]:
+    """What `load --narrow-hold` prints about its releases (spec 0008 AC-5)."""
+    reasons = ", ".join(f"{name} {n}" for name, n in tally.by_reason)
+    flags = ", ".join(f"{flag} {n}" for flag, n in tally.by_flag) or "none"
+    return (
+        f"Narrow hold (spec 0008): {tally.entities} entities and {tally.links} links "
+        "released, each stamped accepted_by narrow_hold.",
+        f"  By hold reason, an item counted under each reason that held it: {reasons} "
+        f"({tally.held_for_both} held for both).",
+        "  known_trap_flag releases by flag, an item counted under each flag any of its runs "
+        f"raised: {flags}.",
+    )
+
+
+def _refuse_narrow_hold_mismatch(base: Path, narrow_hold: bool) -> None:
+    """Exit 1 unless the graph was loaded with the narrow hold setting given (spec 0008 AC-5d).
+
+    Read from `artifacts/graph-build.json` before any connection; a missing
+    `narrow_hold` key means the graph was loaded without the rule.
+    """
+    try:
+        built = built_with_narrow_hold(base)
+    except ManifestUnreadable as exc:
+        _fail(str(exc))
+    if built == narrow_hold:
+        return
+    if narrow_hold:
+        _fail(
+            f"the narrow hold rule is on for this command, but {GRAPH_BUILD.as_posix()} says "
+            "the graph was loaded without it. Run `tracepath load` first, or add "
+            "--no-narrow-hold."
+        )
+    _fail(
+        f"{GRAPH_BUILD.as_posix()} says the graph was loaded with the narrow hold rule, but "
+        "it is off for this command. Run `tracepath load --no-narrow-hold` first, or drop "
+        "--no-narrow-hold."
+    )
+
+
 def _refuse_code_pass_mismatch(base: Path, code_pass: bool) -> None:
     """Exit 1 unless the graph was loaded with the routing this command will score.
 
@@ -383,6 +479,21 @@ def _refuse_code_pass_mismatch(base: Path, code_pass: bool) -> None:
     )
 
 
+def _scored_held_view(base: Path, given: bool | None) -> bool:
+    """The held view a score uses: the flag given, else how the graph was loaded.
+
+    With neither `--with-held` nor `--no-with-held`, `eval` and `trace --eval` follow
+    `artifacts/graph-build.json` (its `held_view` key), so a graph loaded with
+    `--no-with-held` is never scored under the held view's label.
+    """
+    if given is not None:
+        return given
+    try:
+        return built_with_held_view(base)
+    except ManifestUnreadable as exc:
+        _fail(str(exc))
+
+
 def _holds_held(graph: GraphSlice) -> bool:
     """Whether a load wrote held items: any held entity or `:Unresolved` node (AC-26)."""
     return any(
@@ -399,13 +510,16 @@ class _Committed:
     settled: dict[tuple[str, str], int]
 
 
-def _committed(base: Path, corpus_snapshot: Path, commit: str, code_pass: bool) -> _Committed:
+def _committed(
+    base: Path, corpus_snapshot: Path, commit: str, code_pass: bool, narrow_hold: bool = False
+) -> _Committed:
     """Rebuild every fully extracted unit from the run files, for scoring.
 
     With `code_pass`, routed with the pass, so the scoring explains the routing the
-    graph holds (spec 0007 AC-7d).
+    graph holds (spec 0007 AC-7d); with `narrow_hold`, the same for the narrow hold
+    rule (spec 0008).
     """
-    results = committed_units(base, corpus_snapshot, code_pass=code_pass)
+    results = committed_units(base, corpus_snapshot, code_pass=code_pass, narrow_hold=narrow_hold)
     corpus = resolve_accepted(results, records_for_units(results, corpus_snapshot, commit))
     return _Committed(results, corpus, settled_run_counts(base))
 
@@ -504,11 +618,12 @@ def trace(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
-    with_held: bool = typer.Option(
-        False,
-        "--with-held",
-        help="Walk through held items too, each printed as held (spec 0005). "
-        "Needs a graph from `load --with-held`.",
+    with_held: bool | None = typer.Option(
+        None,
+        "--with-held/--no-with-held",
+        help="Walk through held items too, each printed as held (spec 0005). On by default; "
+        "with --eval N and neither flag, follows how the graph was loaded. --no-with-held "
+        "walks accepted items only. Given by name, needs a graph holding held items.",
     ),
     release_held_out: bool = typer.Option(
         False,
@@ -517,6 +632,11 @@ def trace(
     ),
     code_pass: bool = typer.Option(
         False, "--code-pass", help=CODE_PASS_HELP + " Needs --eval N and a graph from it."
+    ),
+    narrow_hold: bool | None = typer.Option(
+        None,
+        "--narrow-hold/--no-narrow-hold",
+        help=NARROW_HOLD_HELP + " Needs --eval N and a graph from it.",
     ),
 ) -> None:
     """Walk the chain from one item and print every step, each citing its record.
@@ -534,6 +654,10 @@ def trace(
         _fail("--release-held-out reads an eval file, so it needs --eval N.")
     if code_pass and eval_question is None:
         _fail("--code-pass changes the routing scored, so it needs --eval N.")
+    if narrow_hold is True and eval_question is None:
+        _fail("--narrow-hold changes the routing scored, so it needs --eval N.")
+    narrow = _setting(narrow_hold, NARROW_HOLD_DEFAULT)
+    show_held = _setting(with_held, WITH_HELD_DEFAULT)
     base = Path(root)
     question: Question | None = None
     held_out = False
@@ -548,9 +672,11 @@ def trace(
                 held_out=held_out,
             )
             _refuse_code_pass_mismatch(base, code_pass)
+            _refuse_narrow_hold_mismatch(base, narrow)
+            show_held = _scored_held_view(base, with_held)
         settings = load_neo4j_settings()
         with connect(settings) as driver:
-            graph = read_graph(driver, settings.database, with_held=with_held)
+            graph = read_graph(driver, settings.database, with_held=show_held)
     except (
         EvalEntryUnusable,
         HeldOutRefused,
@@ -560,7 +686,7 @@ def trace(
         SliceError,
     ) as exc:
         _fail(str(exc))
-    if with_held and not _holds_held(graph):
+    if with_held is True and not _holds_held(graph):
         _fail(NO_HELD_ITEMS)
 
     if question is None:
@@ -577,9 +703,9 @@ def trace(
         scored = _score_question(
             question,
             graph,
-            _committed(base, corpus_snapshot, commit, code_pass),
+            _committed(base, corpus_snapshot, commit, code_pass, narrow),
             corpus_snapshot,
-            with_held=with_held,
+            with_held=show_held,
         )
     except (RebuildFailed, RecordError, EvalEntryUnusable, OSError, UnicodeDecodeError) as exc:
         _fail(str(exc))
@@ -605,11 +731,12 @@ def eval_set_command(
         "corpus/jobhunt/docs", "--snapshot", help="The pinned corpus snapshot."
     ),
     commit: str = typer.Option("2e40bcf", "--commit", help="The corpus commit the run pins."),
-    with_held: bool = typer.Option(
-        False,
-        "--with-held",
-        help="Score under the held item view too (spec 0005). "
-        "Needs a graph from `load --with-held`.",
+    with_held: bool | None = typer.Option(
+        None,
+        "--with-held/--no-with-held",
+        help="Score under the held item view too (spec 0005). With neither flag, follows how "
+        "the graph was loaded; --no-with-held scores accepted items only. Given by name, "
+        "needs a graph holding held items.",
     ),
     release_held_out: bool = typer.Option(
         False,
@@ -618,6 +745,11 @@ def eval_set_command(
     ),
     code_pass: bool = typer.Option(
         False, "--code-pass", help=CODE_PASS_HELP + " Needs a graph from `load --code-pass`."
+    ),
+    narrow_hold: bool | None = typer.Option(
+        None,
+        "--narrow-hold/--no-narrow-hold",
+        help=NARROW_HOLD_HELP + " Needs a graph loaded with the same setting.",
     ),
 ) -> None:
     """Score every question of an eval file: pass, fail or inconclusive, difference shown.
@@ -628,13 +760,16 @@ def eval_set_command(
     """
     base = Path(root)
     path = base / eval_file
+    narrow = _setting(narrow_hold, NARROW_HOLD_DEFAULT)
+    show_held = _scored_held_view(base, with_held)
     try:
         eval_set = read_eval_set(path, release_held_out=release_held_out)
         sidecar = read_sidecar(base, path)
         _refuse_code_pass_mismatch(base, code_pass)
+        _refuse_narrow_hold_mismatch(base, narrow)
         settings = load_neo4j_settings()
         with connect(settings) as driver:
-            graph = read_graph(driver, settings.database, with_held=with_held)
+            graph = read_graph(driver, settings.database, with_held=show_held)
     except (
         EvalEntryUnusable,
         HeldOutRefused,
@@ -644,11 +779,11 @@ def eval_set_command(
         SliceError,
     ) as exc:
         _fail(str(exc))
-    if with_held and not _holds_held(graph):
+    if with_held is True and not _holds_held(graph):
         _fail(NO_HELD_ITEMS)
     corpus_snapshot = base / snapshot
     try:
-        committed = _committed(base, corpus_snapshot, commit, code_pass)
+        committed = _committed(base, corpus_snapshot, commit, code_pass, narrow)
     except (RebuildFailed, RecordError, OSError, UnicodeDecodeError) as exc:
         _fail(str(exc))
 
@@ -663,7 +798,7 @@ def eval_set_command(
             _fail(f"cannot read a tracked example: {exc}")
         if digest is not None and digest != sidecar.examples_sha256:
             header.append(UNCHECKED_LINE)
-    if with_held:
+    if show_held:
         header.append(HELD_LABEL)
     for line in header:
         _say(line)
@@ -676,7 +811,7 @@ def eval_set_command(
         try:
             question = _question(eval_set.entries, sidecar, number, held_out=eval_set.held_out)
             report = _score_question(
-                question, graph, committed, corpus_snapshot, with_held=with_held
+                question, graph, committed, corpus_snapshot, with_held=show_held
             ).report
         except EvalEntryUnusable as exc:
             _say(f"Question {number}: UNUSABLE, {exc}")

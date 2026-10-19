@@ -118,12 +118,15 @@ def unresolved_row(node: UnresolvedNode) -> dict[str, Any]:
     )
 
 
-def link_row(link: ResolvedLink, provenance: Provenance) -> dict[str, Any]:
+def link_row(
+    link: ResolvedLink, provenance: Provenance, accepted_by: str | None = None
+) -> dict[str, Any]:
     """One relationship's endpoints and its own properties, provenance included.
 
     `provenance` is the unit the link was written in, so a chain step can say which
     prompt made it (spec 0004 AC-16). Records and `PART_OF` links are code's, not the
-    model's, and never pass through here.
+    model's, and never pass through here. A link carries `accepted_by` only when it is
+    given, which today is only a link the narrow hold rule released (spec 0008 AC-3b).
     """
     return {
         "from_id": link.source.canonical_id,
@@ -139,6 +142,7 @@ def link_row(link: ResolvedLink, provenance: Provenance) -> dict[str, Any]:
                 "prompt_version": provenance.prompt_version,
                 "model": provenance.model,
                 "commit": provenance.commit,
+                "accepted_by": accepted_by,
             }
         ),
     }

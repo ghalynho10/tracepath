@@ -2,6 +2,9 @@
 
 **Date**: 2026-10-07
 **Status**: Accepted
+**Amended**: 2026-10-18 by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b), with no paid call, after [experiment 0014](../../../experiments/0014-review-volume-and-routing-policy/README.md)'s four way comparison met spec 0008 AC-11: five expected steps move from not reached to reached only as held under `--with-held`. The held view becomes the default for `load`, `trace` and `eval`, and `--no-with-held` is the opt out. Marked inline: **AC-1**, **AC-3**, **AC-4** and **AC-5** now describe the opt out, **AC-2** is unchanged because `graph_slice()`'s own default is unchanged, and **key invariant 1** is restated. The user story "default output never contains a held item" is superseded by spec 0008 AC-11; key invariant 2 keeps what it protected, since a held item is never accepted, counted as accepted, or shown without `HELD:`. The default itself flips in the commit after this one.
+
+**Note, 2026-10-18**: since `acff286`, `eval` and `trace --eval` with no held flag follow how the graph was loaded (`graph-build.json`'s `held_view`), which is still the held view after a plain `load` (spec [0008](../0008-review-volume-and-routing-policy/index.md) AC-11). An explicit flag behaves as before. The criteria text is unchanged.
 
 ## Summary
 
@@ -18,11 +21,11 @@ The five conditions below were set by the engineer on 2026-10-06 (scope feature 
 **Acceptance criteria** (each holds one claim):
 
 *Default stays clean (condition 1)*
-- **AC-1**: `load` without `--with-held` writes no node and no relationship that has a `held` property.
-- **AC-2**: `graph_slice()` called without `with_held` drops every held node, every held link, and every link with an end that was dropped.
-- **AC-3**: The chain `trace` prints without `--with-held`, over a graph that holds held items, is byte identical to the chain over the same graph with no held items.
-- **AC-4**: `trace --eval N` without `--with-held` prints a report with no held line, no held outcome and no held label.
-- **AC-5**: `load` without `--with-held` writes a `graph-build.json` with no `held_view` key and prints no held line.
+- **AC-1**: `load` without `--with-held` writes no node and no relationship that has a `held` property. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): the held view is now the default, so this holds for `load --no-with-held`.
+- **AC-2**: `graph_slice()` called without `with_held` drops every held node, every held link, and every link with an end that was dropped. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): unchanged. `graph_slice()` and `read_graph()` still default to dropping held items; the commands pass `with_held` on by default, and off under `--no-with-held`.
+- **AC-3**: The chain `trace` prints without `--with-held`, over a graph that holds held items, is byte identical to the chain over the same graph with no held items. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): the held view is now the default, so this holds for `trace --no-with-held`.
+- **AC-4**: `trace --eval N` without `--with-held` prints a report with no held line, no held outcome and no held label. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): the held view is now the default, so this holds for `trace --eval N --no-with-held`, and likewise for `eval --no-with-held`.
+- **AC-5**: `load` without `--with-held` writes a `graph-build.json` with no `held_view` key and prints no held line. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): the held view is now the default, so this holds for `load --no-with-held`.
 - **AC-6**: `load --with-held` writes the same accepted entities and the same accepted links as `load`, in number, by id, and by endpoints. The accepted rows are built exactly as today, independent of the held view.
 
 *The walk (condition 2)*
@@ -154,7 +157,7 @@ A held `:Unresolved` node has `held` and no `held_reasons`. A held entity row is
 | report | the held nodes and links on an item's path | the chain's steps: `step.node.held`, `step.via.held`, followed by `step.parent` |
 
 **Key invariants**:
-1. No default path (load, walk, render, report) reads a held item. The one place that decides is `graph_slice()`.
+1. No default path (load, walk, render, report) reads a held item. The one place that decides is `graph_slice()`. · **Amended 2026-10-18** by spec [0008](../0008-review-volume-and-routing-policy/index.md) (AC-11b): the default path now reads held items, each one marked `HELD:` (key invariant 2); the opt out path, `--no-with-held`, reads none. The one place that decides is still `graph_slice()`.
 2. No held item is ever accepted, counted as accepted, or shown without `HELD:`.
 3. A held item never overwrites an accepted one, and an accepted write never leaves a `held` property behind. Written items are skipped, not merged.
 4. Every held write asserts its own row count through `_write()`. Where an endpoint is missing the load stops, as it does for accepted items.

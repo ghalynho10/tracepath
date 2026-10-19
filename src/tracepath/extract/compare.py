@@ -109,12 +109,39 @@ class ReviewItem:
     offset: int | None = None
 
 
+#: What `accepted_by` reads on an item the narrow hold rule released (spec 0008 AC-3).
+NARROW_HOLD = "narrow_hold"
+
+#: The only hold reasons the narrow hold rule may release (spec 0008 AC-1b, AC-1c).
+NARROW_REASONS = frozenset(
+    {ReviewReasonName.KNOWN_TRAP_FLAG, ReviewReasonName.ENDPOINT_NOT_ACCEPTED}
+)
+
+
+@dataclass(frozen=True)
+class NarrowRelease:
+    """One item `--narrow-hold` accepted inside its unit, with what held it before.
+
+    `item` is the review item routing would have queued, its reasons intact, so the
+    load can count releases by reason (spec 0008 AC-5). `flags` are the known trap flags
+    any of the unit's runs raised on the item's signature, their union. `relationship` is
+    set for a link, so the corpus step can tell a link released here from one another
+    unit still holds.
+    """
+
+    item: ReviewItem
+    flags: tuple[str, ...]
+    relationship: ExtractedRelationship | None = None
+
+
 @dataclass(frozen=True)
 class RoutedUnit:
     """What of a unit enters the graph, and what waits for a person.
 
     `released` names the accepted entities the code pass let through, each one held by
     its flag alone without it (spec 0007 AC-12). Empty when the pass is off.
+    `narrow_released` lists every item the narrow hold rule accepted (spec 0008), never
+    one the code pass already released. Empty when the rule is off.
     """
 
     comparison: RunComparison
@@ -122,6 +149,16 @@ class RoutedUnit:
     accepted_relationships: tuple[ExtractedRelationship, ...]
     review: tuple[ReviewItem, ...]
     released: frozenset[str] = frozenset()
+    narrow_released: tuple[NarrowRelease, ...] = ()
+
+    @property
+    def narrow_entities(self) -> frozenset[str]:
+        """The canonical ids of the entities the narrow hold rule accepted."""
+        return frozenset(
+            r.item.canonical_id
+            for r in self.narrow_released
+            if r.relationship is None and r.item.canonical_id is not None
+        )
 
 
 def entity_identity(entity: IdentifiedEntity) -> str:
@@ -340,8 +377,56 @@ def _flag_alone_releasable(canonical_id: str, outputs: Sequence[IdentifiedOutput
     )
 
 
+def entity_flags(
+    outputs: Sequence[IdentifiedOutput], signature: EntitySignature
+) -> tuple[str, ...]:
+    """Every known trap flag any run raised on an entity with this signature, sorted (AC-5).
+
+    Matched on the signature the runs were compared on, so a run that gave the entity
+    another derived ordinal still counts.
+    """
+    return tuple(
+        sorted(
+            {
+                str(flag)
+                for output in outputs
+                for entity in output.entities
+                if entity_signature(entity) == signature
+                for flag in entity.entity.known_trap_flags
+            }
+        )
+    )
+
+
+def link_flags(
+    outputs: Sequence[IdentifiedOutput], signature: EntitySignature | RelationshipSignature
+) -> tuple[str, ...]:
+    """Every known trap flag any run raised on a link with this signature, sorted (AC-5)."""
+    found: set[str] = set()
+    for output in outputs:
+        identities = identities_of(output)
+        for relationship in output.relationships:
+            if relationship_signature(relationship, identities) == signature:
+                found.update(str(flag) for flag in relationship.known_trap_flags)
+    return tuple(sorted(found))
+
+
+def narrow_releasable(reasons: Sequence[ReviewReason]) -> bool:
+    """Whether a held item's deduplicated reason names are a non empty subset of the two.
+
+    `runs_disagree`, `span_not_located` and `unclassified_type` are outside the set, so
+    any of them, alone or beside a releasable reason, keeps the item held (spec 0008
+    AC-1b, AC-1c).
+    """
+    names = {reason.name for reason in reasons}
+    return bool(names) and names <= NARROW_REASONS
+
+
 def route_runs(
-    outputs: Sequence[IdentifiedOutput], code_decided: frozenset[str] = frozenset()
+    outputs: Sequence[IdentifiedOutput],
+    code_decided: frozenset[str] = frozenset(),
+    *,
+    narrow_hold: bool = False,
 ) -> RoutedUnit:
     """Compare the runs of one unit and split it into what is accepted and what waits.
 
@@ -356,6 +441,13 @@ def route_runs(
     flags, and an entity held for any other reason keeps every reason (AC-12b, AC-12c).
     The pass only ever drops that one reason, so it never adds a hold (AC-13).
 
+    With `narrow_hold` (spec 0008), an item whose reasons pass `narrow_releasable()` is
+    accepted instead of queued, and listed in `narrow_released`. The code pass is
+    checked first, so an entity both would release is the code pass's (AC-4). A link's
+    reasons are read against the entities accepted outright or by the code pass, and
+    its `endpoint_not_accepted` releases only when every entity it waits on is accepted
+    by the end of this pass, the narrow hold's own releases included (AC-2).
+
     Raises:
         ComparisonError: fewer than two outputs were given.
     """
@@ -366,6 +458,8 @@ def route_runs(
     accepted_entities: list[IdentifiedEntity] = []
     review: list[ReviewItem] = []
     released: set[str] = set()
+    narrow: list[NarrowRelease] = []
+    narrow_ids: set[str] = set()
     seen: set[str] = set()
 
     for entity in first.entities:
@@ -377,6 +471,11 @@ def route_runs(
         ):
             released.add(entity.canonical_id)
             reasons = ()
+        elif narrow_hold and narrow_releasable(reasons):
+            flags = entity_flags(outputs, entity_signature(entity))
+            narrow.append(NarrowRelease(_item_for(entity, reasons), flags))
+            narrow_ids.add(entity.canonical_id)
+            reasons = ()
         if reasons:
             review.append(_item_for(entity, reasons))
             seen.add(str(entity_signature(entity)))
@@ -384,13 +483,34 @@ def route_runs(
             accepted_entities.append(entity)
 
     accepted_ids = frozenset(entity.canonical_id for entity in accepted_entities)
+    before_narrow = accepted_ids - narrow_ids
     known_ids = frozenset(entity.canonical_id for entity in first.entities)
 
     accepted_links: list[ExtractedRelationship] = []
     for relationship in first.relationships:
         reasons = _relationship_reasons(
-            relationship, comparison, identities, accepted_ids, known_ids
+            relationship, comparison, identities, before_narrow, known_ids
         )
+        if (
+            narrow_hold
+            and narrow_releasable(reasons)
+            and all(
+                reason.detail in accepted_ids
+                for reason in reasons
+                if reason.name is ReviewReasonName.ENDPOINT_NOT_ACCEPTED
+            )
+        ):
+            item = ReviewItem(
+                signature=relationship_signature(relationship, identities), reasons=reasons
+            )
+            flags = link_flags(outputs, item.signature)
+            narrow.append(NarrowRelease(item, flags, relationship))
+            reasons = ()
+        elif narrow_ids:
+            # Still held: its queue row names only the ends still waiting.
+            reasons = _relationship_reasons(
+                relationship, comparison, identities, accepted_ids, known_ids
+            )
         if reasons:
             signature = relationship_signature(relationship, identities)
             review.append(ReviewItem(signature=signature, reasons=reasons))
@@ -420,4 +540,5 @@ def route_runs(
         accepted_relationships=tuple(accepted_links),
         review=tuple(sorted(review, key=_queue_key)),
         released=frozenset(released),
+        narrow_released=tuple(narrow),
     )

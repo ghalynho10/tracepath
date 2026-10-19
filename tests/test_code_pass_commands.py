@@ -18,7 +18,7 @@ from typer.testing import CliRunner
 
 from tests.conftest import UNREACHABLE_URI
 from tracepath.artifacts import GRAPH_BUILD, REVIEW_QUEUE, REVIEW_QUEUE_CODE_PASS, RUNS_DIR
-from tracepath.cli import _committed, app
+from tracepath.cli import NARROW_HOLD_DEFAULT, _committed, app
 from tracepath.config import Neo4jSettings
 from tracepath.graph import connect
 from tracepath.graph.schema import clear
@@ -88,10 +88,14 @@ def test_ac_6_a_plain_review_queue_reproduces_the_committed_queue(queues: Queues
 
 
 def test_ac_8_review_queue_with_the_pass_writes_its_own_file(queues: Queues) -> None:
-    """covers: AC-8 (and it holds fewer rows: the pass only ever releases)."""
+    """covers: AC-8 (and it holds no more rows: the pass only ever releases).
+
+    Since the narrow hold rule became the default (spec 0008 AC-9b), it already
+    releases every entity the pass would, so the two queues can hold the same rows.
+    """
     assert queues.code_pass_code == 0
     rows = json.loads((queues.root / REVIEW_QUEUE_CODE_PASS).read_text())
-    assert 0 < len(rows) < len(json.loads(queues.plain))
+    assert 0 < len(rows) <= len(json.loads(queues.plain))
 
 
 def test_ac_8b_review_queue_with_the_pass_leaves_the_default_queue_alone(queues: Queues) -> None:
@@ -109,6 +113,8 @@ def eval_root(root: Path, code_pass: bool | None) -> Path:
     manifest: dict[str, object] = {"corpus_commit": COMMIT, "units": []}
     if code_pass is not None:
         manifest["code_pass"] = code_pass
+    if NARROW_HOLD_DEFAULT:
+        manifest["narrow_hold"] = True  # what a default load writes (spec 0008 AC-9b)
     (root / GRAPH_BUILD).parent.mkdir(parents=True)
     (root / GRAPH_BUILD).write_text(json.dumps(manifest))
     return root
@@ -223,7 +229,10 @@ def driver(neo4j_settings: Neo4jSettings) -> Iterator[Driver]:
 
 
 def run_load(root: Path, *extra: str) -> tuple[int, str, str]:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *extra])
+    """A load with the held view off (on by default since spec 0008 AC-11b): stamps only."""
+    result = runner.invoke(
+        app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), "--no-with-held", *extra]
+    )
     return result.exit_code, result.stdout, result.stderr
 
 
@@ -249,7 +258,8 @@ def test_load_with_and_without_the_pass(
     released = sorted(i for r in with_pass for i in r.released)
     assert released, "these two records hold flag only criteria the pass releases"
 
-    code, stdout, stderr = run_load(root, "--code-pass")
+    # The code pass alone, the narrow hold rule off, so every stamp is the pass's own.
+    code, stdout, stderr = run_load(root, "--code-pass", "--no-narrow-hold")
 
     assert code == 0, stderr
     assert json.loads((root / GRAPH_BUILD).read_text())["code_pass"] is True
@@ -269,7 +279,7 @@ def test_load_with_and_without_the_pass(
         stdout
     )
 
-    code, stdout, stderr = run_load(root)
+    code, stdout, stderr = run_load(root, "--no-narrow-hold")
 
     assert code == 0, stderr
     assert "code_pass" not in json.loads((root / GRAPH_BUILD).read_text())

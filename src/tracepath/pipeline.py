@@ -26,6 +26,7 @@ from tracepath.extract.client import (
 )
 from tracepath.extract.codepass import CODE_PASS
 from tracepath.extract.compare import (
+    NARROW_HOLD,
     ReviewItem,
     ReviewReason,
     ReviewReasonName,
@@ -695,6 +696,7 @@ def load(
     *,
     clear_first: bool = False,
     held: HeldView | None = None,
+    narrow_links: frozenset[tuple[RelationshipType, str, str]] = frozenset(),
 ) -> dict[str, int]:
     """Write records, entities, unresolved nodes and links, asserting every write.
 
@@ -707,6 +709,9 @@ def load(
     With a `held` view, its items are written after the accepted ones have all
     finished, through the same asserted writes, each marked held (spec 0005). The
     accepted rows are built exactly as without it.
+
+    An entity the narrow hold rule released is stamped `accepted_by` `narrow_hold`, and
+    so is a link whose type and endpoints are in `narrow_links` (spec 0008 AC-3, AC-3b).
 
     Raises:
         ProvenanceMismatch: a unit's runs disagree on model, prompt version or commit,
@@ -726,7 +731,16 @@ def load(
 
     link_rows: dict[RelationshipType, list[dict[str, Any]]] = {}
     for link_type, links in by_link_type(resolution.links).items():
-        link_rows[link_type] = [link_row(link, place_of(link)) for link in links]
+        link_rows[link_type] = [
+            link_row(
+                link,
+                place_of(link),
+                NARROW_HOLD
+                if (link.type, link.source.canonical_id, link.target.canonical_id) in narrow_links
+                else None,
+            )
+            for link in links
+        ]
 
     held_entities: dict[EntityType, list[dict[str, object]]] = {}
     held_part_of: list[dict[str, str]] = []
@@ -756,8 +770,14 @@ def load(
         # Only an entity the code pass released says so; the rest of the unit keeps
         # the load's own `accepted_by` (spec 0007 AC-16).
         released = replace(provenance, accepted_by=CODE_PASS)
+        narrowed = replace(provenance, accepted_by=NARROW_HOLD)
+        narrow_ids = result.routed.narrow_entities
         for entity in result.routed.accepted_entities:
-            stamp = released if entity.canonical_id in result.released else provenance
+            stamp = provenance
+            if entity.canonical_id in result.released:
+                stamp = released
+            elif entity.canonical_id in narrow_ids:
+                stamp = narrowed
             by_type.setdefault(entity.entity.type, []).append(
                 entity_row(entity, result.unit, commit, stamp)
             )
@@ -791,6 +811,7 @@ def graph_build(
     held: HeldView | None = None,
     *,
     code_pass: bool = False,
+    narrow_hold: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """The build manifest `load` writes to `artifacts/graph-build.json` (spec 0004 AC-17).
 
@@ -805,6 +826,8 @@ def graph_build(
     when the load wrote a held view (spec 0005 AC-24); a default load has none. A
     `code_pass` key, `true`, is there only when the load applied the code pass (spec
     0007 AC-6b, AC-7b), so `eval` can refuse to score routing the graph does not hold.
+    A `narrow_hold` key, `true`, and the release counts under `narrow_hold_released`
+    are there only when the load applied the narrow hold rule (spec 0008 AC-5, AC-5c).
     """
     units: list[dict[str, Any]] = []
     for result, provenance in zip(results, provenances, strict=True):
@@ -844,4 +867,7 @@ def graph_build(
         manifest["held_view"] = held.counts()
     if code_pass:
         manifest["code_pass"] = True
+    if narrow_hold is not None:
+        manifest["narrow_hold"] = True
+        manifest["narrow_hold_released"] = dict(narrow_hold)
     return manifest

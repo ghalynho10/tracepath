@@ -108,8 +108,20 @@ def corpus_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return write_root(tmp_path_factory.mktemp("corpus"))
 
 
+#: These tests score fixed questions over known routing, so the narrow hold rule, on by
+#: default since spec 0008 AC-9b, is turned off for every load and every scoring.
+NO_NARROW = "--no-narrow-hold"
+
+#: The held view, on by default since spec 0008 AC-11b, is off unless a test asks for it:
+#: a test's own `--with-held` comes later on the command line, and the last one wins.
+NO_HELD = "--no-with-held"
+
+
 def load(root: Path, *flags: str) -> None:
-    result = runner.invoke(app, ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), *flags])
+    result = runner.invoke(
+        app,
+        ["load", "--root", str(root), "--snapshot", str(SNAPSHOT), NO_NARROW, NO_HELD, *flags],
+    )
     assert result.exit_code == 0, result.stderr
 
 
@@ -149,7 +161,18 @@ def held_graph(corpus_root: Path, neo4j_settings: Neo4jSettings) -> Iterator[Pat
 def run(root: Path, *args: str, eval_file: str = "eval/questions.json") -> tuple[int, str, str]:
     result = runner.invoke(
         app,
-        [*args, "--eval-file", eval_file, "--root", str(root), "--snapshot", str(SNAPSHOT)],
+        [
+            args[0],
+            NO_HELD,
+            *args[1:],
+            NO_NARROW,
+            "--eval-file",
+            eval_file,
+            "--root",
+            str(root),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
     )
     return result.exit_code, result.stdout, result.stderr
 
@@ -322,6 +345,7 @@ def run_undecodable(root: Path, snapshot: Path, *args: str) -> tuple[int, str, s
         app,
         [
             *args,
+            NO_NARROW,
             *("--eval-file", "eval/undecodable.json"),
             *("--root", str(root), "--snapshot", str(snapshot)),
         ],
@@ -423,6 +447,57 @@ def test_ac_9b_a_held_block_is_the_held_trace_report_without_its_label(held_grap
     report = report[report.index(HELD_LABEL) + 1 :]
     lines = stdout.splitlines()
     assert lines[2 : 2 + len(report)] == report
+
+
+@pytest.mark.parametrize("command", [("eval",), ("trace", "--eval", "1")])
+def test_given_no_held_flag_eval_and_trace_eval_show_the_held_view(
+    held_graph: Path, command: tuple[str, ...]
+) -> None:
+    """covers: spec 0008 AC-11 (the held view is on by default in trace and eval, not just load)."""
+    bare = runner.invoke(
+        app,
+        [
+            *command,
+            NO_NARROW,
+            "--eval-file",
+            "eval/scorable.json",
+            "--root",
+            str(held_graph),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
+    )
+    _, held, _ = run(held_graph, *command, "--with-held", eval_file="eval/scorable.json")
+    _, plain, _ = run(held_graph, *command, eval_file="eval/scorable.json")
+
+    assert bare.exit_code == 0, bare.stderr
+    assert bare.stdout == held
+    assert HELD_LABEL in held.splitlines() and held != plain
+
+
+@pytest.mark.parametrize("command", [("eval",), ("trace", "--eval", "1")])
+def test_given_no_held_flag_over_a_graph_loaded_without_held_items_no_held_label_prints(
+    default_graph: Path, command: tuple[str, ...]
+) -> None:
+    """covers: the 2026-10-18 review's first finding (no flag follows `held_view`)."""
+    bare = runner.invoke(
+        app,
+        [
+            *command,
+            NO_NARROW,
+            "--eval-file",
+            "eval/scorable.json",
+            "--root",
+            str(default_graph),
+            "--snapshot",
+            str(SNAPSHOT),
+        ],
+    )
+    _, plain, _ = run(default_graph, *command, eval_file="eval/scorable.json")
+
+    assert bare.exit_code == 0, bare.stderr
+    assert HELD_LABEL not in bare.stdout.splitlines()
+    assert bare.stdout == plain
 
 
 # AC-29 and AC-9c: the held out label, and the order above the first block.

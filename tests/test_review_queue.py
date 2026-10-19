@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from tracepath.artifacts import REVIEW_QUEUE
+from tracepath.cli import NARROW_HOLD_DEFAULT
 from tracepath.extract.compare import ReviewItem, ReviewReason, ReviewReasonName
 from tracepath.pipeline import CorpusResolution, HeldLink, UnitResult, resolve_accepted, review_rows
 from tracepath.rebuild import committed_units, records_for_units
@@ -102,12 +103,17 @@ def test_the_queue_is_stable_from_one_rebuild_to_the_next() -> None:
 
 
 def test_the_committed_queue_matches_what_the_committed_artifacts_produce() -> None:
-    """The queue is derived, never hand maintained, so a stale file is a real defect."""
-    committed = json.loads((ROOT / REVIEW_QUEUE).read_text())
+    """The queue is derived, never hand maintained, so a stale file is a real defect.
 
-    assert [row["signature"] for row in committed] == [
-        list(row["signature"]) for row in rebuilt().rows
-    ]
+    It is the default routing's queue, so it is rebuilt with the narrow hold rule set
+    as the default sets it (spec 0008 AC-9b).
+    """
+    committed = json.loads((ROOT / REVIEW_QUEUE).read_text())
+    results = committed_units(ROOT, SNAPSHOT, narrow_hold=NARROW_HOLD_DEFAULT)
+    corpus = resolve_accepted(results, records_for_units(results, SNAPSHOT, COMMIT))
+    rows = review_rows(results, corpus.held, MODEL, QUEUED_AT)
+
+    assert [row["signature"] for row in committed] == [list(row["signature"]) for row in rows]
 
 
 def test_a_held_link_from_a_unit_with_no_results_is_still_queued() -> None:
