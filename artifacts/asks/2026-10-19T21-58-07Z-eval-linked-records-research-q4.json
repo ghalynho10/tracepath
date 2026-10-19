@@ -1,0 +1,1684 @@
+{
+  "asked_at": "2026-10-19T21:58:07+00:00",
+  "question": "Why is the return path cookie's max age 10 minutes? Is it matched to the lifetime of the PKCE code verifier cookie Supabase writes on the same sign in action, or to the session policy spec 0007 AC-19 records?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 4,
+  "called": true,
+  "search_words": [
+    "return",
+    "path",
+    "cookie's",
+    "max",
+    "age",
+    "10",
+    "minutes",
+    "matched",
+    "lifetime",
+    "pkce",
+    "code",
+    "verifier",
+    "cookie",
+    "supabase",
+    "writes",
+    "same",
+    "sign",
+    "action",
+    "session",
+    "policy",
+    "spec",
+    "0007",
+    "ac-19",
+    "records"
+  ],
+  "items": [
+    {
+      "id": "0008/AC-14",
+      "line": "0008/AC-14  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:67  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-14**: Each provider Server Action reads the hidden field and validates it again. When the value is accepted it writes the return cookie **before** the call that produces the provider URL, so the cookie is already on the response whichever way that call goes. When the value is rejected or absent it writes no cookie and proceeds, and sign in works normally without a deep link. The cookie is `httpOnly`, `SameSite=Lax`, `Path` scoped to `/auth/callback`, with a max age of 10 minutes, and its value is percent encoded on write and decoded before validation on read. `redirectTo` is unchanged and still carries nothing but `currentOrigin()` and the callback path, so spec 0007's safeguard 3 stands."
+    },
+    {
+      "id": "0009/AC-24",
+      "line": "0009/AC-24  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:163  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all."
+    },
+    {
+      "id": "0009/AC-14",
+      "line": "0009/AC-14  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:84  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24."
+    },
+    {
+      "id": "0007/AC-4",
+      "line": "0007/AC-4  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\n  - **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`. Documented expected behaviour, not a misconfiguration.\n  - **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`"
+    },
+    {
+      "id": "0009#follow-up:11",
+      "line": "0009#follow-up:11  FollowUp  held  specs/0009-terms-and-privacy-notices/index.md:610  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A cross check the same day found the first draft of this correction still wrong, twice.** First, AC-14's replacement text named only two cookie kinds; `@supabase/ssr` also writes short lived PKCE verifier cookies during the OAuth handshake, a fact already documented in this repo (`src/features/auth/AGENTS.md:29`, \"the PKCE code verifier is a host only cookie\") but never carried to the page a visitor reads. Second, AC-24's first draft proposed registering `src/features/demo/refresh-session.ts` as a cookie that reaches nobody: verified against the actual code, that module never touches an HTTP cookie store at all, `createCookieJar()` holds its state in a plain `Map`, so it was about to be named, even as an undisclosed one, in a legal document it has nothing to do with."
+    },
+    {
+      "id": "0009#build-plan:9",
+      "line": "0009#build-plan:9  BuildStep  held  specs/0009-terms-and-privacy-notices/index.md:484  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**7a.** Ship a corrected, hand written `COOKIES` array in `privacy-notice.tsx` promptly: disclose the Supabase session cookie, the PKCE verifier cookies, and `jobhunt_return_path` truthfully. This is an interim, manually verified fix, not yet enforced by a test, satisfies the corrected **AC-14** on its own. Ships first and alone."
+    },
+    {
+      "id": "0014/AC-20a",
+      "line": "0014/AC-20a  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:51  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-20a**: `src/proxy.ts` **withholds the refreshed session cookie from the response of a Server Action request**, while still handing the refreshed value to that request's own code through `request.cookies.set()`, so `recordApplication` can verify its caller. The branch keys on the presence of Next's `next-action` request header, never on the route, so binding rule 6's mechanical guard is untouched: the proxy still cannot tell a protected path from a public one. This is the criterion the 25 weekly Adzuna calls actually rest on. **The trade is deliberate**: the browser keeps its stale cookie until its next ordinary request, which refreshes and persists as usual. That refresh reuses a token the action already rotated, which GoTrue accepts inside `refresh_token_reuse_interval` (10 seconds on this project, read from the running container). **Driven, and the first version of this measurement did not cover the case that matters** (found by the fresh model review on 2026-09-05): three applies about six seconds apart all sit INSIDE the reuse interval, and a pause before an ordinary navigation proves nothing about a second action, because the navigation persists a fresh cookie anyway. The shape that actually tests it is two applies **sixteen seconds apart with no request of any kind between them**. Driven: both applies succeeded, both rows landed, no message on either, and the navigation after returned 200 still signed in with a freshly rotated cookie. The token family was not revoked. Amends spec [0008](../0008-app-shell-and-navigation/index.md) AC-10 and spec [0001](../0001-stack-and-architecture/index.md) binding rule 6, both dated the same day."
+    },
+    {
+      "id": "0008#feature-design:13",
+      "line": "0008#feature-design:13  Constraint  accepted  specs/0008-app-shell-and-navigation/index.md:162  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The cookie is `httpOnly`, `SameSite=Lax`, 10 minute max age, and `Path` scoped to the callback so it is not carried on ordinary navigation."
+    },
+    {
+      "id": "0007/AC-19",
+      "line": "0007/AC-19  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:42  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-19**: The session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments (local, the development project, the production project), not read off `config.toml` alone, which governs only the local stack."
+    },
+    {
+      "id": "0004#follow-up:8",
+      "line": "0004#follow-up:8  FollowUp  accepted  specs/0004-test-foundation/index.md:172  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Driving a Server Action without a browser is deferred to feature 9, deliberately.** Spec 0001 names it as one of three must satisfy constraints on the test runner; this feature meets the other two (the local stack with the real policies, and the development only session mint). Recorded here so it is not rediscovered a third time: fetch the page, read the hidden fields React renders on the form (`$ACTION_REF_<n>`, `$ACTION_<n>:0` carrying the action id, `$ACTION_<n>:1` carrying the previous `useActionState` state, `$ACTION_KEY`), then post those plus the real form fields as multipart to the same route; a `303` carrying the session cookie means it ran. **`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside. See `test/integration/profile-form.test.ts`. The `Next-Action` header path is fiddlier and silently loses the form fields. Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel. Feature 9 owns proving it, and its done when clause in the scope now says so."
+    },
+    {
+      "id": "0007#consequences:10",
+      "line": "0007#consequences:10  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:312  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Google's consent screen does not name this product, and that is a user visible misrepresentation on the front door.** Verified 2026-08-30 by running the real handshake: the screen reads \"Sign in to `serbucmdtvbspkbmxewl.supabase.co`\", tells the person Google will let *that host* access their information, and points them at that host's Privacy Policy and Terms of Service, which do not exist. The word \"JobHunt\" appears nowhere. GitHub's screen, run minutes earlier against the same project, reads \"Authorize JobHunt\" correctly, so this is Google specific rather than a misconfiguration. **Cause is inferred, not confirmed**: Google appears to derive the displayed name from an Authorized domain, and the only authorized domains are the two `supabase.co` hosts, which this project does not own and cannot verify. Both remedies need a domain we own, so see the Follow-up. **Not a v1 blocker**: sign in works and both providers were exercised live."
+    },
+    {
+      "id": "0008#feature-design:4",
+      "line": "0008#feature-design:4  Constraint  held  specs/0008-app-shell-and-navigation/index.md:150  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The proxy writes no cookie **of its own** and holds no route knowledge. It cannot tell a protected path from a public one, which is what `src/proxy.test.ts` lines 49 to 70 assert and AC-9 keeps true. It has always passed the Supabase session cookie through on a refresh, which is its one job; AC-10b withholds even that from a Server Action response, keyed on request kind and never on route, so this invariant is untouched."
+    },
+    {
+      "id": "0009#follow-up:9",
+      "line": "0009#follow-up:9  FollowUp  accepted  specs/0009-terms-and-privacy-notices/index.md:592  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-14's cookie disclosure was found false on the live site, 2026-09-18.** The privacy notice stated \"One cookie is set, and it is the session cookie that keeps you signed in\", which was wrong: `rememberReturnPath()` in `src/features/auth/actions.ts` writes a second cookie, `jobhunt_return_path` (spec 0008 AC-5b), whenever a signed out visitor follows a protected deep link, cleared by the callback at `src/app/auth/callback/route.ts:73`. It is first party, `httpOnly`, short lived (600 seconds) and strictly necessary, so the fix is accuracy rather than a consent question."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0007/AC-11",
+      "line": "0007/AC-11  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:34  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-11**: Sign out is a Server Action in `src/features/auth/`, opens its registered span as its first statement, and **constructs** a `failure()` on the failing path, which reports, before redirecting either way. It does not return one: `redirect()` works by throwing, so no caller ever regains control to read a returned value. `src/app/(app)/health/page.tsx` imports it from there."
+    },
+    {
+      "id": "0008#decision:2",
+      "line": "0008#decision:2  Constraint  held  specs/0008-app-shell-and-navigation/index.md:91  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Three routes under `(app)`, a chrome only header primitive in `src/components/ui/` composed per page on both sides (revision 5), no mobile navigation machinery, one shared landing rule, the return path carried as a request header then a query parameter then a cookie written by the Server Action, and a small door route handler that lets `/` stay static while never inviting a signed in visitor to sign in."
+    },
+    {
+      "id": "0008#build-plan:8",
+      "line": "0008#build-plan:8  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:205  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`/sign-in` parses `next` and renders the hidden field; the Server Actions validate, write the cookie before the provider call, and carry the value onto their error redirect, satisfies **AC-13**, **AC-14**, **AC-14a**"
+    },
+    {
+      "id": "0008/AC-14a",
+      "line": "0008/AC-14a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:68  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14a**: The deep link survives a failed sign in attempt, on both error paths, or the spec says it does not. When `startProviderSignIn` fails, `signInWithGoogle` and `signInWithGitHub` redirect to `signInErrorPath(code)` (`src/features/auth/actions.ts:53` and `:79`); that path carries the accepted `next` value so the retry keeps it. When the callback fails it redirects to `/sign-in?error=...` and AC-15 has already cleared the cookie, so that path carries the value forward on the redirect too."
+    },
+    {
+      "id": "0009#build-plan:10",
+      "line": "0009#build-plan:10  BuildStep  held  specs/0009-terms-and-privacy-notices/index.md:488  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**7b.** Build the `CookieDisclosure` registry, then replace 7a's hand written array with `COOKIES` rendered FROM the registry the same way `RECIPIENTS_INTRO`'s list renders from `DATA_RECIPIENTS` (invariant 1's shape, extended to cookies), then add the primary integration level `Set-Cookie` assertion and the secondary source scan guard, satisfies **AC-24** and closes the two-lists gap 7a's stopgap otherwise leaves open."
+    },
+    {
+      "id": "0009#feature-design:27",
+      "line": "0009#feature-design:27  TestScenario  held  specs/0009-terms-and-privacy-notices/index.md:437  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cookie drift, real response (added 2026-09-18, revised after cross check): the integration suite drives sign in start, the callback, and an ordinary signed in navigation as three separate steps, and asserts each step's own `Set-Cookie` names against the registry, verifies **AC-24**."
+    },
+    {
+      "id": "0009#feature-design:28",
+      "line": "0009#feature-design:28  TestScenario  held  specs/0009-terms-and-privacy-notices/index.md:442  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cookie drift, source scan (secondary net): a new cookie setting call site under `src/` with no matching registry entry fails the unit suite, and a registry entry naming a call site that no longer exists also fails. A known non cookie in source text (an in memory jar, a deliberate no-op adapter) is explicitly excluded rather than silently matched, verifies **AC-24**."
+    },
+    {
+      "id": "0009/AC-23",
+      "line": "0009/AC-23  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:144  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-23**: The stored field list is rendered from a typed field registry, and a test fails when `src/lib/supabase/database.types.ts`, which is generated from the applied schema, shows a column in a personal data table that no registry entry names. A migration that adds a column the notice does not mention fails the suite rather than quietly making the notice incomplete."
+    },
+    {
+      "id": "0009/AC-5",
+      "line": "0009/AC-5  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:60  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: Adding a key to `src/env.ts` that no registry entry accounts for fails the unit suite."
+    },
+    {
+      "id": "0009#build-plan:2",
+      "line": "0009#build-plan:2  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:460  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Create the two typed registries (recipients, with today's five entries; stored fields, covering the six tables plus the identity fields) and the effective date constant, plus the three guard tests: the recipient test binding to `src/env.ts`, the field test binding to `src/lib/supabase/database.types.ts`, and the absence test for analytics dependencies and third party script tags. Add the Sentry configuration regression test, satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:5",
+      "line": "0009#build-plan:5  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:471  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write the privacy notice's real content: the stored field list, the recipient list rendered from the registry, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, the rights and lawful basis, the Google disclosure, and the cookie line, satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0009#feature-design:26",
+      "line": "0009#feature-design:26  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:435  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Tracking drift: adding an analytics dependency or a third party script tag fails the unit suite, verifies **AC-14**."
+    },
+    {
+      "id": "0009#requirements:5",
+      "line": "0009#requirements:5  AcceptanceCriterion  accepted  STRUCK  specs/0009-terms-and-privacy-notices/index.md:84  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The privacy notice discloses the session cookie as strictly necessary to sign in, and states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so the claim cannot become false in silence."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:12  BuildStep  accepted  scope/scope.md:185  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test · **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:14  BuildStep  accepted  scope/scope.md:187  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies · **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0007#copy:5",
+      "line": "0007#copy:5  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:254  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**`COPY-4`'s \"Start again from here. An older tab or link won't work.\" is the AC-4 fix in plain words, not politeness.** The clause is load bearing and must not be trimmed for brevity."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:12  BuildStep  accepted  scope/scope.md:139  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The thin thread, Google only, proved on a preview: both provider stanzas in `config.toml` with the local redirect URLs corrected, `src/features/auth/` with `signInWithGoogle()` and the `/auth/callback` route handler, `/sign-in` rebuilt as a real page with the five member error enum, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18 · **done 2026-08-30**"
+    },
+    {
+      "id": "scope#resolved:2",
+      "line": "scope#resolved:2  Consequence  accepted  scope/scope.md:522  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**What it fixed**: the product now serves from a domain it owns, and that redirect is what spec 0007 **AC-4** leans on to stop a sign in being started on a hostname the callback never returns to."
+    },
+    {
+      "id": "0001",
+      "line": "0001  record  accepted  specs/0001-stack-and-architecture/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Stack and architecture for JobHunt"
+    },
+    {
+      "id": "0001#binding-rules:25",
+      "line": "0001#binding-rules:25  Constraint  accepted  specs/0001-stack-and-architecture/index.md:133  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**6. Authorisation is never decided in the proxy.** The proxy (`src/proxy.ts`, the file Next.js called `middleware.ts` before 16) refreshes the Supabase session cookie and does nothing else. The protected layout verifies the session, and every Server Action verifies its own caller independently. Row level security in Postgres is the guarantee behind both."
+    },
+    {
+      "id": "0008",
+      "line": "0008  record  accepted  specs/0008-app-shell-and-navigation/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "App shell and navigation"
+    },
+    {
+      "id": "0008/AC-10",
+      "line": "0008/AC-10  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:61  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-10**: The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run."
+    },
+    {
+      "id": "0008/AC-10b",
+      "line": "0008/AC-10b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:62  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-10b**: **On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. The branch keys on Next's `next-action` request header, **never on the route**, so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination. The cost is that the browser keeps its stale cookie until its next ordinary request; GoTrue's `refresh_token_reuse_interval` covers the reuse, driven as two applies sixteen seconds apart with no request between them, which is the shape that leaves the interval; both succeeded and the session survived."
+    },
+    {
+      "id": "0014#decision:7",
+      "line": "0014#decision:7  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:69  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "A cookie mutated during the action's request. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a."
+    },
+    {
+      "id": "0014#feature-design:36",
+      "line": "0014#feature-design:36  TestScenario  accepted  specs/0014-apply-redirect-and-application-record/index.md:206  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Expired session apply: an apply on a session whose access token has expired spends no Adzuna call, which is the one a fresh session measurement misses entirely, verifies **AC-10**, **AC-20a**. **Drive it from a real browser and make the action `POST` the first request after expiry**"
+    },
+    {
+      "id": "0014/AC-20",
+      "line": "0014/AC-20  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:50  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-20**: The apply action builds its Supabase client with a **read only cookie adapter**, so nothing inside it can write a session cookie. **This criterion is defence in depth, and it is NOT what makes AC-10 hold for an expired session** (corrected 2026-09-05, revision 4; the original wording said it was). Measured: with the adapter in place and unchanged, an expired session apply still spent a call, because the write came from `src/proxy.ts`, which runs on the action `POST` too. What actually makes AC-10 hold for an expired session is **AC-20a**."
+    },
+    {
+      "id": "feature-12#12-apply-redirect-application-record-done:16",
+      "line": "feature-12#12-apply-redirect-application-record-done:16  BuildStep  accepted  scope/scope.md:254  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Close out · **done 2026-09-05, and the half that was open turned out to be a real bug rather than a missing measurement**. Done earlier that day: the four spans registered in `spans.md`, and the entry page claim moved from `planned` to `working`. Fixed by `/debug`, locked by proxy-action-refresh.test.ts which was proved to fail without the fix, recorded by `/architect` as spec 0014 **AC-20a**, spec 0008 **AC-10b** and a third item on spec 0001's binding rule 6, then re-measured end to end: counter flat across an expired session apply, row landed, no `x-action-revalidated`. The stale build case (AC-21) was measured the same way and passes (AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:14",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:14  BuildStep  accepted  scope/scope.md:141  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The account rule: the `public.before_user_created_hook` migration (`security definer`, empty `search_path`, explicit grants) rejecting on its own internal error too, enabled in both hosted dashboards, P10 answered against the local stack and `COPY-2` wired, plus the integration suite, satisfies AC-9, AC-10, AC-14, AC-15, AC-19 · **done**"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:15",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:15  BuildStep  accepted  scope/scope.md:142  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The entry page and the record: the two provider labels become real submits with `COPY-1` and both status chips deleted, spec 0006's \"no dead controls\" test split so its apply half survives, and the session policy matrix read off both dashboards, satisfies AC-8, AC-15, AC-16, AC-19 · **done 2026-08-30.**"
+    },
+    {
+      "id": "0004#follow-up:7",
+      "line": "0004#follow-up:7  FollowUp  accepted  specs/0004-test-foundation/index.md:172  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Done on 2026 09 02**: spec 0001's third runner constraint is met, by `test/integration/profile-form.test.ts` (spec 0010, AC-14)."
+    },
+    {
+      "id": "0009#follow-up:12",
+      "line": "0009#follow-up:12  FollowUp  accepted  specs/0009-terms-and-privacy-notices/index.md:622  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Resolved in this revision.** AC-14 now names three cookie kinds (struck through above, replaced), and AC-24 adds the drift guard: a `CookieDisclosure` registry, an integration test asserting real response cookies against it (primary), and a unit level source scan (secondary, explicitly excluding the two things in this codebase that resemble a cookie setting call in source text but are not one). The prose correction (Build plan 7a) ships promptly and alone, the registry, the render from it, and both guards (7b) follow separately."
+    },
+    {
+      "id": "0008#build-plan:3",
+      "line": "0008#build-plan:3  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:200  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`src/lib/return-path.ts`: the header name, the cookie name and the length cap as exported constants, plus one Zod schema with the rules of AC-12, and unit tests naming each hostile string, satisfies **AC-12**, **AC-5b**"
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "0008/AC-12",
+      "line": "0008/AC-12  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:65  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: One Zod schema validates the return path, and it is parsed at all three boundaries it crosses: the `next` query parameter on `/sign-in`, the hidden form field reaching the Server Action, and the cookie read by the callback. It accepts only a safe single leading slash path. It rejects a protocol relative `//`, a backslash, a scheme, control characters, and any value over **2048 characters** (the shared cap of AC-8). It rejects `/sign-in`, `/auth/callback` and `/go` as return targets: `/sign-in` and `/auth/callback` would loop, and `/go` would not loop but would resolve straight back to the landing rule, making the deep link a no op that looks honoured. It keeps the query string and drops the fragment, which is a property of the validator in isolation, since a browser never sends the fragment and the value can now also arrive typed into `?next=`. A rejected value falls back to the landing rule. A unit test names each hostile string, including one that is harmless before percent decoding and hostile after."
+    },
+    {
+      "id": "0008/AC-5",
+      "line": "0008/AC-5  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:41  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides."
+    },
+    {
+      "id": "0008/AC-6",
+      "line": "0008/AC-6  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:53  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes."
+    },
+    {
+      "id": "0008/AC-7",
+      "line": "0008/AC-7  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:54  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed."
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:15",
+      "line": "feature-32#32-app-shell-navigation-done:15  BuildStep  accepted  scope/scope.md:169  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it · **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. Starts by proving the one mechanic the spec marks inferred rather than verified."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:13  BuildStep  accepted  scope/scope.md:140  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Thicken: GitHub with the `user:email` scope, sign out rebuilt in `src/features/auth/` with its span and failure path, then the deletions (`src/features/dev-session/`, `src/lib/supabase/browser.ts`) and the span registry, satisfies AC-1, AC-11, AC-12, AC-13, AC-17 · done 2026-08-30."
+    },
+    {
+      "id": "0008#build-plan:9",
+      "line": "0008#build-plan:9  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:206  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`completeSignIn()` returns its claims, and the callback consumes, validates and clears the cookie on every path, passes the claims into the landing rule, then redirects to the deep link or the landing rule, carrying the value onto its own error redirect and removing the literal `/health` redirect, satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**"
+    },
+    {
+      "id": "0008/AC-13",
+      "line": "0008/AC-13  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:66  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: `/sign-in` parses `next` at its boundary and renders the accepted value into a hidden field inside each provider form. A rejected value is dropped and never echoed onto the page."
+    },
+    {
+      "id": "0008/AC-15",
+      "line": "0008/AC-15  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:69  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15**: The callback consumes, validates and clears the cookie on **every** path through it, including when validation fails and when the provider returned an error, so a stale value cannot fire at a later sign in. The clear repeats the same `Path` the cookie was written with, or it silently fails to match and the value survives."
+    },
+    {
+      "id": "0009#feature-design:23",
+      "line": "0009#feature-design:23  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:429  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Drift: adding a key to `src/env.ts` with no matching registry entry fails the unit suite, and removing the assertion is checked to fail the test, so it is not vacuous, verifies **AC-5**."
+    },
+    {
+      "id": "0009#feature-design:25",
+      "line": "0009#feature-design:25  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:433  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Schema drift: adding a column to a personal data table without naming it in the field registry fails the unit suite, verifies **AC-23**."
+    },
+    {
+      "id": "0013/AC-11",
+      "line": "0013/AC-11  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:33  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts`, naming Adzuna as the recipient, as part of this build, satisfying spec 0009 AC-5's drift guard."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:11",
+      "line": "feature-11#11-job-search-results-list:11  Consequence  held  scope/scope.md:231  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "the moment this feature adds its API key to `src/env.ts`, the AC-5 guard fails the unit suite until the entry exists."
+    },
+    {
+      "id": "0009/AC-10",
+      "line": "0009/AC-10  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:71  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The privacy notice describes deletion truthfully: the operator removes the account record, which cascades to every table holding that person's data. Nothing is left behind."
+    },
+    {
+      "id": "0009/AC-11",
+      "line": "0009/AC-11  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:73  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The privacy notice identifies JobHunt as the service, Ghaly Nicolas Jules, resident in the United States, as the person responsible, and the contact address above."
+    },
+    {
+      "id": "0009/AC-12",
+      "line": "0009/AC-12  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:75  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: The privacy notice carries the GDPR and UK GDPR shape, and names the lawful basis for each purpose rather than the word alone: contract necessity for the identity, profile and application data; and legitimate interest for error monitoring. It lists the rights (access, correction, deletion, portability, objection, restriction) and how to exercise each."
+    },
+    {
+      "id": "0009/AC-13",
+      "line": "0009/AC-13  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:81  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: The privacy notice discloses how data received from Google is accessed, used, stored and shared, and states plainly that data is not sold, not used for advertising, not shared with data brokers, and not used to train models. It carries no Limited Use affirmation."
+    },
+    {
+      "id": "0009/AC-2",
+      "line": "0009/AC-2  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:43  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: The privacy notice names every category of personal data stored, and its list matches the applied schema. From the identity provider: the email address, display name and avatar URL in `auth.users`. From this app's own tables: full name, location and written summary (`profile`); skill names (`profile_skill`); company, job title, location, description and start and end month (`work_experience`); desired titles, desired locations, remote preference, minimum pay and its currency (`job_preference`); the source and its job id, job title, company, location, link, description, salary range and currency, posted and applied timestamps (`application`); and the question key with the person's own typed answer (`application_answer`). It also names the `created_at` and `updated_at` timestamps every one of these tables carries,"
+    },
+    {
+      "id": "0009/AC-3",
+      "line": "0009/AC-3  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:53  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The privacy notice names every third party receiving data today and what each receives: Supabase (everything, as the database and the identity store), Vercel (IP address and IP derived location data, per Vercel's own Privacy Notice), Sentry (error and performance events), Google and GitHub (only the sign in handshake, and only for whichever the person chooses)."
+    },
+    {
+      "id": "0009/AC-4",
+      "line": "0009/AC-4  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:57  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The notice states that Sentry receives no personal data, and that claim holds against the running configuration (`userInfo: false`, `httpBodies: []`, `cookies: false`). A change that made it false fails a test."
+    },
+    {
+      "id": "0009/AC-6",
+      "line": "0009/AC-6  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:61  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: Both pages render their recipient list from one typed registry module,"
+    },
+    {
+      "id": "0009/AC-7",
+      "line": "0009/AC-7  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:63  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The privacy notice states the retention policy in words: data is kept until the person asks for it to be removed, there is no fixed period, and dormant accounts are not deleted automatically."
+    },
+    {
+      "id": "0009/AC-8",
+      "line": "0009/AC-8  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:66  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: The privacy notice publishes `contact@usejobhunt.dev` for deletion and data requests, phrased as requesting deletion by contacting, never as a control the person can operate."
+    },
+    {
+      "id": "0007/AC-1",
+      "line": "0007/AC-1  AcceptanceCriterion  accepted  HISTORY  specs/0007-auth-and-per-user-isolation/index.md:22  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0008/AC-6"
+      ],
+      "hop": 2,
+      "text": "**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session."
+    },
+    {
+      "id": "0007/AC-12",
+      "line": "0007/AC-12  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:35  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: `src/features/dev-session/` no longer exists, `signInWithDevPassword` no longer exists, `src/lib/supabase/browser.ts` no longer exists, and `/sign-in` renders the real page in every environment rather than a 404 outside development."
+    },
+    {
+      "id": "0007/AC-18",
+      "line": "0007/AC-18  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-18**: `supabase/config.toml` declares both providers with environment variable substitution, its local site and redirect URLs match what `currentOrigin()` actually returns locally, and both `pnpm db:start` and CI's `supabase start` still succeed."
+    },
+    {
+      "id": "0007/AC-2",
+      "line": "0007/AC-2  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: The whole handshake is server side. No file reachable from `/` or from `/sign-in` carries `\"use client\"`, so spec 0006 **AC-4** still holds after this feature ships, and both provider controls are `<form action={...}>` submits."
+    },
+    {
+      "id": "0007/AC-3",
+      "line": "0007/AC-3  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The return leg lives at `src/app/auth/callback/route.ts`. No route handler under `src/app/api/` reads or writes user data, so binding rule 6 is untouched."
+    },
+    {
+      "id": "0007/AC-5",
+      "line": "0007/AC-5  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: Every failure path redirects to `/sign-in?error=<code>` and the page renders this product's own sentence for that code, verbatim from `## Copy`, **above the two provider forms**. The position is part of the criterion because five of the six sentences say \"below\" or \"from here\" and are wrong anywhere else. There are **five** codes, four raised by the callback and one by the sign in actions, listed in `## Feature design` under **Failure codes**. The provider's `error_description` reaches Sentry and never reaches the page."
+    },
+    {
+      "id": "0007/AC-6",
+      "line": "0007/AC-6  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: Each of the five codes carries the kind and severity given in the **Failure codes** table. A cancelled consent and a refused signup are `expected` and raise no alert; a failed exchange and an unreachable provider are `unexpected`. Every one is built by `failure()`, with no log line written beside it."
+    },
+    {
+      "id": "0007/AC-7",
+      "line": "0007/AC-7  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:30  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The `error` query value is parsed with Zod as a closed enum of exactly those five codes. An unrecognised value renders the one generic sentence (`COPY-6`) and is never echoed back to the page."
+    },
+    {
+      "id": "0001#binding-rules:28",
+      "line": "0001#binding-rules:28  Constraint  held  specs/0001-stack-and-architecture/index.md:139  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The proxy also echoes the requested path as a request header, on every request, unconditionally, using the `{ request: { headers } }` form so the value travels upstream only. This is wording, not substance, and the distinction is load bearing: the proxy still reads no session, still holds no list of routes, and still cannot tell a protected path from a public one."
+    },
+    {
+      "id": "0001#binding-rules:31",
+      "line": "0001#binding-rules:31  Constraint  held  specs/0001-stack-and-architecture/index.md:143  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "On a Server Action request the proxy hands the refreshed cookie to that request's own code and **withholds it from the response**."
+    },
+    {
+      "id": "0002#follow-up:6",
+      "line": "0002#follow-up:6  FollowUp  held  specs/0002-deployment-and-environments/index.md:307  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Confirm Sentry's current surface for quota notifications** when wiring AC-15. Spec 0001 already carries the same caution about the failure rate alert surface; both are worth doing in one sitting with the `sentry-sdk-setup` skill open."
+    },
+    {
+      "id": "0004#decision:15",
+      "line": "0004#decision:15  FollowUp  held  specs/0004-test-foundation/index.md:52  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Driving a Server Action without a browser**: deferred to feature 9, deliberately and named rather than dropped. Spec 0001 makes it one of three must satisfy constraints on the runner and this feature meets the other two. See the Follow-up, which records both the reasoning and the technique."
+    },
+    {
+      "id": "0004#summary:2",
+      "line": "0004#summary:2  Constraint  held  specs/0004-test-foundation/index.md:8  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "It decides the test runner (Vitest) that spec 0001 deliberately left open, and replaces the seeded fixture users with valid identifiers."
+    },
+    {
+      "id": "0004/AC-1",
+      "line": "0004/AC-1  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:19  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: A test can sign in as fixture user A, write data, switch to fixture user B, and prove B cannot read A's data. The write goes through the request scoped client, not through a Server Action; driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up."
+    },
+    {
+      "id": "0007#consequences:18",
+      "line": "0007#consequences:18  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:321  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "spec 0001's file tree lists `browser.ts`;"
+    },
+    {
+      "id": "0007#decision:3",
+      "line": "0007#decision:3  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:49  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "a single route handler at `src/app/auth/callback/route.ts` exchanging the returned code for a session"
+    },
+    {
+      "id": "0008#build-plan:4",
+      "line": "0008#build-plan:4  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:201  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The proxy sets the pathname header, unconditionally, using the `{ request: { headers } }` form, re-deriving `new Headers(request.headers)` immediately before **each** `NextResponse.next()` call including the one inside `setAll` and after its cookie loop, omitting the header when over the shared cap, with the binding rule 6 comment widened to name the new job, satisfies **AC-8**, **AC-10**, and keeps **AC-9** true"
+    },
+    {
+      "id": "0008#consequences:20",
+      "line": "0008#consequences:20  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:243  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Spec 0001, binding rule 6**: \"refreshes the Supabase session cookie and does nothing else\". The closed enumeration widens to include echoing the requested path as a request header. The no authorisation half and both tests are untouched."
+    },
+    {
+      "id": "0008#consequences:8",
+      "line": "0008#consequences:8  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:228  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The proxy takes on a second job (echoing the requested path as a header). Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it (see Follow-up). Its substance and both its tests survive unchanged"
+    },
+    {
+      "id": "0008#copy:7",
+      "line": "0008#copy:7  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:190  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Silent degradation: the proxy runs through a session refresh that writes cookies, and the pathname header is still present on the returned response, verifies **AC-10**"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0004#summary:2",
+      "phrase": "the test runner (Vitest) that spec 0001 deliberately left open",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0007#consequences:18",
+      "phrase": "They are amended alongside this spec",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0001#binding-rules:28",
+      "phrase": "**One, \"and does nothing else\" widened by one job.**",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0001#binding-rules:31",
+      "phrase": "\"Refreshes the Supabase session cookie\" now carries one exception about where the refresh lands.",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008#consequences:20",
+      "phrase": "The closed enumeration widens to include echoing the requested path as a request header.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008#consequences:8",
+      "phrase": "Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008/AC-10b",
+      "phrase": "Spec 0001's binding rule 6 amendment gains a third item, dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0014/AC-20a",
+      "phrase": "Amends spec 0008 AC-10 and spec 0001 binding rule 6, both dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "**The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0008/AC-10b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0014/AC-20a",
+      "phrase": "Amends spec 0008 AC-10 and spec 0001 binding rule 6, both dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-14",
+      "target": "0008/AC-14a",
+      "phrase": "AC-14a (the deep link survives both error retry paths)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5b",
+      "phrase": "AC-5b naming `src/lib/return-path.ts` and `src/lib/landing-rule.ts` with the header and cookie strings fixed",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0009#requirements:5",
+      "target": "0009/AC-14",
+      "phrase": "**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0014/AC-20",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0009/AC-14",
+      "target": "0009/AC-14",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-12",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:4",
+      "target": "0008/AC-10",
+      "phrase": "satisfies **AC-8**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-6",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:8",
+      "target": "0008/AC-13",
+      "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:8",
+      "target": "0008/AC-14",
+      "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:8",
+      "target": "0008/AC-14a",
+      "phrase": "satisfies **AC-13**, **AC-14**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-14a",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-15",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:10",
+      "target": "0009/AC-24",
+      "phrase": "satisfies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-23",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-4",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-6",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-10",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-11",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-12",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-13",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-2",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-3",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-7",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-8",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:9",
+      "target": "0009/AC-14",
+      "phrase": "satisfies the corrected **AC-14** on its own",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-20a",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-14",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-23",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-4",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-5",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-6",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-10",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-11",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-12",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-13",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-14",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-2",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-3",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-7",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-8",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-5b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-6",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-12",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-18",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-3",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-4",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-5",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-6",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-7",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "target": "0007/AC-1",
+      "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "target": "0007/AC-11",
+      "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "target": "0007/AC-12",
+      "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:14",
+      "target": "0007/AC-19",
+      "phrase": "satisfies AC-9, AC-10, AC-14, AC-15, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:15",
+      "target": "0007/AC-19",
+      "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "AC-6 replaces it.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0002#follow-up:6",
+      "target": "0001",
+      "phrase": "Spec 0001 already carries the same caution about the failure rate alert surface",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004#decision:15",
+      "target": "0001",
+      "phrase": "Spec 0001 makes it one of three must satisfy constraints on the runner",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004#follow-up:8",
+      "target": "0004#follow-up:7",
+      "phrase": "**Done on 2026 09 02**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004/AC-1",
+      "target": "0001",
+      "phrase": "driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#copy:5",
+      "target": "0007/AC-4",
+      "phrase": "is the AC-4 fix in plain words",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#decision:3",
+      "target": "0001#binding-rules:25",
+      "phrase": "basis: spec 0001 binding rule 6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-10b",
+      "target": "0014/AC-20a",
+      "phrase": "Added 2026-09-05 by spec 0014 AC-20a",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-14a",
+      "target": "0008/AC-15",
+      "phrase": "AC-15 has already cleared the cookie",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-12",
+      "phrase": "the AC-12 Zod schema",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-6",
+      "phrase": "exports the one function of AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-7",
+      "phrase": "The existence read of AC-7 is a new named export",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009#follow-up:9",
+      "target": "0009#follow-up:12",
+      "phrase": "**Resolved in this revision.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0008/AC-5b",
+      "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0009/AC-24",
+      "phrase": "the cookie half now has its own guard, AC-24",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-23",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-5",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-11",
+      "target": "0009/AC-5",
+      "phrase": "satisfying spec 0009 AC-5's drift guard",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#decision:7",
+      "target": "0014/AC-20",
+      "phrase": "prevented by AC-20's read only adapter",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#decision:7",
+      "target": "0014/AC-20a",
+      "phrase": "Prevented by AC-20a.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-20",
+      "target": "0014/AC-20a",
+      "phrase": "What actually makes AC-10 hold for an expired session is **AC-20a**.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-11#11-job-search-results-list:11",
+      "target": "0009/AC-5",
+      "phrase": "the AC-5 guard fails the unit suite until the entry exists",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#resolved:2",
+      "target": "0007/AC-4",
+      "phrase": "that redirect is what spec 0007 **AC-4** leans on",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:7",
+      "target": "0008/AC-10",
+      "phrase": "verifies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:23",
+      "target": "0009/AC-5",
+      "phrase": "verifies **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:25",
+      "target": "0009/AC-23",
+      "phrase": "verifies **AC-23**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:26",
+      "target": "0009/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:27",
+      "target": "0009/AC-24",
+      "phrase": "verifies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:28",
+      "target": "0009/AC-24",
+      "phrase": "verifies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0014#feature-design:36",
+      "target": "0014/AC-20a",
+      "phrase": "verifies **AC-10**, **AC-20a**",
+      "held": false
+    }
+  ],
+  "cut": 38,
+  "counted_input_tokens": 24315,
+  "bound_usd": 0.20863,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-1",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[{\"text\":\"The items state that the return cookie has a 10 minute max age, along with httpOnly, SameSite=Lax and a Path scoped to /auth/callback. They give no reason for choosing 10 minutes.\",\"cites\":[\"0008/AC-14\",\"0008#feature-design:13\"],\"basis\":\"text\"},{\"text\":\"Spec 0009 describes the same cookie as short lived at 600 seconds, which is 10 minutes. It does not say why that length was chosen.\",\"cites\":[\"0009#follow-up:9\"],\"basis\":\"text\"},{\"text\":\"Spec 0007 AC-19 only says the session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments. It gives no value and does not mention the return cookie, so nothing ties the 10 minutes to it.\",\"cites\":[\"0007/AC-19\"],\"basis\":\"text\"},{\"text\":\"The PKCE verifier cookies are described as short lived cookies that @supabase/ssr writes during the OAuth handshake. No item gives their lifetime or relates it to the return cookie's max age.\",\"cites\":[\"0009/AC-14\",\"0009/AC-24\"],\"basis\":\"text\"}],\"missing\":[\"The rationale for the 10 minute max age of the return path cookie\",\"The max age of the Supabase PKCE code verifier cookie\",\"Any session policy value in 0007 AC-19 that the 10 minutes could be matched to\",\"Any statement that the return cookie's lifetime was chosen to match either the verifier cookie or the session policy\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "The rationale for the 10 minute max age of the return path cookie",
+    "The max age of the Supabase PKCE code verifier cookie",
+    "Any session policy value in 0007 AC-19 that the 10 minutes could be matched to",
+    "Any statement that the return cookie's lifetime was chosen to match either the verifier cookie or the session policy"
+  ],
+  "claims": [
+    {
+      "text": "The items state that the return cookie has a 10 minute max age, along with httpOnly, SameSite=Lax and a Path scoped to /auth/callback. They give no reason for choosing 10 minutes.",
+      "cites": [
+        "0008/AC-14",
+        "0008#feature-design:13"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Spec 0009 describes the same cookie as short lived at 600 seconds, which is 10 minutes. It does not say why that length was chosen.",
+      "cites": [
+        "0009#follow-up:9"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Spec 0007 AC-19 only says the session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments. It gives no value and does not mention the return cookie, so nothing ties the 10 minutes to it.",
+      "cites": [
+        "0007/AC-19"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The PKCE verifier cookies are described as short lived cookies that @supabase/ssr writes during the OAuth handshake. No item gives their lifetime or relates it to the return cookie's max age.",
+      "cites": [
+        "0009/AC-14",
+        "0009/AC-24"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 24315,
+    "output_tokens": 526,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.05389,
+  "recorded_usd": 0.05389
+}
