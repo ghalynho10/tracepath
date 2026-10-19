@@ -19,7 +19,7 @@ In session residue that no spec, scope row, or `AGENTS.md` owns. Written by `/ch
 - Slow CI: the suite takes about 20 minutes locally and about 31 in CI (PR #39), because the tests rebuild all 240 units. Docs only changes skip the tests (`6e29cc2`). Have the slowest tests use a fixed subset of units.
 - Span rule question, for feature 13's later steps (after v1): where does a clause that carries its own checkable fact go? The ruling guide (lines 15, 119) says its own item. The prompt (`client.py:75-78`) says it stays in the span. JobHunt's proposal on H07: it stays when removing it makes the claim unverifiable. Split rule tradeoff, same thread: splitting lets a later record change one piece (0002 `index.md:122` against 0004 `index.md:41`), but split pieces lose their connection in the walk because `walk.py` never follows PART_OF (the reader still sees both).
 - Check the 3 hop limit after features 8 and 7 land: if a failing eval question's trace shows a step at the limit with links not followed (spec 0004 AC-23), raise `MAX_HOPS` to 4 in `walk.py` (now 3) with a one line spec 0004 note.
-- Before features 7 and 8 are ordered (after feature 13), class every eval question from walks that print the chain, not from eval output: `load --with-held`, then `trace --eval N --with-held` for N = 1 to 5, then a plain `load` to restore the default. Scope's feature 7 column is already marked not measurable; its feature 8 column also undercounts, since a `SUPERSEDED_BY` step shows only in a reached item's path. Never open `eval/held-out.json` for this.
+- Next time spec 0008 is edited, wording only: a plain accepted entity's accepted_by is auto, not "" as the spec says; AC-8e's "plain load" now means both defaults on (per verify.md).
 
 ## Ruled out
 
