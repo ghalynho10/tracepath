@@ -1,0 +1,526 @@
+{
+  "record": "0011",
+  "section": "Feature design",
+  "section_slug": "feature-design",
+  "file": "specs/0011-usage-gating-and-kill-switch/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 6341,
+  "output_tokens": 10006,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "c4c75e7f3aa44c8ea361f85aea38fc29",
+  "artifact_format_version": 3,
+  "unit_sha256": "c4285bdc68ee1c3082f38eb62fee95ea586d818b95420a0d23198232fcc1cf5d",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Primary key `(call_type, scope, period)`. Seed rows for `job_search`: `(account, week, 25)`, `(global, day, 66)`, `(global, month, 2000)`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"All three are required together: the gate function treats a `call_type` missing any one of its three rows the same as a `call_type` with none at all, `configured: false` (AC-6), never a partial cap that silently does nothing.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`enable row level security` and `force row level security`, no policy yet, matching `app_settings`'s own pattern: nothing under `src/app` should read this table directly. `revoke all from anon, authenticated`; grant `select` to `service_role` only\",\"rejected_spans\":[\"since only the gate function needs it\",\"for dashboard debugging without a direct database connection\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two partial unique indexes: `(call_type, profile_id, period, period_start) where scope = 'account'` and `(call_type, period, period_start) where scope = 'global'`.\",\"rejected_spans\":[\"since a plain unique constraint over a nullable `profile_id` would let two `global` rows exist for one window (SQL treats `null` as distinct from `null`)\"],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every `ON CONFLICT` clause in the gate function must repeat the matching `WHERE`\",\"rejected_spans\":[\"or Postgres refuses the statement outright (\\\"there is no unique or exclusion constraint matching the ON CONFLICT specification\\\")\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`enable row level security` and `force row level security`, no policy yet. `revoke all from anon, authenticated`, no grant: the `SECURITY DEFINER` gate function is the only reader and writer.\",\"rejected_spans\":[\"(feature 28's spend visibility is what eventually reads a user's own rows, and that is a policy owed then, not now)\"],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**State transitions**: none. Each window row's two counters only ever increase, and reset by construction the moment a new `period_start` is reached, since that is a new row rather than a mutation of the old one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The Postgres function itself, in order: check `usage_cap` for all three matching rows first, in one statement (`select` with three `filter`-scoped `max()`s over one scan by `call_type`, not three separate `select`s), and return `configured: false` immediately if any is missing, before touching `usage_gate_counter` at all; then, once configured, unconditionally bump `attempt_count` on all three window rows (`global` day, `global` month, `account` week, in that fixed lock order, upserting each into existence if the window has no row yet), which is also what takes the row locks; then evaluate all three rows' `consumed_count < cap_value` together; then, only if every one passes, bump `consumed_count` on all three.\",\"rejected_spans\":[\"corrected 2026-09-04 on a second fresh model review: three statements each take their own snapshot under `read committed`, so a concurrent admin edit to `usage_cap` could be observed half applied and produce a spurious `usage_gate_misconfigured`\",\"**This order was corrected 2026-09-03**: the function originally bumped `attempt_count` before checking configuration, reasoned as \\\"an attempt nobody could serve is still worth seeing.\\\" That reasoning was wrong. `EXECUTE` on this function is granted to `authenticated`, so any signed in caller could create and grow `usage_gate_counter` rows without bound simply by calling with a different `call_type` string each time, since a row was written before the function ever decided the call type was unconfigured, an unbounded write with no rate limit, no length limit on `call_type`, and no retention policy above it. Visibility does not depend on the write: `usage_gate_misconfigured` reaches Sentry as its own `unexpected` severity failure whether or not a counter row exists, so checking configuration first loses nothing a reader of the alert needs.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The reported reason on a refusal is chosen by precedence (account before global), independent of the lock order used to avoid deadlocks.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`SECURITY DEFINER`\",\"rejected_spans\":[\"because it writes `global` scope rows no authenticated caller could write under row level security, matching `before_user_created_hook`'s own precedent of a `postgres` owned definer function bypassing forced row level security on a table with no policies (confirmed empirically for this project's hosted `postgres` role in spec 0002's `verify.md`, P-1)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`set search_path = ''`, matching every other function in `supabase/migrations/`; `EXECUTE` revoked from `PUBLIC` and granted to `authenticated` only, following `before_user_created_hook`'s own hardening.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`checkUsageGate()` never calls the RPC for a kill switch block: it calls `readKillSwitch()` directly first (not `isKillSwitchEngaged()`'s collapsed boolean), and only proceeds to `check_usage_gate` once that read succeeds and reports the switch off.\",\"rejected_spans\":[\"which would lose the distinction AC-4 needs\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Copy**: one slot per `UsageGateReason` member, text left for the engineer to write before `/develop`, the same convention spec 0007 uses (`COPY-2` there stayed blank until its dependency was answered). `/develop` must not invent or reword any of them.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The cap counts outbound API calls, not user facing searches. The gate is called once per outbound Adzuna call. A search that costs more than one call (pagination, a count query, a follow up fetch) consumes that many gate calls, exactly, with no multiplier configured or guessed anywhere in this design. Feature 11 confirms the real shape when it builds the search call; this spec does not depend on that answer.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A refusal never reduces budget in any window it was checked against, in the same call.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every call for a **configured** `call_type` that reaches the atomic gate function increments `attempt_count`, whether allowed or refused, regardless of the branch. An unconfigured `call_type` (AC-6) and a kill switch block (either reason) both increment no `usage_gate_counter` row at all: the kill switch block never reaches the atomic function (it is refused by the pre-check instead), and the atomic function itself now checks configuration before writing anything (corrected 2026-09-03, see the Feature design paragraph above and AC-9). Demand during a kill switch incident stays visible only through the `usage_gate.check` span's own volume in Sentry (AC-7), which in turn depends on trace sampling staying at 1.0 on gated operations (AC-8). If that sampling is ever lowered (spec 0001 flags it as something to revisit as traffic grows), this specific blind spot becomes real, and nothing else warns of it; this coupling is also recorded in `docs/observability/README.md`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`usage_gate.check` and `kill_switch.read` are two separate named spans (the second already registered, feature 3), so a kill switch read failure marks only its own span failed, never the parent `usage_gate.check` span. AC-10 therefore alerts on both ratios, not one.\",\"rejected_spans\":[\"a total gate outage and a total kill switch outage are different failures with different causes, and folding them into one span's ratio would have left one of the two invisible\"],\"known_trap_flags\":[]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A global daily ceiling of 66 bounds any rolling 30 day reading of the monthly cap at or under 2,000, whichever way Adzuna's own month boundary is actually implemented (calendar month or a rolling window; this project's read of Adzuna's docs does not settle which). A global weekly counter is deliberately not built: at 66 a day, a week tops out at 462, which is under Adzuna's own 1,000 a week ceiling by more than half, so a third window and a third row lock on every gate call would check a condition that can never fire. A lower day cap (64) was considered, which would also make the month window provably unreachable (64 \u00d7 31 = 1,984), but rejected: the month is the actual licensed ceiling this whole feature protects, not a redundant backstop the way the week is, so it should stay the binding constraint. The day cap exists to close the rolling window gap, not to render the month decorative; see rationale.md.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna's 25 calls a minute ceiling is deliberately not gated here. A burst inside one minute is caught by Adzuna's own enforcement, surfacing as `external_service_failed` from the search call itself, not as a gate refusal. If that limit is ever actually hit, the fix is a fourth, minute scoped window in the same `usage_cap` / `usage_gate_counter` shape, not a lower daily cap.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every gated call in the whole app takes a row lock on the same two `global` counter rows (day and month), so the gate serialises all gated traffic to one decision committing at a time. At this app's real volume (a handful of users) this ceiling is never approached. If it ever were, the fix is sharding the two `global` rows (hashing into a small fixed number of bucket rows, summed at read time) rather than relaxing the atomicity guarantee.\",\"rejected_spans\":[\"this is the price of AC-1's atomicity, not an oversight\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:21\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Provisioning more than one account, or more than one API key, to expand the effective budget is against the source's terms (inferred from the current terms text, not verified there directly; see References). This gate does not and cannot defend against that; it is a policy constraint on the operator, not a technical one this feature enforces.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:22\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Security model**: The account window is keyed on `auth.uid()`, read inside the `SECURITY DEFINER` function itself, never a client supplied value; `checkUsageGate()` additionally verifies the caller with `getClaims()` before ever calling the function, the same defence in depth pattern every existing Server Action and query in this codebase already follows.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:23\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`usage_cap` and `usage_gate_counter` are both row level security enabled and forced, with no policy on either yet, so no `authenticated` role reaches them directly, only the `SECURITY DEFINER` function.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:24\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A signed out caller never reaches `checkUsageGate()` at all; the caller check happens before the gate is ever consulted.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:25\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Configuration required**: none. The three cap values live in `usage_cap`, a database table, per AC-12, not as environment variables.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:26\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Critical test scenarios**, all driven through the Data API with a real minted test session (spec 0004's session mint), never the direct database connection helper (`test/helpers/database.ts`)\",\"rejected_spans\":[\"since that connection carries no `auth.uid()` and would either fail `usage_gate_counter`'s own owner check constraint or need `service_role`, which holds no privilege on this table at all\"],\"known_trap_flags\":[]},{\"id\":\"derived:27\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Happy path: a `job_search` call under all three caps is allowed, and `consumed_count` and `attempt_count` both increment on all three window rows, verifies **AC-1**, **AC-9**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Happy path\"},{\"id\":\"derived:28\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a burst of concurrent calls for the same minted account (sized to what the Data API's own statement timeout allows, not an arbitrary large number), land exactly the account weekly cap's worth of allowed calls and refuse the rest, with every refused call still counted in `attempt_count` and none of them touching `consumed_count`, verifies **AC-1**, **AC-2**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:29\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a call for an unknown `call_type` returns `configured: false` and is refused through `failure()` with `usage_gate_misconfigured`; a call with a `call_type` missing one of its three `usage_cap` rows behaves identically, verifies **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:30\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Failure case: a call blocked by an engaged kill switch reports `success({ allowed: false, reason: \\\"kill_switch_engaged\\\" })`, and a call made with `readKillSwitch()` forced to fail reports `success({ allowed: false, reason: \\\"kill_switch_unavailable\\\" })`, neither ever a `Failure`, verifies **AC-4**, **AC-5**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:31\",\"id_source\":\"derived\",\"type\":\"TestScenario\",\"span\":\"Auth/permission: a caller with no valid session gets `session_missing` before any database call happens, and a request crafted to name another user's `profile_id` cannot spend that user's budget, since the function reads `auth.uid()` itself and takes no caller supplied identity, verifies **AC-13**.\",\"rejected_spans\":[],\"known_trap_flags\":[],\"label\":\"Auth/permission\"}],\"relationships\":[{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:27\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"verifies **AC-1**, **AC-9**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:28\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"verifies **AC-1**, **AC-2**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:29\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"verifies **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"verifies **AC-4**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:30\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"verifies **AC-4**, **AC-5**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"verifies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:31\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"verifies **AC-13**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Primary key `(call_type, scope, period)`. Seed rows for `job_search`: `(account, week, 25)`, `(global, day, 66)`, `(global, month, 2000)`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "All three are required together: the gate function treats a `call_type` missing any one of its three rows the same as a `call_type` with none at all, `configured: false` (AC-6), never a partial cap that silently does nothing.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`enable row level security` and `force row level security`, no policy yet, matching `app_settings`'s own pattern: nothing under `src/app` should read this table directly. `revoke all from anon, authenticated`; grant `select` to `service_role` only",
+        "rejected_spans": [
+          "since only the gate function needs it",
+          "for dashboard debugging without a direct database connection"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two partial unique indexes: `(call_type, profile_id, period, period_start) where scope = 'account'` and `(call_type, period, period_start) where scope = 'global'`.",
+        "rejected_spans": [
+          "since a plain unique constraint over a nullable `profile_id` would let two `global` rows exist for one window (SQL treats `null` as distinct from `null`)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every `ON CONFLICT` clause in the gate function must repeat the matching `WHERE`",
+        "rejected_spans": [
+          "or Postgres refuses the statement outright (\"there is no unique or exclusion constraint matching the ON CONFLICT specification\")"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`enable row level security` and `force row level security`, no policy yet. `revoke all from anon, authenticated`, no grant: the `SECURITY DEFINER` gate function is the only reader and writer.",
+        "rejected_spans": [
+          "(feature 28's spend visibility is what eventually reads a user's own rows, and that is a policy owed then, not now)"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**State transitions**: none. Each window row's two counters only ever increase, and reset by construction the moment a new `period_start` is reached, since that is a new row rather than a mutation of the old one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The Postgres function itself, in order: check `usage_cap` for all three matching rows first, in one statement (`select` with three `filter`-scoped `max()`s over one scan by `call_type`, not three separate `select`s), and return `configured: false` immediately if any is missing, before touching `usage_gate_counter` at all; then, once configured, unconditionally bump `attempt_count` on all three window rows (`global` day, `global` month, `account` week, in that fixed lock order, upserting each into existence if the window has no row yet), which is also what takes the row locks; then evaluate all three rows' `consumed_count < cap_value` together; then, only if every one passes, bump `consumed_count` on all three.",
+        "rejected_spans": [
+          "corrected 2026-09-04 on a second fresh model review: three statements each take their own snapshot under `read committed`, so a concurrent admin edit to `usage_cap` could be observed half applied and produce a spurious `usage_gate_misconfigured`",
+          "**This order was corrected 2026-09-03**: the function originally bumped `attempt_count` before checking configuration, reasoned as \"an attempt nobody could serve is still worth seeing.\" That reasoning was wrong. `EXECUTE` on this function is granted to `authenticated`, so any signed in caller could create and grow `usage_gate_counter` rows without bound simply by calling with a different `call_type` string each time, since a row was written before the function ever decided the call type was unconfigured, an unbounded write with no rate limit, no length limit on `call_type`, and no retention policy above it. Visibility does not depend on the write: `usage_gate_misconfigured` reaches Sentry as its own `unexpected` severity failure whether or not a counter row exists, so checking configuration first loses nothing a reader of the alert needs."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The reported reason on a refusal is chosen by precedence (account before global), independent of the lock order used to avoid deadlocks.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`SECURITY DEFINER`",
+        "rejected_spans": [
+          "because it writes `global` scope rows no authenticated caller could write under row level security, matching `before_user_created_hook`'s own precedent of a `postgres` owned definer function bypassing forced row level security on a table with no policies (confirmed empirically for this project's hosted `postgres` role in spec 0002's `verify.md`, P-1)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`set search_path = ''`, matching every other function in `supabase/migrations/`; `EXECUTE` revoked from `PUBLIC` and granted to `authenticated` only, following `before_user_created_hook`'s own hardening.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`checkUsageGate()` never calls the RPC for a kill switch block: it calls `readKillSwitch()` directly first (not `isKillSwitchEngaged()`'s collapsed boolean), and only proceeds to `check_usage_gate` once that read succeeds and reports the switch off.",
+        "rejected_spans": [
+          "which would lose the distinction AC-4 needs"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Copy**: one slot per `UsageGateReason` member, text left for the engineer to write before `/develop`, the same convention spec 0007 uses (`COPY-2` there stayed blank until its dependency was answered). `/develop` must not invent or reword any of them.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The cap counts outbound API calls, not user facing searches. The gate is called once per outbound Adzuna call. A search that costs more than one call (pagination, a count query, a follow up fetch) consumes that many gate calls, exactly, with no multiplier configured or guessed anywhere in this design. Feature 11 confirms the real shape when it builds the search call; this spec does not depend on that answer.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A refusal never reduces budget in any window it was checked against, in the same call.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every call for a **configured** `call_type` that reaches the atomic gate function increments `attempt_count`, whether allowed or refused, regardless of the branch. An unconfigured `call_type` (AC-6) and a kill switch block (either reason) both increment no `usage_gate_counter` row at all: the kill switch block never reaches the atomic function (it is refused by the pre-check instead), and the atomic function itself now checks configuration before writing anything (corrected 2026-09-03, see the Feature design paragraph above and AC-9). Demand during a kill switch incident stays visible only through the `usage_gate.check` span's own volume in Sentry (AC-7), which in turn depends on trace sampling staying at 1.0 on gated operations (AC-8). If that sampling is ever lowered (spec 0001 flags it as something to revisit as traffic grows), this specific blind spot becomes real, and nothing else warns of it; this coupling is also recorded in `docs/observability/README.md`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`usage_gate.check` and `kill_switch.read` are two separate named spans (the second already registered, feature 3), so a kill switch read failure marks only its own span failed, never the parent `usage_gate.check` span. AC-10 therefore alerts on both ratios, not one.",
+        "rejected_spans": [
+          "a total gate outage and a total kill switch outage are different failures with different causes, and folding them into one span's ratio would have left one of the two invisible"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A global daily ceiling of 66 bounds any rolling 30 day reading of the monthly cap at or under 2,000, whichever way Adzuna's own month boundary is actually implemented (calendar month or a rolling window; this project's read of Adzuna's docs does not settle which). A global weekly counter is deliberately not built: at 66 a day, a week tops out at 462, which is under Adzuna's own 1,000 a week ceiling by more than half, so a third window and a third row lock on every gate call would check a condition that can never fire. A lower day cap (64) was considered, which would also make the month window provably unreachable (64 \u00d7 31 = 1,984), but rejected: the month is the actual licensed ceiling this whole feature protects, not a redundant backstop the way the week is, so it should stay the binding constraint. The day cap exists to close the rolling window gap, not to render the month decorative; see rationale.md.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Adzuna's 25 calls a minute ceiling is deliberately not gated here. A burst inside one minute is caught by Adzuna's own enforcement, surfacing as `external_service_failed` from the search call itself, not as a gate refusal. If that limit is ever actually hit, the fix is a fourth, minute scoped window in the same `usage_cap` / `usage_gate_counter` shape, not a lower daily cap.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every gated call in the whole app takes a row lock on the same two `global` counter rows (day and month), so the gate serialises all gated traffic to one decision committing at a time. At this app's real volume (a handful of users) this ceiling is never approached. If it ever were, the fix is sharding the two `global` rows (hashing into a small fixed number of bucket rows, summed at read time) rather than relaxing the atomicity guarantee.",
+        "rejected_spans": [
+          "this is the price of AC-1's atomicity, not an oversight"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:21",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Provisioning more than one account, or more than one API key, to expand the effective budget is against the source's terms (inferred from the current terms text, not verified there directly; see References). This gate does not and cannot defend against that; it is a policy constraint on the operator, not a technical one this feature enforces.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:22",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Security model**: The account window is keyed on `auth.uid()`, read inside the `SECURITY DEFINER` function itself, never a client supplied value; `checkUsageGate()` additionally verifies the caller with `getClaims()` before ever calling the function, the same defence in depth pattern every existing Server Action and query in this codebase already follows.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:23",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`usage_cap` and `usage_gate_counter` are both row level security enabled and forced, with no policy on either yet, so no `authenticated` role reaches them directly, only the `SECURITY DEFINER` function.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:24",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A signed out caller never reaches `checkUsageGate()` at all; the caller check happens before the gate is ever consulted.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:25",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Configuration required**: none. The three cap values live in `usage_cap`, a database table, per AC-12, not as environment variables.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:26",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Critical test scenarios**, all driven through the Data API with a real minted test session (spec 0004's session mint), never the direct database connection helper (`test/helpers/database.ts`)",
+        "rejected_spans": [
+          "since that connection carries no `auth.uid()` and would either fail `usage_gate_counter`'s own owner check constraint or need `service_role`, which holds no privilege on this table at all"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:27",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Happy path: a `job_search` call under all three caps is allowed, and `consumed_count` and `attempt_count` both increment on all three window rows, verifies **AC-1**, **AC-9**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Happy path"
+      },
+      {
+        "id": "derived:28",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a burst of concurrent calls for the same minted account (sized to what the Data API's own statement timeout allows, not an arbitrary large number), land exactly the account weekly cap's worth of allowed calls and refuse the rest, with every refused call still counted in `attempt_count` and none of them touching `consumed_count`, verifies **AC-1**, **AC-2**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:29",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a call for an unknown `call_type` returns `configured: false` and is refused through `failure()` with `usage_gate_misconfigured`; a call with a `call_type` missing one of its three `usage_cap` rows behaves identically, verifies **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:30",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Failure case: a call blocked by an engaged kill switch reports `success({ allowed: false, reason: \"kill_switch_engaged\" })`, and a call made with `readKillSwitch()` forced to fail reports `success({ allowed: false, reason: \"kill_switch_unavailable\" })`, neither ever a `Failure`, verifies **AC-4**, **AC-5**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:31",
+        "id_source": "derived",
+        "type": "TestScenario",
+        "span": "Auth/permission: a caller with no valid session gets `session_missing` before any database call happens, and a request crafted to name another user's `profile_id` cannot spend that user's budget, since the function reads `auth.uid()` itself and takes no caller supplied identity, verifies **AC-13**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": "Auth/permission"
+      }
+    ],
+    "relationships": [
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:27"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "verifies **AC-1**, **AC-9**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:28"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "verifies **AC-1**, **AC-2**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:29"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "verifies **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "verifies **AC-4**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:30"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "verifies **AC-4**, **AC-5**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "verifies",
+        "source": {
+          "kind": "local",
+          "id": "derived:31"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "verifies **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

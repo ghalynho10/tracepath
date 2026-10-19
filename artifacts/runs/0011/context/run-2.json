@@ -1,0 +1,107 @@
+{
+  "record": "0011",
+  "section": "Context",
+  "section_slug": "context",
+  "file": "specs/0011-usage-gating-and-kill-switch/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 571,
+  "output_tokens": 741,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "cc3b0af6f6f5492990896d154ac99a59",
+  "artifact_format_version": 3,
+  "unit_sha256": "8bf125685f7c442513984c7610c882b2c1e109dfc6716d14919069263d36642e",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna, the job listing source feature 11 will call, licenses this app a fixed monthly budget of calls.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Two different kinds of limit are therefore both load bearing, a personal ceiling that is fair to one user and a shared ceiling that protects the key itself, and both must hold together under concurrent requests, since two calls landing at once must never both slip past a limit that only checked itself once.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec's job is everything downstream of that: the per call budget check, and the observability that proves a total failure of either mechanism is seen rather than silently endured.\",\"rejected_spans\":[\"Spec 0001's own error model names this feature by number as the place its first alert rule gets built, because a rate alert defined on paper and never proven to fire is indistinguishable from no alert at all, which is exactly the failure this project exists to learn from.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"mention\":\"Spec 0001's own error model names this feature by number as the place its first alert rule gets built\"},\"phrase\":\"Spec 0001's own error model names this feature by number as the place its first alert rule gets built\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 3\",\"id\":null,\"mention\":\"Feature 3 already built the piece this spec assumes rather than re-decides\"},\"phrase\":\"Feature 3 already built the piece this spec assumes rather than re-decides\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Adzuna, the job listing source feature 11 will call, licenses this app a fixed monthly budget of calls.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Two different kinds of limit are therefore both load bearing, a personal ceiling that is fair to one user and a shared ceiling that protects the key itself, and both must hold together under concurrent requests, since two calls landing at once must never both slip past a limit that only checked itself once.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec's job is everything downstream of that: the per call budget check, and the observability that proves a total failure of either mechanism is seen rather than silently endured.",
+        "rejected_spans": [
+          "Spec 0001's own error model names this feature by number as the place its first alert rule gets built, because a rate alert defined on paper and never proven to fire is indistinguishable from no alert at all, which is exactly the failure this project exists to learn from."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0001's own error model names this feature by number as the place its first alert rule gets built"
+        },
+        "phrase": "Spec 0001's own error model names this feature by number as the place its first alert rule gets built",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 3",
+          "id": null,
+          "label": null,
+          "mention": "Feature 3 already built the piece this spec assumes rather than re-decides"
+        },
+        "phrase": "Feature 3 already built the piece this spec assumes rather than re-decides",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

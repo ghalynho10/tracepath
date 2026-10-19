@@ -1,0 +1,311 @@
+{
+  "record": "0013",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0013-job-search-and-results-list/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1347,
+  "output_tokens": 2752,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "3df0e401535b4120946cb57b1b946fc9",
+  "artifact_format_version": 3,
+  "unit_sha256": "b9f5bda74eff918e551d5daf5b908f0dc02d87d1fd83ac7ef563a26bf9a57de3",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The entry page's \\\"filtered search\\\" claim becomes true the moment this ships, the third of five features 32's status card held a slot open for.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`withUsageGate()` closes a gap spec 0011 itself flagged rather than engineered around, and becomes reusable by features 13 and 14 when they add their own call types.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The attribution slot spec 0005 built ahead of time gets its first real content, closing that spec's own Follow-up.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Adzuna's search response carries only a description snippet, not the full posting text. Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation; this spec does not resolve it, `docs/archive/jobhunt-carry-forward.md`'s feature 14 entry already names the options.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The Jobsworth attribution adds a second, visually distinct attribution block whenever a predicted salary appears, which is most listings in practice; the result card is busier than a plain job board card\",\"rejected_spans\":[\"as a direct consequence of meeting the terms exactly rather than approximately\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Locking the country to a single constant means a second market is a code change, not a configuration change, until a real second market is actually needed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A reload, a shared `/search?q=...` link, or a browser back navigation each spends a fresh gate check and, if allowed, a fresh Adzuna call (AC-10). At this app's real volume this is not a meaningful cost, but it is a real one, and it means the account weekly cap of 25 is a cap on requests, not on distinct intents to search.\",\"rejected_spans\":[\"since the URL alone drives the render and this app keeps no cache of its own to serve a repeat view from\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**`next dev` hides this, and the gap is worth knowing before it fools somebody else.** On a development server a back navigation costs nothing, because the browser answers it from its own HTTP cache and never asks the app. That is not this app's doing and it is not a bug: `next dev` deliberately sends `Cache-Control: no-cache, must-revalidate` so back and forward feel instant while you work (Next 16.3.1, `base-server.js`, and its own comment beside that line says exactly this).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A production build sends `private, no-cache, no-store, max-age=0, must-revalidate` instead**, measured on 2026-09-04 from `pnpm build && pnpm start`. `no-store` means the response is never stored, so back really does return to the server, and really does spend.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Both halves were measured on the same day rather than reasoned about: under `pnpm dev`, one load plus one back moved the counter by one; under `pnpm start`, the same two steps moved it by two. **Production is the number that counts**, so AC-10 states the production behaviour and asks to be verified against a production build.\",\"rejected_spans\":[\"The development behaviour is recorded here only so that a future reader who measures it in `next dev` and sees a free back navigation knows why, and does not \\\"correct\\\" this spec on the strength of it. That already happened once, on the day this feature was verified; the first Follow-up item tells that story, because the shape of the mistake is more useful than the fact.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The prefill now has four outcomes where the first build had three**, and one of them costs a sentence nobody would have written from the acceptance criteria as first drafted: preferences found, no preferences stated, and the read failing, which used to collapse into the second.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Any read whose empty result is itself meaningful needs the failure told apart from the emptiness, and the criterion has to say so, or an implementer satisfies the criterion exactly and still ships a silent failure.\",\"rejected_spans\":[\"That is what happened here: the early return was correct about not blocking the form and wrong about saying nothing.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No migration. This is the first Slice 1 feature that adds no table and no policy.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The real Adzuna logo asset is a manual step outside this spec's own build plan (see Follow-up); the thin thread ships with a text only stand in until it lands.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":null,\"label\":null,\"mention\":\"spec 0011\"},\"phrase\":\"closes a gap spec 0011 itself flagged\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0005\",\"id\":null,\"label\":null,\"mention\":\"spec 0005\"},\"phrase\":\"closing that spec's own Follow-up\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 14\",\"id\":null,\"label\":null,\"mention\":\"feature 14\"},\"phrase\":\"Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 18\",\"id\":null,\"label\":null,\"mention\":\"feature 18\"},\"phrase\":\"Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-10\",\"label\":null,\"mention\":\"AC-10\"},\"phrase\":\"(AC-10)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":\"AC-10\",\"label\":null,\"mention\":\"AC-10\"},\"phrase\":\"so AC-10 states the production behaviour\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The entry page's \"filtered search\" claim becomes true the moment this ships, the third of five features 32's status card held a slot open for.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`withUsageGate()` closes a gap spec 0011 itself flagged rather than engineered around, and becomes reusable by features 13 and 14 when they add their own call types.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The attribution slot spec 0005 built ahead of time gets its first real content, closing that spec's own Follow-up.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Adzuna's search response carries only a description snippet, not the full posting text. Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation; this spec does not resolve it, `docs/archive/jobhunt-carry-forward.md`'s feature 14 entry already names the options.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The Jobsworth attribution adds a second, visually distinct attribution block whenever a predicted salary appears, which is most listings in practice; the result card is busier than a plain job board card",
+        "rejected_spans": [
+          "as a direct consequence of meeting the terms exactly rather than approximately"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Locking the country to a single constant means a second market is a code change, not a configuration change, until a real second market is actually needed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A reload, a shared `/search?q=...` link, or a browser back navigation each spends a fresh gate check and, if allowed, a fresh Adzuna call (AC-10). At this app's real volume this is not a meaningful cost, but it is a real one, and it means the account weekly cap of 25 is a cap on requests, not on distinct intents to search.",
+        "rejected_spans": [
+          "since the URL alone drives the render and this app keeps no cache of its own to serve a repeat view from"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**`next dev` hides this, and the gap is worth knowing before it fools somebody else.** On a development server a back navigation costs nothing, because the browser answers it from its own HTTP cache and never asks the app. That is not this app's doing and it is not a bug: `next dev` deliberately sends `Cache-Control: no-cache, must-revalidate` so back and forward feel instant while you work (Next 16.3.1, `base-server.js`, and its own comment beside that line says exactly this).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A production build sends `private, no-cache, no-store, max-age=0, must-revalidate` instead**, measured on 2026-09-04 from `pnpm build && pnpm start`. `no-store` means the response is never stored, so back really does return to the server, and really does spend.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Both halves were measured on the same day rather than reasoned about: under `pnpm dev`, one load plus one back moved the counter by one; under `pnpm start`, the same two steps moved it by two. **Production is the number that counts**, so AC-10 states the production behaviour and asks to be verified against a production build.",
+        "rejected_spans": [
+          "The development behaviour is recorded here only so that a future reader who measures it in `next dev` and sees a free back navigation knows why, and does not \"correct\" this spec on the strength of it. That already happened once, on the day this feature was verified; the first Follow-up item tells that story, because the shape of the mistake is more useful than the fact."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The prefill now has four outcomes where the first build had three**, and one of them costs a sentence nobody would have written from the acceptance criteria as first drafted: preferences found, no preferences stated, and the read failing, which used to collapse into the second.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Any read whose empty result is itself meaningful needs the failure told apart from the emptiness, and the criterion has to say so, or an implementer satisfies the criterion exactly and still ships a silent failure.",
+        "rejected_spans": [
+          "That is what happened here: the early return was correct about not blocking the form and wrong about saying nothing."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No migration. This is the first Slice 1 feature that adds no table and no policy.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The real Adzuna logo asset is a manual step outside this spec's own build plan (see Follow-up); the thin thread ships with a text only stand in until it lands.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": null,
+          "label": null,
+          "mention": "spec 0011"
+        },
+        "phrase": "closes a gap spec 0011 itself flagged",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0005",
+          "id": null,
+          "label": null,
+          "mention": "spec 0005"
+        },
+        "phrase": "closing that spec's own Follow-up",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 14",
+          "id": null,
+          "label": null,
+          "mention": "feature 14"
+        },
+        "phrase": "Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 18",
+          "id": null,
+          "label": null,
+          "mention": "feature 18"
+        },
+        "phrase": "Scoring (feature 14) and the remote heuristic (feature 18) inherit that limitation",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "(AC-10)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": "AC-10",
+          "label": null,
+          "mention": "AC-10"
+        },
+        "phrase": "so AC-10 states the production behaviour",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

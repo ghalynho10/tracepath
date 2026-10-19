@@ -1,0 +1,269 @@
+{
+  "record": "0014",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1495,
+  "output_tokens": 4216,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "e89ad66981fb4254a512ca6da53b43a8",
+  "artifact_format_version": 3,
+  "unit_sha256": "2d7ddfe54ebe05c72c89025913535c56c26929affa14c19257d944ba245c2897",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The application record becomes the only place a job persists,\",\"rejected_spans\":[\"which is what closes the Slice 1 loop: search, click out, record, see it later.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The predicted salary decision that three specs deferred is settled, and settled in the direction that keeps AC-7's honesty rule true past the moment of applying.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`/applications` stops making a promise the product does not keep. That sentence has been live on production since feature 32 with nothing behind it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Feature 23's dashboard inherits a table with real rows in it and a display path already written, rather than starting from an empty page.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The attribution components and the salary formatter become shared rather than feature private,\",\"rejected_spans\":[\"which is where the folder rule always wanted them and where feature 23 will need them.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`/search` ships client JavaScript for the first time. Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search; the first half stays true and the second does not, once the apply control exists. The control is deliberately the smallest possible boundary, but the property is gone rather than reduced.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The apply action breaks the pattern every profile action follows, in two ways: no `revalidatePath` and no `redirect`, and a cookie adapter that refuses to write. A later session tidying either toward the house pattern would silently reintroduce a real budget cost. The reasons live at the call sites, not only here.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This feature is the first production caller to pass `createClient()` an adapter. That parameter was built as spec 0004's test seam and its own doc comment says the default is \\\"every caller in `src/`\\\", which stops being true here.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A deploy invalidates the apply control on any results page left open, and it costs the reader nothing.** The closure key is regenerated per build, so the framework refuses the dispatch. Driven from a real browser on 2026-09-05 against a genuinely stale production build: the server logs `Failed to find Server Action. This request might be from an older or newer deployment.`, the browser receives a `404`, `ApplyControl`'s catch renders `COPY-7` beside a control that stays enabled, no row is written, and **no `job_search` counter moves**. An earlier draft of this line recorded the opposite, that the refusal falls back to re-rendering `/search` and spends a call. That was true of the hand built `POST` it was measured on and is not true of the hydrated dispatch a real reader sends. **The method mattered more than the result here**: a first attempt rebuilt over a populated `.next`, which reuses the previous build's `server-reference-manifest.json`, so the key never rotated, the page was never stale, and the whole case read as unreproducible. `.next` must be wiped before each build to reach this state at all.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The stale build refusal cannot be handled where a failure normally is.** Next rejects the dispatch before `recordApplication` executes, so this feature's failure table, its span, and its whole error model never see it. The catch sits in `ApplyControl` around the call instead, which is the only place left, and it is a plain `try`/`catch` around everything rather than a match on the framework's wording, because that wording is not ours to depend on. One consequence worth naming: this is the only failure in the feature that is reported by an explicit `Sentry.captureException` at that catch rather than through `failure()`, so a real client fault does not hide behind the staleness message through `failure()`, because no server code runs to report it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Removing an application in one tab leaves another tab's search still showing that job as applied, until the next search. Recovering costs one of 25 weekly calls, so the stale state is cheap to create and expensive to clear.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One extra database read per search render, for the applied marker.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`/applications` is unpaginated. Correct at a ceiling of 25 searches a week and wrong eventually, which feature 23 inherits.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The attribution obligation now has to be honoured on two screens rather than one, so a third screen showing a stored listing will owe it too, and nothing enforces that automatically.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"One additive migration on a table holding no rows anywhere yet, so no backfill and no live data risk.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A new feature folder, `src/features/applications/`, and the nested `AGENTS.md` that will want writing once it has invariants worth recording. That is `/sync`'s job after the build, not this spec's.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"No new environment variable, so no Vercel preview build failure to plan for.\",\"rejected_spans\":[],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":\"AC-7\",\"mention\":\"AC-7's honesty rule\"},\"phrase\":\"keeps AC-7's honesty rule true past the moment of applying\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":null,\"mention\":\"Spec 0013's Decision\"},\"phrase\":\"Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0004\",\"id\":null,\"mention\":\"spec 0004's test seam\"},\"phrase\":\"That parameter was built as spec 0004's test seam\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The application record becomes the only place a job persists,",
+        "rejected_spans": [
+          "which is what closes the Slice 1 loop: search, click out, record, see it later."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The predicted salary decision that three specs deferred is settled, and settled in the direction that keeps AC-7's honesty rule true past the moment of applying.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`/applications` stops making a promise the product does not keep. That sentence has been live on production since feature 32 with nothing behind it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Feature 23's dashboard inherits a table with real rows in it and a display path already written, rather than starting from an empty page.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The attribution components and the salary formatter become shared rather than feature private,",
+        "rejected_spans": [
+          "which is where the folder rule always wanted them and where feature 23 will need them."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`/search` ships client JavaScript for the first time. Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search; the first half stays true and the second does not, once the apply control exists. The control is deliberately the smallest possible boundary, but the property is gone rather than reduced.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The apply action breaks the pattern every profile action follows, in two ways: no `revalidatePath` and no `redirect`, and a cookie adapter that refuses to write. A later session tidying either toward the house pattern would silently reintroduce a real budget cost. The reasons live at the call sites, not only here.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This feature is the first production caller to pass `createClient()` an adapter. That parameter was built as spec 0004's test seam and its own doc comment says the default is \"every caller in `src/`\", which stops being true here.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A deploy invalidates the apply control on any results page left open, and it costs the reader nothing.** The closure key is regenerated per build, so the framework refuses the dispatch. Driven from a real browser on 2026-09-05 against a genuinely stale production build: the server logs `Failed to find Server Action. This request might be from an older or newer deployment.`, the browser receives a `404`, `ApplyControl`'s catch renders `COPY-7` beside a control that stays enabled, no row is written, and **no `job_search` counter moves**. An earlier draft of this line recorded the opposite, that the refusal falls back to re-rendering `/search` and spends a call. That was true of the hand built `POST` it was measured on and is not true of the hydrated dispatch a real reader sends. **The method mattered more than the result here**: a first attempt rebuilt over a populated `.next`, which reuses the previous build's `server-reference-manifest.json`, so the key never rotated, the page was never stale, and the whole case read as unreproducible. `.next` must be wiped before each build to reach this state at all.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The stale build refusal cannot be handled where a failure normally is.** Next rejects the dispatch before `recordApplication` executes, so this feature's failure table, its span, and its whole error model never see it. The catch sits in `ApplyControl` around the call instead, which is the only place left, and it is a plain `try`/`catch` around everything rather than a match on the framework's wording, because that wording is not ours to depend on. One consequence worth naming: this is the only failure in the feature that is reported by an explicit `Sentry.captureException` at that catch rather than through `failure()`, so a real client fault does not hide behind the staleness message through `failure()`, because no server code runs to report it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Removing an application in one tab leaves another tab's search still showing that job as applied, until the next search. Recovering costs one of 25 weekly calls, so the stale state is cheap to create and expensive to clear.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One extra database read per search render, for the applied marker.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`/applications` is unpaginated. Correct at a ceiling of 25 searches a week and wrong eventually, which feature 23 inherits.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The attribution obligation now has to be honoured on two screens rather than one, so a third screen showing a stored listing will owe it too, and nothing enforces that automatically.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "One additive migration on a table holding no rows anywhere yet, so no backfill and no live data risk.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A new feature folder, `src/features/applications/`, and the nested `AGENTS.md` that will want writing once it has invariants worth recording. That is `/sync`'s job after the build, not this spec's.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "No new environment variable, so no Vercel preview build failure to plan for.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": "AC-7",
+          "label": null,
+          "mention": "AC-7's honesty rule"
+        },
+        "phrase": "keeps AC-7's honesty rule true past the moment of applying",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0013's Decision"
+        },
+        "phrase": "Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0004",
+          "id": null,
+          "label": null,
+          "mention": "spec 0004's test seam"
+        },
+        "phrase": "That parameter was built as spec 0004's test seam",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

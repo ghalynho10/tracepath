@@ -1,0 +1,207 @@
+{
+  "record": "0013",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0013-job-search-and-results-list/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 800,
+  "output_tokens": 1714,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d50a444f54e349b9adfc0eb7a0149f3e",
+  "artifact_format_version": 3,
+  "unit_sha256": "1e03186ab537083a88b7ef351cc50e02a28f670437e719617ea065afc24bd61b",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: A signed in `Server Component` reading the search terms from the URL (`/search?q=...&where=...`), never a Server Action or a client side fetch.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The whole operation, gate check, Adzuna call, and Zod parse, runs server side inside one function, `searchListings()`, called from `src/app/(app)/search/page.tsx`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"A plain `<form method=\\\"get\\\" action=\\\"/search\\\">` with inputs named `q` and `where` is what actually produces the URL this relies on; there is no client side submit handler.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Still true:** the search itself is a Server Component reading the URL. No Server Action and no client side fetch produces results, the form is still a plain `GET`, and a shared `/search?q=...` link is still a real working search.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"No client JavaScript ships for search itself.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**No longer true:** that `/search` ships no client JavaScript. Spec 0014 adds `ApplyControl`, one Client Component per result card, and it could not be avoided.\",\"rejected_spans\":[\"Feature 12's apply must not re-render this page, because a re-render re-runs `searchListings()` and spends one of the 25 weekly Adzuna calls; a form with no JavaScript needs a rendered response, which IS that re-render. So the choice was client JavaScript or a per apply cost, and the cost lost.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The boundary is drawn as small as it goes: the page, the form, the twenty cards, both attributions and every salary line remain server rendered.\",\"rejected_spans\":[\"Recorded here rather than only in spec 0014's Consequences, because this is the sentence a later reader would otherwise take at face value.\"],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`searchListings()` never returns `Result<Listing[]>` directly. A refusal (spec 0011, AC-5) is a success carrying `allowed: false`, never a `Failure`, so the return type has to carry both branches: `Result<{ allowed: true; value: Listing[] } | { allowed: false; reason: UsageGateReason }>`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"This is exactly what the new `withUsageGate()` helper (Build plan step 2) returns generically, and `searchListings()` is its first real caller.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"phrase\":\"**This claim was narrowed on 2026-09-05, when feature 12 shipped. Read it before relying on either half.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0014\",\"id\":null,\"mention\":\"Spec 0014 adds `ApplyControl`\"},\"phrase\":\"Spec 0014 adds `ApplyControl`, one Client Component per result card\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0011\",\"id\":\"AC-5\",\"mention\":\"spec 0011, AC-5\"},\"phrase\":\"A refusal (spec 0011, AC-5) is a success carrying `allowed: false`\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"target\":{\"kind\":\"reference\",\"record\":\"0013\",\"id\":null,\"label\":\"Build plan step 2\",\"mention\":\"Build plan step 2\"},\"phrase\":\"the new `withUsageGate()` helper (Build plan step 2)\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: A signed in `Server Component` reading the search terms from the URL (`/search?q=...&where=...`), never a Server Action or a client side fetch.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The whole operation, gate check, Adzuna call, and Zod parse, runs server side inside one function, `searchListings()`, called from `src/app/(app)/search/page.tsx`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "A plain `<form method=\"get\" action=\"/search\">` with inputs named `q` and `where` is what actually produces the URL this relies on; there is no client side submit handler.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Still true:** the search itself is a Server Component reading the URL. No Server Action and no client side fetch produces results, the form is still a plain `GET`, and a shared `/search?q=...` link is still a real working search.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "No client JavaScript ships for search itself.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**No longer true:** that `/search` ships no client JavaScript. Spec 0014 adds `ApplyControl`, one Client Component per result card, and it could not be avoided.",
+        "rejected_spans": [
+          "Feature 12's apply must not re-render this page, because a re-render re-runs `searchListings()` and spends one of the 25 weekly Adzuna calls; a form with no JavaScript needs a rendered response, which IS that re-render. So the choice was client JavaScript or a per apply cost, and the cost lost."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The boundary is drawn as small as it goes: the page, the form, the twenty cards, both attributions and every salary line remain server rendered.",
+        "rejected_spans": [
+          "Recorded here rather than only in spec 0014's Consequences, because this is the sentence a later reader would otherwise take at face value."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`searchListings()` never returns `Result<Listing[]>` directly. A refusal (spec 0011, AC-5) is a success carrying `allowed: false`, never a `Failure`, so the return type has to carry both branches: `Result<{ allowed: true; value: Listing[] } | { allowed: false; reason: UsageGateReason }>`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "This is exactly what the new `withUsageGate()` helper (Build plan step 2) returns generically, and `searchListings()` is its first real caller.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "phrase": "**This claim was narrowed on 2026-09-05, when feature 12 shipped. Read it before relying on either half.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0014",
+          "id": null,
+          "label": null,
+          "mention": "Spec 0014 adds `ApplyControl`"
+        },
+        "phrase": "Spec 0014 adds `ApplyControl`, one Client Component per result card",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0011",
+          "id": "AC-5",
+          "label": null,
+          "mention": "spec 0011, AC-5"
+        },
+        "phrase": "A refusal (spec 0011, AC-5) is a success carrying `allowed: false`",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0013",
+          "id": null,
+          "label": "Build plan step 2",
+          "mention": "Build plan step 2"
+        },
+        "phrase": "the new `withUsageGate()` helper (Build plan step 2)",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

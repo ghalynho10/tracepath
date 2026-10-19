@@ -1,0 +1,186 @@
+{
+  "record": "0011",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0011-usage-gating-and-kill-switch/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 1386,
+  "output_tokens": 2042,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "6e9e8c2de8ff4dab8b4ec9d7c87bb829",
+  "artifact_format_version": 3,
+  "unit_sha256": "7109dc5eca942d8ad3d47eb1af34bf47b1e6d02597862db93852e27cb43f61d7",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The app can never spend past a shared, licensed budget on outside job listing calls, under concurrent load, without depending on the source's own enforcement as the only backstop.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This project's first failure rate alert exists and is proven to fire, not just written down, closing the exact gap spec 0001 named this feature to close.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The gate is generic across `call_type` from day one: feature 13 and 14's model calls add new `usage_cap` rows later, no migration to `usage_gate_counter` or the gate function itself.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"A kill switch flipped on between the pre-check read and the atomic window check lets one call through, once, only during that narrow window (Option 1's accepted tradeoff).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Demand during a kill switch incident is visible only through Sentry span volume, which depends on trace sampling staying at 1.0 on gated operations; lowering that sampling later silently narrows this feature's own visibility during the exact kind of incident it exists to catch.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every gated call app wide serialises on the same two `global` counter rows, so the whole app's `job_search` throughput is bounded by however fast one Postgres row lock can be taken, checked, and released in sequence. Not a real constraint at this app's volume; the fix if it ever became one is sharding the `global` rows, not relaxing AC-1.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Two new tables and one `plpgsql` function are now part of the schema that every future migration and every future `/check verify` pass has to account for.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`check_usage_gate` marks `consumed_count` as soon as it decides `allowed: true`, before the caller's actual outbound call (Adzuna today, a model vendor from feature 13 onward) ever runs. A downstream outage during a busy window burns the account's or the app's real budget on calls that returned nothing, since the gate has no way to un-consume a window after the fact. Accepted rather than engineered around, for the same reason as Option 1's kill switch race: refunding a consumed unit on downstream failure would need a second write after the outbound call completes, which reopens the exact read-then-write race AC-1 exists to close.\",\"rejected_spans\":[\"Recorded here because spec 0012 (the model client router) surfaced it first, even though the behaviour has been true of `job_search` since this spec shipped.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`checkUsageGate()`'s `Result<UsageGateDecision>` does not force a caller to read `allowed` before making the outbound call: `if (isFailure(gate)) return ...` followed by an unguarded outbound call type checks cleanly, because the success value is a union whose members are only distinguished after narrowing. Nothing in the type system stops a future caller from treating `ok: true` as \\\"the search ran.\\\" The API surface table above records the shape as correct, and it is; the fix, when feature 11 (the first real caller) is built, is inversion of control rather than a signature change here: a `withUsageGate(callType, fn)` helper that invokes `fn` only on the allowed branch makes the misreading structurally impossible instead of conventionally discouraged.\",\"rejected_spans\":[\"Recorded here (fresh model review, 2026-09-03) so feature 11 inherits the concern rather than rediscovering it.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Deleting an account (feature 31, not yet built) cascades that person's own counter rows away, which resets their personal weekly cap early. The global counters are untouched, so the blast radius stays bounded; this is accepted as a known, self service edge case rather than a defect.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"only full account deletion resets these counters. If a future feature ever lets a person delete or reset their own `profile` row without deleting the account, that action no longer touches these counters at all, since the foreign key no longer cascades from `profile`.\",\"rejected_spans\":[\"since `usage_gate_counter.profile_id` now references `auth.users(id)` rather than `profile(id)`\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`cap_value = 0` is a valid configuration, and functions as a per call type kill switch distinct from feature 3's app wide one. Nothing currently sets it that way; it exists as a lever, not a default.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"amended-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"phrase\":\"**Narrowed 2026-09-03**\",\"date\":\"2026-09-03\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The app can never spend past a shared, licensed budget on outside job listing calls, under concurrent load, without depending on the source's own enforcement as the only backstop.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This project's first failure rate alert exists and is proven to fire, not just written down, closing the exact gap spec 0001 named this feature to close.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The gate is generic across `call_type` from day one: feature 13 and 14's model calls add new `usage_cap` rows later, no migration to `usage_gate_counter` or the gate function itself.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "A kill switch flipped on between the pre-check read and the atomic window check lets one call through, once, only during that narrow window (Option 1's accepted tradeoff).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Demand during a kill switch incident is visible only through Sentry span volume, which depends on trace sampling staying at 1.0 on gated operations; lowering that sampling later silently narrows this feature's own visibility during the exact kind of incident it exists to catch.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every gated call app wide serialises on the same two `global` counter rows, so the whole app's `job_search` throughput is bounded by however fast one Postgres row lock can be taken, checked, and released in sequence. Not a real constraint at this app's volume; the fix if it ever became one is sharding the `global` rows, not relaxing AC-1.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Two new tables and one `plpgsql` function are now part of the schema that every future migration and every future `/check verify` pass has to account for.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`check_usage_gate` marks `consumed_count` as soon as it decides `allowed: true`, before the caller's actual outbound call (Adzuna today, a model vendor from feature 13 onward) ever runs. A downstream outage during a busy window burns the account's or the app's real budget on calls that returned nothing, since the gate has no way to un-consume a window after the fact. Accepted rather than engineered around, for the same reason as Option 1's kill switch race: refunding a consumed unit on downstream failure would need a second write after the outbound call completes, which reopens the exact read-then-write race AC-1 exists to close.",
+        "rejected_spans": [
+          "Recorded here because spec 0012 (the model client router) surfaced it first, even though the behaviour has been true of `job_search` since this spec shipped."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`checkUsageGate()`'s `Result<UsageGateDecision>` does not force a caller to read `allowed` before making the outbound call: `if (isFailure(gate)) return ...` followed by an unguarded outbound call type checks cleanly, because the success value is a union whose members are only distinguished after narrowing. Nothing in the type system stops a future caller from treating `ok: true` as \"the search ran.\" The API surface table above records the shape as correct, and it is; the fix, when feature 11 (the first real caller) is built, is inversion of control rather than a signature change here: a `withUsageGate(callType, fn)` helper that invokes `fn` only on the allowed branch makes the misreading structurally impossible instead of conventionally discouraged.",
+        "rejected_spans": [
+          "Recorded here (fresh model review, 2026-09-03) so feature 11 inherits the concern rather than rediscovering it."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Deleting an account (feature 31, not yet built) cascades that person's own counter rows away, which resets their personal weekly cap early. The global counters are untouched, so the blast radius stays bounded; this is accepted as a known, self service edge case rather than a defect.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "only full account deletion resets these counters. If a future feature ever lets a person delete or reset their own `profile` row without deleting the account, that action no longer touches these counters at all, since the foreign key no longer cascades from `profile`.",
+        "rejected_spans": [
+          "since `usage_gate_counter.profile_id` now references `auth.users(id)` rather than `profile(id)`"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`cap_value = 0` is a valid configuration, and functions as a per call type kill switch distinct from feature 3's app wide one. Nothing currently sets it that way; it exists as a lever, not a default.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "amended-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "phrase": "**Narrowed 2026-09-03**",
+        "date": "2026-09-03",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

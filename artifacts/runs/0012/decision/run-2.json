@@ -1,0 +1,76 @@
+{
+  "record": "0012",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 232,
+  "output_tokens": 455,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "92436ff586744cd1955f193aedb43e34",
+  "artifact_format_version": 3,
+  "unit_sha256": "d85b866c817d66c34c8d1d8676602bff7a8dac00971333bb2f19183bcdd3c531",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Option 1: One generic tier dispatch function, structured output only.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`, no `.agents/skills/` clone). Its default push toward routing every call through the Vercel AI Gateway is overridden here on purpose: spec 0001 already bound this project to direct provider packages, one key per vendor\",\"rejected_spans\":[\", specifically so personal data flows only to the vendors the privacy notice names.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0001\",\"id\":null,\"mention\":\"spec 0001 already bound this project to direct provider packages, one key per vendor\"},\"phrase\":\"spec 0001 already bound this project to direct provider packages, one key per vendor\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Option 1: One generic tier dispatch function, structured output only.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`, no `.agents/skills/` clone). Its default push toward routing every call through the Vercel AI Gateway is overridden here on purpose: spec 0001 already bound this project to direct provider packages, one key per vendor",
+        "rejected_spans": [
+          ", specifically so personal data flows only to the vendors the privacy notice names."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0001",
+          "id": null,
+          "label": null,
+          "mention": "spec 0001 already bound this project to direct provider packages, one key per vendor"
+        },
+        "phrase": "spec 0001 already bound this project to direct provider packages, one key per vendor",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

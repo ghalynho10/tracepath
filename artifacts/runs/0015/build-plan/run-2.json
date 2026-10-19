@@ -1,0 +1,555 @@
+{
+  "record": "0015",
+  "section": "Build plan",
+  "section_slug": "build-plan",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2281,
+  "output_tokens": 7555,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "5c27cfc37df944f8a92dd7d961149964",
+  "artifact_format_version": 3,
+  "unit_sha256": "81f615e5044ad9586f95a368745899e9df01841aebcdecc6435f6cd013698f3a",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"Steps 4 and 6 were built at full width in one step rather than as one listing then twenty\",\"rejected_spans\":[\"the thin thread's\\nvalue is catching an integration problem with one call instead of twenty, and\\nno live call could be made during this build (it needs\\n`TEST_LIVE_MODEL_CALLS_ENABLED` and real vendor keys), so the narrow slice\\nwould have proved nothing the wide one does not.\"],\"known_trap_flags\":[\"entity_type_ambiguous\",\"rationale_boundary_call\"],\"unclassified_note\":\"A progress note recording a deviation in how steps 4 and 6 were built. It states no requirement, build step, outcome or test of its own, so no named type fits.\"},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `src/features/scoring/score.ts`: `scoreListing()`, calling `callTier(\\\"ai_scoring\\\", fitScoreSchema, { system, prompt })` with the prompt `rubric.ts` builds, returning its `Result` unchanged. Satisfies **AC-3**.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `src/features/scoring/score-card.tsx`: the band badge, the matched and not mentioned lists, the reasoning, the optional sponsorship badge, plus the pending state and the per card failure state, taking a `ScoreOutcome | \\\"pending\\\"` prop so it renders every state this feature has from day one. Satisfies the display half of **AC-5**, **AC-6**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"The thin end to end thread (this project's Tracer Bullet approach): extend the search page's `SearchOutcome` to read the caller's own profile, skill count, and work experience count through the existing `readOwnProfile()` / `readProfileSections()`, gate on both counts being zero (rendering the unscored list plus the `/profile` link, `COPY-5`, only then), and otherwise wrap a call to `scoreListing()` against the first listing only in a `<Suspense>` boundary whose fallback renders that one card's pending state (`COPY-4`), so the page is never blocked even in this first thin slice. Satisfies **AC-7**.\",\"rejected_spans\":[\"Proves profile to score to card to Suspense end to end on one listing before scaling to all 20.\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `src/features/scoring/score-listings.ts`: `scoreListings()`, opening the `scoring.score_listings` span first, firing `scoreListing()` concurrently across every listing (`Promise.all`, since each call already returns a `Result` rather than throwing), tallying the scored, refused, and failed counts as span attributes once every outcome resolves. Register the span in `docs/observability/spans.md`. Satisfies **AC-8**, **AC-14**.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Widen the thread from one listing to all 20: swap the single `scoreListing()` call from step 4 for `scoreListings()` inside the same Suspense boundary, whose fallback now renders the whole list unscored, in Adzuna's original order, with every card in its pending state (the Strategic Suspense Boundaries pattern named in Decision). Satisfies **AC-9**'s immediate render half.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Add the resolved states: sort the outcomes by band once all have resolved (**AC-9**'s re-sort half), the per card failure state (**AC-10**), and the page level cap reached notice reusing `SENTENCES` (**AC-11**).\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Tests: the critical test scenarios above, the prompt builder's truncation unit test, and the thin profile gate.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Move `ranked results with reasoning` from `planned` to `working` in `src/features/entry-page/about-section.tsx`. Satisfies **AC-15**.\",\"rejected_spans\":[\"This sits outside this feature's own code area and nothing else in the build prompts it, the exact shape that left this same clause unmet for two days on feature 7 and had to be named explicitly again on features 9, 11, 12, and 14.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Gate the re-rank announcement on at least one listing having scored. Satisfies the corrected announcement half of **AC-16**.\",\"rejected_spans\":[\"*Landed 2026-09-06 via `/debug` (`fix(search): only announce the ranking when something was actually ranked`) before this spec recorded it; the criterion was amended afterwards to match, which is the wrong order and is named in Follow-up.*\"],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Write `src/features/search/focus-keeper.tsx`: one client module exporting `FocusRecorder` and `FocusRestorer`, sharing module level state. `FocusRecorder` renders outside the Suspense boundary and listens for `focusin` on the document, filtered by `closest('[data-focus-key]')`. `FocusRestorer` renders inside the resolved content, so its mount effect IS the reveal signal, and applies AC-17's rules, consuming and clearing the recorded key on every mount. Satisfies **AC-17** and the focus half of **AC-16**.\\n    - Tag the posting link with `data-focus-key=\\\"<source>:<sourceJobId>:posting-link\\\"` in `result-card.tsx`, which owns that anchor.\\n    - **The apply control is NOT `result-card.tsx`'s markup to tag**. `ApplyControl` lives in `src/features/applications/apply-control.tsx` and owns its own `<button>`; `ResultCard` only renders the component. So it takes a new `focusKey` prop and puts the attribute on its own button. That keeps the dependency running one way, `/search` reaching into the applications feature and never the reverse, which is the rule `src/features/applications/AGENTS.md` states.\\n    - Give the `<ul>` in `result-list.tsx` `tabindex=\\\"-1\\\"` and `COPY-8` as its accessible name, for AC-17's fallback target.\",\"rejected_spans\":[\", and an earlier draft of this step said it was\"],\"known_trap_flags\":[\"multi_condition_split\",\"rationale_boundary_call\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"BuildStep\",\"span\":\"Prove it in a real browser: drive `/search`, tab into a pending card, wait out the reveal, and assert the same control is focused afterwards. Add the steps to `verify.md` and let `/check verify` own them.\",\"rejected_spans\":[\"because no test in this repo can\",\"The unit project is `node` with no jsdom and no layout, so it can assert the key attributes exist and that the restore helper is a pure decision over an active element it is handed, but the thing AC-16 actually promises only exists in a browser.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-1\",\"mention\":\"**AC-1**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-4\",\"mention\":\"**AC-4**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-12\",\"mention\":\"**AC-12**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-13\",\"mention\":\"**AC-13**\"},\"phrase\":\"Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-2\",\"mention\":\"**AC-2**\"},\"phrase\":\"is the anchor wording **AC-2** is later measured against\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-3\",\"mention\":\"**AC-3**\"},\"phrase\":\"Satisfies **AC-3**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-5\",\"mention\":\"**AC-5**\"},\"phrase\":\"Satisfies the display half of **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-6\",\"mention\":\"**AC-6**\"},\"phrase\":\"Satisfies the display half of **AC-5**, **AC-6**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-7\",\"mention\":\"**AC-7**\"},\"phrase\":\"Satisfies **AC-7**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-8\",\"mention\":\"**AC-8**\"},\"phrase\":\"Satisfies **AC-8**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-14\",\"mention\":\"**AC-14**\"},\"phrase\":\"Satisfies **AC-8**, **AC-14**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"Satisfies **AC-9**'s immediate render half\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-9\",\"mention\":\"**AC-9**\"},\"phrase\":\"(**AC-9**'s re-sort half)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-10\",\"mention\":\"**AC-10**\"},\"phrase\":\"(**AC-10**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-11\",\"mention\":\"**AC-11**\"},\"phrase\":\"(**AC-11**)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-15\",\"mention\":\"**AC-15**\"},\"phrase\":\"Satisfies **AC-15**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies the corrected announcement half of **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-17\",\"mention\":\"**AC-17**\"},\"phrase\":\"Satisfies **AC-17** and the focus half of **AC-16**\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"satisfies\",\"source\":{\"kind\":\"local\",\"id\":\"derived:12\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-16\",\"mention\":\"**AC-16**\"},\"phrase\":\"Satisfies **AC-17** and the focus half of **AC-16**\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "Steps 4 and 6 were built at full width in one step rather than as one listing then twenty",
+        "rejected_spans": [
+          "the thin thread's\nvalue is catching an integration problem with one call instead of twenty, and\nno live call could be made during this build (it needs\n`TEST_LIVE_MODEL_CALLS_ENABLED` and real vendor keys), so the narrow slice\nwould have proved nothing the wide one does not."
+        ],
+        "known_trap_flags": [
+          "entity_type_ambiguous",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": "A progress note recording a deviation in how steps 4 and 6 were built. It states no requirement, build step, outcome or test of its own, so no named type fits.",
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/features/scoring/score.ts`: `scoreListing()`, calling `callTier(\"ai_scoring\", fitScoreSchema, { system, prompt })` with the prompt `rubric.ts` builds, returning its `Result` unchanged. Satisfies **AC-3**.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/features/scoring/score-card.tsx`: the band badge, the matched and not mentioned lists, the reasoning, the optional sponsorship badge, plus the pending state and the per card failure state, taking a `ScoreOutcome | \"pending\"` prop so it renders every state this feature has from day one. Satisfies the display half of **AC-5**, **AC-6**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "The thin end to end thread (this project's Tracer Bullet approach): extend the search page's `SearchOutcome` to read the caller's own profile, skill count, and work experience count through the existing `readOwnProfile()` / `readProfileSections()`, gate on both counts being zero (rendering the unscored list plus the `/profile` link, `COPY-5`, only then), and otherwise wrap a call to `scoreListing()` against the first listing only in a `<Suspense>` boundary whose fallback renders that one card's pending state (`COPY-4`), so the page is never blocked even in this first thin slice. Satisfies **AC-7**.",
+        "rejected_spans": [
+          "Proves profile to score to card to Suspense end to end on one listing before scaling to all 20."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/features/scoring/score-listings.ts`: `scoreListings()`, opening the `scoring.score_listings` span first, firing `scoreListing()` concurrently across every listing (`Promise.all`, since each call already returns a `Result` rather than throwing), tallying the scored, refused, and failed counts as span attributes once every outcome resolves. Register the span in `docs/observability/spans.md`. Satisfies **AC-8**, **AC-14**.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Widen the thread from one listing to all 20: swap the single `scoreListing()` call from step 4 for `scoreListings()` inside the same Suspense boundary, whose fallback now renders the whole list unscored, in Adzuna's original order, with every card in its pending state (the Strategic Suspense Boundaries pattern named in Decision). Satisfies **AC-9**'s immediate render half.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Add the resolved states: sort the outcomes by band once all have resolved (**AC-9**'s re-sort half), the per card failure state (**AC-10**), and the page level cap reached notice reusing `SENTENCES` (**AC-11**).",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Tests: the critical test scenarios above, the prompt builder's truncation unit test, and the thin profile gate.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Move `ranked results with reasoning` from `planned` to `working` in `src/features/entry-page/about-section.tsx`. Satisfies **AC-15**.",
+        "rejected_spans": [
+          "This sits outside this feature's own code area and nothing else in the build prompts it, the exact shape that left this same clause unmet for two days on feature 7 and had to be named explicitly again on features 9, 11, 12, and 14."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Gate the re-rank announcement on at least one listing having scored. Satisfies the corrected announcement half of **AC-16**.",
+        "rejected_spans": [
+          "*Landed 2026-09-06 via `/debug` (`fix(search): only announce the ranking when something was actually ranked`) before this spec recorded it; the criterion was amended afterwards to match, which is the wrong order and is named in Follow-up.*"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Write `src/features/search/focus-keeper.tsx`: one client module exporting `FocusRecorder` and `FocusRestorer`, sharing module level state. `FocusRecorder` renders outside the Suspense boundary and listens for `focusin` on the document, filtered by `closest('[data-focus-key]')`. `FocusRestorer` renders inside the resolved content, so its mount effect IS the reveal signal, and applies AC-17's rules, consuming and clearing the recorded key on every mount. Satisfies **AC-17** and the focus half of **AC-16**.\n    - Tag the posting link with `data-focus-key=\"<source>:<sourceJobId>:posting-link\"` in `result-card.tsx`, which owns that anchor.\n    - **The apply control is NOT `result-card.tsx`'s markup to tag**. `ApplyControl` lives in `src/features/applications/apply-control.tsx` and owns its own `<button>`; `ResultCard` only renders the component. So it takes a new `focusKey` prop and puts the attribute on its own button. That keeps the dependency running one way, `/search` reaching into the applications feature and never the reverse, which is the rule `src/features/applications/AGENTS.md` states.\n    - Give the `<ul>` in `result-list.tsx` `tabindex=\"-1\"` and `COPY-8` as its accessible name, for AC-17's fallback target.",
+        "rejected_spans": [
+          ", and an earlier draft of this step said it was"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "BuildStep",
+        "span": "Prove it in a real browser: drive `/search`, tab into a pending card, wait out the reveal, and assert the same control is focused afterwards. Add the steps to `verify.md` and let `/check verify` own them.",
+        "rejected_spans": [
+          "because no test in this repo can",
+          "The unit project is `node` with no jsdom and no layout, so it can assert the key attributes exist and that the restore helper is a pure decision over an active element it is handed, but the thing AC-16 actually promises only exists in a browser."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-1",
+          "label": null,
+          "mention": "**AC-1**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-4",
+          "label": null,
+          "mention": "**AC-4**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-12",
+          "label": null,
+          "mention": "**AC-12**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-13",
+          "label": null,
+          "mention": "**AC-13**"
+        },
+        "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-2",
+          "label": null,
+          "mention": "**AC-2**"
+        },
+        "phrase": "is the anchor wording **AC-2** is later measured against",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-3",
+          "label": null,
+          "mention": "**AC-3**"
+        },
+        "phrase": "Satisfies **AC-3**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-5",
+          "label": null,
+          "mention": "**AC-5**"
+        },
+        "phrase": "Satisfies the display half of **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-6",
+          "label": null,
+          "mention": "**AC-6**"
+        },
+        "phrase": "Satisfies the display half of **AC-5**, **AC-6**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-7",
+          "label": null,
+          "mention": "**AC-7**"
+        },
+        "phrase": "Satisfies **AC-7**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-8",
+          "label": null,
+          "mention": "**AC-8**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-14",
+          "label": null,
+          "mention": "**AC-14**"
+        },
+        "phrase": "Satisfies **AC-8**, **AC-14**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "Satisfies **AC-9**'s immediate render half",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-9",
+          "label": null,
+          "mention": "**AC-9**"
+        },
+        "phrase": "(**AC-9**'s re-sort half)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-10",
+          "label": null,
+          "mention": "**AC-10**"
+        },
+        "phrase": "(**AC-10**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-11",
+          "label": null,
+          "mention": "**AC-11**"
+        },
+        "phrase": "(**AC-11**)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-15",
+          "label": null,
+          "mention": "**AC-15**"
+        },
+        "phrase": "Satisfies **AC-15**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies the corrected announcement half of **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-17",
+          "label": null,
+          "mention": "**AC-17**"
+        },
+        "phrase": "Satisfies **AC-17** and the focus half of **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "satisfies",
+        "source": {
+          "kind": "local",
+          "id": "derived:12"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-16",
+          "label": null,
+          "mention": "**AC-16**"
+        },
+        "phrase": "Satisfies **AC-17** and the focus half of **AC-16**",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

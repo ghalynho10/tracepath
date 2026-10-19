@@ -1,0 +1,240 @@
+{
+  "record": "0015",
+  "section": "Consequences",
+  "section_slug": "consequences",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2401,
+  "output_tokens": 3261,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "d90554d7787b470589111a5f979ce56c",
+  "artifact_format_version": 3,
+  "unit_sha256": "b899eea222c272b599f374e8612ec1523ffe1d90e33c951b8ca9b8566bb25142",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Every displayed claim is grounded in what the visible 500 characters actually say, or is honestly labeled as unconfirmed; the design does not assert a requirement gap the model cannot verify.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Reuses spec 0012's router and spec 0010's profile queries unchanged. No new table, no new migration, no new credential.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`scoreListings()`'s concurrent dispatch pattern is the shape feature 17 (cross vendor self check) can reuse directly for its own `ai_check` calls once it is designed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**`/search` gains a second client component, and this one exists purely for accessibility.** `FocusRecorder` / `FocusRestorer` is forced by nothing except that a reader who tabs into the list during scoring should not be thrown to the top of the document. That is a weaker forcing function and worth naming honestly. This grows a conceded boundary rather than breaking an intact guarantee. Anyone tempted to revert it should note that the alternative is not \\\"no client JavaScript\\\", it is \\\"keyboard users lose their place\\\"\",\"rejected_spans\":[\"`ApplyControl` (spec 0014) was forced by a budget cost: a no JavaScript form needs a rendered response, and that response is a re-render that spends an Adzuna call.\",\"What makes it acceptable is that the property it spends was already spent: spec 0013's Decision carries a **No longer true** amendment saying `/search` no longer ships zero client JavaScript, and spec 0014's Consequences records that \\\"the property is gone rather than reduced\\\" (both read on 2026-09-06).\",\", because the reveal destroys the nodes either way.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**Focus is restored, not preserved, and the two are observably different.** There is a moment, between the reveal and the restore effect, when focus really is on the body. It is short and no reader is expected to act inside it, but a screen reader may announce the document or the list before the restored control.\",\"rejected_spans\":[\"Preserving focus properly would mean never removing the node, which means never reordering the DOM, which is the option this spec rejected.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**The re-rank announcement and the restored focus land in the same commit, and which one a screen reader actually speaks is not ours to decide.** Many screen reader and browser pairs prioritise the focus change and drop or truncate a simultaneous polite announcement. This spec does not sequence them; it accepts that on a render which both ranks and restores, the reader may hear only the restored control. The ranking is still discoverable, on the card they land on.\",\"rejected_spans\":[\"Both belong to the resolved content: the `role=\\\"status\\\"` node arrives with its text already set, and `FocusRestorer` calls `.focus()` from the same subtree's mount.\",\"because guessing at the right delay would be tuning to one pairing\",\"Raised by the 2026-09-06 cross check, and it is the one item here that a real screen reader has to settle rather than reasoning (see `verify.md`).\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**`document.activeElement === body` is a proxy for \\\"the reveal orphaned this reader\\\", not a measurement of it.** A reader who clicks blank page space, or dismisses a browser dialog, moments before the reveal has focus on the body for reasons that have nothing to do with scoring, and will be moved onto a card control they never touched. It is the one path where this mechanism reproduces the defect it exists to prevent. Accepted as narrow rather than engineered around\",\"rejected_spans\":[\": the alternative is tracking whether the orphaning was caused by the reveal specifically, which needs more machinery than the defect justifies.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**A reader who focuses a control before the page hydrates is not recorded.** `FocusRecorder` starts listening when its own JavaScript runs. The list first appears at roughly 1.8 seconds and the ranking at roughly 14 (measured on 2026-09-06), so the unrecorded window is the gap before hydration rather than the whole 12 seconds, and a reader in it lands on the AC-17 fallback (the results list) rather than on their exact control.\",\"rejected_spans\":[\"Closing it fully would need an inline script running ahead of hydration, which is a bigger hammer than this defect justifies.\"],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"**CSS `order` was rejected, and it is the option that looks cheapest.** Reordering a flex list visually leaves every card in the DOM, so focus survives with no JavaScript at all. It also leaves the DOM and reading order in Adzuna's sequence, so a screen reader reads the list unranked while the screen shows it ranked.\",\"rejected_spans\":[\"That is a WCAG 2.2 Meaningful Sequence and Focus Order failure, and it recreates in a new place the exact defect this session just fixed: the page claiming an order it does not have. It is cheaper only if the reader is assumed to be sighted.\"],\"known_trap_flags\":[\"rationale_boundary_call\",\"embedded_second_claim\"]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Scores are never cached. Every `/search` render that has results and clears the AC-7 gate spends up to 20 `ai_scoring` calls, the same non caching precedent `job_search` itself already accepts; a repeat view (a reload, a shared link, or browser back navigation) costs budget again exactly like feature 18's own open problem, now applying to a second gated call type rather than one.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"`notMentionedSkills` still requires the model to judge what a role like this one \\\"would typically value,\\\" an inference the honest label does not remove, only flags. A wrong inference now reads as an honest, hedged guess rather than a confident false claim\",\"rejected_spans\":[\", which is the fix this spec makes; it is not a fix that removes the underlying judgment call.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The band ignores stated preferences by design. A listing whose salary sits well below the caller's stated minimum, or that is on site when the caller wants remote, can still land in `strong_match`\",\"rejected_spans\":[\", since only skill and experience alignment drive the band.\"],\"known_trap_flags\":[]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The full posting is never fetched. A skill genuinely required by a posting but never mentioned in its visible 500 characters is invisible to this feature: correctly reported as neither matched nor not mentioned, rather than wrongly reported as missing, but still unreported. This is an accepted information gap, not a closed one (see Follow-up).\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"Sorting only once, after all 20 resolve, means the one visible reorder waits for the slowest of the 20 calls. The honest worst case is not one hung call but a vendor side outage during the batch: every card can sit at its pending indicator for the full 30 second per call timeout (spec 0012's `tiers.ts`), then settle as 20 individual failure states with no ranking at all. The page itself is never blocked, it renders immediately in unscored order, but a reader watching the list can wait the full 30 seconds for that outcome. No aggregate, shorter than 30 second deadline is added in this spec (see Follow-up); this is accepted rather than engineered around until real usage shows it matters.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"The five band names and their anchor wording are this spec's own first attempt.\",\"rejected_spans\":[\"Feature 16's eval harness against feature 15's ground truth set is the actual mechanism to prove whether they discriminate real listings well, not this spec's own reasoning alone (AC-2).\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"Consequence\",\"span\":\"This is the first feature that actually sends a real user's profile data to `ai_scoring` in production. Spec 0012's own provisional vendor pick and its Follow-up items (the alias pinning trigger, the eval harness ranking) apply unchanged to this feature's calls.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Every displayed claim is grounded in what the visible 500 characters actually say, or is honestly labeled as unconfirmed; the design does not assert a requirement gap the model cannot verify.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Reuses spec 0012's router and spec 0010's profile queries unchanged. No new table, no new migration, no new credential.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`scoreListings()`'s concurrent dispatch pattern is the shape feature 17 (cross vendor self check) can reuse directly for its own `ai_check` calls once it is designed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**`/search` gains a second client component, and this one exists purely for accessibility.** `FocusRecorder` / `FocusRestorer` is forced by nothing except that a reader who tabs into the list during scoring should not be thrown to the top of the document. That is a weaker forcing function and worth naming honestly. This grows a conceded boundary rather than breaking an intact guarantee. Anyone tempted to revert it should note that the alternative is not \"no client JavaScript\", it is \"keyboard users lose their place\"",
+        "rejected_spans": [
+          "`ApplyControl` (spec 0014) was forced by a budget cost: a no JavaScript form needs a rendered response, and that response is a re-render that spends an Adzuna call.",
+          "What makes it acceptable is that the property it spends was already spent: spec 0013's Decision carries a **No longer true** amendment saying `/search` no longer ships zero client JavaScript, and spec 0014's Consequences records that \"the property is gone rather than reduced\" (both read on 2026-09-06).",
+          ", because the reveal destroys the nodes either way."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**Focus is restored, not preserved, and the two are observably different.** There is a moment, between the reveal and the restore effect, when focus really is on the body. It is short and no reader is expected to act inside it, but a screen reader may announce the document or the list before the restored control.",
+        "rejected_spans": [
+          "Preserving focus properly would mean never removing the node, which means never reordering the DOM, which is the option this spec rejected."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**The re-rank announcement and the restored focus land in the same commit, and which one a screen reader actually speaks is not ours to decide.** Many screen reader and browser pairs prioritise the focus change and drop or truncate a simultaneous polite announcement. This spec does not sequence them; it accepts that on a render which both ranks and restores, the reader may hear only the restored control. The ranking is still discoverable, on the card they land on.",
+        "rejected_spans": [
+          "Both belong to the resolved content: the `role=\"status\"` node arrives with its text already set, and `FocusRestorer` calls `.focus()` from the same subtree's mount.",
+          "because guessing at the right delay would be tuning to one pairing",
+          "Raised by the 2026-09-06 cross check, and it is the one item here that a real screen reader has to settle rather than reasoning (see `verify.md`)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**`document.activeElement === body` is a proxy for \"the reveal orphaned this reader\", not a measurement of it.** A reader who clicks blank page space, or dismisses a browser dialog, moments before the reveal has focus on the body for reasons that have nothing to do with scoring, and will be moved onto a card control they never touched. It is the one path where this mechanism reproduces the defect it exists to prevent. Accepted as narrow rather than engineered around",
+        "rejected_spans": [
+          ": the alternative is tracking whether the orphaning was caused by the reveal specifically, which needs more machinery than the defect justifies."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**A reader who focuses a control before the page hydrates is not recorded.** `FocusRecorder` starts listening when its own JavaScript runs. The list first appears at roughly 1.8 seconds and the ranking at roughly 14 (measured on 2026-09-06), so the unrecorded window is the gap before hydration rather than the whole 12 seconds, and a reader in it lands on the AC-17 fallback (the results list) rather than on their exact control.",
+        "rejected_spans": [
+          "Closing it fully would need an inline script running ahead of hydration, which is a bigger hammer than this defect justifies."
+        ],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "**CSS `order` was rejected, and it is the option that looks cheapest.** Reordering a flex list visually leaves every card in the DOM, so focus survives with no JavaScript at all. It also leaves the DOM and reading order in Adzuna's sequence, so a screen reader reads the list unranked while the screen shows it ranked.",
+        "rejected_spans": [
+          "That is a WCAG 2.2 Meaningful Sequence and Focus Order failure, and it recreates in a new place the exact defect this session just fixed: the page claiming an order it does not have. It is cheaper only if the reader is assumed to be sighted."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Scores are never cached. Every `/search` render that has results and clears the AC-7 gate spends up to 20 `ai_scoring` calls, the same non caching precedent `job_search` itself already accepts; a repeat view (a reload, a shared link, or browser back navigation) costs budget again exactly like feature 18's own open problem, now applying to a second gated call type rather than one.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "`notMentionedSkills` still requires the model to judge what a role like this one \"would typically value,\" an inference the honest label does not remove, only flags. A wrong inference now reads as an honest, hedged guess rather than a confident false claim",
+        "rejected_spans": [
+          ", which is the fix this spec makes; it is not a fix that removes the underlying judgment call."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The band ignores stated preferences by design. A listing whose salary sits well below the caller's stated minimum, or that is on site when the caller wants remote, can still land in `strong_match`",
+        "rejected_spans": [
+          ", since only skill and experience alignment drive the band."
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The full posting is never fetched. A skill genuinely required by a posting but never mentioned in its visible 500 characters is invisible to this feature: correctly reported as neither matched nor not mentioned, rather than wrongly reported as missing, but still unreported. This is an accepted information gap, not a closed one (see Follow-up).",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "Sorting only once, after all 20 resolve, means the one visible reorder waits for the slowest of the 20 calls. The honest worst case is not one hung call but a vendor side outage during the batch: every card can sit at its pending indicator for the full 30 second per call timeout (spec 0012's `tiers.ts`), then settle as 20 individual failure states with no ranking at all. The page itself is never blocked, it renders immediately in unscored order, but a reader watching the list can wait the full 30 seconds for that outcome. No aggregate, shorter than 30 second deadline is added in this spec (see Follow-up); this is accepted rather than engineered around until real usage shows it matters.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "The five band names and their anchor wording are this spec's own first attempt.",
+        "rejected_spans": [
+          "Feature 16's eval harness against feature 15's ground truth set is the actual mechanism to prove whether they discriminate real listings well, not this spec's own reasoning alone (AC-2)."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "Consequence",
+        "span": "This is the first feature that actually sends a real user's profile data to `ai_scoring` in production. Spec 0012's own provisional vendor pick and its Follow-up items (the alias pinning trigger, the eval harness ranking) apply unchanged to this feature's calls.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "record": "0015",
+  "section": "Decision",
+  "section_slug": "decision",
+  "file": "specs/0015-fit-scoring-with-shown-reasoning/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 682,
+  "output_tokens": 1261,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "91756d3df10c4a95b27117d58c39138e",
+  "artifact_format_version": 3,
+  "unit_sha256": "7fa34408fbc8925e911d0ff6f64dc193af4259ebf4e0986222becdee6d0eafa2",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Chosen option**: Score the snippet, relabel the semantics honestly (rationale.md, Option 1). No fetch of the full posting; the rubric and the schema are designed around what a 500 character excerpt can honestly support.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Second decision, added 2026-09-06: restore keyboard focus after the reveal with a small client component** (rationale.md, \\\"How the ranked list reveals without losing keyboard focus\\\", Option A). A client module records the focused control by a stable key and gives focus back to that same control once the ranked list is in place (AC-17).\",\"rejected_spans\":[\"The ranked list arrives as a `<Suspense>` reveal, which destroys the fallback's DOM, so a reader focused on a card control is dropped to `<body>`.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The runner up, reordering visually with CSS `order` so no node is ever removed, was rejected\",\"rejected_spans\":[\"because it leaves the reading order unranked while the screen shows it ranked, which trades a keyboard defect for a screen reader one\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Doing nothing was rejected\",\"rejected_spans\":[\"because AC-9's re-sort is the feature's headline and the defect is real and reproducible\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"**Implementation skills**: `ai-sdk` (Vercel's official plugin skill; consulted indirectly, since this feature calls spec 0012's router rather than the AI SDK directly, and never imports an `@ai-sdk/` package itself, per spec 0012 AC-3's own guard)\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\",\"embedded_second_claim\"]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`), specifically its Strategic Suspense Boundaries and Parallel Data Fetching rules, which this spec's sort once after all 20 resolve design applies directly\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the `scoring.score_listings` span.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"target\":{\"kind\":\"reference\",\"record\":\"0015\",\"id\":\"AC-17\",\"mention\":\"AC-17\"},\"phrase\":\"(AC-17)\",\"date\":null,\"known_trap_flags\":[]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"target\":{\"kind\":\"reference\",\"record\":\"0012\",\"id\":\"AC-3\",\"mention\":\"spec 0012 AC-3's own guard\"},\"phrase\":\"per spec 0012 AC-3's own guard\",\"date\":null,\"known_trap_flags\":[]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Chosen option**: Score the snippet, relabel the semantics honestly (rationale.md, Option 1). No fetch of the full posting; the rubric and the schema are designed around what a 500 character excerpt can honestly support.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Second decision, added 2026-09-06: restore keyboard focus after the reveal with a small client component** (rationale.md, \"How the ranked list reveals without losing keyboard focus\", Option A). A client module records the focused control by a stable key and gives focus back to that same control once the ranked list is in place (AC-17).",
+        "rejected_spans": [
+          "The ranked list arrives as a `<Suspense>` reveal, which destroys the fallback's DOM, so a reader focused on a card control is dropped to `<body>`."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The runner up, reordering visually with CSS `order` so no node is ever removed, was rejected",
+        "rejected_spans": [
+          "because it leaves the reading order unranked while the screen shows it ranked, which trades a keyboard defect for a screen reader one"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Doing nothing was rejected",
+        "rejected_spans": [
+          "because AC-9's re-sort is the feature's headline and the defect is real and reproducible"
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "**Implementation skills**: `ai-sdk` (Vercel's official plugin skill; consulted indirectly, since this feature calls spec 0012's router rather than the AI SDK directly, and never imports an `@ai-sdk/` package itself, per spec 0012 AC-3's own guard)",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split",
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`vercel-react-best-practices` (`vercel-labs/agent-skills`, `.agents/skills/vercel-react-best-practices/`), specifically its Strategic Suspense Boundaries and Parallel Data Fetching rules, which this spec's sort once after all 20 resolve design applies directly",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "`sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, `.agents/skills/sentry-nextjs-sdk/`), for the `scoring.score_listings` span.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0015",
+          "id": "AC-17",
+          "label": null,
+          "mention": "AC-17"
+        },
+        "phrase": "(AC-17)",
+        "date": null,
+        "known_trap_flags": []
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "0012",
+          "id": "AC-3",
+          "label": null,
+          "mention": "spec 0012 AC-3's own guard"
+        },
+        "phrase": "per spec 0012 AC-3's own guard",
+        "date": null,
+        "known_trap_flags": []
+      }
+    ]
+  }
+}

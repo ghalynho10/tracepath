@@ -1,0 +1,336 @@
+{
+  "record": "0014",
+  "section": "Follow-up",
+  "section_slug": "follow-up",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 2609,
+  "output_tokens": 6603,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "cfcbe644e77f43b2826c44233eace399",
+  "artifact_format_version": 3,
+  "unit_sha256": "2c6c6a9f76b2fdf311231f9e023076cf2eaf64f972b4d31dc6c4dbf739c04b43",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Settle the one claim this spec inferred rather than verified.** AC-20's read only adapter is built on the reasoning that `getClaims()` can refresh an expired access token and persist new cookies through `setAll`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Driven against a real minted session whose `expires_at` was pushed two hours into the past: the default `next/headers` adapter refreshed and wrote `sb-127-auth-token`, while the read only adapter in the identical state wrote nothing and the apply still succeeded. So every link in AC-20's chain is now verified rather than inherited. **The same run also showed the chain was not the one that fired** (see AC-20a): the write that cost the call came from `src/proxy.ts`, one layer up, where the action could not defend against it.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Correct `createClient()`'s doc comment** at `src/lib/supabase/server.ts:17-30`. It says the `next/headers` store is the default \\\"which is every caller in `src/`\\\", and AC-20 makes this feature the exception. It also frames the parameter as existing for tests, which stops being the whole truth.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Correct spec 0003's `job_description` description in both places, not one.** [index.md:118](../0003-data-model/index.md) calls it \\\"the listing's full description text. The only copy that survives the posting being taken down\\\", and [index.md:262](../0003-data-model/index.md) says it \\\"stores a full listing body per application\\\". Both are wrong: Adzuna's search response carries only a snippet. Spec 0013's own Follow-up item names only line 118, so that item is itself incomplete and should be updated when it is closed. A plain grep for \\\"full text\\\" or \\\"full description\\\" finds only the first; line 262 says \\\"full listing body\\\" and is missed.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Both corrected, and spec 0013's own Follow-up item (which named only line 118) was updated to record that it had missed the second.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Amend spec 0013's Decision at [index.md:42](../0013-job-search-and-results-list/index.md) with a visible note** that \\\"never a Server Action or a client side fetch\\\" and \\\"no client JavaScript ships for search itself\\\" no longer hold in full once this feature ships. Follow the shape of that spec's own AC-10 correction: a note in the spec that a later reader cannot miss, rather than a quiet narrowing recorded only in this spec's Consequences.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:7\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Spec 0013's Decision now carries a block quote splitting the claim in two: the Server Component and plain `GET` half stays true, the no client JavaScript half does not\",\"rejected_spans\":[\"with the reason (a form with no JavaScript needs a rendered response, which is the re-render that spends a call)\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:8\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Update spec 0013's `Listing` table (rows 71 to 73 today; they were 63 to 65 before this pass's own block quote shifted them)** so `sourceJobId`, `title` and `companyName` record the non empty guarantee AC-13 adds. The table currently documents all three as plain strings, which is what let the gap sit undetected between a shipped schema and a shipped table. Its `postedAt` row also claims ISO datetime while the code accepts any string, which AC-2 now enforces at this feature's boundary and which that table should say.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:9\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"All three rows record the non empty guarantee, and the `postedAt` row now says it accepts any string rather than claiming a validated ISO datetime, which it never enforced.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:10\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Close spec 0003's Follow-up items at lines 274 and 275.** Line 274 asks for a `Done when` criterion covering the missing profile case, which AC-5 now supplies. Line 275 asks for the predicted salary decision, which AC-6 now settles. Both were written at design time and neither had been acted on.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:11\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Both ticked, each naming the acceptance criterion that closed it and what the deliberation added beyond the original lean.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:12\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**Does a refused stale dispatch spend a call on the HYDRATED path too?** The re-render and the spend were observed for real, but only from a hand built `POST`, which is the no JavaScript request shape and the only one that can be driven headlessly. The real control sends a different request. If the hydrated dispatch merely rejects the promise, `COPY-7` renders and nothing is spent; if it behaves like the observed case, every deploy silently bills mid session readers. AC-21 and Consequences both state the limit rather than guessing. **Answer this before anyone builds a rate alert on `search.run`**\",\"rejected_spans\":[\"since a deploy would otherwise look like an Adzuna incident.\"],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:13\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**AC-10 is not proven end to end, and the gap is specific.** The build stood up a production build, confirmed a search moves the `job_search` counters, and confirmed the wiring with two unit guards whose regressions were both driven on purpose (removing the read only adapter, and adding a re-render trigger to `recordApplication`). What it could NOT do is dispatch a real apply: Next refuses a hand built action `POST` with `Failed to find Server Action`, so `curl` and `fetch` cannot drive it. **A successful apply's cost has therefore never been measured, only argued from the wiring.** It needs a real browser, and it is the single most load bearing unverified claim in this spec. `verify.md` carries the corrected method.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:14\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**The expired session case is untouched**, which is the one AC-20 exists for. A fresh session cannot reveal it, and the first attempt to prove AC-20 passed against BOTH the read only adapter and the writing default, precisely because of that. Recorded in `verify.md` under `## What the build measured`.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:15\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**AC-21's client side catch is not browser verified.** The stale build refusal was observed for real at the server, and the catch was written where it has to be, but nothing has yet driven a deploy underneath an open page and watched `COPY-7` render.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:16\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**`src/components/` is a third shared location that root `AGENTS.md` does not name.** It names `src/lib` and `src/components/ui`. `/sync` should add it after the merge\",\"rejected_spans\":[\"with the reason: `src/components/ui` is spec 0005's design system, so a shared component that is not a design system primitive needs somewhere else to live.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:17\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"**A new feature area has no nested `AGENTS.md` yet.** `src/features/applications/` now holds the one action in the codebase that must never call `revalidatePath` or `redirect`. `/sync` after the merge.\",\"rejected_spans\":[\"and the reason is a budget cost invisible in review. That is exactly the kind of invariant a nested context file exists to carry.\"],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:18\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"Feature 23's applications dashboard inherits the unpaginated list and the absent status column. Both are deliberate here and neither should be inherited silently.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:19\",\"id_source\":\"derived\",\"type\":\"FollowUp\",\"span\":\"A third screen that ever displays a stored listing owes the same per advert attribution. Nothing enforces this automatically today, and the two screens that owe it are currently kept correct by review alone.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:20\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"**What revision 2 changed, and why it is recorded rather than smoothed over.** A cross check on a different model found two majors this spec had not seen. The first is that the design's whole purpose, not spending a call on apply, could be defeated by a session refresh writing a cookie inside the action, which is invisible in review and passes a single measurement on a fresh session. The second is that the file layout in the original build plan was mechanically incompatible with the closure encryption the security model rested on, so the build would have landed on `.bind()` and the integrity claim would have been false while reading as true. Both are the same shape: a correct sounding spec whose failure only appears under a condition nobody thought to test.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"A revision history note recording what revision 2 changed and why. It states no requirement, outcome, build step or test, and no named type fits.\"}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:1\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:2\"},\"phrase\":\"**Answered 2026-09-05 by `/debug`, and the answer is yes.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:5\"},\"phrase\":\"**Done 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:6\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:7\"},\"phrase\":\"**Done 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:8\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:9\"},\"phrase\":\"**Done 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:10\"},\"target\":{\"kind\":\"local\",\"id\":\"derived:11\"},\"phrase\":\"**Done 2026-09-05.**\",\"date\":\"2026-09-05\",\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Settle the one claim this spec inferred rather than verified.** AC-20's read only adapter is built on the reasoning that `getClaims()` can refresh an expired access token and persist new cookies through `setAll`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Driven against a real minted session whose `expires_at` was pushed two hours into the past: the default `next/headers` adapter refreshed and wrote `sb-127-auth-token`, while the read only adapter in the identical state wrote nothing and the apply still succeeded. So every link in AC-20's chain is now verified rather than inherited. **The same run also showed the chain was not the one that fired** (see AC-20a): the write that cost the call came from `src/proxy.ts`, one layer up, where the action could not defend against it.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Correct `createClient()`'s doc comment** at `src/lib/supabase/server.ts:17-30`. It says the `next/headers` store is the default \"which is every caller in `src/`\", and AC-20 makes this feature the exception. It also frames the parameter as existing for tests, which stops being the whole truth.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Correct spec 0003's `job_description` description in both places, not one.** [index.md:118](../0003-data-model/index.md) calls it \"the listing's full description text. The only copy that survives the posting being taken down\", and [index.md:262](../0003-data-model/index.md) says it \"stores a full listing body per application\". Both are wrong: Adzuna's search response carries only a snippet. Spec 0013's own Follow-up item names only line 118, so that item is itself incomplete and should be updated when it is closed. A plain grep for \"full text\" or \"full description\" finds only the first; line 262 says \"full listing body\" and is missed.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Both corrected, and spec 0013's own Follow-up item (which named only line 118) was updated to record that it had missed the second.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Amend spec 0013's Decision at [index.md:42](../0013-job-search-and-results-list/index.md) with a visible note** that \"never a Server Action or a client side fetch\" and \"no client JavaScript ships for search itself\" no longer hold in full once this feature ships. Follow the shape of that spec's own AC-10 correction: a note in the spec that a later reader cannot miss, rather than a quiet narrowing recorded only in this spec's Consequences.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:7",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Spec 0013's Decision now carries a block quote splitting the claim in two: the Server Component and plain `GET` half stays true, the no client JavaScript half does not",
+        "rejected_spans": [
+          "with the reason (a form with no JavaScript needs a rendered response, which is the re-render that spends a call)"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:8",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Update spec 0013's `Listing` table (rows 71 to 73 today; they were 63 to 65 before this pass's own block quote shifted them)** so `sourceJobId`, `title` and `companyName` record the non empty guarantee AC-13 adds. The table currently documents all three as plain strings, which is what let the gap sit undetected between a shipped schema and a shipped table. Its `postedAt` row also claims ISO datetime while the code accepts any string, which AC-2 now enforces at this feature's boundary and which that table should say.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:9",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "All three rows record the non empty guarantee, and the `postedAt` row now says it accepts any string rather than claiming a validated ISO datetime, which it never enforced.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:10",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Close spec 0003's Follow-up items at lines 274 and 275.** Line 274 asks for a `Done when` criterion covering the missing profile case, which AC-5 now supplies. Line 275 asks for the predicted salary decision, which AC-6 now settles. Both were written at design time and neither had been acted on.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:11",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Both ticked, each naming the acceptance criterion that closed it and what the deliberation added beyond the original lean.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:12",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**Does a refused stale dispatch spend a call on the HYDRATED path too?** The re-render and the spend were observed for real, but only from a hand built `POST`, which is the no JavaScript request shape and the only one that can be driven headlessly. The real control sends a different request. If the hydrated dispatch merely rejects the promise, `COPY-7` renders and nothing is spent; if it behaves like the observed case, every deploy silently bills mid session readers. AC-21 and Consequences both state the limit rather than guessing. **Answer this before anyone builds a rate alert on `search.run`**",
+        "rejected_spans": [
+          "since a deploy would otherwise look like an Adzuna incident."
+        ],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:13",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**AC-10 is not proven end to end, and the gap is specific.** The build stood up a production build, confirmed a search moves the `job_search` counters, and confirmed the wiring with two unit guards whose regressions were both driven on purpose (removing the read only adapter, and adding a re-render trigger to `recordApplication`). What it could NOT do is dispatch a real apply: Next refuses a hand built action `POST` with `Failed to find Server Action`, so `curl` and `fetch` cannot drive it. **A successful apply's cost has therefore never been measured, only argued from the wiring.** It needs a real browser, and it is the single most load bearing unverified claim in this spec. `verify.md` carries the corrected method.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:14",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**The expired session case is untouched**, which is the one AC-20 exists for. A fresh session cannot reveal it, and the first attempt to prove AC-20 passed against BOTH the read only adapter and the writing default, precisely because of that. Recorded in `verify.md` under `## What the build measured`.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:15",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**AC-21's client side catch is not browser verified.** The stale build refusal was observed for real at the server, and the catch was written where it has to be, but nothing has yet driven a deploy underneath an open page and watched `COPY-7` render.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:16",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**`src/components/` is a third shared location that root `AGENTS.md` does not name.** It names `src/lib` and `src/components/ui`. `/sync` should add it after the merge",
+        "rejected_spans": [
+          "with the reason: `src/components/ui` is spec 0005's design system, so a shared component that is not a design system primitive needs somewhere else to live."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:17",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "**A new feature area has no nested `AGENTS.md` yet.** `src/features/applications/` now holds the one action in the codebase that must never call `revalidatePath` or `redirect`. `/sync` after the merge.",
+        "rejected_spans": [
+          "and the reason is a budget cost invisible in review. That is exactly the kind of invariant a nested context file exists to carry."
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:18",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "Feature 23's applications dashboard inherits the unpaginated list and the absent status column. Both are deliberate here and neither should be inherited silently.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:19",
+        "id_source": "derived",
+        "type": "FollowUp",
+        "span": "A third screen that ever displays a stored listing owes the same per advert attribution. Nothing enforces this automatically today, and the two screens that owe it are currently kept correct by review alone.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:20",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "**What revision 2 changed, and why it is recorded rather than smoothed over.** A cross check on a different model found two majors this spec had not seen. The first is that the design's whole purpose, not spending a call on apply, could be defeated by a session refresh writing a cookie inside the action, which is invisible in review and passes a single measurement on a fresh session. The second is that the file layout in the original build plan was mechanically incompatible with the closure encryption the security model rested on, so the build would have landed on `.bind()` and the integrity claim would have been false while reading as true. Both are the same shape: a correct sounding spec whose failure only appears under a condition nobody thought to test.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "A revision history note recording what revision 2 changed and why. It states no requirement, outcome, build step or test, and no named type fits.",
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:1"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:2"
+        },
+        "phrase": "**Answered 2026-09-05 by `/debug`, and the answer is yes.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:5"
+        },
+        "phrase": "**Done 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:6"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:7"
+        },
+        "phrase": "**Done 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:8"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:9"
+        },
+        "phrase": "**Done 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:10"
+        },
+        "target": {
+          "kind": "local",
+          "id": "derived:11"
+        },
+        "phrase": "**Done 2026-09-05.**",
+        "date": "2026-09-05",
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "record": "0013",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0013-job-search-and-results-list/index.md",
+  "unit_kind": "Section",
+  "run": 3,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 247,
+  "output_tokens": 653,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "863d78dfa4c24f89bd8070e6de46d75e",
+  "artifact_format_version": 3,
+  "unit_sha256": "91337f301647cf8ee72811f8816a8875986706e5525f3fe1390283dc62d4a618",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec builds the first real search screen: a signed in user types a title and or a location, the app spends one budget checked call against Adzuna (the job board this project already committed to), and real listings come back with the attribution Adzuna's own terms require.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing here persists.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Clicking through to a real posting, and marking a job applied, stay feature 12's job; this feature only searches and displays.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"making sure a caller can never spend an outbound call without passing feature 10's budget gate first.\",\"rejected_spans\":[\"The two hardest parts are not the search itself: they are meeting Adzuna's exact attribution wording without guessing, and\"],\"known_trap_flags\":[\"rationale_boundary_call\"]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 12\",\"id\":null,\"mention\":\"feature 12's job\"},\"phrase\":\"stay feature 12's job\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]},{\"type\":\"blocked-by\",\"source\":{\"kind\":\"local\",\"id\":\"derived:4\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"id\":null,\"mention\":\"feature 10's budget gate\"},\"phrase\":\"without passing feature 10's budget gate first\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec builds the first real search screen: a signed in user types a title and or a location, the app spends one budget checked call against Adzuna (the job board this project already committed to), and real listings come back with the attribution Adzuna's own terms require.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing here persists.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Clicking through to a real posting, and marking a job applied, stay feature 12's job; this feature only searches and displays.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "making sure a caller can never spend an outbound call without passing feature 10's budget gate first.",
+        "rejected_spans": [
+          "The two hardest parts are not the search itself: they are meeting Adzuna's exact attribution wording without guessing, and"
+        ],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 12",
+          "id": null,
+          "label": null,
+          "mention": "feature 12's job"
+        },
+        "phrase": "stay feature 12's job",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      },
+      {
+        "type": "blocked-by",
+        "source": {
+          "kind": "local",
+          "id": "derived:4"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10's budget gate"
+        },
+        "phrase": "without passing feature 10's budget gate first",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}

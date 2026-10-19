@@ -1,0 +1,101 @@
+{
+  "record": "0014",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0014-apply-redirect-and-application-record/index.md",
+  "unit_kind": "Section",
+  "run": 1,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 386,
+  "output_tokens": 675,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "25a96d52ef4d4069a2fec8e7f68f79f9",
+  "artifact_format_version": 3,
+  "unit_sha256": "11d905e241fcd06fed12d3f1c7fcf6ca9976b089f46bf2fcb95fa3664f6b149f",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"A signed in user clicks a search result through to the real posting, then marks that they applied, and the app writes one `application` row holding a full copy of the listing. Those rows are listed back on `/applications`, where they can be removed through a confirmation step.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Nothing is auto filled and nothing is submitted on anyone's behalf.\",\"rejected_spans\":[],\"known_trap_flags\":[]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The apply write must not re-render `/search`\",\"rejected_spans\":[\"because that would re-run the Adzuna search and spend one of the 25 weekly calls\"],\"known_trap_flags\":[]},{\"id\":\"derived:4\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Adzuna's attribution obligation is per displayed advert, so it follows the listing onto `/applications`.\",\"rejected_spans\":[],\"known_trap_flags\":[\"embedded_second_claim\"]},{\"id\":\"derived:5\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"the `application` table gains one column, `salary_is_predicted`\",\"rejected_spans\":[\"because without it a salary Adzuna only guessed at resurfaces later as a stated fact\"],\"known_trap_flags\":[]},{\"id\":\"derived:6\",\"id_source\":\"derived\",\"type\":\"unclassified\",\"span\":\"The hardest part is not the write. It is that three separate mechanisms can each re-render `/search` without anyone meaning to, and two of them are invisible in review.\",\"rejected_spans\":[],\"known_trap_flags\":[\"entity_type_ambiguous\"],\"unclassified_note\":\"An assessment of where the difficulty lies. It states no requirement, outcome, build step or test, so none of the named types fits.\"}],\"relationships\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "A signed in user clicks a search result through to the real posting, then marks that they applied, and the app writes one `application` row holding a full copy of the listing. Those rows are listed back on `/applications`, where they can be removed through a confirmation step.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Nothing is auto filled and nothing is submitted on anyone's behalf.",
+        "rejected_spans": [],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The apply write must not re-render `/search`",
+        "rejected_spans": [
+          "because that would re-run the Adzuna search and spend one of the 25 weekly calls"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:4",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Adzuna's attribution obligation is per displayed advert, so it follows the listing onto `/applications`.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "embedded_second_claim"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:5",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "the `application` table gains one column, `salary_is_predicted`",
+        "rejected_spans": [
+          "because without it a salary Adzuna only guessed at resurfaces later as a stated fact"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:6",
+        "id_source": "derived",
+        "type": "unclassified",
+        "span": "The hardest part is not the write. It is that three separate mechanisms can each re-render `/search` without anyone meaning to, and two of them are invisible in review.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "entity_type_ambiguous"
+        ],
+        "unclassified_note": "An assessment of where the difficulty lies. It states no requirement, outcome, build step or test, so none of the named types fits.",
+        "label": null
+      }
+    ],
+    "relationships": []
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "record": "0012",
+  "section": "Summary",
+  "section_slug": "summary",
+  "file": "specs/0012-model-client-router/index.md",
+  "unit_kind": "Section",
+  "run": 2,
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "prompt_version": "0003.1",
+  "commit": "2e40bcf",
+  "extracted_at": "2026-10-19T06:09:42+00:00",
+  "max_output_tokens": 64000,
+  "effort": "medium",
+  "input_tokens": 232,
+  "output_tokens": 486,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 57493,
+  "run_id": "b5124f3a51814abb8bd6dd584934488d",
+  "artifact_format_version": 3,
+  "unit_sha256": "68bffd03ee75d315bc2fd7d4a9e252df0deb914bae6b49f1c964f99273cf0675",
+  "raw_response": "{\"entities\":[{\"id\":\"derived:1\",\"id_source\":\"derived\",\"type\":\"Feature\",\"span\":\"This spec builds the one door every AI model call walks through. A feature names a tier, \\\"ai_scoring\\\" or \\\"ai_check\\\", and gets back a validated structured result or a visible failure; it never names a vendor or a model.\",\"rejected_spans\":[],\"known_trap_flags\":[\"multi_condition_split\"]},{\"id\":\"derived:2\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"The two tiers are configured in one checked in file to two different vendors, OpenAI for scoring and Google for the cross vendor check, so swapping a model later is an edit to that one file.\",\"rejected_spans\":[],\"known_trap_flags\":[\"rationale_boundary_call\"]},{\"id\":\"derived:3\",\"id_source\":\"derived\",\"type\":\"Constraint\",\"span\":\"Every call passes through feature 10's usage gate first, using the tier name as the budget's call type\",\"rejected_spans\":[\"so the router never becomes a way to spend past that gate by accident\"],\"known_trap_flags\":[]}],\"relationships\":[{\"type\":\"unclassified\",\"source\":{\"kind\":\"local\",\"id\":\"derived:3\"},\"target\":{\"kind\":\"reference\",\"record\":\"feature 10\",\"id\":null,\"mention\":\"feature 10's usage gate\"},\"phrase\":\"Every call passes through feature 10's usage gate first\",\"date\":null,\"known_trap_flags\":[\"relationship_type_ambiguous\"]}]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "failure_kind": null,
+  "output": {
+    "entities": [
+      {
+        "id": "derived:1",
+        "id_source": "derived",
+        "type": "Feature",
+        "span": "This spec builds the one door every AI model call walks through. A feature names a tier, \"ai_scoring\" or \"ai_check\", and gets back a validated structured result or a visible failure; it never names a vendor or a model.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "multi_condition_split"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:2",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "The two tiers are configured in one checked in file to two different vendors, OpenAI for scoring and Google for the cross vendor check, so swapping a model later is an edit to that one file.",
+        "rejected_spans": [],
+        "known_trap_flags": [
+          "rationale_boundary_call"
+        ],
+        "unclassified_note": null,
+        "label": null
+      },
+      {
+        "id": "derived:3",
+        "id_source": "derived",
+        "type": "Constraint",
+        "span": "Every call passes through feature 10's usage gate first, using the tier name as the budget's call type",
+        "rejected_spans": [
+          "so the router never becomes a way to spend past that gate by accident"
+        ],
+        "known_trap_flags": [],
+        "unclassified_note": null,
+        "label": null
+      }
+    ],
+    "relationships": [
+      {
+        "type": "unclassified",
+        "source": {
+          "kind": "local",
+          "id": "derived:3"
+        },
+        "target": {
+          "kind": "reference",
+          "record": "feature 10",
+          "id": null,
+          "label": null,
+          "mention": "feature 10's usage gate"
+        },
+        "phrase": "Every call passes through feature 10's usage gate first",
+        "date": null,
+        "known_trap_flags": [
+          "relationship_type_ambiguous"
+        ]
+      }
+    ]
+  }
+}
