@@ -1,7 +1,7 @@
 # 0009. Answer at question time
 
 **Date**: 2026-10-19
-**Status**: Proposed
+**Status**: Accepted
 
 ## Summary
 
@@ -25,6 +25,7 @@ This spec adds one command, `tracepath ask "QUESTION"`. Code picks the question'
 - **AC-5**: `ask` reads the graph with held items included, and searches accepted and held items both.
 - **AC-5b**: `ask` exits 1 before any call when the graph read holds no held entity or Unresolved node (the test `trace` uses, spec 0005 AC-26), with a message of its own that tells the author to run `tracepath load` without `--no-with-held`.
 - **AC-5c**: `ask` prints one line naming how the graph was loaded: the held view, the narrow hold setting and the corpus commit, read from `artifacts/graph-build.json`.
+  - **Note, 2026-10-19** (review finding 4): the line also says whether the code pass was on, read from the `code_pass` key of `artifacts/graph-build.json`, for example `Graph: held view yes, narrow hold yes, code pass no, corpus 2e40bcf.` The ask record does not store it. The criterion text above is unchanged.
 - **AC-6**: A typed failure (`SettingsInvalid`, `GraphUnavailable`, `SliceError`, an unreadable `graph-build.json`, an unreadable eval file, `HeldOutRefused`, `EstimateUnavailable`, `CountUnreadable`, an API error from the token count, `ArtifactCollisionError`) prints one message on stderr and exits 1, with no traceback.
 
 *Search words and ranking (code only, no model call)*
@@ -34,12 +35,15 @@ This spec adds one command, `tracepath ask "QUESTION"`. Code picks the question'
 - **AC-9**: The hits are the 16 highest scoring nodes with a score above 0.
 - **AC-10**: From the hits, neighbours are added along the seven typed relationship types, in either direction, held links included, up to 2 hops. `PART_OF` is never followed.
 - **AC-11**: Items are ordered hits by score, then hop 1, then hop 2, each hop in the order of the highest ranked hit that reached it, then by canonical id. At most 90 items are sent, and the output says how many were cut.
+  - **Note, 2026-10-19**: a history item's replacement is placed right after it, ahead of the hop order, as `test_ac_14b_the_item_replacing_a_history_item_is_added_right_behind_it` asserts. The code already did this during all nine recorded runs under `artifacts/asks/` (`src/tracepath/ask/retrieve.py` last changed in `baede05`, before the first record), so no result changes. The criterion text above is unchanged.
+  - **Note, 2026-10-19** (review nit 3): the cut count now includes a replacement cut together with its history item, even one that no hop reached. A record written before this note can count fewer cut items in that case; the items it sent are unchanged.
 - **AC-12**: When no node scores above 0, `ask` prints that no item matches, makes no call, and exits 0. A plain `ask` writes no record then; an `--eval` ask writes one (AC-29).
 - **AC-12b**: Every typed link whose two ends are both among the items sent is sent with them, with its type, its phrase and a held mark.
 
 *What is printed about items*
 - **AC-13**: Each item line shows its id, its type (the entity type, or `record` or `unresolved`), `accepted` or `held`, `STRUCK` or `HISTORY` when it is one (AC-14), its `file:line`, and `hit` or `hop N`. A Record shows its `path` with no line; an Unresolved node shows its own `file` and `line`.
 - **AC-14**: An item is history when it is struck, or is the source of a `superseded-by` or `corrected-by` link anywhere in the graph, held or accepted (both run old to new, per the extraction prompt). An `amended-by` source is not history.
+  - **Note, 2026-10-19**: a `corrected-by` link from an item to itself means the item was rewritten in place, and does not make the item history. The live graph holds three: `0009/AC-14`, `0011/AC-9` and `0020/AC-11`. The code already did this during all nine recorded runs (`replacements()` in `src/tracepath/ask/retrieve.py`, last changed in `baede05`, before the first record), so no result changes. The criterion text above is unchanged.
 - **AC-14b**: History items are sent to the model under a `HISTORY` label. When a link names the item that replaces one, that replacing item is added to the pack, counted against the limit of AC-11, so the model can cite it.
 
 *The answer and its checks*
@@ -48,17 +52,21 @@ This spec adds one command, `tracepath ask "QUESTION"`. Code picks the question'
 - **AC-16**: A cited id that was not among the items sent prints the claim marked `CITATION REJECTED: ID`.
 - **AC-16b**: A claim with no cited id prints marked `UNCITED`.
 - **AC-17**: A claim whose basis is `link` is checked by code: a typed link, in either direction, must join two of its cited ids among the links sent. With none, the claim prints marked `INFERRED`.
+  - **Note, 2026-10-19** (review finding 2): a `link` claim passes only when every cited id is joined by a sent link to another cited id. One cited id left unjoined, or one that was not sent, marks the claim `INFERRED`. Before this note, one linked pair among the cited ids was enough. The criterion text above is unchanged.
 - **AC-17b**: A claim whose basis is `inferred` prints marked `INFERRED`. A verified `link` claim prints `link`, and a `text` claim prints `read from text`.
+  - **Note, 2026-10-19** (review nit 1): a claim whose every citation is rejected prints `unsupported` in place of `link` or `read from text`. The criterion text above is unchanged.
 - **AC-18**: A claim that cites a history item prints marked `HISTORY`, set by code from AC-14 and not from anything the model says.
 - **AC-18b**: The system prompt tells the model to say in the claim itself when it uses a history item, and what replaced it if a link names it.
 - **AC-19**: Each cited id prints with `held` beside it when that item is held.
 - **AC-20**: The verdict prints above the claims, and a non empty `missing` list prints below them as `Missing:`. When several marks apply to one claim they print in this order: `HISTORY`, `INFERRED`, `CITATION REJECTED`, `UNCITED`.
+  - **Note, 2026-10-19** (review finding 3): when any claim failed a code check, the verdict line says how many, for example `Answer (verdict: answered; 1 of 2 claims failed a check):`. A claim fails a check when it cites an id that was not sent (AC-16), cites nothing (AC-16b), or is a `link` claim whose link was not found (AC-17). A claim the model itself marks `inferred` does not count as failed. The model's verdict is printed and stored as it came. The criterion text above is unchanged.
 
 *Spending*
 - **AC-21**: The model call `ask` makes goes through `ask_metered()` in `src/tracepath/extract/metered.py`, which holds the client call and the token count too. `ALLOWED` in `tests/test_spend_fence.py` gains no entry, and the test passes as it stands.
 - **AC-22**: Before the call, its bound must not pass the ceiling; otherwise `ask` stops with `stopping here before the call: ceiling` and exits 1.
 - **AC-23**: The call's bound is its counted input tokens at the model's input rate plus `ASK_MAX_TOKENS` at its output rate, priced by a new `ask_bound()` that uses `rates_for()` and `tokens_cost()` and not `per_call_bound()` (which prices extraction's cap and a cache write). The count comes from the free token count endpoint. A model with no recorded rates exits 1 before the call (`EstimateUnavailable`).
 - **AC-24**: A call fails when it raises a transport or API error, stops on `max_tokens` or a refusal, or returns a reply that does not validate as `Answer`. A failed call counts at its bound, is saved (AC-27), makes no retry, and ends the command with exit 1.
+  - **Note, 2026-10-19** (review finding 1): any exception the call raises, `KeyboardInterrupt` included, is saved as a failed call at its bound before it propagates, so a paid request is never left without a record. The record's `error` names the exception and its usage is unmeasured. The exception then ends the command as before (Ctrl-C exits 130). Like any failed call, this record does not use up a held out question (AC-32). The criterion text above is unchanged.
 - **AC-25**: The cost line gives the number of calls, input and output tokens, dollars by the recorded usage, dollars by the guard's rule (a failed call at its bound), and the ceiling.
 - **AC-26**: `ask` opens its client with `build_client()`, so the SDK's own retries stay off and one call is one billed request (spec 0004 AC-70).
 
@@ -228,3 +236,5 @@ Build approach is Tracer Bullet (AGENTS.md): a thin real thread first, then thic
 - [ ] Measured per call cost is unknown until build plan step 4. The bound below is a ceiling, not an estimate: about $0.18 per call at `ASK_MAX_TOKENS` of 16,000 (inferred: about 90 items at 4 characters per token over the graph's measured 232 character mean item text, so roughly 8,000 input tokens; the dry run measures the real count). Nine questions at one call each come to about $1.6 at the bound, and each rerun of a question 1 to 5 after a prompt change adds about $0.18.
 - [ ] If the bar is missed, record each miss's cause from its saved record (retrieval or reading) in the scope, as the v1 finish line asks.
 - [ ] After v1, decide whether `ask --eval` should run all questions in one command; this spec runs one per command so a stop is by structure.
+- [ ] After v1, add a distinct verdict for an absence answer. Seen on eval question 4 (2026-10-19, record `artifacts/asks/2026-10-19T21-58-07Z-eval-linked-records-research-q4.json`): its correct answer is "no documented link", but the only verdict that fits is `not_supported`, which reads as "could not answer". A separate verdict would let an answer say the items were found and hold no stated connection. Recorded by the engineer after the prompt `ask-1` freeze; not built in v1.
+- [ ] After v1: held out question 3 is evidence for the second look (the first Follow-up item). Retrieval did not reach 0018 line 63 (`0018#review-findings:10`), the invariant's text, with nothing cut and the item beyond two hops (record `artifacts/asks/2026-10-19T22-17-49Z-eval-held-out-q3.json`). Once a fix targets it, held out question 3 no longer counts as unseen. Recorded by the engineer on 2026-10-19.

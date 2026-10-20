@@ -34,10 +34,14 @@ uv run tracepath eval --eval-file F --release-held-out   # run a held out file; 
 uv run tracepath load --code-pass   # spec 0007: route with the code pass; load, review-queue, eval and trace --eval each take --code-pass, off by default; eval and trace --eval refuse a graph loaded the other way
 uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code-pass.json, never over the default review-queue.json; --no-narrow-hold adds -without-narrow-hold to the name, so four queue files in all
 uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # refuses (exit 1) before any call when the settings model differs from M
+uv run tracepath ask "QUESTION" --ceiling USD   # spec 0009: answers a why question from the graph, every claim citing an item; one paid call, record written to artifacts/asks/; --ceiling is required
+uv run tracepath ask "QUESTION" --ceiling USD --dry-run   # finds the items and prices the call only: no call, no record (free)
+uv run tracepath ask --eval N --ceiling USD   # asks eval question N; --eval-file F --release-held-out runs a held out file, refusing a question already answered once
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration; about 20 minutes locally over the whole corpus
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
+uv run tracepath load            # after the suite: the ask integration tests (tests/test_ask_command.py) empty the shared Neo4j graph
 ```
 
 tracepath runs from this repository with `uv run`, not as an installed tool: the extraction prompt reads `examples/` relative to the repo root (`EXAMPLES_DIR` in `src/tracepath/extract/examples.py`), and `examples/` is not part of the built package. The prompt is built on first use, so a command that makes no extraction call (`status`, `review-queue`) never reads it.

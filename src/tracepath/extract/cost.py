@@ -8,6 +8,7 @@ that turned out 10 to 15 times low.
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from tracepath.ask.answer import ASK_MAX_TOKENS
 from tracepath.extract.client import MAX_TOKENS, Attempt
 
 
@@ -104,6 +105,19 @@ def per_call_bound(counted: int, model: str) -> float:
     return tokens_cost(
         model, max(counted - CACHED_PREFIX_TOKENS, 0), MAX_TOKENS, CACHED_PREFIX_TOKENS, 0
     )
+
+
+def ask_bound(counted: int, model: str) -> float:
+    """The most one ask call can cost (spec 0009 AC-23).
+
+    Its whole counted input at the input rate, plus `ASK_MAX_TOKENS` at the output rate.
+    No cache is read or written, so unlike `per_call_bound()` there is no cache term.
+
+    Raises:
+        EstimateUnavailable: no rates are recorded for `model`.
+    """
+    rates_for(model)
+    return tokens_cost(model, counted, ASK_MAX_TOKENS, 0, 0)
 
 
 def recorded_cost(attempt: Attempt, model: str) -> float:

@@ -1,0 +1,1403 @@
+{
+  "asked_at": "2026-10-19T22:18:05+00:00",
+  "question": "Why does band-anchors.test.ts pin BAND_ANCHORS twice, once as five inline strings and once as bandAnchorsHash(BAND_ANCHORS), when either assertion alone fails on an anchor edit?",
+  "eval_file": "eval/held-out.json",
+  "eval_question": 4,
+  "called": true,
+  "search_words": [
+    "band-anchors.test.ts",
+    "band",
+    "anchors",
+    "test",
+    "pin",
+    "band_anchors",
+    "twice",
+    "once",
+    "five",
+    "inline",
+    "strings",
+    "bandanchorshash(band_anchors",
+    "bandanchorshash(band",
+    "either",
+    "assertion",
+    "alone",
+    "fails",
+    "anchor",
+    "edit"
+  ],
+  "items": [
+    {
+      "id": "0017/AC-10",
+      "line": "0017/AC-10  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:40  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-10**: A committed test (no vendor call, runs under the ordinary free unit suite) asserts `BAND_ANCHORS` literally equals today's text (`toEqual` against the five strings written inline in the test, never a snapshot file, which a routine `vitest -u` could silently rewrite) and that `bandAnchorsHash(BAND_ANCHORS)` equals today's computed hash, both failing by name and naming spec 0016's dataset, the moment either changes,"
+    },
+    {
+      "id": "0016#follow-up:6",
+      "line": "0016#follow-up:6  FollowUp  accepted  specs/0016-eval-ground-truth-set/index.md:180  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done by spec 0017's AC-10**, and by the concrete way this item names: `src/features/scoring/eval/band-anchors.test.ts` pins the anchor wording, and its failure message names this dataset and `pairs.ts` by path, telling the reader to re-argue each affected pair rather than update the expectation. A second assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report, so a change to the hash function alone is caught as well. It runs in the free unit suite, so drift is caught by `pnpm test`."
+    },
+    {
+      "id": "0017#build-plan:6",
+      "line": "0017#build-plan:6  BuildStep  accepted  specs/0017-eval-harness-runner/index.md:107  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Add the committed `BAND_ANCHORS` drift test under `src/features/scoring/eval/` (the ordinary unit project, no vendor call): a literal `toEqual` pin of today's text plus a `bandAnchorsHash()` equality check, both failing by name, pointing at spec 0016's dataset, the moment either changes. Satisfies **AC-10**."
+    },
+    {
+      "id": "0015#follow-up:7",
+      "line": "0015#follow-up:7  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:205  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "If feature 16's eval harness later shows the five bands clustering rather than spreading (the condition **AC-2** defers to that harness), the band anchors in `rubric.ts` are the first thing to revise, not the vendor or any of this prompt's other instructions. **Still open, and its trigger has not fired.** Feature 16's harness ran the full sixteen pairs twice on 2026-09-08 and both runs observed all five bands, `strong_match` 35, `good_match` 5, `possible_match` 21, `weak_match` 11, `not_a_match` 8 in the first and 35, 4, 21, 8, 12 in the second, so the bands spread rather than clustered and AC-2's bar of at least three of five was already met. Spec 0018 did review the anchors, but for a different reason, two pairs disagreeing with their recorded expectation, and it concluded that `BAND_ANCHORS` holds and one committed expectation was wrong. No anchor changed and the hash is still `1b45f524b356`. So this item is neither satisfied nor superseded by that review; it is waiting on a clustering condition that has not been seen."
+    },
+    {
+      "id": "0018#review-findings:7",
+      "line": "0018#review-findings:7  Constraint  held  specs/0018-band-anchor-review/index.md:49  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**What is unchanged and why it matters**: `BAND_ANCHORS`, the anchor hash `1b45f524b356`, the drift guard, `scoreListing()`, the response schema, the five `Band` values, and every other pair's expectation."
+    },
+    {
+      "id": "0020/AC-9",
+      "line": "0020/AC-9  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:29  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-9**: v1 shows `job_search` usage only, and this is a proven choice, not a deferred one. `src/features/search/adzuna.ts`'s `RESULTS_PER_PAGE` is exported so a test can import the real value rather than a copied literal. That test, run against the real `usage_cap` rows (an integration test, since the caps are no deploy editable per AC-5 and a unit test could only pin the migration's seed values), asserts that `ai_scoring`'s and `ai_check`'s own caps stay at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, for all three window scopes (account week, global day, global month), not only the one this feature displays. That arithmetic is what guarantees `job_search`'s own cap always binds at or before either AI tier's, so showing it alone tells the whole truth about what will actually stop the caller. The test failing, or an operator changing a cap value so it no longer holds, is the signal to revisit this scope."
+    },
+    {
+      "id": "0018#decision:2",
+      "line": "0018#decision:2  Constraint  accepted  specs/0018-band-anchor-review/index.md:32  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`control-one-gap`'s recorded expectation is wrong under the anchor text that already exists, so the pair is corrected and `BAND_ANCHORS` is not touched."
+    },
+    {
+      "id": "feature-33#33-band-anchor-review-done:3",
+      "line": "feature-33#33-band-anchor-review-done:3  AcceptanceCriterion  accepted  scope/scope.md:348  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`BAND_ANCHORS` and its hash `1b45f524b356` are untouched,"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:14",
+      "line": "feature-4#4-data-model-done-ga:14  BuildStep  held  scope/scope.md:100  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Test it: `/test data model` · done 2026-08-27. Five tests in [test/integration/profile-read.test.ts](../../test/integration/profile-read.test.ts) against the real local stack, covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**. Two claims were checked for vacuousness rather than trusted: swapping the Zod parse for a type assertion fails the AC-15 test with `expected null to be undefined`, and misnaming the missing profile failure fails the AC-14 test. **The schema half was deliberately not ported**, by decision this run: AC-1 to AC-13 and AC-16 are proved by [verify.sql](../specs/0003-data-model/verify.sql) at 83 of 83 and by [verify-production.sql](../specs/0003-data-model/verify-production.sql). The aimed slice the fresh model review then asked for IS covered, in [test/integration/data-model-constraints.test.ts](../../test/integration/data-model-constraints.test.ts): four tests on a SECOND table besides `profile`, proving AC-4's `with check` trap in both directions (an update onto another user's row changes zero rows and does not raise, while moving a row under another profile is refused with 42501) and AC-7 in both directions (a duplicate is refused with 23505, and a different user may still apply to the same listing, which is what the constraint leading with `profile_id` buys). The remaining checks stay a manual `verify.sql` run rather than a CI gate, worth revisiting when feature 9 and feature 12 build the write paths that hit them through real code."
+    },
+    {
+      "id": "0015#build-plan:2",
+      "line": "0015#build-plan:2  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:156  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15  BuildStep  accepted  scope/scope.md:288  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)"
+    },
+    {
+      "id": "0016#follow-up:5",
+      "line": "0016#follow-up:5  FollowUp  accepted  specs/0016-eval-ground-truth-set/index.md:180  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`BAND_ANCHORS`'s own comment (`rubric.ts:63-67`) states its wording \"is expected to change\". Every `expectedBand` and `rationale` in this set is derived from today's wording. Feature 16's own harness spec should decide how to detect when the anchors it checks against have drifted since this data was authored (a test pinning a snapshot of `BAND_ANCHORS`, failing with a message naming this dataset, is one concrete way)"
+    },
+    {
+      "id": "0017#consequences:3",
+      "line": "0017#consequences:3  Consequence  accepted  specs/0017-eval-harness-runner/index.md:115  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The `BAND_ANCHORS` drift test means a rubric wording change is caught by the free, always run unit suite, not only by someone remembering to run the paid harness and compare two reports by hand."
+    },
+    {
+      "id": "0017#feature-design:7",
+      "line": "0017#feature-design:7  Constraint  accepted  specs/0017-eval-harness-runner/index.md:83  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The `BAND_ANCHORS` drift assertions (AC-10) live in the ordinary unit suite (`pnpm test`), never behind a vendor call"
+    },
+    {
+      "id": "0018/AC-2",
+      "line": "0018/AC-2  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:22  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-2**: `BAND_ANCHORS` in `src/features/scoring/rubric.ts` is unchanged, so `band-anchors.test.ts`'s pinned text and committed hash `1b45f524b356` are untouched and still pass, and reports written before and after this change remain comparable."
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:10",
+      "line": "feature-16#16-eval-harness-runner:10  BuildStep  accepted  scope/scope.md:323  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The drift guard: the committed `BAND_ANCHORS` snapshot test under the free unit suite, and the gitignored output directory, satisfies AC-10."
+    },
+    {
+      "id": "0017#feature-design:19",
+      "line": "0017#feature-design:19  TestScenario  accepted  specs/0017-eval-harness-runner/index.md:97  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Drift guard: editing `BAND_ANCHORS`'s text fails the AC-10 test by name, under the ordinary free `pnpm test`, verifies **AC-10**."
+    },
+    {
+      "id": "0017/AC-9",
+      "line": "0017/AC-9  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:39  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: The command writes a JSON report every run, in addition to the console table, to a directory this repository does not track, at `test/eval/.output/<ISO timestamp with colons replaced by dashes>.json`, creating that directory if it does not exist. Each report is a single `EvalReport` object (defined in `test/eval/report.ts`) recording: the filter used (if any) and every skipped pair id; per pair, its status (`pass`/`fail`/`inconclusive`), sub reason where relevant, denominator, and every observed band (or band distribution); the preference leak check's own outcome; the run's overall status and aborted reason if any; and, once per report, which model answered (via the shared `resolvedModel()` guard on `TIERS.ai_scoring.model`, never a name typed into the harness) and a hash of `BAND_ANCHORS`'s current text (`bandAnchorsHash()`, defined once and shared with the AC-10 test, so \"the same way\" is true by construction rather than by two separate implementations agreeing)."
+    },
+    {
+      "id": "0020#build-plan:6",
+      "line": "0020#build-plan:6  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:163  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Export `RESULTS_PER_PAGE` from `src/features/search/adzuna.ts`, then write the cap arithmetic invariant test as an integration test that reads the real `usage_cap` rows through the Data API (never the direct database helper) and imports the real `RESULTS_PER_PAGE`, asserting the relationship for all three window scopes. Satisfies **AC-9**."
+    },
+    {
+      "id": "0020#feature-design:15",
+      "line": "0020#feature-design:15  Constraint  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:134  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Showing `job_search` alone is correct only because of today's cap values, not as a structural guarantee: `ai_scoring` and `ai_check` each spend at most one call per listing, `RESULTS_PER_PAGE` (20) listings are fetched per search, and both AI tiers' account week caps (500) equal `job_search`'s own account week cap (25) times 20. A test pins this relationship (AC-9); if either side of it ever changes, the test fails and this scope decision needs a fresh look, not a silent drift."
+    },
+    {
+      "id": "0020#feature-design:31",
+      "line": "0020#feature-design:31  TestScenario  held  specs/0020-spend-visibility-and-gating-polish/index.md:153  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Integration test, against the real `usage_cap` rows: the cap arithmetic invariant behind **AC-9**, `ai_scoring`'s and `ai_check`'s caps each at or above `job_search`'s own cap times `RESULTS_PER_PAGE`, checked for all three window scopes (account week, global day, global month), not only the one this feature displays."
+    },
+    {
+      "id": "0020/AC-5",
+      "line": "0020/AC-5  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:25  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: The cap value shown is read live from `usage_cap`, never a literal in application code,"
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:8",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:8  BuildStep  accepted  scope/scope.md:370  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cap arithmetic invariant test and the privacy notice correction in `src/features/legal/stored-fields.ts` (AC-9, AC-10)"
+    },
+    {
+      "id": "0003/AC-14",
+      "line": "0003/AC-14  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: The health page reads the caller's own `profile` through the real server client under a real policy. Each of the two seeded development users with a profile sees only their own row, and a third seeded user, deliberately given no profile row, sees a visible expected failure naming the missing profile rather than an empty page."
+    },
+    {
+      "id": "0003/AC-15",
+      "line": "0003/AC-15  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:35  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: `src/lib/supabase/database.types.ts` is regenerated from the applied schema, and the profile read parses its row with Zod at the boundary, reporting a row that does not match as a visible `response_malformed` failure."
+    },
+    {
+      "id": "0003/AC-4",
+      "line": "0003/AC-4  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:24  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-4**: A signed in user can insert, update and delete their own rows on five of the six tables, and insert and delete on `profile_skill`, which has no update path by design. An insert or update that would place a row under another user's profile is refused by the policy's `with check`, not merely hidden from reads."
+    },
+    {
+      "id": "0003/AC-7",
+      "line": "0003/AC-7  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: A second `application` row with the same profile, `source` and `source_job_id` is refused by the database with a unique violation. The refusal comes from the constraint, so it holds even for a caller that forgot to check first."
+    },
+    {
+      "id": "unresolved:feature-4:feature-12",
+      "line": "unresolved:feature-4:feature-12  unresolved  held  scope/scope.md:88  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 12"
+    },
+    {
+      "id": "unresolved:feature-4:feature-9",
+      "line": "unresolved:feature-4:feature-9  unresolved  held  scope/scope.md:88  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 9"
+    },
+    {
+      "id": "0015/AC-1",
+      "line": "0015/AC-1  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:23  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,"
+    },
+    {
+      "id": "0015/AC-12",
+      "line": "0015/AC-12  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them."
+    },
+    {
+      "id": "0015/AC-13",
+      "line": "0015/AC-13  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:35  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-13**: The prompt built from the caller's profile is bounded regardless of how much the user wrote: the full `summary` (already capped at 4000 characters, spec 0010 AC-3), at most 50 skills (in `readProfileSections()`'s own `lower(name)` ascending order, the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9), the full `job_preference` row when present (already bounded by spec 0010 AC-9's own limits, no new cap needed), and at most the 5 most recent `work_experience` entries in the order `readProfileSections()` already returns them, each entry's own `description` truncated to 300 characters before it enters the prompt. When a listing's own `descriptionSnippet` is absent (an optional field, spec 0013), the prompt states plainly that no description was returned for this posting and the model reasons from the title alone."
+    },
+    {
+      "id": "0015/AC-2",
+      "line": "0015/AC-2  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:24  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-2**: Across the genuinely varied listings feature 15's ground truth set will author, scored results spread across at least three of the five bands rather than clustering on one. This is exercised by feature 16's eval harness once feature 15 exists, not by this feature's own unit tests,"
+    },
+    {
+      "id": "0015/AC-4",
+      "line": "0015/AC-4  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:26  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \"…\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either."
+    },
+    {
+      "id": "0015/AC-5",
+      "line": "0015/AC-5  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \"missing skills\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`)."
+    },
+    {
+      "id": "0015/AC-6",
+      "line": "0015/AC-6  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: A `sponsorshipSignal` field is a required enum of `sponsors`, `does_not_sponsor`, or `not_stated`, resolved from whether the listing's visible text states a sponsorship stance explicitly. `not_stated` renders nothing on the card, the same visible outcome an absent field would have had, The signal is never used to compute or adjust the band, and when present (`sponsors` or `does_not_sponsor`) it renders as its own separate badge, distinct from the band badge (`COPY-6`)."
+    },
+    {
+      "id": "0018#build-plan:4",
+      "line": "0018#build-plan:4  BuildStep  accepted  specs/0018-band-anchor-review/index.md:78  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Run the free suite: the drift guard still passes untouched, `validateGroundTruth` reports no issue, and every band still has an exact expectation. Satisfies **AC-2**, **AC-3**."
+    },
+    {
+      "id": "0018#review-findings:13",
+      "line": "0018#review-findings:13  TestScenario  accepted  specs/0018-band-anchor-review/index.md:69  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The free suite still passes with the anchors untouched, including both drift assertions, verifies **AC-2**."
+    },
+    {
+      "id": "feature-33#33-band-anchor-review-done:10",
+      "line": "feature-33#33-band-anchor-review-done:10  BuildStep  accepted  scope/scope.md:354  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Prove it for free: the drift guard passes untouched, the data quality gate is clean, and every band still has an exact expectation now that `good-match-adjacent` is the only pair expecting `good_match`, satisfies AC-2, AC-3."
+    },
+    {
+      "id": "0017#build-plan:4",
+      "line": "0017#build-plan:4  BuildStep  accepted  specs/0017-eval-harness-runner/index.md:105  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The thin thread: `test/eval/harness.test.ts`, one `describe(\"eval harness\")`, a top level `beforeAll` running `validateGroundTruth()` (throwing with every issue if any, before anything else) then minting the one fixture session for the run; one `it.concurrent` per pair named `` `${pair.id} [${pair.tags.join(\" \")}]` ``, whose body awaits five sequential `scoreListing()` calls, feeds the outcomes to step 2's verdict function, stores the result in a module scoped `Map<string, PairVerdict>` keyed by pair id, and asserts that the verdict's status is `pass`, so `fail` and `inconclusive` both fail their own test with the denominator and distribution in the message; and a final `afterAll` that runs the preference leak check against the map, writes the JSON report (including the model id and anchors hash), then deletes the fixture user. Prove this against exactly `control-direct-match` (real vendor calls) before scaling: get `pnpm eval -t control-direct-match` green end to end. Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**."
+    },
+    {
+      "id": "0017#build-plan:7",
+      "line": "0017#build-plan:7  BuildStep  accepted  specs/0017-eval-harness-runner/index.md:108  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add `/test/eval/.output/` to `.gitignore`. Satisfies **AC-9**."
+    },
+    {
+      "id": "0017#feature-design:14",
+      "line": "0017#feature-design:14  TestScenario  accepted  specs/0017-eval-harness-runner/index.md:92  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: `pnpm eval -t control-direct-match` scores that one pair for real, five sequential reruns under the one minted session, and prints a passing verdict with its denominator (e.g. \"strong_match, 5 of 5 succeeded\"), verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**."
+    },
+    {
+      "id": "0017/AC-11",
+      "line": "0017/AC-11  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The command works against a changed model with no code edit to this feature: nothing here names a vendor or a model id directly, every call goes through the existing `scoreListing()` / `TIERS` path exactly as the rest of the app does, and the model id reported (AC-9) is read off that same resolved config."
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:7",
+      "line": "feature-16#16-eval-harness-runner:7  BuildStep  accepted  scope/scope.md:320  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Project scaffolding: the `eval` Vitest project (`extends: true`, its own timeouts and `maxConcurrency`, `fileParallelism: false`), the `pnpm eval` script, and the shared `resolvedModel()`/`bandAnchorsHash()` helpers, satisfies AC-1, AC-2, AC-9, AC-11"
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:9",
+      "line": "feature-16#16-eval-harness-runner:9  BuildStep  accepted  scope/scope.md:322  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The harness itself: the thin thread against one real pair, then the full sixteen with bounded concurrency and the run's own aggregate exit code, satisfies AC-1, AC-2, AC-7, AC-8, AC-9."
+    },
+    {
+      "id": "0020#build-plan:3",
+      "line": "0020#build-plan:3  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:160  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build `getJobSearchUsageSummary()` in `src/lib/usage-gating/queries.ts`: `getClaims()` verification, the RPC call wrapped in `attempt()`, the response parsed with Zod rather than trusted (matching `gate.ts`'s own treatment of `check_usage_gate`'s row), a named span `usage_gate.read_summary` opened first and registered in `docs/observability/spans.md` (binding rule 3). Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**."
+    },
+    {
+      "id": "0020#build-plan:8",
+      "line": "0020#build-plan:8  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:165  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Integration tests: the Critical test scenarios above, covering **AC-1** through **AC-8**."
+    },
+    {
+      "id": "0020#feature-design:21",
+      "line": "0020#feature-design:21  TestScenario  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:143  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a minted account with some `job_search` usage already recorded this week reads back the exact `consumed_count` and `cap_value` through the real RPC, verifies **AC-1**, **AC-2**, **AC-5**."
+    },
+    {
+      "id": "0020/AC-10",
+      "line": "0020/AC-10  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:30  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: `src/features/legal/stored-fields.ts`'s description of `usage_cap` and of `usage_gate_counter.call_type` no longer states or implies these tables count job search calls only. Migration `20260906120000_model_client_router_usage_cap.sql` added `ai_scoring` and `ai_check` rows to the same tables, and neither description was updated to say so. **Corrected 2026-09-12: only ONE of the two is user facing.** `usage_gate_counter.call_type`'s `describedAs` does render on `/privacy`. `usage_cap`'s text is `NON_PERSONAL_TABLES[].why`, whose only reader is `src/features/legal/stored-fields.test.ts`; it reaches no user facing surface at all. Both corrections are still required, because the registry is what a later reader of the codebase trusts, but only the `call_type` one can be confirmed by reading `/privacy`, and the `usage_cap` one must be confirmed at its source."
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:6",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:6  BuildStep  accepted  scope/scope.md:368  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Read path: `get_job_search_usage_summary()` migration, `getJobSearchUsageSummary()` in `src/lib/usage-gating/queries.ts`, and the `usage_gate.read_summary` span (AC-1, AC-2, AC-3, AC-4, AC-5, AC-7, AC-8)"
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:9",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:9  BuildStep  accepted  scope/scope.md:371  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Tests: the integration scenarios proving the read path end to end (AC-1 through AC-8)"
+    },
+    {
+      "id": "0003#build-plan:3",
+      "line": "0003#build-plan:3  BuildStep  accepted  specs/0003-data-model/index.md:238  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the migration creating the shared `public.set_updated_at()` trigger function (`security invoker`, empty `search_path`, fully qualified names, matching the `app_settings` precedent), then the six tables with their checks, unique constraints, foreign key indexes, the explicit `grant` per table to `authenticated` and to nothing else, `enable` plus `force row level security`, and the twenty three policies (four per table, three on `profile_skill`), each carrying the clause its action actually permits. Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**."
+    },
+    {
+      "id": "0003#build-plan:4",
+      "line": "0003#build-plan:4  BuildStep  accepted  specs/0003-data-model/index.md:239  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `supabase/seed.sql`: give each of the two existing synthetic users a profile row, and add a **third** synthetic user with an auth row and an identity but deliberately no profile row. Keep every statement idempotent, and keep the existing `scaffold_check` rows for now. Satisfies **AC-3**, **AC-14**."
+    },
+    {
+      "id": "0003#build-plan:5",
+      "line": "0003#build-plan:5  BuildStep  accepted  specs/0003-data-model/index.md:240  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Run `pnpm db:reset` locally, then `pnpm db:types` to regenerate `src/lib/supabase/database.types.ts` from the applied schema. Satisfies **AC-15**."
+    },
+    {
+      "id": "0003#build-plan:6",
+      "line": "0003#build-plan:6  BuildStep  accepted  specs/0003-data-model/index.md:241  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add `src/features/profile/queries.ts` with `readOwnProfile()`: the named span `profile.read` as the first statement per binding rule 4, the session check per binding rule 6, the Supabase call, and a Zod parse at the boundary, returning `record_not_found` as an expected failure when no profile row exists. Register `profile.read` in [docs/observability/spans.md](../../observability/spans.md). Satisfies **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0003#build-plan:7",
+      "line": "0003#build-plan:7  BuildStep  accepted  specs/0003-data-model/index.md:242  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Repoint `src/app/(app)/health/page.tsx` at `readOwnProfile()`, keeping the existing failure rendering shape so a failure is still shown rather than swallowed. Satisfies **AC-14**."
+    },
+    {
+      "id": "0003#build-plan:8",
+      "line": "0003#build-plan:8  BuildStep  accepted  specs/0003-data-model/index.md:243  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Prove the constraints by hand against the real development project as each seeded user: isolation both ways, the `with check` refusal on both insert and update, the duplicate application, the orphan application, the pay pairing in both tables, the skill uniqueness ignoring case, the date checks, and both cascade paths. Also confirm directly that `anon` and `service_role` hold nothing on all six, with `has_table_privilege`, the same test spec 0002's task 10 used. Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**."
+    },
+    {
+      "id": "0003#build-plan:9",
+      "line": "0003#build-plan:9  BuildStep  accepted  specs/0003-data-model/index.md:244  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Confirm the repointed health page on a real preview deployment as all three seeded users: the first two each see only their own profile, the third sees the visible missing profile failure. Satisfies **AC-3**, **AC-14**."
+    },
+    {
+      "id": "0003#feature-design:22",
+      "line": "0003#feature-design:22  TestScenario  accepted  specs/0003-data-model/index.md:221  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a seeded development user signs in on a real preview and the health page shows their own profile row, verifies **AC-14**, **AC-3**."
+    },
+    {
+      "id": "0003#feature-design:25",
+      "line": "0003#feature-design:25  TestScenario  accepted  specs/0003-data-model/index.md:224  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write refusal: an insert placing a row under another user's profile is refused by the insert policy's `with check`, and an update moving an owned row under another profile is refused by the update policy's `with check`, verifies **AC-4**."
+    },
+    {
+      "id": "0003#feature-design:26",
+      "line": "0003#feature-design:26  TestScenario  accepted  specs/0003-data-model/index.md:225  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Missing profile: a signed in user with no profile row sees a visible expected failure, not a blank page, verifies **AC-14**."
+    },
+    {
+      "id": "0003#feature-design:27",
+      "line": "0003#feature-design:27  TestScenario  accepted  specs/0003-data-model/index.md:226  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Duplicate application: inserting the same `(profile_id, source, source_job_id)` twice is refused by the database, verifies **AC-7**."
+    },
+    {
+      "id": "0007#consequences:5",
+      "line": "0007#consequences:5  Consequence  accepted  specs/0007-auth-and-per-user-isolation/index.md:307  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Between this feature and feature 9, a brand new user's happy path ends on a visible error.** They land on `/health` and see the `record_not_found` that spec 0003 **AC-14** exists to prove. That is the honest state and the tracer bullet working, not a defect, and verify.md carries it as an expected outcome so `/check verify` does not read it as a failure. It ends when feature 9 ships."
+    },
+    {
+      "id": "0014/AC-4",
+      "line": "0014/AC-4  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: A second apply to the same `(profile_id, source, source_job_id)` writes no second row and produces a visible expected failure carrying `COPY-2`, kind `validation_failed`, severity `expected`. The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7)."
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:10",
+      "line": "feature-4#4-data-model-done-ga:10  BuildStep  accepted  scope/scope.md:96  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The replacement read: `readOwnProfile()` with its named span and Zod parse, the span registered, the health page repointed off `scaffold_check` (AC-14, AC-15)"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:11",
+      "line": "feature-4#4-data-model-done-ga:11  BuildStep  accepted  scope/scope.md:97  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Proved against the real project: isolation both ways, the `with check` refusals, every constraint, the privilege check, and the preview confirmed as all three seeded users (AC-2 to AC-11, AC-14) · done 2026-08-25 on pull request [#9](https://github.com/ghalynho10/JobHunt/pull/9). The sweep in [verify.sql](../specs/0003-data-model/verify.sql) ran against the hosted development project with zero failures, and all three seeded users were driven through the preview page: dev-one and dev-two each saw only their own profile, dev-three saw the named `record_not_found` failure rather than an empty page"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:8",
+      "line": "feature-4#4-data-model-done-ga:8  BuildStep  accepted  scope/scope.md:94  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The schema migration: the shared timestamp trigger, six tables with their checks and unique constraints, an explicit grant per table, and the twenty three policies (AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12)"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:9",
+      "line": "feature-4#4-data-model-done-ga:9  BuildStep  accepted  scope/scope.md:95  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Fixtures and types: the seed grows a profile for each of the two synthetic users plus a third carrying none, then `database.types.ts` is regenerated from the applied schema (AC-3, AC-14, AC-15)"
+    },
+    {
+      "id": "0010/AC-3",
+      "line": "0010/AC-3  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: `full_name` is required and at most 200 characters. `summary` is optional and at most 4000 characters. `location` is optional. A submission that fails a rule writes nothing and returns a visible error next to the field, with the values the user typed kept in place."
+    },
+    {
+      "id": "0010/AC-9",
+      "line": "0010/AC-9  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: Search preferences (`desired_titles`, `desired_locations`, `remote_preference`, `minimum_pay`, `minimum_pay_currency`) are edited together as one section. `desired_titles` and `desired_locations` are each entered as one field, one value per line, never comma separated (a location value can itself contain a comma); each line is trimmed, empty lines are dropped, values are deduplicated ignoring case the same way skills are, each value is at most 100 characters, and each list holds at most 50 values. `remote_preference` is a closed choice among `on_site`, `hybrid`, `remote`, `no_preference`. `minimum_pay` and `minimum_pay_currency` are both present or both absent; an empty `minimum_pay` field is treated as absent before that pairing check runs, never as zero. When present, `minimum_pay` is at least 0, at most 9,999,999,999.99, and at most two decimal places, rejected rather than rounded; `minimum_pay_currency` is a free text field, trimmed and uppercased before checking, then exactly three uppercase letters, with no fixed currency list (the schema has none, and one here would be a second source of truth)."
+    },
+    {
+      "id": "0013",
+      "line": "0013  record  accepted  specs/0013-job-search-and-results-list/index.md  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Job search and results list"
+    },
+    {
+      "id": "0015#build-plan:4",
+      "line": "0015#build-plan:4  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:158  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write `src/features/scoring/score-card.tsx`: the band badge, the matched and not mentioned lists, the reasoning, the optional sponsorship badge, plus the pending state and the per card failure state, taking a `ScoreOutcome | \"pending\"` prop so it renders every state this feature has from day one. Satisfies the display half of **AC-5**, **AC-6**."
+    },
+    {
+      "id": "0015#feature-design:20",
+      "line": "0015#feature-design:20  TestScenario  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:140  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `scoreListing()` with a real bounded profile and a real fixture listing returns a parsed `FitScore` whose `band` is one of the five defined values, verifies **AC-1**, **AC-3**."
+    },
+    {
+      "id": "0015#feature-design:24",
+      "line": "0015#feature-design:24  TestScenario  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:144  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Truncation handling: building the prompt for a fixture listing whose `descriptionSnippet` ends in \"…\" includes the explicit truncation caveat from AC-4; this is a unit test on the prompt builder itself, needing no live call, verifies **AC-4**."
+    },
+    {
+      "id": "0016#consequences:1",
+      "line": "0016#consequences:1  Consequence  accepted  specs/0016-eval-ground-truth-set/index.md:160  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Spec 0015's `AC-2` (do the five bands actually spread real listings, deferred explicitly to this feature) finally has real evidence to run against once feature 16 exists."
+    },
+    {
+      "id": "0019/AC-11",
+      "line": "0019/AC-11  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The listing text sent to the check carries the same untrusted input instruction spec 0015 AC-12 gives the scorer: treat the title and description as data, never follow an instruction embedded in them, never fetch or act on a link inside them."
+    },
+    {
+      "id": "0019/AC-3",
+      "line": "0019/AC-3  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:20  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The check's schema output, `ungroundedSkills`, is filtered after parsing to only names present in the `matchedSkills` list sent to it, using the same normalization `normalizeFitScore()` already applies to `matchedSkills` itself (case, whitespace, canonicalised to the caller's own spelling), so a name that only differs in case or formatting is matched rather than dropped as invented. This mirrors spec 0015 AC-5's own filter and reuses its normalization rather than a second, independently written one."
+    },
+    {
+      "id": "0018/AC-3",
+      "line": "0018/AC-3  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: `validateGroundTruth(ARCHETYPES, PAIRS)` reports no issue on the updated set, and `ground-truth.test.ts`'s stricter check that every band is some pair's exact `expectedBand` still passes, which it does because `good-match-adjacent` keeps `good_match`."
+    }
+  ],
+  "links": [
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:3",
+      "target": "0003/AC-4",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:4",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:5",
+      "target": "0003/AC-15",
+      "phrase": "Satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:6",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:6",
+      "target": "0003/AC-15",
+      "phrase": "Satisfies **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:7",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:8",
+      "target": "0003/AC-4",
+      "phrase": "Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:8",
+      "target": "0003/AC-7",
+      "phrase": "Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:9",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-13",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-4",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-5",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-6",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:4",
+      "target": "0015/AC-5",
+      "phrase": "Satisfies the display half of **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:4",
+      "target": "0015/AC-6",
+      "phrase": "Satisfies the display half of **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:4",
+      "target": "0017/AC-9",
+      "phrase": "Satisfies the first slice of **AC-1**, **AC-2**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:6",
+      "target": "0017/AC-10",
+      "phrase": "Satisfies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:7",
+      "target": "0017/AC-9",
+      "phrase": "Satisfies **AC-9**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:4",
+      "target": "0018/AC-2",
+      "phrase": "Satisfies **AC-2**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0018#build-plan:4",
+      "target": "0018/AC-3",
+      "phrase": "Satisfies **AC-2**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:3",
+      "target": "0020/AC-5",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:6",
+      "target": "0020/AC-9",
+      "phrase": "Satisfies **AC-9**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:8",
+      "target": "0020/AC-5",
+      "phrase": "covering **AC-1** through **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-1",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-12",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-13",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-2",
+      "phrase": "the anchor wording AC-2 is later measured against",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-4",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-5",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-6",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:10",
+      "target": "0017/AC-10",
+      "phrase": "satisfies AC-10",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:7",
+      "target": "0017/AC-11",
+      "phrase": "satisfies AC-1, AC-2, AC-9, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:7",
+      "target": "0017/AC-9",
+      "phrase": "satisfies AC-1, AC-2, AC-9, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:9",
+      "target": "0017/AC-9",
+      "phrase": "satisfies AC-1, AC-2, AC-7, AC-8, AC-9",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:6",
+      "target": "0020/AC-5",
+      "phrase": "(AC-1, AC-2, AC-3, AC-4, AC-5, AC-7, AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:8",
+      "target": "0020/AC-10",
+      "phrase": "(AC-9, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:8",
+      "target": "0020/AC-9",
+      "phrase": "(AC-9, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:9",
+      "target": "0020/AC-5",
+      "phrase": "(AC-1 through AC-8)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:10",
+      "target": "0018/AC-2",
+      "phrase": "satisfies AC-2, AC-3",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-33#33-band-anchor-review-done:10",
+      "target": "0018/AC-3",
+      "phrase": "satisfies AC-2, AC-3",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:10",
+      "target": "0003/AC-14",
+      "phrase": "AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:10",
+      "target": "0003/AC-15",
+      "phrase": "AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-14",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-4",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-7",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-14",
+      "phrase": "covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-15",
+      "phrase": "covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-4",
+      "phrase": "proving AC-4's `with check` trap in both directions",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-7",
+      "phrase": "and AC-7 in both directions",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:8",
+      "target": "0003/AC-4",
+      "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:9",
+      "target": "0003/AC-14",
+      "phrase": "AC-3, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:9",
+      "target": "0003/AC-15",
+      "phrase": "AC-3, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#consequences:5",
+      "target": "0003/AC-14",
+      "phrase": "the `record_not_found` that spec 0003 **AC-14** exists to prove",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-4",
+      "target": "0003/AC-7",
+      "phrase": "(spec 0003, AC-7)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-2",
+      "phrase": "is the anchor wording **AC-2** is later measured against",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0010/AC-3",
+      "phrase": "already capped at 4000 characters, spec 0010 AC-3",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0010/AC-9",
+      "phrase": "the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0013",
+      "phrase": "an optional field, spec 0013",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0016#consequences:1",
+      "target": "0015/AC-2",
+      "phrase": "deferred explicitly to this feature",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0016#follow-up:5",
+      "target": "0016#follow-up:6",
+      "phrase": "**Done by spec 0017's AC-10**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0016#follow-up:6",
+      "target": "0017/AC-10",
+      "phrase": "**Done by spec 0017's AC-10**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-11",
+      "target": "0017/AC-9",
+      "phrase": "the model id reported (AC-9)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-9",
+      "target": "0017/AC-10",
+      "phrase": "shared with the AC-10 test",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-11",
+      "target": "0015/AC-12",
+      "phrase": "the same untrusted input instruction spec 0015 AC-12 gives the scorer",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-3",
+      "target": "0015/AC-5",
+      "phrase": "This mirrors spec 0015 AC-5's own filter",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0020#feature-design:15",
+      "target": "0020/AC-9",
+      "phrase": "A test pins this relationship (AC-9)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0020/AC-5",
+      "target": "0020/AC-9",
+      "phrase": "no deploy editable per AC-5",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0020/AC-9",
+      "target": "0020/AC-5",
+      "phrase": "since the caps are no deploy editable per AC-5",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "unresolved:feature-4:feature-12",
+      "phrase": "worth revisiting when feature 9 and feature 12 build the write paths",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "unresolved:feature-4:feature-9",
+      "phrase": "worth revisiting when feature 9 and feature 12 build the write paths",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:22",
+      "target": "0003/AC-14",
+      "phrase": "verifies **AC-14**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:25",
+      "target": "0003/AC-4",
+      "phrase": "verifies **AC-4**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:26",
+      "target": "0003/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:27",
+      "target": "0003/AC-7",
+      "phrase": "verifies **AC-7**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0015#feature-design:20",
+      "target": "0015/AC-1",
+      "phrase": "verifies **AC-1**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0015#feature-design:24",
+      "target": "0015/AC-4",
+      "phrase": "verifies **AC-4**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:14",
+      "target": "0017/AC-9",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0017#feature-design:19",
+      "target": "0017/AC-10",
+      "phrase": "verifies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0018#review-findings:13",
+      "target": "0018/AC-2",
+      "phrase": "verifies **AC-2**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:21",
+      "target": "0020/AC-5",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:31",
+      "target": "0020/AC-9",
+      "phrase": "the cap arithmetic invariant behind **AC-9**",
+      "held": true
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 18856,
+  "bound_usd": 0.197712,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-1",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"The two assertions guard different things. The inline `toEqual` pins the anchor wording, and the hash assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report. A change to the hash function alone is therefore caught too, even if the anchor text is untouched.\",\"cites\":[\"0016#follow-up:6\"],\"basis\":\"text\"},{\"text\":\"The inline strings are used instead of a snapshot file because a routine `vitest -u` could silently rewrite a snapshot. The hash is checked against today's computed value.\",\"cites\":[\"0017/AC-10\"],\"basis\":\"text\"},{\"text\":\"The hash is defined once and shared between the report and the drift test, so the report's hash and the test's hash are computed the same way by construction. Pinning it in the test therefore protects the value that reports carry for comparison.\",\"cites\":[\"0017/AC-9\"],\"basis\":\"text\"},{\"text\":\"The wording pin exists because the anchors' own comment says the wording is expected to change, and every expected band and rationale in the ground truth set derives from today's wording. Spec 0016 asked the harness spec to detect that drift, and AC-10 is the item that does so.\",\"cites\":[\"0016#follow-up:5\",\"0016#follow-up:6\"],\"basis\":\"text\"},{\"text\":\"The build step for the drift test satisfies AC-10 with both a literal `toEqual` pin and a `bandAnchorsHash()` equality check, each failing by name and pointing at spec 0016's dataset.\",\"cites\":[\"0017#build-plan:6\",\"0017/AC-10\"],\"basis\":\"link\"}],\"missing\":[\"No item states explicitly why the hash check is kept beyond catching a hash function change, for example whether the two were meant to cross check each other on an anchor edit.\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [
+    "No item states explicitly why the hash check is kept beyond catching a hash function change, for example whether the two were meant to cross check each other on an anchor edit."
+  ],
+  "claims": [
+    {
+      "text": "The two assertions guard different things. The inline `toEqual` pins the anchor wording, and the hash assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report. A change to the hash function alone is therefore caught too, even if the anchor text is untouched.",
+      "cites": [
+        "0016#follow-up:6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The inline strings are used instead of a snapshot file because a routine `vitest -u` could silently rewrite a snapshot. The hash is checked against today's computed value.",
+      "cites": [
+        "0017/AC-10"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The hash is defined once and shared between the report and the drift test, so the report's hash and the test's hash are computed the same way by construction. Pinning it in the test therefore protects the value that reports carry for comparison.",
+      "cites": [
+        "0017/AC-9"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The wording pin exists because the anchors' own comment says the wording is expected to change, and every expected band and rationale in the ground truth set derives from today's wording. Spec 0016 asked the harness spec to detect that drift, and AC-10 is the item that does so.",
+      "cites": [
+        "0016#follow-up:5",
+        "0016#follow-up:6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The build step for the drift test satisfies AC-10 with both a literal `toEqual` pin and a `bandAnchorsHash()` equality check, each failing by name and pointing at spec 0016's dataset.",
+      "cites": [
+        "0017#build-plan:6",
+        "0017/AC-10"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 18856,
+    "output_tokens": 604,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.043752,
+  "recorded_usd": 0.043752
+}

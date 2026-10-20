@@ -30,7 +30,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 13 | Extraction accuracy | after feature 6, before feature 11 | in-progress |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
-| 16 | Answer at question time | v1, replaces the remaining v1 needs | in-progress |
+| 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 
 ## v1 finish line
 
@@ -49,6 +49,12 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 - If the bar is not met, v1 still finishes, reported as it is, with each failing question's cause.
 
 **Limit of the held out set:** all four of its questions sit in a small cluster of records (0004, 0010, 0016 to 0018). A pass there says little about the rest of the corpus.
+
+**Result, recorded 2026-10-19 (feature 16, spec [0009](../specs/0009-answer-at-question-time/index.md)):** the bar is met, judged by the engineer.
+- Eval questions 1 to 5: 5 of 5 right.
+- Held out questions 1 to 4: 3 of 4 right, and 1 partly right. Held out question 3's cause is retrieval: it did not reach 0018 line 63 (`0018#review-findings:10`), the invariant's text. Nothing was cut; the item sat beyond two hops.
+- Bar: at least 4 of 5 and at least 3 of 4, so met.
+- Cost: $0.3818 over nine calls on `claude-sonnet-5-5`, each question asked once, prompt `ask-1` frozen before the held out run (`8d28d1a`). Records in `artifacts/asks/` (`f7dbc7c`, `8977f29`, `6dd1aa1`).
 
 **What moves:** feature 15 folds into the new feature 16. Features 8 and 7 move to after v1 as retrieval improvements. Feature 5 (first traced chain) also moves to after v1: it closes only when the walk itself passes a question that spans two or more records, which is now the job of features 8 and 7.
 
@@ -209,7 +215,7 @@ Let a person type a plain English question and get a start item for the walk, in
 
 ## Answer at question time (v1)
 
-### 16. Answer at question time · in progress
+### 16. Answer at question time · done
 The engineer types a why question in plain English. The tool finds the graph items that bear on it, asks the model to answer using only those items, and prints the answer with every claim citing a graph item. A link the model inferred rather than read in the text is printed marked as inferred. This takes in feature 15 (question to start item). It does not need the walk to cross a document boundary, which is where all seven questions run so far fail.
 **Done when:** the new v1 line holds: a plain English question prints an answer whose every claim cites a graph item, and any inferred link is marked as inferred; and the success bar is met or reported as missed (see the v1 finish line): at least 4 of the 5 eval questions and at least 3 of the 4 held out questions answered right, each judged by the engineer against its expected answer.
 **Rules set 2026-10-19, before design:**
@@ -223,15 +229,15 @@ spec [0009](../specs/0009-answer-at-question-time/index.md) · code in `src/trac
 _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to 90 items; code picks the search words; the second look is dropped and kept as a Follow-up in the spec._
 - [x] Design it (spec): `/architect answer at question time` · decide how items are found, how the model is asked, how a claim cites an item, and how an inferred link is marked
 - [ ] Build it: `/develop answer at question time`
-  - [ ] Retrieval and `ask --dry-run`, no model (spec 0009 AC-2 to AC-14b)
-  - [ ] The answer type, prompt and claim checks (AC-15 to AC-20)
-  - [ ] The guarded call and the record in `metered.py` (AC-21 to AC-28)
-  - [ ] Gate: dry run over the five eval questions, the engineer's go and ceiling, then question 1 alone to measure one call's cost
-  - [ ] Eval wiring (`--eval`, the held out refusals, the one run guard; AC-29 to AC-33)
-  - [ ] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt
-  - [ ] Held out questions, once each, after the freeze; result reported against the bar
-- [ ] Verify it: `/check verify answer at question time`
-- [ ] Test it: `/test answer at question time`
+  - [x] Retrieval and `ask --dry-run`, no model (spec 0009 AC-2 to AC-14b) · built 2026-10-19, code in `src/tracepath/ask/retrieve.py` and the `ask` command in `src/tracepath/cli.py`; `ask --eval N` exits 1 as not built until the eval wiring milestone
+  - [x] The answer type, prompt and claim checks (AC-15 to AC-20) · built 2026-10-19, code in `src/tracepath/ask/answer.py`, prompt version `ask-1`
+  - [x] The guarded call and the record in `metered.py` (AC-21 to AC-28) · built 2026-10-19, code in `src/tracepath/extract/metered.py` (`ask_metered()`), `ask_bound()` in `src/tracepath/extract/cost.py`, `src/tracepath/ask/record.py`; tested with a fake call, no paid call made
+  - [x] Gate: dry run over the five eval questions, the engineer's go and ceiling, then question 1 alone to measure one call's cost · done 2026-10-19: dry run bounds $0.1741 to $0.2086 (inputs 7,045 to 24,315 tokens); question 1 run once at ceiling $0.25, 22,681 in, 402 out, $0.0494 against its $0.2054 bound, record `artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json` (`f7dbc7c`)
+  - [x] Eval wiring (`--eval`, the held out refusals, the one run guard; AC-29 to AC-33) · built 2026-10-19 (`946705e`), records named `<UTC time>-eval-<stem>-q<N>.json`; tested on temporary eval files only, no paid call
+  - [x] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt · done 2026-10-19: each run once on prompt `ask-1` with no tuning, $0.2110 for the five calls, records in `artifacts/asks/` (`f7dbc7c`, `8977f29`); engineer's marks: all five right; **prompt `ask-1` frozen by the engineer on 2026-10-19**, this commit being the freeze commit the held out run follows
+  - [x] Held out questions, once each, after the freeze; result reported against the bar · done 2026-10-19 (`6dd1aa1`): 3 of 4 right and 1 partly right (question 3, retrieval), $0.1708 for the four calls; result recorded under the v1 finish line, bar met
+- [x] Verify it: `/check verify answer at question time`
+- [x] Test it: `/test answer at question time`
 
 ## Slice 3: Name resolution
 
