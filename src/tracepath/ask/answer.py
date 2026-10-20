@@ -15,12 +15,12 @@ from tracepath.extract.schema import RelationshipType
 from tracepath.traverse.graph_slice import Link, NodeKind
 
 #: The version of the instructions below, stored on every ask record.
-PROMPT_VERSION = "ask-1"
+PROMPT_VERSION = "ask-2"
 
 #: The output cap of one ask call, thinking included (spec 0009, decided 2026-10-19).
 ASK_MAX_TOKENS = 16_000
 
-Verdict = Literal["answered", "partly", "not_supported"]
+Verdict = Literal["answered", "partly", "not_supported", "no_documented_link"]
 Basis = Literal["link", "text", "inferred"]
 
 
@@ -67,6 +67,12 @@ stands as written. When a claim uses a HISTORY item, say so in the claim itself,
 when the item says what replaced it, name that item in the claim and cite it.
 - `verdict` is `answered` when the claims answer the question, `partly` when they \
 answer only part of it, and `not_supported` when the items do not support an answer.
+- Use `no_documented_link` instead when the question asks how two or more things are \
+connected, the items for each of them are there, and no item's text and no listed link \
+states a connection between them. The claims then say what the items do state about each \
+thing, each cited. Use `not_supported` when the items for one of the things are missing, \
+and name it in `missing`. `no_documented_link` means the records state no link, not that \
+none exists.
 - `missing` lists what the question needs that the items do not hold. Leave it empty \
 when nothing is missing.
 - Keep each claim to one or two sentences.

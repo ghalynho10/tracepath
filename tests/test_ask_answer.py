@@ -5,11 +5,14 @@ The pack for "landing" sends 9101, 9101/AC-1 to AC-4 (AC-3 struck, replaced by A
 AC-2 held), the held Unresolved node and 9102/AC-1, with four links among them.
 """
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
 from tests import ask_fixture as fx
 from tracepath.ask.answer import (
+    PROMPT_VERSION,
     Answer,
     Claim,
     answer_lines,
@@ -18,6 +21,7 @@ from tracepath.ask.answer import (
     system_prompt,
 )
 from tracepath.ask.retrieve import Pack, build_pack
+from tracepath.extract.metered import ask_output_format
 
 
 @pytest.fixture
@@ -63,6 +67,33 @@ def test_ac_15_a_reply_outside_the_shape_does_not_validate(reply: str) -> None:
     """covers: AC-15 (a bad verdict, a bad basis, an extra field)."""
     with pytest.raises(ValidationError):
         Answer.model_validate_json(reply)
+
+
+def test_ac_15_note_no_documented_link_is_a_fourth_verdict_and_prints_as_given(
+    pack: Pack,
+) -> None:
+    """covers: AC-15 note of 2026-10-19 (the absence verdict, prompt `ask-2`)."""
+    lines = printed(pack, claim("It reads once.", "9101/AC-1"), verdict="no_documented_link")
+
+    assert lines[0] == "Answer (verdict: no_documented_link):"
+
+
+def test_ac_15_note_the_output_schema_offers_the_absence_verdict() -> None:
+    """covers: AC-15 note of 2026-10-19 (the model can only send a verdict the schema lists)."""
+    schema = json.dumps(ask_output_format()["schema"])
+
+    assert "no_documented_link" in schema
+    assert "not_supported" in schema
+
+
+def test_ac_15_note_the_prompt_says_when_the_absence_verdict_applies() -> None:
+    """covers: AC-15 note of 2026-10-19, with the prompt version bumped to `ask-2`."""
+    prompt = " ".join(system_prompt().split())
+
+    assert PROMPT_VERSION == "ask-2"
+    assert "Use `no_documented_link` instead when the question asks how two" in prompt
+    assert "no item's text and no listed link states a connection between them" in prompt
+    assert "Use `not_supported` when the items for one of the things are missing" in prompt
 
 
 def test_ac_15b_and_ac_20_the_answer_prints_verdict_numbered_claims_then_missing(
