@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-20
 **Feeds**: nothing yet; an experiment, no scope row
-**Status**: run 2026-10-20, one decision-memory query per question; marks owed by the engineer
+**Status**: run and marked 2026-10-20, one decision-memory query per question; tracepath 8 right and 1 partly right, decision-memory 9 abstained
 
 ## Question
 
@@ -407,17 +407,39 @@ Citations: none.
 Judged by the engineer with the needed points rule: an answer is right when it gives the
 points the question needs.
 
+- tracepath: the marks the engineer already recorded for these same nine `ask-1` records
+  on 2026-10-19 (`docs/scope/scope.md`, v1 finish line), carried over, not judged again.
+- decision-memory: every answer abstained, printing `not enough evidence here` with no
+  claim and no citation. Abstained is recorded as its own category, not as right, partly
+  right or wrong: there is no claim to judge.
+
 | question | tracepath (`ask-1`) | decision-memory |
 |---|---|---|
-| eval 1 | | |
-| eval 2 | | |
-| eval 3 | | |
-| eval 4 | | |
-| eval 5 | | |
-| held out 1 | | |
-| held out 2 | | |
-| held out 3 | | |
-| held out 4 | | |
+| eval 1 | right | abstained |
+| eval 2 | right | abstained |
+| eval 3 | right | abstained |
+| eval 4 | right | abstained |
+| eval 5 | right | abstained |
+| held out 1 | right | abstained |
+| held out 2 | right | abstained |
+| held out 3 | partly right | abstained |
+| held out 4 | right | abstained |
+| all | 8 right, 1 partly right | 9 abstained |
+
+Held out question 3's partly right cause, as v1 recorded it, is retrieval: tracepath did
+not reach `0018#review-findings:10`.
+
+## Conclusion
+
+decision-memory reached the expected records on most questions (all of each chain's spec
+records on eight of nine, at record level), but its claim verifier removed the sentences
+it drafted, and it abstained on all nine. tracepath answered all nine with cited claims,
+8 right and 1 partly right, every citation checked in code against the extracted items.
+
+This compares two whole systems, each with its own retrieval, its own verification and
+its own model provider. It is not a test of a graph against vectors in isolation: the
+abstentions come from decision-memory's verification stage, not from its retrieval, so
+these nine results say nothing about which retrieval approach alone does better.
 
 ## Limits of this comparison
 
