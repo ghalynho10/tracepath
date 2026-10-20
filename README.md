@@ -83,7 +83,7 @@ flowchart TD
     end
 ```
 
-Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a time. Code first marks struck text and checkboxes. The model then reads each section three times, and each run is saved as a JSON file that is never overwritten. Loading compares the three runs: an item they agree on, with no warning flag raised, is accepted, and the rest are held, each with the reason it was held. Held items still load, marked held. The graph is rebuilt from the run files every time. At question time, code picks the question's words, finds up to 16 items that share them, and adds their neighbours up to two hops away, at most 90 items in all. It prices the call before making it, makes one call, then checks every cited id against the items it sent, and saves the whole exchange.
+Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a time. Code first marks struck text and checkboxes. The model then reads each section three times, and each run is saved as a JSON file that is never overwritten. Loading compares the three runs. An item all three runs agree on is accepted, including one held only by a warning flag or by a link waiting on another item (the narrow hold rule, on by default). Items the runs disagree on, or that fail another check, are held, each with the reason. Held items still load, marked held. The graph is rebuilt from the run files every time. At question time, code picks the question's words, finds up to 16 items that share them, and adds their neighbours up to two hops away, at most 90 items in all. It prices the call before making it, makes one call, then checks every cited id against the items it sent, and saves the whole exchange.
 
 ## What I tried first
 
