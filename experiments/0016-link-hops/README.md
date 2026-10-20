@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-20
 **Feeds**: `ask` retrieval (spec 0009 AC-10, note of 2026-10-20); no scope row
-**Status**: run 2026-10-20; question, method and decision committed before any paid call (`0cc044d`); marks owed by the engineer
+**Status**: run and marked 2026-10-20; question, method and decision committed before any paid call (`0cc044d`); default kept at 2 hops
 
 ## Question
 
@@ -126,17 +126,32 @@ record's `cost_usd` equals its `recorded_usd`.
 
 ## Marks
 
-_Left for the engineer. One line per question and hop count: right, partly, or wrong,
-with a reason._
+Judged by the engineer on 2026-10-20, with the needed points rule: an answer is right
+when it gives the points the question needs.
 
 | question | hops 2 | hops 0 |
 |---|---|---|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
-| 5 | | |
+| 1 | right | right |
+| 2 | right | right |
+| 3 | right | right |
+| 4 | right | right |
+| 5 | right | right |
+
+All ten answers are right.
 
 ## Conclusion
 
-_Left until the marks are in._
+Against the decision written before the run: hops 0 answered as many questions right as
+hops 2, so on these five questions the links do not help find the items an answer
+needs.
+
+The links still matter for checking and labelling answers. The `HISTORY` label (question
+3) and the code checked `link` marks (question 1 claim 3, question 2 claim 2) come from
+the graph's links, and they do so at any hop count.
+
+**Decision: keep the default at 2 hops.** The cost difference is a few cents a question
+(about $0.04 at most here, $0.21 against $0.08 for all five). The v1 result and the
+README describe 2 hops. And held out question 3 shows that questions exist where the
+item an answer needs sits further out than the hits.
+
+This stays the baseline to rerun after feature 8 or feature 7 lands.
