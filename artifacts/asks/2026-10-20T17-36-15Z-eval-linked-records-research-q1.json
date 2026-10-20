@@ -1,0 +1,285 @@
+{
+  "asked_at": "2026-10-20T17:36:15+00:00",
+  "question": "Why does the landing rule's profile existence read (src/lib/landing-rule.ts) have its own dedicated query instead of reusing readOwnProfile(), which already reads the same row?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 1,
+  "called": true,
+  "hops": 0,
+  "search_words": [
+    "landing",
+    "rule's",
+    "profile",
+    "existence",
+    "read",
+    "src",
+    "lib",
+    "landing-rule.ts",
+    "rule",
+    "own",
+    "dedicated",
+    "query",
+    "instead",
+    "reusing",
+    "readownprofile",
+    "already",
+    "reads",
+    "same",
+    "row"
+  ],
+  "items": [
+    {
+      "id": "0008/AC-7",
+      "line": "0008/AC-7  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:54  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-7**: The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed."
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0008#feature-design:11",
+      "line": "0008#feature-design:11  Constraint  held  specs/0008-app-shell-and-navigation/index.md:160  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The door route and the callback sit outside `src/app/api/`. Binding rule 6 restricts handlers **under** `src/app/api/` and is silent about handlers elsewhere. Both may read the session, and the landing rule reads profile row existence. These are the first route handlers in this project to read a user data table, which is a deliberate extension: each checks its own caller independently, and row level security from spec 0003 remains the guarantee behind the read."
+    },
+    {
+      "id": "0008#feature-design:9",
+      "line": "0008#feature-design:9  Constraint  held  specs/0008-app-shell-and-navigation/index.md:155  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The landing rule reads only profile row existence, never profile sufficiency. Feature 14's scoring gate layers on top of this rule's callers later and replaces nothing here."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8  Constraint  accepted  scope/scope.md:282  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**The scoring gate layers onto the landing rule's callers, it does not replace the rule.** Spec 0008 AC-6 decides where a visitor lands after sign in, and its invariant says the rule reads profile row existence only, never profile sufficiency. Whatever gate this feature adds for a profile too thin to score against belongs at the callers of that rule"
+    },
+    {
+      "id": "0007#feature-design:20",
+      "line": "0007#feature-design:20  Constraint  held  specs/0007-auth-and-per-user-isolation/index.md:153  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`/sign-in` stops reading nothing. Spec 0008 AC-20 has it read the session, so a visitor who is already signed in is bounced to the landing rule rather than shown the provider buttons again, and that bounce also reads profile row existence through the landing rule."
+    },
+    {
+      "id": "0008/AC-7a",
+      "line": "0008/AC-7a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:55  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-7a**: A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported."
+    },
+    {
+      "id": "0001#binding-rules:30",
+      "line": "0001#binding-rules:30  Constraint  accepted  specs/0001-stack-and-architecture/index.md:141  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`/go` and `/auth/callback` are the first route handlers here to read a user data table (`public.profile`, for row existence only). Both sit outside `src/app/api/`, so the paragraph above does not forbid them. Each verifies its own caller through the session before the read, neither writes user data, neither accepts a user supplied identifier for the row it reads, and row level security remains the guarantee behind the read rather than the handler's own check."
+    },
+    {
+      "id": "0008#consequences:24",
+      "line": "0008#consequences:24  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:247  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Spec 0007, security model**: \"`/` and `/sign-in` are public and read nothing\". AC-20 makes `/sign-in` read the session and, through the landing rule, profile row existence. `/` is unchanged."
+    },
+    {
+      "id": "0003#build-plan:6",
+      "line": "0003#build-plan:6  BuildStep  accepted  specs/0003-data-model/index.md:241  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Add `src/features/profile/queries.ts` with `readOwnProfile()`: the named span `profile.read` as the first statement per binding rule 4, the session check per binding rule 6, the Supabase call, and a Zod parse at the boundary, returning `record_not_found` as an expected failure when no profile row exists. Register `profile.read` in [docs/observability/spans.md](../../observability/spans.md). Satisfies **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0021#feature-design:13",
+      "line": "0021#feature-design:13  Constraint  accepted  specs/0021-seeded-demo-account/index.md:325  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**The fixed search queries** (revised 2026-09-15): two searches per refresh, both nationwide within the already configured `ADZUNA_COUNTRY`, each matching one persona's own first desired title (**Seed content**): title `\"backend engineer\"`, then title `\"frontend engineer\"`. The backend search runs first; a refusal or failure of the backend search ends the refresh before the frontend search runs (**Refresh outcomes**). A refused or failed frontend search aborts the refresh too, even though the backend search succeeded: only a search that *succeeds and returns nothing* is the \"publish the other search's listings\" case below, never a search that did not complete. Each query is paired with the persona whose own role it names (`\"backend engineer\"` with `backend-engineer`, `\"frontend engineer\"` with `frontend-engineer`). These two queries are fixed from here on and are not re-tuned per run; the one condition under which they are revisited is the stopping rule in `## Follow-up`, and that rule's answer is to leave them unchanged."
+    },
+    {
+      "id": "0008/AC-8",
+      "line": "0008/AC-8  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:59  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`, so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434). It **overwrites** any header of that name arriving on the request, so a client supplied value cannot be trusted forward. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**, per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it. Omitting it falls through to the landing rule, which is the honest outcome. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy, so one number governs both."
+    },
+    {
+      "id": "0008/AC-16",
+      "line": "0008/AC-16  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:71  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-16**: Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply."
+    },
+    {
+      "id": "0020#build-plan:3",
+      "line": "0020#build-plan:3  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:160  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Build `getJobSearchUsageSummary()` in `src/lib/usage-gating/queries.ts`: `getClaims()` verification, the RPC call wrapped in `attempt()`, the response parsed with Zod rather than trusted (matching `gate.ts`'s own treatment of `check_usage_gate`'s row), a named span `usage_gate.read_summary` opened first and registered in `docs/observability/spans.md` (binding rule 3). Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-7**."
+    },
+    {
+      "id": "0007#feature-design:40",
+      "line": "0007#feature-design:40  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:189  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Fallback, and the amendment it requires first.** If it is ever taken, AC-9 is met in the callback instead. Read the freshly signed in user, and where the email already belonged to another identity, refuse and sign back out, removing the partial account through [src/lib/supabase/secret.ts](../../../src/lib/supabase/secret.ts)."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-7",
+      "target": "0008/AC-7a",
+      "phrase": "AC-7a (a genuine query error is still a failure, since AC-7's ban on `failure()` had over corrected against binding rule 5)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-7",
+      "phrase": "The existence read of AC-7 is a new named export",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 5024,
+  "bound_usd": 0.170048,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"AC-7 gives the reason: an absent profile row is not a failure for the landing rule, so the existence read returns `false` and constructs no `failure()`. `readOwnProfile()` cannot be reused because its `record_not_found` path reports to Sentry and marks the `profile.read` span failed.\",\"cites\":[\"0008/AC-7\"],\"basis\":\"text\"},{\"text\":\"The `readOwnProfile()` build step confirms it returns `record_not_found` as an expected failure when no profile row exists, which is the behavior the landing rule must avoid.\",\"cites\":[\"0003#build-plan:6\"],\"basis\":\"text\"},{\"text\":\"The dedicated read is narrower than a blanket exemption. AC-7a amends AC-7 so that a genuine query error is still a failure: the call is wrapped in `attempt()`, errors are not collapsed into `false`, and the landing rule sends the visitor to `/search` on an errored read.\",\"cites\":[\"0008/AC-7\",\"0008/AC-7a\"],\"basis\":\"link\"},{\"text\":\"The existence read is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table. `src/lib/landing-rule.ts` imports it from there.\",\"cites\":[\"0008/AC-5b\"],\"basis\":\"text\"}],\"missing\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [],
+  "claims": [
+    {
+      "text": "AC-7 gives the reason: an absent profile row is not a failure for the landing rule, so the existence read returns `false` and constructs no `failure()`. `readOwnProfile()` cannot be reused because its `record_not_found` path reports to Sentry and marks the `profile.read` span failed.",
+      "cites": [
+        "0008/AC-7"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The `readOwnProfile()` build step confirms it returns `record_not_found` as an expected failure when no profile row exists, which is the behavior the landing rule must avoid.",
+      "cites": [
+        "0003#build-plan:6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The dedicated read is narrower than a blanket exemption. AC-7a amends AC-7 so that a genuine query error is still a failure: the call is wrapped in `attempt()`, errors are not collapsed into `false`, and the landing rule sends the visitor to `/search` on an errored read.",
+      "cites": [
+        "0008/AC-7",
+        "0008/AC-7a"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The existence read is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table. `src/lib/landing-rule.ts` imports it from there.",
+      "cites": [
+        "0008/AC-5b"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 5024,
+    "output_tokens": 461,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.014658,
+  "recorded_usd": 0.014658
+}

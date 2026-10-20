@@ -37,6 +37,7 @@ uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # r
 uv run tracepath ask "QUESTION" --ceiling USD   # spec 0009: answers a why question from the graph, every claim citing an item; one paid call, record written to artifacts/asks/; --ceiling is required except with --dry-run; verdict answered, partly, not_supported or no_documented_link (prompt ask-2)
 uv run tracepath ask "QUESTION" --dry-run   # finds the items and prices the call only: no call, no record (free), so no --ceiling needed
 uv run tracepath ask --eval N --ceiling USD   # asks eval question N; --eval-file F --release-held-out runs a held out file, refusing a question already answered once
+uv run tracepath ask "QUESTION" --hops N --ceiling USD   # link hops added around the search hits: 0, 1 or 2, default 2; printed on the Items sent line and stored as hops in the record (spec 0009 AC-10 note, experiment 0016)
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration; about 15 minutes locally (tests that do not need the whole corpus run on a fixed subset)

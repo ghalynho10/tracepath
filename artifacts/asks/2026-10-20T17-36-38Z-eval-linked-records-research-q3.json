@@ -1,0 +1,625 @@
+{
+  "asked_at": "2026-10-20T17:36:38+00:00",
+  "question": "Why is password sign in impossible on production?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 3,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "password",
+    "sign",
+    "impossible",
+    "production"
+  ],
+  "items": [
+    {
+      "id": "0002/AC-10",
+      "line": "0002/AC-10  AcceptanceCriterion  accepted  STRUCK  specs/0002-deployment-and-environments/index.md:31  hit",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0007"
+      ],
+      "hop": 0,
+      "text": "**AC-10**: Password sign in is impossible on production, in both places it is guarded: the sign in page does not render and the Server Action refuses to run. The enabling variable is absent there, both guards fail closed, and neither depends any longer on how a build labels `NODE_ENV`."
+    },
+    {
+      "id": "0007",
+      "line": "0007  record  accepted  specs/0007-auth-and-per-user-isolation/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Auth and per user isolation"
+    },
+    {
+      "id": "0002#feature-design:27",
+      "line": "0002#feature-design:27  Constraint  accepted  specs/0002-deployment-and-environments/index.md:180  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Dev password sign in**: enabled by an explicit variable that defaults to false, set only on the Vercel Preview environment and locally. Production never carries it. Feature 7 deletes the whole feature folder."
+    },
+    {
+      "id": "0002#build-plan:1",
+      "line": "0002#build-plan:1  BuildStep  accepted  specs/0002-deployment-and-environments/index.md:238  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Already created, so record and confirm rather than create.** Both Supabase projects exist, development and production, each with the Data API set not to expose new tables. Confirm both are in `us-east-1`, then record, for each: project URL, publishable key, secret key, project ref, database password and connection string. Satisfies **AC-2**."
+    },
+    {
+      "id": "0004#consequences:12",
+      "line": "0004#consequences:12  Consequence  accepted  specs/0004-test-foundation/index.md:159  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The development password sign in stays until feature 7 deletes it; the mint does not depend on it."
+    },
+    {
+      "id": "0004#decision:5",
+      "line": "0004#decision:5  Constraint  accepted  specs/0004-test-foundation/index.md:42  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Session mint**: a development only helper under `test/helpers/` that uses the secret client (binding rule 1, caller 1) to generate an admin magiclink for a fixture user and exchanges it with `verifyOtp` through the request scoped client into an in memory cookie jar. Guarded by `DEV_SESSION_ENABLED` (default false, fails closed). Programmatic only, no HTTP route. It does not depend on the development password sign in that feature 7 deletes."
+    },
+    {
+      "id": "0004#feature-design:23",
+      "line": "0004#feature-design:23  Constraint  accepted  specs/0004-test-foundation/index.md:107  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The mint does not depend on the development password sign in from feature 1, which feature 7 deletes."
+    },
+    {
+      "id": "0007#summary:1",
+      "line": "0007#summary:1  Feature  accepted  specs/0007-auth-and-per-user-isolation/index.md:8  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "This spec builds the real sign in: OAuth through Google and GitHub, on Supabase Auth, with no password anywhere."
+    },
+    {
+      "id": "0007#summary:4",
+      "line": "0007#summary:4  Feature  accepted  specs/0007-auth-and-per-user-isolation/index.md:8  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The development only password sign in from feature 1 is deleted along with the browser client that was only ever reserved for this feature"
+    },
+    {
+      "id": "feature-27#27-auth-remainder-needs-a-decision:1",
+      "line": "feature-27#27-auth-remainder-needs-a-decision:1  Feature  accepted  scope/scope.md:473  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Email and password sign up as an alternative for people without a Google or GitHub account, password reset, session expiry handling, and an account settings screen."
+    },
+    {
+      "id": "feature-27#27-auth-remainder-needs-a-decision:2",
+      "line": "feature-27#27-auth-remainder-needs-a-decision:2  AcceptanceCriterion  accepted  scope/scope.md:474  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done when:** a user can sign up and reset a password by email,"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:6",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:6  AcceptanceCriterion  accepted  scope/scope.md:134  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "and the development only password sign in from feature 1 is deleted, not merely blocked."
+    },
+    {
+      "id": "0010#follow-up:5",
+      "line": "0010#follow-up:5  FollowUp  accepted  specs/0010-profile-entry/index.md:226  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Feature 14 owns revisiting `addWorkExperience`'s duplicate submission gap**, recorded as an accepted tradeoff in `## Consequences` on 2026 09 02. Scoring is the first thing that reads work history without a person looking at it, so feature 14 is the one that can say whether duplicates need to be impossible rather than merely visible."
+    },
+    {
+      "id": "0002#consequences:19",
+      "line": "0002#consequences:19  Consequence  accepted  specs/0002-deployment-and-environments/index.md:299  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The production Supabase project will sit empty until feature 7 ships a way to sign in. That is expected, not a fault, though it is also the reason it will pause."
+    },
+    {
+      "id": "0002#consequences:7",
+      "line": "0002#consequences:7  Consequence  accepted  specs/0002-deployment-and-environments/index.md:282  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Both hosted projects will pause, and production is the more exposed of the two.** Supabase's free plan pauses a project that has not had sufficient database activity over the previous week, and their guidance is that this means roughly a few user requests a day across that week. That is a daily bar, not a weekly one, so a burst of activity on merge day does not clear it. Production is worse off than development here: nothing touches the production database at all until feature 7 ships a way to sign in, so it will pause while being perfectly healthy. Development is exposed too whenever a few days pass with no previews."
+    },
+    {
+      "id": "0002#feature-design:46",
+      "line": "0002#feature-design:46  TestScenario  accepted  HISTORY  specs/0002-deployment-and-environments/index.md:232  hit",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0007"
+      ],
+      "hop": 0,
+      "text": "Auth/permission: a POST to the sign in action on production is refused because `DEV_SESSION_ENABLED` is absent, verifies **AC-10**"
+    },
+    {
+      "id": "0006#requirements:6",
+      "line": "0006#requirements:6  AcceptanceCriterion  held  STRUCK  specs/0006-entry-page-and-link-metadata/index.md:29  hit",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0006/AC-7",
+        "0007/AC-16"
+      ],
+      "hop": 0,
+      "text": "No sign in control on the page is a link. The two provider controls render as labels carrying the `Chip` status variant, beside a line saying accounts open with feature 7. The header's \"Sign in\" is an in page anchor to that band and is a working link at every width. This criterion is deliberately environment independent: it holds on production, preview and locally alike, because the page never links to `/sign-in` at all."
+    },
+    {
+      "id": "0006/AC-7",
+      "line": "0006/AC-7  AcceptanceCriterion  accepted  HISTORY  specs/0006-entry-page-and-link-metadata/index.md:29  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0007#consequences:21",
+        "0007/AC-16"
+      ],
+      "hop": 1,
+      "text": "**AC-7**: both provider controls become real `<form action={...}>` submits. What survives untouched: **AC-17**, the inert apply control, and with it this spec's one rule with no exceptions, that nothing which cannot work is a link."
+    },
+    {
+      "id": "0007/AC-16",
+      "line": "0007/AC-16  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:39  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16**: The entry page's two provider controls are real submits. `COPY-1` and both `Chip state=\"status\"` labels are gone. Spec 0006 **AC-17**, the inert apply control, is untouched and its half of the \"no dead controls\" test still runs."
+    },
+    {
+      "id": "0007#consequences:21",
+      "line": "0007#consequences:21  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:321  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "spec 0006 **AC-7** is superseded;"
+    },
+    {
+      "id": "0002#build-plan:7",
+      "line": "0002#build-plan:7  BuildStep  accepted  specs/0002-deployment-and-environments/index.md:246  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Replace the `NODE_ENV` guard with the validated `DEV_SESSION_ENABLED` check, failing closed, in **both** places it lives: `src/features/dev-session/actions.ts` and the page guard in `src/app/(marketing)/sign-in/page.tsx`. Satisfies **AC-10**."
+    },
+    {
+      "id": "0007/AC-13",
+      "line": "0007/AC-13  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:36  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-13**: `DEV_SESSION_ENABLED` survives with exactly one remaining job, guarding the test mint in `test/helpers/admin.ts`. It is no longer set on Vercel Preview, `src/env.ts`'s comment about it says so, and spec 0002's configuration table matches."
+    },
+    {
+      "id": "0002/AC-2",
+      "line": "0002/AC-2  AcceptanceCriterion  accepted  specs/0002-deployment-and-environments/index.md:23  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-2**: A push to any branch other than `main` produces a preview deployment that reads the development Supabase project. No preview ever holds credentials for the production project."
+    },
+    {
+      "id": "unresolved:0004:until-feature-7-deletes-it",
+      "line": "unresolved:0004:until-feature-7-deletes-it  unresolved  accepted  specs/0004-test-foundation/index.md:141  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "until feature 7 deletes it"
+    },
+    {
+      "id": "0001#directory-layout:4",
+      "line": "0001#directory-layout:4  Constraint  accepted  specs/0001-stack-and-architecture/index.md:90  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "This tree listed a fourth file, `lib/supabase/browser.ts`, \"publishable key client\", reserved for the OAuth handshake in feature 7. Feature 7 does that handshake entirely on the server, so the browser client never gained a caller and is deleted rather than left as a module whose doc comment claims a purpose it no longer has."
+    },
+    {
+      "id": "0004#follow-up:10",
+      "line": "0004#follow-up:10  FollowUp  accepted  specs/0004-test-foundation/index.md:174  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Layer a hard refusal on `NEXT_PUBLIC_VERCEL_ENV === \"production\"` on top of the `DEV_SESSION_ENABLED` guard, **in the mint only**."
+    },
+    {
+      "id": "0006#feature-design:37",
+      "line": "0006#feature-design:37  TestScenario  accepted  specs/0006-entry-page-and-link-metadata/index.md:149  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`automated` No dead controls: no apply control renders as an anchor, verifies **AC-17**."
+    },
+    {
+      "id": "0009#consequences:2",
+      "line": "0009#consequences:2  Consequence  accepted  specs/0009-terms-and-privacy-notices/index.md:500  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The consent screen can finally name JobHunt, closing the finding spec 0007 recorded on 2026-08-30."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:13  BuildStep  accepted  scope/scope.md:140  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: GitHub with the `user:email` scope, sign out rebuilt in `src/features/auth/` with its span and failure path, then the deletions (`src/features/dev-session/`, `src/lib/supabase/browser.ts`) and the span registry, satisfies AC-1, AC-11, AC-12, AC-13, AC-17 · done 2026-08-30."
+    },
+    {
+      "id": "0006#build-plan:6",
+      "line": "0006#build-plan:6  BuildStep  accepted  specs/0006-entry-page-and-link-metadata/index.md:170  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the sign in controls as non linking labels with the `Chip` status variant, carrying `COPY-1`, in both the hero and the band, and wire the header's anchor to the band, satisfies **AC-7**."
+    },
+    {
+      "id": "0006#feature-design:9",
+      "line": "0006#feature-design:9  Constraint  accepted  specs/0006-entry-page-and-link-metadata/index.md:101  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**`COPY-1`, the sign in line** (**AC-7**), shown beside the two provider controls in both the hero and the sign in band. It must say that accounts are not open yet without using an internal feature number. `Sign in isn't live yet. Coming soon with Google and GitHub.`"
+    },
+    {
+      "id": "0006/AC-17",
+      "line": "0006/AC-17  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-17**: The hero card's \"Apply on the real posting\" control is not a link either (`JobHuntLanding.tsx` line 259 has it as `href=\"#\"`). It renders as `Text` with the `ExternalLinkIcon`, inside `Card.Footer`. Together with **AC-7** this gives the page one rule with no exceptions: nothing that cannot work is a link, and an example listing has nothing real to apply to."
+    },
+    {
+      "id": "0007#consequences:16",
+      "line": "0007#consequences:16  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:320  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**What does not defer**: `COPY-1` and the two status chips become false for **every** visitor the moment this ships, signed in or not, and fixing them needs no session read. Those change in this feature, per AC-16."
+    },
+    {
+      "id": "0008/AC-18",
+      "line": "0008/AC-18  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:77  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-18**: `/` renders **zero** `<form>` elements and shows no sign in invitation anywhere on the page. `SignInControls` is rendered twice today, in `src/features/entry-page/hero-section.tsx:216` and `src/features/entry-page/sign-in-band.tsx:56`, and both are replaced by the door CTA (`COPY-4`), a plain anchor that does not prefetch. The signed out header's control changes from a `#start` jump to the door (`COPY-5`), because the band it jumped to no longer signs anyone in."
+    },
+    {
+      "id": "0008/AC-2",
+      "line": "0008/AC-2  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: Each placeholder page renders an ordinary expected state, not a failure: the sentence from its copy slot (`COPY-1` to `COPY-3`), with no `role=\"alert\"` and no red border treatment. It does not carry the literal phrase \"coming soon\", nor any phrasing that will become **false** once the feature lands, which is what spec 0007 **AC-16** actually deleted from the sign in band. A sentence that truthfully says a route is not built yet is fine and is what these three are."
+    },
+    {
+      "id": "feature-6#6-entry-page-link-metadata-done:11",
+      "line": "feature-6#6-entry-page-link-metadata-done:11  BuildStep  accepted  scope/scope.md:125  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The hero: a `<figure>` wrapping the one elevated `Card`, the example label, `MatchBar` at 8 of 11, the chip clusters, and every dead control rendered inert rather than linked, satisfies AC-5, AC-7, AC-9, AC-17"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:15",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:15  BuildStep  accepted  scope/scope.md:142  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The entry page and the record: the two provider labels become real submits with `COPY-1` and both status chips deleted, spec 0006's \"no dead controls\" test split so its apply half survives, and the session policy matrix read off both dashboards, satisfies AC-8, AC-15, AC-16, AC-19 · **done 2026-08-30.**"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#directory-layout:4",
+      "target": "0007",
+      "phrase": "**Amended 2026-08-29 by spec 0007.**",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0004#follow-up:10",
+      "target": "0007",
+      "phrase": "Shrunk 2026-08-29 by spec 0007",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0006#feature-design:37",
+      "target": "0007",
+      "phrase": "**Split 2026-08-29 by spec 0007**: the sign in half of this check retires with **AC-7**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-16",
+      "target": "0008/AC-18",
+      "phrase": "After AC-18 there are no provider controls on `/`.",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0004#consequences:12",
+      "target": "unresolved:0004:until-feature-7-deletes-it",
+      "phrase": "stays until feature 7 deletes it",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0002#build-plan:1",
+      "target": "0002/AC-2",
+      "phrase": "Satisfies **AC-2**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0002#build-plan:7",
+      "target": "0002/AC-10",
+      "phrase": "Satisfies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:6",
+      "target": "0006/AC-7",
+      "phrase": "satisfies **AC-7**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-17",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-7",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:13",
+      "target": "0007/AC-13",
+      "phrase": "satisfies AC-1, AC-11, AC-12, AC-13, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:15",
+      "target": "0007/AC-16",
+      "phrase": "satisfies AC-8, AC-15, AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0002#feature-design:46",
+      "target": "0007",
+      "phrase": "**UNRUNNABLE SINCE 2026-08-30**",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0002/AC-10",
+      "target": "0007",
+      "phrase": "**SUPERSEDED 2026-08-30 by spec 0007.**",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006#requirements:6",
+      "target": "0006/AC-7",
+      "phrase": "What replaces it: both provider controls become real `<form action={...}>` submits.",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006#requirements:6",
+      "target": "0007/AC-16",
+      "phrase": "**SUPERSEDED 2026-08-29 by spec 0007 AC-16.**",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006/AC-7",
+      "target": "0007#consequences:21",
+      "phrase": "spec 0006 **AC-7** is superseded",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006/AC-7",
+      "target": "0007/AC-16",
+      "phrase": "spec 0007 **AC-16** superseded spec 0006 **AC-7**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0002/AC-10",
+      "target": "0007/AC-13",
+      "phrase": "What survives from it is the fail closed default itself, which is now the session mint's guarantee (spec 0007 **AC-13**)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006#feature-design:9",
+      "target": "0006/AC-7",
+      "phrase": "(**AC-7**)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006/AC-17",
+      "target": "0006/AC-7",
+      "phrase": "Together with **AC-7** this gives the page one rule with no exceptions",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006/AC-7",
+      "target": "0006/AC-17",
+      "phrase": "What survives untouched: **AC-17**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#consequences:16",
+      "target": "0007/AC-16",
+      "phrase": "Those change in this feature, per AC-16.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-2",
+      "target": "0007/AC-16",
+      "phrase": "which is what spec 0007 **AC-16** actually deleted from the sign in band",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009#consequences:2",
+      "target": "0007",
+      "phrase": "closing the finding spec 0007 recorded on 2026-08-30",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0002#feature-design:46",
+      "target": "0002/AC-10",
+      "phrase": "verifies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0006#feature-design:37",
+      "target": "0006/AC-17",
+      "phrase": "verifies **AC-17**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 7178,
+  "bound_usd": 0.174356,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"Per 0002/AC-10, which is HISTORY (struck through, replaced by 0007), password sign in was impossible on production because the enabling variable is absent there. Both guards, the sign in page and the Server Action, fail closed and no longer depend on how a build labels NODE_ENV.\",\"cites\":[\"0002/AC-10\"],\"basis\":\"text\"},{\"text\":\"The design constraint says dev password sign in is enabled only by an explicit variable that defaults to false. It is set only on Vercel Preview and locally, and production never carries it.\",\"cites\":[\"0002#feature-design:27\"],\"basis\":\"text\"},{\"text\":\"The build step replaced the NODE_ENV guard with a validated DEV_SESSION_ENABLED check that fails closed in both places, the dev-session actions and the sign-in page. This satisfies AC-10.\",\"cites\":[\"0002#build-plan:7\",\"0002/AC-10\"],\"basis\":\"link\"},{\"text\":\"AC-10 no longer stands as written: spec 0007 replaced it. Spec 0007 deletes the development password sign in and builds OAuth sign in with no password anywhere.\",\"cites\":[\"0002/AC-10\",\"0007#summary:1\",\"0007#summary:4\"],\"basis\":\"text\"}],\"missing\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [],
+  "claims": [
+    {
+      "text": "Per 0002/AC-10, which is HISTORY (struck through, replaced by 0007), password sign in was impossible on production because the enabling variable is absent there. Both guards, the sign in page and the Server Action, fail closed and no longer depend on how a build labels NODE_ENV.",
+      "cites": [
+        "0002/AC-10"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": true,
+      "held_ids": []
+    },
+    {
+      "text": "The design constraint says dev password sign in is enabled only by an explicit variable that defaults to false. It is set only on Vercel Preview and locally, and production never carries it.",
+      "cites": [
+        "0002#feature-design:27"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The build step replaced the NODE_ENV guard with a validated DEV_SESSION_ENABLED check that fails closed in both places, the dev-session actions and the sign-in page. This satisfies AC-10.",
+      "cites": [
+        "0002#build-plan:7",
+        "0002/AC-10"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": true,
+      "held_ids": []
+    },
+    {
+      "text": "AC-10 no longer stands as written: spec 0007 replaced it. Spec 0007 deletes the development password sign in and builds OAuth sign in with no password anywhere.",
+      "cites": [
+        "0002/AC-10",
+        "0007#summary:1",
+        "0007#summary:4"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": true,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 7178,
+    "output_tokens": 435,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.018706,
+  "recorded_usd": 0.018706
+}

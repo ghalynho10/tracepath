@@ -1,0 +1,1746 @@
+{
+  "asked_at": "2026-10-20T17:36:22+00:00",
+  "question": "Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 2,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "src",
+    "proxy.ts",
+    "proxy",
+    "treat",
+    "server",
+    "action",
+    "request",
+    "differently",
+    "every",
+    "other",
+    "detect",
+    "one",
+    "next-action",
+    "next",
+    "header",
+    "route"
+  ],
+  "items": [
+    {
+      "id": "0014/AC-20a",
+      "line": "0014/AC-20a  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:51  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-20a**: `src/proxy.ts` **withholds the refreshed session cookie from the response of a Server Action request**, while still handing the refreshed value to that request's own code through `request.cookies.set()`, so `recordApplication` can verify its caller. The branch keys on the presence of Next's `next-action` request header, never on the route, so binding rule 6's mechanical guard is untouched: the proxy still cannot tell a protected path from a public one. This is the criterion the 25 weekly Adzuna calls actually rest on. **The trade is deliberate**: the browser keeps its stale cookie until its next ordinary request, which refreshes and persists as usual. That refresh reuses a token the action already rotated, which GoTrue accepts inside `refresh_token_reuse_interval` (10 seconds on this project, read from the running container). **Driven, and the first version of this measurement did not cover the case that matters** (found by the fresh model review on 2026-09-05): three applies about six seconds apart all sit INSIDE the reuse interval, and a pause before an ordinary navigation proves nothing about a second action, because the navigation persists a fresh cookie anyway. The shape that actually tests it is two applies **sixteen seconds apart with no request of any kind between them**. Driven: both applies succeeded, both rows landed, no message on either, and the navigation after returned 200 still signed in with a freshly rotated cookie. The token family was not revoked. Amends spec [0008](../0008-app-shell-and-navigation/index.md) AC-10 and spec [0001](../0001-stack-and-architecture/index.md) binding rule 6, both dated the same day."
+    },
+    {
+      "id": "0008/AC-10b",
+      "line": "0008/AC-10b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:62  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-10b**: **On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. The branch keys on Next's `next-action` request header, **never on the route**, so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination. The cost is that the browser keeps its stale cookie until its next ordinary request; GoTrue's `refresh_token_reuse_interval` covers the reuse, driven as two applies sixteen seconds apart with no request between them, which is the shape that leaves the interval; both succeeded and the session survived."
+    },
+    {
+      "id": "0004#follow-up:8",
+      "line": "0004#follow-up:8  FollowUp  accepted  specs/0004-test-foundation/index.md:172  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Driving a Server Action without a browser is deferred to feature 9, deliberately.** Spec 0001 names it as one of three must satisfy constraints on the test runner; this feature meets the other two (the local stack with the real policies, and the development only session mint). Recorded here so it is not rediscovered a third time: fetch the page, read the hidden fields React renders on the form (`$ACTION_REF_<n>`, `$ACTION_<n>:0` carrying the action id, `$ACTION_<n>:1` carrying the previous `useActionState` state, `$ACTION_KEY`), then post those plus the real form fields as multipart to the same route; a `303` carrying the session cookie means it ran. **`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside. See `test/integration/profile-form.test.ts`. The `Next-Action` header path is fiddlier and silently loses the form fields. Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel. Feature 9 owns proving it, and its done when clause in the scope now says so."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0001#binding-rules:32",
+      "line": "0001#binding-rules:32  Constraint  held  specs/0001-stack-and-architecture/index.md:143  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The branch keys on Next's `next-action` request header, never on the path, so the proxy still reads no session for a decision, still holds no list of routes, and still cannot tell a protected path from a public one."
+    },
+    {
+      "id": "0001#binding-rules:25",
+      "line": "0001#binding-rules:25  Constraint  accepted  specs/0001-stack-and-architecture/index.md:133  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**6. Authorisation is never decided in the proxy.** The proxy (`src/proxy.ts`, the file Next.js called `middleware.ts` before 16) refreshes the Supabase session cookie and does nothing else. The protected layout verifies the session, and every Server Action verifies its own caller independently. Row level security in Postgres is the guarantee behind both."
+    },
+    {
+      "id": "0009/AC-24",
+      "line": "0009/AC-24  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:163  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all."
+    },
+    {
+      "id": "0014#feature-design:28",
+      "line": "0014#feature-design:28  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:193  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The read only cookie adapter is a budget measure rather than a security one. It stops the action writing a refreshed session cookie, and the session still refreshes: `src/proxy.ts` does it on every request"
+    },
+    {
+      "id": "0014#follow-up:2",
+      "line": "0014#follow-up:2  FollowUp  accepted  specs/0014-apply-redirect-and-application-record/index.md:264  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Answered 2026-09-05 by `/debug`, and the answer is yes.** Driven against a real minted session whose `expires_at` was pushed two hours into the past: the default `next/headers` adapter refreshed and wrote `sb-127-auth-token`, while the read only adapter in the identical state wrote nothing and the apply still succeeded. So every link in AC-20's chain is now verified rather than inherited. **The same run also showed the chain was not the one that fired** (see AC-20a): the write that cost the call came from `src/proxy.ts`, one layer up, where the action could not defend against it."
+    },
+    {
+      "id": "0008#feature-design:4",
+      "line": "0008#feature-design:4  Constraint  held  specs/0008-app-shell-and-navigation/index.md:150  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The proxy writes no cookie **of its own** and holds no route knowledge. It cannot tell a protected path from a public one, which is what `src/proxy.test.ts` lines 49 to 70 assert and AC-9 keeps true. It has always passed the Supabase session cookie through on a refresh, which is its one job; AC-10b withholds even that from a Server Action response, keyed on request kind and never on route, so this invariant is untouched."
+    },
+    {
+      "id": "0008#decision:2",
+      "line": "0008#decision:2  Constraint  held  specs/0008-app-shell-and-navigation/index.md:91  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Three routes under `(app)`, a chrome only header primitive in `src/components/ui/` composed per page on both sides (revision 5), no mobile navigation machinery, one shared landing rule, the return path carried as a request header then a query parameter then a cookie written by the Server Action, and a small door route handler that lets `/` stay static while never inviting a signed in visitor to sign in."
+    },
+    {
+      "id": "0009/AC-14",
+      "line": "0009/AC-14  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:84  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24."
+    },
+    {
+      "id": "0014#decision:7",
+      "line": "0014#decision:7  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:69  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A cookie mutated during the action's request. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a."
+    },
+    {
+      "id": "0008#summary:2",
+      "line": "0008#summary:2  Feature  accepted  specs/0008-app-shell-and-navigation/index.md:18  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A deep link a visitor followed while signed out survives sign in and returns them to it, carried by a request header the proxy echoes on every request, then a query parameter, then a short lived cookie written by the Server Action that already sends the visitor to the provider."
+    },
+    {
+      "id": "0007/AC-4",
+      "line": "0007/AC-4  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\n  - **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`. Documented expected behaviour, not a misconfiguration.\n  - **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`"
+    },
+    {
+      "id": "0008/AC-8",
+      "line": "0008/AC-8  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:59  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`, so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434). It **overwrites** any header of that name arriving on the request, so a client supplied value cannot be trusted forward. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**, per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it. Omitting it falls through to the landing rule, which is the honest outcome. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy, so one number governs both."
+    },
+    {
+      "id": "0001",
+      "line": "0001  record  accepted  specs/0001-stack-and-architecture/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Stack and architecture for JobHunt"
+    },
+    {
+      "id": "0008",
+      "line": "0008  record  accepted  specs/0008-app-shell-and-navigation/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "App shell and navigation"
+    },
+    {
+      "id": "0008/AC-10",
+      "line": "0008/AC-10  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:61  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-10**: The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run."
+    },
+    {
+      "id": "0014#feature-design:36",
+      "line": "0014#feature-design:36  TestScenario  accepted  specs/0014-apply-redirect-and-application-record/index.md:206  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Expired session apply: an apply on a session whose access token has expired spends no Adzuna call, which is the one a fresh session measurement misses entirely, verifies **AC-10**, **AC-20a**. **Drive it from a real browser and make the action `POST` the first request after expiry**"
+    },
+    {
+      "id": "0014/AC-20",
+      "line": "0014/AC-20  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:50  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-20**: The apply action builds its Supabase client with a **read only cookie adapter**, so nothing inside it can write a session cookie. **This criterion is defence in depth, and it is NOT what makes AC-10 hold for an expired session** (corrected 2026-09-05, revision 4; the original wording said it was). Measured: with the adapter in place and unchanged, an expired session apply still spent a call, because the write came from `src/proxy.ts`, which runs on the action `POST` too. What actually makes AC-10 hold for an expired session is **AC-20a**."
+    },
+    {
+      "id": "feature-12#12-apply-redirect-application-record-done:16",
+      "line": "feature-12#12-apply-redirect-application-record-done:16  BuildStep  accepted  scope/scope.md:254  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Close out · **done 2026-09-05, and the half that was open turned out to be a real bug rather than a missing measurement**. Done earlier that day: the four spans registered in `spans.md`, and the entry page claim moved from `planned` to `working`. Fixed by `/debug`, locked by proxy-action-refresh.test.ts which was proved to fail without the fix, recorded by `/architect` as spec 0014 **AC-20a**, spec 0008 **AC-10b** and a third item on spec 0001's binding rule 6, then re-measured end to end: counter flat across an expired session apply, row landed, no `x-action-revalidated`. The stale build case (AC-21) was measured the same way and passes (AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+    },
+    {
+      "id": "0004#follow-up:7",
+      "line": "0004#follow-up:7  FollowUp  accepted  specs/0004-test-foundation/index.md:172  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Done on 2026 09 02**: spec 0001's third runner constraint is met, by `test/integration/profile-form.test.ts` (spec 0010, AC-14)."
+    },
+    {
+      "id": "0008#build-plan:3",
+      "line": "0008#build-plan:3  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:200  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`src/lib/return-path.ts`: the header name, the cookie name and the length cap as exported constants, plus one Zod schema with the rules of AC-12, and unit tests naming each hostile string, satisfies **AC-12**, **AC-5b**"
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "0008/AC-12",
+      "line": "0008/AC-12  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:65  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: One Zod schema validates the return path, and it is parsed at all three boundaries it crosses: the `next` query parameter on `/sign-in`, the hidden form field reaching the Server Action, and the cookie read by the callback. It accepts only a safe single leading slash path. It rejects a protocol relative `//`, a backslash, a scheme, control characters, and any value over **2048 characters** (the shared cap of AC-8). It rejects `/sign-in`, `/auth/callback` and `/go` as return targets: `/sign-in` and `/auth/callback` would loop, and `/go` would not loop but would resolve straight back to the landing rule, making the deep link a no op that looks honoured. It keeps the query string and drops the fragment, which is a property of the validator in isolation, since a browser never sends the fragment and the value can now also arrive typed into `?next=`. A rejected value falls back to the landing rule. A unit test names each hostile string, including one that is harmless before percent decoding and hostile after."
+    },
+    {
+      "id": "0008/AC-5",
+      "line": "0008/AC-5  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:41  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides."
+    },
+    {
+      "id": "0008/AC-6",
+      "line": "0008/AC-6  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:53  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes."
+    },
+    {
+      "id": "0008/AC-7",
+      "line": "0008/AC-7  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:54  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed."
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:15",
+      "line": "feature-32#32-app-shell-navigation-done:15  BuildStep  accepted  scope/scope.md:169  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it · **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. Starts by proving the one mechanic the spec marks inferred rather than verified."
+    },
+    {
+      "id": "0001#binding-rules:28",
+      "line": "0001#binding-rules:28  Constraint  held  specs/0001-stack-and-architecture/index.md:139  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The proxy also echoes the requested path as a request header, on every request, unconditionally, using the `{ request: { headers } }` form so the value travels upstream only. This is wording, not substance, and the distinction is load bearing: the proxy still reads no session, still holds no list of routes, and still cannot tell a protected path from a public one."
+    },
+    {
+      "id": "0001#binding-rules:31",
+      "line": "0001#binding-rules:31  Constraint  held  specs/0001-stack-and-architecture/index.md:143  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "On a Server Action request the proxy hands the refreshed cookie to that request's own code and **withholds it from the response**."
+    },
+    {
+      "id": "0007#decision:3",
+      "line": "0007#decision:3  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:49  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "a single route handler at `src/app/auth/callback/route.ts` exchanging the returned code for a session"
+    },
+    {
+      "id": "0008#consequences:20",
+      "line": "0008#consequences:20  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:243  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Spec 0001, binding rule 6**: \"refreshes the Supabase session cookie and does nothing else\". The closed enumeration widens to include echoing the requested path as a request header. The no authorisation half and both tests are untouched."
+    },
+    {
+      "id": "0008#consequences:8",
+      "line": "0008#consequences:8  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:228  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The proxy takes on a second job (echoing the requested path as a header). Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it (see Follow-up). Its substance and both its tests survive unchanged"
+    },
+    {
+      "id": "0014/AC-19",
+      "line": "0014/AC-19  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:49  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-19**: Both write paths verify their own caller independently of the protected layout that rendered the form (spec 0001, binding rule 6), and row level security remains the real guarantee behind both."
+    },
+    {
+      "id": "0009#build-plan:10",
+      "line": "0009#build-plan:10  BuildStep  held  specs/0009-terms-and-privacy-notices/index.md:488  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**7b.** Build the `CookieDisclosure` registry, then replace 7a's hand written array with `COOKIES` rendered FROM the registry the same way `RECIPIENTS_INTRO`'s list renders from `DATA_RECIPIENTS` (invariant 1's shape, extended to cookies), then add the primary integration level `Set-Cookie` assertion and the secondary source scan guard, satisfies **AC-24** and closes the two-lists gap 7a's stopgap otherwise leaves open."
+    },
+    {
+      "id": "0009#feature-design:27",
+      "line": "0009#feature-design:27  TestScenario  held  specs/0009-terms-and-privacy-notices/index.md:437  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cookie drift, real response (added 2026-09-18, revised after cross check): the integration suite drives sign in start, the callback, and an ordinary signed in navigation as three separate steps, and asserts each step's own `Set-Cookie` names against the registry, verifies **AC-24**."
+    },
+    {
+      "id": "0009#feature-design:28",
+      "line": "0009#feature-design:28  TestScenario  held  specs/0009-terms-and-privacy-notices/index.md:442  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cookie drift, source scan (secondary net): a new cookie setting call site under `src/` with no matching registry entry fails the unit suite, and a registry entry naming a call site that no longer exists also fails. A known non cookie in source text (an in memory jar, a deliberate no-op adapter) is explicitly excluded rather than silently matched, verifies **AC-24**."
+    },
+    {
+      "id": "0009/AC-23",
+      "line": "0009/AC-23  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:144  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-23**: The stored field list is rendered from a typed field registry, and a test fails when `src/lib/supabase/database.types.ts`, which is generated from the applied schema, shows a column in a personal data table that no registry entry names. A migration that adds a column the notice does not mention fails the suite rather than quietly making the notice incomplete."
+    },
+    {
+      "id": "0009/AC-5",
+      "line": "0009/AC-5  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:60  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: Adding a key to `src/env.ts` that no registry entry accounts for fails the unit suite."
+    },
+    {
+      "id": "0014#follow-up:1",
+      "line": "0014#follow-up:1  FollowUp  accepted  specs/0014-apply-redirect-and-application-record/index.md:264  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Settle the one claim this spec inferred rather than verified.** AC-20's read only adapter is built on the reasoning that `getClaims()` can refresh an expired access token and persist new cookies through `setAll`."
+    },
+    {
+      "id": "0009#build-plan:2",
+      "line": "0009#build-plan:2  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:460  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Create the two typed registries (recipients, with today's five entries; stored fields, covering the six tables plus the identity fields) and the effective date constant, plus the three guard tests: the recipient test binding to `src/env.ts`, the field test binding to `src/lib/supabase/database.types.ts`, and the absence test for analytics dependencies and third party script tags. Add the Sentry configuration regression test, satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:5",
+      "line": "0009#build-plan:5  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:471  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write the privacy notice's real content: the stored field list, the recipient list rendered from the registry, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, the rights and lawful basis, the Google disclosure, and the cookie line, satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:9",
+      "line": "0009#build-plan:9  BuildStep  held  specs/0009-terms-and-privacy-notices/index.md:484  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**7a.** Ship a corrected, hand written `COOKIES` array in `privacy-notice.tsx` promptly: disclose the Supabase session cookie, the PKCE verifier cookies, and `jobhunt_return_path` truthfully. This is an interim, manually verified fix, not yet enforced by a test, satisfies the corrected **AC-14** on its own. Ships first and alone."
+    },
+    {
+      "id": "0009#feature-design:26",
+      "line": "0009#feature-design:26  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:435  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Tracking drift: adding an analytics dependency or a third party script tag fails the unit suite, verifies **AC-14**."
+    },
+    {
+      "id": "0009#requirements:5",
+      "line": "0009#requirements:5  AcceptanceCriterion  accepted  STRUCK  specs/0009-terms-and-privacy-notices/index.md:84  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The privacy notice discloses the session cookie as strictly necessary to sign in, and states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so the claim cannot become false in silence."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:12  BuildStep  accepted  scope/scope.md:185  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test · **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:14  BuildStep  accepted  scope/scope.md:187  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies · **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0007#copy:5",
+      "line": "0007#copy:5  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:254  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**`COPY-4`'s \"Start again from here. An older tab or link won't work.\" is the AC-4 fix in plain words, not politeness.** The clause is load bearing and must not be trimmed for brevity."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:12  BuildStep  accepted  scope/scope.md:139  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The thin thread, Google only, proved on a preview: both provider stanzas in `config.toml` with the local redirect URLs corrected, `src/features/auth/` with `signInWithGoogle()` and the `/auth/callback` route handler, `/sign-in` rebuilt as a real page with the five member error enum, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18 · **done 2026-08-30**"
+    },
+    {
+      "id": "scope#resolved:2",
+      "line": "scope#resolved:2  Consequence  accepted  scope/scope.md:522  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**What it fixed**: the product now serves from a domain it owns, and that redirect is what spec 0007 **AC-4** leans on to stop a sign in being started on a hostname the callback never returns to."
+    },
+    {
+      "id": "0008#build-plan:4",
+      "line": "0008#build-plan:4  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:201  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The proxy sets the pathname header, unconditionally, using the `{ request: { headers } }` form, re-deriving `new Headers(request.headers)` immediately before **each** `NextResponse.next()` call including the one inside `setAll` and after its cookie loop, omitting the header when over the shared cap, with the binding rule 6 comment widened to name the new job, satisfies **AC-8**, **AC-10**, and keeps **AC-9** true"
+    },
+    {
+      "id": "0002#follow-up:6",
+      "line": "0002#follow-up:6  FollowUp  held  specs/0002-deployment-and-environments/index.md:307  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Confirm Sentry's current surface for quota notifications** when wiring AC-15. Spec 0001 already carries the same caution about the failure rate alert surface; both are worth doing in one sitting with the `sentry-sdk-setup` skill open."
+    },
+    {
+      "id": "0004#decision:15",
+      "line": "0004#decision:15  FollowUp  held  specs/0004-test-foundation/index.md:52  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Driving a Server Action without a browser**: deferred to feature 9, deliberately and named rather than dropped. Spec 0001 makes it one of three must satisfy constraints on the runner and this feature meets the other two. See the Follow-up, which records both the reasoning and the technique."
+    },
+    {
+      "id": "0004#summary:2",
+      "line": "0004#summary:2  Constraint  held  specs/0004-test-foundation/index.md:8  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "It decides the test runner (Vitest) that spec 0001 deliberately left open, and replaces the seeded fixture users with valid identifiers."
+    },
+    {
+      "id": "0004/AC-1",
+      "line": "0004/AC-1  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:19  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: A test can sign in as fixture user A, write data, switch to fixture user B, and prove B cannot read A's data. The write goes through the request scoped client, not through a Server Action; driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up."
+    },
+    {
+      "id": "0007#consequences:18",
+      "line": "0007#consequences:18  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:321  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "spec 0001's file tree lists `browser.ts`;"
+    },
+    {
+      "id": "0008#copy:7",
+      "line": "0008#copy:7  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:190  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Silent degradation: the proxy runs through a session refresh that writes cookies, and the pathname header is still present on the returned response, verifies **AC-10**"
+    },
+    {
+      "id": "0008/AC-10a",
+      "line": "0008/AC-10a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:63  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10a**: The test for AC-10 asserts **both** halves after a refresh: the pathname header is present, and the forwarded request carries the refreshed session cookie. A test asserting only the pathname passes while the second bug ships, which is the whole reason this criterion is split out. The vehicle is whichever suite can drive a real refresh: `src/proxy.test.ts` records that its unit half works only because `getClaims()` returns early with no session, so this likely belongs in `test/integration/`. A mock whose `setAll` merely rebuilds the response would encode the same assumption as the code under test and is forbidden by AGENTS.md."
+    },
+    {
+      "id": "0008/AC-15a",
+      "line": "0008/AC-15a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:70  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15a**: `completeSignIn()` returns the resolved claims alongside `{ signedIn: true }`, and the callback passes them into the landing rule rather than building a second Supabase client to re-read them. It also means the session is read once per callback rather than twice."
+    },
+    {
+      "id": "0011#consequences:2",
+      "line": "0011#consequences:2  Consequence  accepted  specs/0011-usage-gating-and-kill-switch/index.md:187  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "This project's first failure rate alert exists and is proven to fire, not just written down, closing the exact gap spec 0001 named this feature to close."
+    },
+    {
+      "id": "0011#context:2",
+      "line": "0011#context:2  Feature  accepted  specs/0011-usage-gating-and-kill-switch/index.md:16  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "This spec's job is everything downstream of that: the per call budget check, and the observability that proves a total failure of either mechanism is seen rather than silently endured."
+    },
+    {
+      "id": "0011#options-considered:12",
+      "line": "0011#options-considered:12  Consequence  accepted  specs/0011-usage-gating-and-kill-switch/index.md:75  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Not atomic. Two concurrent requests can both read the same pre increment count, both decide they are under the cap, and both write, letting one over budget call through, which directly violates spec 0001's own binding rule that atomic work is one statement in the database, naming this exact gate as the reason the rule exists."
+    },
+    {
+      "id": "0012#consequences:11",
+      "line": "0012#consequences:11  Consequence  accepted  specs/0012-model-client-router/index.md:105  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`gpt-5.6-luna` is an alias, not a pinned snapshot, the same shape of risk `claude-haiku-4-5` carried in this spec's original vendor pick. OpenAI can repoint it to a newer Luna build without a commit here, which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git; see Follow-up for the concrete trigger to revisit it."
+    },
+    {
+      "id": "0012#decision:2",
+      "line": "0012#decision:2  Constraint  accepted  specs/0012-model-client-router/index.md:35  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Implementation skills**: `ai-sdk` (Vercel's official plugin skill, invoke via `Skill(vercel:ai-sdk)`, no `.agents/skills/` clone). Its default push toward routing every call through the Vercel AI Gateway is overridden here on purpose: spec 0001 already bound this project to direct provider packages, one key per vendor"
+    },
+    {
+      "id": "0014#build-plan:6",
+      "line": "0014#build-plan:6  BuildStep  accepted  specs/0014-apply-redirect-and-application-record/index.md:223  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The thin end to end thread: `listingSnapshotSchema`, `recordApplication` in `src/features/applications/actions.ts` opening `application.record` as its first statement, with its caller check on the read only cookie adapter, the re-parse and the insert; the inline per card closure that reaches it; the `ApplyControl` Client Component and the feature's own three state `ActionState`; and a minimal `/applications` list opening `application.read_list`. Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-19**, **AC-20**."
+    },
+    {
+      "id": "0014/AC-10",
+      "line": "0014/AC-10  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:40  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: Marking applied does not re-render `/search`. No second Adzuna call is made, no `job_search` gate check is spent, and the weekly counter does not move. This holds for a fresh session **and for a session whose access token has expired**, which is the case a single measurement misses. Measured against a production build (`pnpm build && pnpm start`), never under `pnpm dev`, for the reason spec 0013's AC-10 records."
+    },
+    {
+      "id": "0014/AC-12",
+      "line": "0014/AC-12  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:42  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: `job_description` holds the Adzuna description snippet the search already parsed, and the spec that describes that column as the full posting text is corrected in every place it says so."
+    },
+    {
+      "id": "0014/AC-14",
+      "line": "0014/AC-14  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:44  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14**: The four operations this feature adds each open a named span as their first statement, at the moment the operation is first written rather than in a later pass, and are registered in [spans.md](../../observability/spans.md) with `op: \"db.query\"`: `application.record`, `application.remove`, `application.read_list`, and `search.read_applied`."
+    },
+    {
+      "id": "0014/AC-16",
+      "line": "0014/AC-16  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:46  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-16**: The entry page's \"What's real today\" card moves `application tracking` out of `planned` and into `working` (spec 0006, **AC-8**), and the `planned` list no longer names it."
+    },
+    {
+      "id": "0014/AC-21",
+      "line": "0014/AC-21  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:52  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-21**: An apply attempted against a stale build fails visibly, carrying `COPY-7`. The encryption key protecting the bound listing is regenerated on every build, so any results page left open across a deploy has an apply control the framework refuses. **The refusal happens before any of this feature's server code runs, so it is caught in the client control around the call, never in `recordApplication`** (corrected 2026-09-05, see `## Consequences`). **It costs the reader nothing** (settled 2026-09-05, revision 4). An earlier draft recorded a refused dispatch re-rendering `/search` and spending one of the 25 weekly Adzuna calls. That came from a hand built `POST`, the no JavaScript shape, and it does not carry over: driven from a real browser against a genuinely stale build, the dispatch answers `404`, runs none of this feature's code, and moves no `job_search` counter."
+    },
+    {
+      "id": "feature-12#12-apply-redirect-application-record-done:13",
+      "line": "feature-12#12-apply-redirect-application-record-done:13  BuildStep  accepted  scope/scope.md:251  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The thin thread · done 2026-09-05, proved end to end against the real stack by 14 integration tests: one apply writes one row carrying all eleven snapshot fields, `profile_id` comes from verified claims, and the three timestamps come from the database. The encrypted closure was **confirmed in the served HTML of a production build**: neither `sourceJobId` nor `salaryIsPredicted` appears in plaintext, only a 1388 character ciphertext field (AC-1, AC-2, AC-3, AC-19, AC-20)"
+    },
+    {
+      "id": "scope#deferred:12",
+      "line": "scope#deferred:12  FollowUp  accepted  scope/scope.md:504  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Alert rule drift detection**: a scheduled diff between Sentry's live alert rules and the definitions in `docs/observability/`, so a rule that is edited or deleted in the Sentry interface is caught. Blocks nothing in v1; the forced failure smoke test in feature 10 is the load bearing half."
+    },
+    {
+      "id": "0007/AC-1",
+      "line": "0007/AC-1  AcceptanceCriterion  accepted  HISTORY  specs/0007-auth-and-per-user-isolation/index.md:22  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0008/AC-6"
+      ],
+      "hop": 2,
+      "text": "**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session."
+    },
+    {
+      "id": "0008#build-plan:12",
+      "line": "0008#build-plan:12  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:209  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The chrome only header primitive in `src/components/ui/`, holding no routing logic; each marketing page composing the signed out variant itself with its own navigation content, and **each route under `(app)` composing the signed in one itself, passing its own `current`**; `EntryHeader` folded in, sign out wired to the existing action with `COPY-7`, satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**"
+    },
+    {
+      "id": "0008#build-plan:13",
+      "line": "0008#build-plan:13  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:210  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The three routes under `(app)` with their copy slots, the nav rendering only Search and Profile and marking the current one with `aria-current=\"page\"`, and the `/profile` link to `/applications`, satisfies **AC-1**, **AC-2**, **AC-5**"
+    },
+    {
+      "id": "0008#copy:5",
+      "line": "0008#copy:5  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:188  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a signed out visitor deep links to `/search?q=react`, signs in, and lands on `/search?q=react`; a second user with a profile row and no deep link lands on `/search`; a third with no profile row lands on `/profile`, verifies **AC-6**, **AC-16**"
+    },
+    {
+      "id": "0008#copy:6",
+      "line": "0008#copy:6  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:189  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: the return value is `//evil.com`, `/\\evil.com`, a scheme, an embedded tab, a value over the length cap, `/auth/callback`, and a percent encoded value that decodes to `//evil.com`; every one falls back to the landing rule and the cookie is cleared, verifies **AC-12**, **AC-15**"
+    },
+    {
+      "id": "0008/AC-11",
+      "line": "0008/AC-11  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:64  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The `(app)` layout, at the moment it redirects an unauthenticated visitor, reads the header through `headers()` and appends the value as a `next` query parameter on `/sign-in`, percent encoded so a nested query string survives intact. When the header is absent it redirects to a bare `/sign-in` and nothing fails."
+    },
+    {
+      "id": "0008/AC-16",
+      "line": "0008/AC-16  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:71  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-16**: Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply."
+    },
+    {
+      "id": "0008/AC-24a",
+      "line": "0008/AC-24a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:87  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-24a**: Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing, so a call inside either records the operation as having failed when it succeeded. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48; this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec."
+    },
+    {
+      "id": "0008/AC-3a",
+      "line": "0008/AC-3a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3a**: **Composition is per page on both sides, and the reason is a constraint rather than a preference.** The **signed in** variant is composed by **each route under `(app)`**, which passes its own `current` value. Not by the `(app)` layout, because AC-5 requires the current route to arrive as a prop rather than be computed, and a layout never learns the pathname (`layout.md` lines 238 to 242), so a layout composed header could never be told which page it is on. Four call sites, one line each. The **signed out** variant is composed by **each marketing page** rather than by a marketing layout, for the same pathname reason plus AC-5a, which needs the navigation content itself to differ per page. Reading the pathname in a client component to work around either case would put client JavaScript on `/sign-in`, whose own contract forbids it. `/` already composes its header this way today, so that side is the existing shape kept rather than a new one. A layout on either side may still exist for other shared chrome, but **it must not render the header**. The `(app)` layout keeps its session check and nothing else of the shell."
+    },
+    {
+      "id": "0008/AC-5a",
+      "line": "0008/AC-5a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:42  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5a**: The marketing navigation varies by page. `EntryHeader`'s in page anchors (`#how-it-works`, `#reasoning`, `#about`) render **only on `/`**, because no other marketing route has those sections and a link that cannot work is forbidden by `src/features/entry-page/AGENTS.md`. `/sign-in` and `/ui-preview` render the header with an empty navigation slot. Observably: no marketing page renders an anchor whose target is not on that page."
+    },
+    {
+      "id": "0008/AC-7a",
+      "line": "0008/AC-7a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:55  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7a**: A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported."
+    },
+    {
+      "id": "0008/AC-9",
+      "line": "0008/AC-9  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:60  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: The two existing assertions in `src/proxy.test.ts` pass **unmodified**: that the proxy treats a protected route exactly as it treats a public one (lines 49 to 62), and that it sets no cookies (lines 64 to 70)."
+    },
+    {
+      "id": "0015/AC-7",
+      "line": "0015/AC-7  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: A profile with zero `profile_skill` rows and zero `work_experience` rows is never scored. `/search` renders its plain, unscored result list (today's shape) plus a visible line linking to `/profile` to add skills or experience (`COPY-5`), and no `ai_scoring` call is made for any listing on that render. A profile with either skills or work history, even if the other is empty, is scored normally. This gate layers onto spec 0008's AC-6 landing rule without replacing it: a thin profile still lands on `/search`."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8  Constraint  accepted  scope/scope.md:282  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**The scoring gate layers onto the landing rule's callers, it does not replace the rule.** Spec 0008 AC-6 decides where a visitor lands after sign in, and its invariant says the rule reads profile row existence only, never profile sufficiency. Whatever gate this feature adds for a profile too thin to score against belongs at the callers of that rule"
+    },
+    {
+      "id": "0009#feature-design:23",
+      "line": "0009#feature-design:23  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:429  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Drift: adding a key to `src/env.ts` with no matching registry entry fails the unit suite, and removing the assertion is checked to fail the test, so it is not vacuous, verifies **AC-5**."
+    },
+    {
+      "id": "0009#feature-design:25",
+      "line": "0009#feature-design:25  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:433  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Schema drift: adding a column to a personal data table without naming it in the field registry fails the unit suite, verifies **AC-23**."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0004#summary:2",
+      "phrase": "the test runner (Vitest) that spec 0001 deliberately left open",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0007#consequences:18",
+      "phrase": "They are amended alongside this spec",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0001#binding-rules:28",
+      "phrase": "**One, \"and does nothing else\" widened by one job.**",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0001#binding-rules:31",
+      "phrase": "\"Refreshes the Supabase session cookie\" now carries one exception about where the refresh lands.",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008#consequences:20",
+      "phrase": "The closed enumeration widens to include echoing the requested path as a request header.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008#consequences:8",
+      "phrase": "Binding rule 6's wording must widen, and spec 0001 needs a dated amendment for it",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008/AC-10b",
+      "phrase": "Spec 0001's binding rule 6 amendment gains a third item, dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0014/AC-20a",
+      "phrase": "Amends spec 0008 AC-10 and spec 0001 binding rule 6, both dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "**The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix and amends specs 0008 and 0001",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0008/AC-10a",
+      "phrase": "AC-10 and AC-10a (the request headers must be re-derived before each `NextResponse.next()`, not hoisted, or the refreshed session cookie is lost instead of the pathname)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0008/AC-10b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0014/AC-20a",
+      "phrase": "Amends spec 0008 AC-10 and spec 0001 binding rule 6, both dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-3a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5a",
+      "phrase": "AC-5a (the marketing navigation varies by page, so `/sign-in` ships no dead anchors)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5b",
+      "phrase": "AC-5b naming `src/lib/return-path.ts` and `src/lib/landing-rule.ts` with the header and cookie strings fixed",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-7",
+      "target": "0008/AC-7a",
+      "phrase": "AC-7a (a genuine query error is still a failure, since AC-7's ban on `failure()` had over corrected against binding rule 5)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0009#requirements:5",
+      "target": "0009/AC-14",
+      "phrase": "**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0014/AC-20",
+      "target": "0014/AC-20a",
+      "phrase": "New **AC-20a** records the fix",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0009/AC-14",
+      "target": "0009/AC-14",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-3a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:13",
+      "target": "0008/AC-5",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-5**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-12",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:4",
+      "target": "0008/AC-10",
+      "phrase": "satisfies **AC-8**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:4",
+      "target": "0008/AC-8",
+      "phrase": "satisfies **AC-8**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:4",
+      "target": "0008/AC-9",
+      "phrase": "keeps **AC-9** true",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-6",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:10",
+      "target": "0009/AC-24",
+      "phrase": "satisfies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-23",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:9",
+      "target": "0009/AC-14",
+      "phrase": "satisfies the corrected **AC-14** on its own",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0014#build-plan:6",
+      "target": "0014/AC-19",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0014#build-plan:6",
+      "target": "0014/AC-20",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:13",
+      "target": "0014/AC-19",
+      "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:13",
+      "target": "0014/AC-20",
+      "phrase": "(AC-1, AC-2, AC-3, AC-19, AC-20)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-10",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-12",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-14",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-16",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-20a",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-21",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-14",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-23",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-5",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-14",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-11",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-16",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-24a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-5b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-6",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-8",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-9",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-4",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "AC-6 replaces it.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0002#follow-up:6",
+      "target": "0001",
+      "phrase": "Spec 0001 already carries the same caution about the failure rate alert surface",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004#decision:15",
+      "target": "0001",
+      "phrase": "Spec 0001 makes it one of three must satisfy constraints on the runner",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004#follow-up:8",
+      "target": "0004#follow-up:7",
+      "phrase": "**Done on 2026 09 02**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0004/AC-1",
+      "target": "0001",
+      "phrase": "driving one of those without a browser is spec 0001's third constraint and is deferred by name in the Follow-up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#copy:5",
+      "target": "0007/AC-4",
+      "phrase": "is the AC-4 fix in plain words",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#decision:3",
+      "target": "0001#binding-rules:25",
+      "phrase": "basis: spec 0001 binding rule 6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-10b",
+      "target": "0014/AC-20a",
+      "phrase": "Added 2026-09-05 by spec 0014 AC-20a",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-12",
+      "target": "0008/AC-8",
+      "phrase": "the shared cap of AC-8",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-15a",
+      "target": "0008/AC-10",
+      "phrase": "the same snapshot question AC-10 exists for",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5",
+      "phrase": "because AC-5 requires the current route to arrive as a prop rather than be computed",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5a",
+      "phrase": "plus AC-5a, which needs the navigation content itself to differ per page",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-12",
+      "phrase": "the AC-12 Zod schema",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-6",
+      "phrase": "exports the one function of AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-7",
+      "phrase": "The existence read of AC-7 is a new named export",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-8",
+      "target": "0008/AC-12",
+      "phrase": "a valid looking wrong destination that AC-12 would accept",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0008/AC-5b",
+      "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0009/AC-24",
+      "phrase": "the cookie half now has its own guard, AC-24",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-23",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-5",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011#consequences:2",
+      "target": "0001",
+      "phrase": "closing the exact gap spec 0001 named this feature to close",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011#context:2",
+      "target": "0001",
+      "phrase": "Spec 0001's own error model names this feature by number as the place its first alert rule gets built",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011#options-considered:12",
+      "target": "0001",
+      "phrase": "directly violates spec 0001's own binding rule that atomic work is one statement in the database",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0012#consequences:11",
+      "target": "0001",
+      "phrase": "which sits in tension with spec 0001's own stated goal that what is deployed always matches what is in git",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0012#decision:2",
+      "target": "0001",
+      "phrase": "spec 0001 already bound this project to direct provider packages, one key per vendor",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#decision:7",
+      "target": "0014/AC-20",
+      "phrase": "prevented by AC-20's read only adapter",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#decision:7",
+      "target": "0014/AC-20a",
+      "phrase": "Prevented by AC-20a.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#follow-up:1",
+      "target": "0014#follow-up:2",
+      "phrase": "**Answered 2026-09-05 by `/debug`, and the answer is yes.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-19",
+      "target": "0001#binding-rules:25",
+      "phrase": "(spec 0001, binding rule 6)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-20",
+      "target": "0014/AC-10",
+      "phrase": "it is NOT what makes AC-10 hold for an expired session",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-20",
+      "target": "0014/AC-20a",
+      "phrase": "What actually makes AC-10 hold for an expired session is **AC-20a**.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-7",
+      "target": "0008/AC-6",
+      "phrase": "This gate layers onto spec 0008's AC-6 landing rule without replacing it",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8",
+      "target": "0008/AC-6",
+      "phrase": "Spec 0008 AC-6 decides where a visitor lands after sign in",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:12",
+      "target": "0001",
+      "phrase": "`from spec 0001`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#resolved:2",
+      "target": "0007/AC-4",
+      "phrase": "that redirect is what spec 0007 **AC-4** leans on",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:5",
+      "target": "0008/AC-16",
+      "phrase": "verifies **AC-6**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:5",
+      "target": "0008/AC-6",
+      "phrase": "verifies **AC-6**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:6",
+      "target": "0008/AC-12",
+      "phrase": "verifies **AC-12**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:7",
+      "target": "0008/AC-10",
+      "phrase": "verifies **AC-10**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:23",
+      "target": "0009/AC-5",
+      "phrase": "verifies **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:25",
+      "target": "0009/AC-23",
+      "phrase": "verifies **AC-23**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:26",
+      "target": "0009/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:27",
+      "target": "0009/AC-24",
+      "phrase": "verifies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:28",
+      "target": "0009/AC-24",
+      "phrase": "verifies **AC-24**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0014#feature-design:36",
+      "target": "0014/AC-10",
+      "phrase": "verifies **AC-10**, **AC-20a**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0014#feature-design:36",
+      "target": "0014/AC-20a",
+      "phrase": "verifies **AC-10**, **AC-20a**",
+      "held": false
+    }
+  ],
+  "cut": 19,
+  "counted_input_tokens": 24084,
+  "bound_usd": 0.208168,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"The proxy withholds the refreshed session cookie from a Server Action response but still hands it to that request's own code, so `recordApplication` can verify its caller.\",\"cites\":[\"0014/AC-20a\",\"0008/AC-10b\"],\"basis\":\"text\"},{\"text\":\"The reason for the difference is cost: the proxy also runs on the action POST and refreshed the session there, which the action could not defend against from inside itself. That write spent an Adzuna call, and AC-20a is what keeps the 25 weekly calls safe.\",\"cites\":[\"0014#decision:7\",\"0014/AC-20a\",\"0014/AC-20\"],\"basis\":\"text\"},{\"text\":\"The read only cookie adapter in the action (AC-20) is defence in depth only. It did not stop the expired-session call being spent, because the write came from the proxy.\",\"cites\":[\"0014/AC-20\",\"0014#follow-up:2\"],\"basis\":\"text\"},{\"text\":\"The trade is deliberate: the browser keeps a stale cookie until its next ordinary request. GoTrue's refresh_token_reuse_interval covers the reuse, and two applies sixteen seconds apart with no request between them both succeeded without revoking the token family.\",\"cites\":[\"0014/AC-20a\",\"0008/AC-10b\"],\"basis\":\"text\"},{\"text\":\"It detects a Server Action by the `next-action` header and never by route so the proxy still cannot tell a protected path from a public one. The branch is on request kind, not destination, which leaves AC-9's guard untouched.\",\"cites\":[\"0014/AC-20a\",\"0008/AC-10b\",\"0001#binding-rules:32\"],\"basis\":\"text\"},{\"text\":\"Binding rule 6 says authorisation is never decided in the proxy and that every Server Action verifies its own caller. This is why the action still needs the refreshed cookie handed to it.\",\"cites\":[\"0001#binding-rules:25\",\"0014/AC-20a\"],\"basis\":\"text\"}],\"missing\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [],
+  "claims": [
+    {
+      "text": "The proxy withholds the refreshed session cookie from a Server Action response but still hands it to that request's own code, so `recordApplication` can verify its caller.",
+      "cites": [
+        "0014/AC-20a",
+        "0008/AC-10b"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The reason for the difference is cost: the proxy also runs on the action POST and refreshed the session there, which the action could not defend against from inside itself. That write spent an Adzuna call, and AC-20a is what keeps the 25 weekly calls safe.",
+      "cites": [
+        "0014#decision:7",
+        "0014/AC-20a",
+        "0014/AC-20"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The read only cookie adapter in the action (AC-20) is defence in depth only. It did not stop the expired-session call being spent, because the write came from the proxy.",
+      "cites": [
+        "0014/AC-20",
+        "0014#follow-up:2"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The trade is deliberate: the browser keeps a stale cookie until its next ordinary request. GoTrue's refresh_token_reuse_interval covers the reuse, and two applies sixteen seconds apart with no request between them both succeeded without revoking the token family.",
+      "cites": [
+        "0014/AC-20a",
+        "0008/AC-10b"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "It detects a Server Action by the `next-action` header and never by route so the proxy still cannot tell a protected path from a public one. The branch is on request kind, not destination, which leaves AC-9's guard untouched.",
+      "cites": [
+        "0014/AC-20a",
+        "0008/AC-10b",
+        "0001#binding-rules:32"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0001#binding-rules:32"
+      ]
+    },
+    {
+      "text": "Binding rule 6 says authorisation is never decided in the proxy and that every Server Action verifies its own caller. This is why the action still needs the refreshed cookie handed to it.",
+      "cites": [
+        "0001#binding-rules:25",
+        "0014/AC-20a"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 24084,
+    "output_tokens": 660,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.054768,
+  "recorded_usd": 0.054768
+}

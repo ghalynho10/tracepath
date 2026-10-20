@@ -1,0 +1,1087 @@
+{
+  "asked_at": "2026-10-20T17:37:02+00:00",
+  "question": "Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 5,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "feature",
+    "21",
+    "terms",
+    "privacy",
+    "notices",
+    "built",
+    "foundation",
+    "immediately",
+    "after",
+    "32",
+    "originally",
+    "scoped",
+    "into",
+    "slice",
+    "5",
+    "launch",
+    "readiness",
+    "work"
+  ],
+  "items": [
+    {
+      "id": "0007#consequences:11",
+      "line": "0007#consequences:11  Consequence  accepted  specs/0007-auth-and-per-user-isolation/index.md:313  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \"over the entire lifetime of the app\", so it never goes back down. Confirmed not to block feature 7: Branding flags no field, Verification status says verification is not required in Testing, and a real sign in completed. **Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:5",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:5  unclassified  held  scope/scope.md:179  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Moved here from Slice 5 on 2026-08-31, to build after feature 32."
+    },
+    {
+      "id": "0007#follow-up:12",
+      "line": "0007#follow-up:12  FollowUp  held  specs/0007-auth-and-per-user-isolation/index.md:336  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 21's row now carries the dependency in both directions, including the domain constraint (Google will not accept a `vercel.app` address, so the pages must be served from `usejobhunt.dev`) and what feature 7 puts into `auth.users` that the notice must describe. It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32"
+    },
+    {
+      "id": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "line": "unresolved:0007:feature-21-terms-and-privacy-notices  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:296  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "feature 21 (Terms and privacy notices)"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:15  BuildStep  accepted  scope/scope.md:188  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The terms content and effective dates, then the mail delivery check and the Google console work: authorized domain, both URLs, publish out of Testing, submit brand verification · **AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:7",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:7  Constraint  accepted  scope/scope.md:180  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "the privacy notice must describe what arrives from the provider into `auth.users`, meaning the email address, the display name and the avatar URL."
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:1",
+      "line": "feature-5#5-design-system-ui-foundation-done:1  Feature  accepted  scope/scope.md:105  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Port the locked visual decisions (seven token palette, finalized logo, Space Grotesk and JetBrains Mono typography) into a real token layer and a set of base components. These are inherited decisions, not open questions. Sets the responsive posture and the accessibility floor for every screen built after this."
+    },
+    {
+      "id": "0007#follow-up:10",
+      "line": "0007#follow-up:10  FollowUp  accepted  specs/0007-auth-and-per-user-isolation/index.md:335  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`. That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one."
+    },
+    {
+      "id": "scope#resolved:4",
+      "line": "scope#resolved:4  Consequence  accepted  scope/scope.md:526  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Closed on 2026-09-01 by feature 21**, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \"to continue to JobHunt\"."
+    },
+    {
+      "id": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "line": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:324  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "feature 21 supplying a privacy policy and terms"
+    },
+    {
+      "id": "feature-21",
+      "line": "feature-21  record  accepted  scope/scope.md  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Terms & privacy notices"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:1  Feature  accepted  scope/scope.md:177  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A plain terms page and a privacy notice saying what is stored, why, and how to have it deleted. Owed the day the first person other than the author signs in. Written against the actual data model rather than from a template."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:10",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:10  BuildStep  accepted  scope/scope.md:183  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Design it (spec): `/architect terms & privacy notices` · written 2026-09-01, 23 acceptance criteria."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:11",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:11  BuildStep  accepted  scope/scope.md:184  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Build it: `/develop terms & privacy notices`"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:12  BuildStep  accepted  scope/scope.md:185  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test · **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:13  BuildStep  accepted  scope/scope.md:186  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The two routes under `(marketing)`, indexable, with their own metadata, linked from the entry page footer's reserved slot and from a static line under the provider forms on `/sign-in` · **AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**."
+    },
+    {
+      "id": "0007#follow-up:11",
+      "line": "0007#follow-up:11  FollowUp  held  specs/0007-auth-and-per-user-isolation/index.md:336  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Feature 21 and feature 7 depend on each other and neither scope row says so.** Feature 21 unblocks Google's Publish app, which lifts the lifetime 100 user cap; feature 7 is what makes those notices load bearing rather than paperwork. Recording it on feature 21's row is a `/scope` edit."
+    },
+    {
+      "id": "0009/AC-15",
+      "line": "0009/AC-15  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:109  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: The terms page states what the service is, that it is free with no guarantee of availability, and that it may change or stop. Four clauses are settled here rather than left to the build: - **Acceptable use**: no automated scraping of the service, no using it to apply on another person's behalf, and no attempt to reach another user's data. Breaking these is what \"removed for abuse\" means. - **Content ownership and licence**: the person keeps ownership of their profile and resume content. The licence granted is non exclusive, limited to operating the service for them, revoked when their data is deleted, and explicitly not sublicensable and not for training models. - **Warranty and liability**: the service is provided as is with no warranty, and liability is limited to the fullest extent the law allows. No cap figure is stated, because the service is free and there is no payment to anchor one against. - **How the terms change**: the published version is updated in place and the effective date bumped. There is no advance notice, which matches AC-16 and is the only mechanism this project can actually perform, having no email capability. It also states the governing law and venue: the laws of the State of Georgia, United States of America, with venue in the state and federal courts located in Georgia. The clause writes \"State of Georgia, United States of America\" in full rather than \"Georgia\", because Georgia is also a country and the readers this notice is written for are explicitly worldwide."
+    },
+    {
+      "id": "0009/AC-16",
+      "line": "0009/AC-16  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:130  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16**: Both pages carry an effective date, and state that continued use means accepting the version currently published."
+    },
+    {
+      "id": "0009/AC-21",
+      "line": "0009/AC-21  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:140  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-21**: In the Google Cloud console, `usejobhunt.dev` is added as an authorized domain, the privacy policy and terms fields hold the two live URLs, and the app is moved out of Testing."
+    },
+    {
+      "id": "0009/AC-22",
+      "line": "0009/AC-22  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:142  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-22**: Brand verification is submitted, so the consent screen names JobHunt rather than the Supabase host."
+    },
+    {
+      "id": "0009/AC-9",
+      "line": "0009/AC-9  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:68  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: The published address receives mail. Configured and verified by the engineer on 2026-09-01, before this spec was written, and re confirmed at verify time"
+    },
+    {
+      "id": "scope#resolved:3",
+      "line": "scope#resolved:3  Consequence  accepted  scope/scope.md:524  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**What it did not fix, and what since did**: Google's consent screen read the Supabase host, because that is the OAuth redirect host and the domain move did not touch it."
+    },
+    {
+      "id": "unresolved:scope:feature-21",
+      "line": "unresolved:scope:feature-21  unresolved  held  scope/scope.md:512  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 21"
+    },
+    {
+      "id": "unresolved:feature-21:feature-32",
+      "line": "unresolved:feature-21:feature-32  unresolved  accepted  scope/scope.md:176  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 32"
+    },
+    {
+      "id": "unresolved:feature-21:feature-7",
+      "line": "unresolved:feature-21:feature-7  unresolved  accepted  scope/scope.md:176  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 7"
+    },
+    {
+      "id": "0009/AC-14",
+      "line": "0009/AC-14  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:84  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24."
+    },
+    {
+      "id": "0009/AC-23",
+      "line": "0009/AC-23  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:144  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-23**: The stored field list is rendered from a typed field registry, and a test fails when `src/lib/supabase/database.types.ts`, which is generated from the applied schema, shows a column in a personal data table that no registry entry names. A migration that adds a column the notice does not mention fails the suite rather than quietly making the notice incomplete."
+    },
+    {
+      "id": "0009/AC-4",
+      "line": "0009/AC-4  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:57  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-4**: The notice states that Sentry receives no personal data, and that claim holds against the running configuration (`userInfo: false`, `httpBodies: []`, `cookies: false`). A change that made it false fails a test."
+    },
+    {
+      "id": "0009/AC-5",
+      "line": "0009/AC-5  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:60  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: Adding a key to `src/env.ts` that no registry entry accounts for fails the unit suite."
+    },
+    {
+      "id": "0009/AC-6",
+      "line": "0009/AC-6  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:61  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: Both pages render their recipient list from one typed registry module,"
+    },
+    {
+      "id": "0009/AC-1",
+      "line": "0009/AC-1  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:41  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1**: `/terms` and `/privacy` exist as routes in the `(marketing)` group. Each composes `EntryHeader` with `navigation=\"none\"` and `EntryFooter`, and each ships zero client JavaScript."
+    },
+    {
+      "id": "0009/AC-17",
+      "line": "0009/AC-17  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:132  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-17**: Both pages set their own `robots` metadata so they are indexable, and both existing robots assertions in `src/app/layout.test.ts` still pass unchanged."
+    },
+    {
+      "id": "0009/AC-18",
+      "line": "0009/AC-18  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:134  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-18**: The entry page footer's reserved centre slot links both pages."
+    },
+    {
+      "id": "0009/AC-19",
+      "line": "0009/AC-19  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:135  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-19**: `/sign-in` renders a static line under the two provider forms saying that continuing means agreeing to the Terms and the Privacy Notice, with both linked, and the page still ships zero client JavaScript."
+    },
+    {
+      "id": "0009/AC-20",
+      "line": "0009/AC-20  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:138  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-20**: Both pages carry their own title and description metadata, have exactly one `h1` with headings in order, and every link is keyboard reachable with a visible focus ring (WCAG 2.2 AA)."
+    },
+    {
+      "id": "unresolved:0007:feature-21",
+      "line": "unresolved:0007:feature-21  unresolved  held  specs/0007-auth-and-per-user-isolation/index.md:57  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "feature 21"
+    },
+    {
+      "id": "unresolved:0007:feature-7",
+      "line": "unresolved:0007:feature-7  unresolved  held  specs/0007-auth-and-per-user-isolation/index.md:324  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "feature 7"
+    },
+    {
+      "id": "0009#build-plan:6",
+      "line": "0009#build-plan:6  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:476  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the terms content and the effective date treatment on both pages, satisfies **AC-15**, **AC-16**."
+    },
+    {
+      "id": "0009#build-plan:7",
+      "line": "0009#build-plan:7  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:478  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Re confirm delivery to the published address, then do the console work: authorized domain, the two URLs, publish out of Testing, and submit brand verification, satisfies **AC-9**, **AC-21**, **AC-22**. The address is already configured and verified, so this step is a check, not setup."
+    },
+    {
+      "id": "0009#feature-design:31",
+      "line": "0009#feature-design:31  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:451  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Delivery: a real message to the published address arrives, re confirmed at verify time rather than assumed from the setup date, verifies **AC-9**."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0009#build-plan:2",
+      "line": "0009#build-plan:2  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:460  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Create the two typed registries (recipients, with today's five entries; stored fields, covering the six tables plus the identity fields) and the effective date constant, plus the three guard tests: the recipient test binding to `src/env.ts`, the field test binding to `src/lib/supabase/database.types.ts`, and the absence test for analytics dependencies and third party script tags. Add the Sentry configuration regression test, satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:5",
+      "line": "0009#build-plan:5  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:471  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the privacy notice's real content: the stored field list, the recipient list rendered from the registry, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, the rights and lawful basis, the Google disclosure, and the cookie line, satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:9",
+      "line": "0009#build-plan:9  BuildStep  held  specs/0009-terms-and-privacy-notices/index.md:484  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**7a.** Ship a corrected, hand written `COOKIES` array in `privacy-notice.tsx` promptly: disclose the Supabase session cookie, the PKCE verifier cookies, and `jobhunt_return_path` truthfully. This is an interim, manually verified fix, not yet enforced by a test, satisfies the corrected **AC-14** on its own. Ships first and alone."
+    },
+    {
+      "id": "0009#feature-design:22",
+      "line": "0009#feature-design:22  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:427  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: both pages render, and the recipient list on each matches the registry, verifies **AC-1**, **AC-3**, **AC-6**."
+    },
+    {
+      "id": "0009#feature-design:23",
+      "line": "0009#feature-design:23  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:429  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Drift: adding a key to `src/env.ts` with no matching registry entry fails the unit suite, and removing the assertion is checked to fail the test, so it is not vacuous, verifies **AC-5**."
+    },
+    {
+      "id": "0009#feature-design:24",
+      "line": "0009#feature-design:24  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:431  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Regression: changing a Sentry `dataCollection` value to send personal data fails a test, verifies **AC-4**."
+    },
+    {
+      "id": "0009#feature-design:25",
+      "line": "0009#feature-design:25  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:433  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Schema drift: adding a column to a personal data table without naming it in the field registry fails the unit suite, verifies **AC-23**."
+    },
+    {
+      "id": "0009#feature-design:26",
+      "line": "0009#feature-design:26  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:435  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Tracking drift: adding an analytics dependency or a third party script tag fails the unit suite, verifies **AC-14**."
+    },
+    {
+      "id": "0009#requirements:5",
+      "line": "0009#requirements:5  AcceptanceCriterion  accepted  STRUCK  specs/0009-terms-and-privacy-notices/index.md:84  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The privacy notice discloses the session cookie as strictly necessary to sign in, and states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so the claim cannot become false in silence."
+    },
+    {
+      "id": "0009/AC-24",
+      "line": "0009/AC-24  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:163  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all."
+    },
+    {
+      "id": "0013/AC-11",
+      "line": "0013/AC-11  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:33  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are added to `DATA_RECIPIENTS` in `src/features/legal/recipients.ts`, naming Adzuna as the recipient, as part of this build, satisfying spec 0009 AC-5's drift guard."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:11",
+      "line": "feature-11#11-job-search-results-list:11  Consequence  held  scope/scope.md:231  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "the moment this feature adds its API key to `src/env.ts`, the AC-5 guard fails the unit suite until the entry exists."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:14  BuildStep  accepted  scope/scope.md:187  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies · **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0009#build-plan:3",
+      "line": "0009#build-plan:3  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:466  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Create `/terms` and `/privacy` as `(marketing)` routes composing `EntryHeader navigation=\"none\"` and `EntryFooter`, each with its own metadata and indexable robots override, on placeholder prose, satisfies **AC-1**, **AC-17**, **AC-20**."
+    },
+    {
+      "id": "0009#build-plan:4",
+      "line": "0009#build-plan:4  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:469  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Link both from the entry page footer's reserved centre slot and from a static line under the provider forms on `/sign-in`, satisfies **AC-18**, **AC-19**."
+    },
+    {
+      "id": "0009#feature-design:29",
+      "line": "0009#feature-design:29  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:447  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Metadata: the two pages are indexable while the root layout's robots assertions still pass, verifies **AC-17**."
+    },
+    {
+      "id": "0009#feature-design:30",
+      "line": "0009#feature-design:30  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:449  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "No client boundary: `/sign-in` still ships zero client JavaScript with the acceptance line added, verifies **AC-19**."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0009#requirements:5",
+      "target": "0009/AC-14",
+      "phrase": "**SUPERSEDED 2026-09-18, corrected further after a cross check the same day.**",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#consequences:11",
+      "target": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "phrase": "Leaving Google's Testing mode is gated on feature 21",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#follow-up:10",
+      "target": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "phrase": "it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "target": "unresolved:feature-21:feature-32",
+      "phrase": "to build after feature 32",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0009/AC-14",
+      "target": "0009/AC-14",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-23",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-4",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:2",
+      "target": "0009/AC-6",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:3",
+      "target": "0009/AC-1",
+      "phrase": "satisfies **AC-1**, **AC-17**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:3",
+      "target": "0009/AC-17",
+      "phrase": "satisfies **AC-1**, **AC-17**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:3",
+      "target": "0009/AC-20",
+      "phrase": "satisfies **AC-1**, **AC-17**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:4",
+      "target": "0009/AC-18",
+      "phrase": "satisfies **AC-18**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:4",
+      "target": "0009/AC-19",
+      "phrase": "satisfies **AC-18**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:6",
+      "target": "0009/AC-15",
+      "phrase": "satisfies **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:6",
+      "target": "0009/AC-16",
+      "phrase": "satisfies **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-21",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-22",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-9",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:9",
+      "target": "0009/AC-14",
+      "phrase": "satisfies the corrected **AC-14** on its own",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-14",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-23",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-4",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-5",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "target": "0009/AC-6",
+      "phrase": "**AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "target": "0009/AC-1",
+      "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "target": "0009/AC-17",
+      "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "target": "0009/AC-18",
+      "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "target": "0009/AC-19",
+      "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "target": "0009/AC-20",
+      "phrase": "**AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-14",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-15",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-16",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-21",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-22",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-9",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "0007#follow-up:12",
+      "phrase": "**Done 2026-08-31.**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "unresolved:0007:feature-21",
+      "phrase": "depend on each other",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "unresolved:0007:feature-7",
+      "phrase": "depend on each other",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0008/AC-5b",
+      "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0009/AC-24",
+      "phrase": "the cookie half now has its own guard, AC-24",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-15",
+      "target": "0009/AC-16",
+      "phrase": "which matches AC-16",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-23",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-24",
+      "target": "0009/AC-5",
+      "phrase": "the same way AC-5 enforces the recipient list and AC-23 enforces the field list",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-11",
+      "target": "0009/AC-5",
+      "phrase": "satisfying spec 0009 AC-5's drift guard",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-11#11-job-search-results-list:11",
+      "target": "0009/AC-5",
+      "phrase": "the AC-5 guard fails the unit suite until the entry exists",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "target": "unresolved:feature-21:feature-7",
+      "phrase": "Depends on feature 7, both ways",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#resolved:3",
+      "target": "scope#resolved:4",
+      "phrase": "**Closed on 2026-09-01 by feature 21**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#resolved:4",
+      "target": "unresolved:scope:feature-21",
+      "phrase": "**Closed on 2026-09-01 by feature 21**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:22",
+      "target": "0009/AC-1",
+      "phrase": "verifies **AC-1**, **AC-3**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:22",
+      "target": "0009/AC-6",
+      "phrase": "verifies **AC-1**, **AC-3**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:23",
+      "target": "0009/AC-5",
+      "phrase": "verifies **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:24",
+      "target": "0009/AC-4",
+      "phrase": "verifies **AC-4**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:25",
+      "target": "0009/AC-23",
+      "phrase": "verifies **AC-23**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:26",
+      "target": "0009/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:29",
+      "target": "0009/AC-17",
+      "phrase": "verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:30",
+      "target": "0009/AC-19",
+      "phrase": "verifies **AC-19**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:31",
+      "target": "0009/AC-9",
+      "phrase": "verifies **AC-9**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 12999,
+  "bound_usd": 0.185998,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"Leaving Google's Testing mode was gated on feature 21: Publish app was greyed out because the privacy policy and terms links were empty, and feature 21 produces them.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"Until the app leaves Testing it is capped at 100 users, and Google counts that cap over the app's entire lifetime, so it never goes back down. That is why the gate was urgent.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"When feature 21 sat in Slice 5, neither scope row recorded the dependency. Both rows changed on the strength of this finding, and feature 21 moved to Foundation to be built after feature 32.\",\"cites\":[\"0007#consequences:11\",\"0007#follow-up:12\"],\"basis\":\"text\"},{\"text\":\"The feature 21 scope item records the move from Slice 5 on 2026-08-31, to build after feature 32. It is linked as blocked by feature 32, although the record does not say why feature 32 specifically comes first.\",\"cites\":[\"feature-21#21-terms-privacy-notices-done-alpha:5\",\"feature-21#21-terms-privacy-notices-done-alpha:1\"],\"basis\":\"text\"},{\"text\":\"The publishing fix needed the pages served from usejobhunt.dev, because Google would not accept a vercel.app address as an authorized domain.\",\"cites\":[\"0007#follow-up:10\"],\"basis\":\"text\"},{\"text\":\"The scope item says the notices are owed the day the first person other than the author signs in, which ties them to launch of real sign-in.\",\"cites\":[\"feature-21#21-terms-privacy-notices-done-alpha:1\"],\"basis\":\"text\"}],\"missing\":[\"Why the build was placed specifically after feature 32 rather than elsewhere in Foundation; feature 32 has no item here.\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [
+    "Why the build was placed specifically after feature 32 rather than elsewhere in Foundation; feature 32 has no item here."
+  ],
+  "claims": [
+    {
+      "text": "Leaving Google's Testing mode was gated on feature 21: Publish app was greyed out because the privacy policy and terms links were empty, and feature 21 produces them.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Until the app leaves Testing it is capped at 100 users, and Google counts that cap over the app's entire lifetime, so it never goes back down. That is why the gate was urgent.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "When feature 21 sat in Slice 5, neither scope row recorded the dependency. Both rows changed on the strength of this finding, and feature 21 moved to Foundation to be built after feature 32.",
+      "cites": [
+        "0007#consequences:11",
+        "0007#follow-up:12"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0007#follow-up:12"
+      ]
+    },
+    {
+      "text": "The feature 21 scope item records the move from Slice 5 on 2026-08-31, to build after feature 32. It is linked as blocked by feature 32, although the record does not say why feature 32 specifically comes first.",
+      "cites": [
+        "feature-21#21-terms-privacy-notices-done-alpha:5",
+        "feature-21#21-terms-privacy-notices-done-alpha:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "feature-21#21-terms-privacy-notices-done-alpha:5"
+      ]
+    },
+    {
+      "text": "The publishing fix needed the pages served from usejobhunt.dev, because Google would not accept a vercel.app address as an authorized domain.",
+      "cites": [
+        "0007#follow-up:10"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The scope item says the notices are owed the day the first person other than the author signs in, which ties them to launch of real sign-in.",
+      "cites": [
+        "feature-21#21-terms-privacy-notices-done-alpha:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 12999,
+    "output_tokens": 630,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.032298,
+  "recorded_usd": 0.032298
+}

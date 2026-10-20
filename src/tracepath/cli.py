@@ -42,7 +42,7 @@ from tracepath.ask.record import (
     settled_eval_record,
     write_record,
 )
-from tracepath.ask.retrieve import Pack, build_pack, pack_lines
+from tracepath.ask.retrieve import HOP_CHOICES, HOPS, Pack, build_pack, pack_lines
 from tracepath.config import (
     DEFAULT_MODEL,
     AnthropicSettings,
@@ -1059,6 +1059,11 @@ def ask(
         help="Ask a question of a held out eval file. A question already answered once by a "
         "settled call is refused.",
     ),
+    hops: int = typer.Option(
+        HOPS,
+        "--hops",
+        help="How many link hops of neighbours to add around the search hits: 0, 1 or 2.",
+    ),
     root: str = typer.Option(".", "--root", help="The repository root to read and write."),
 ) -> None:
     """Answer a why question from the graph, every claim citing the item it rests on.
@@ -1075,6 +1080,8 @@ def ask(
         _fail("--ceiling USD is required: the most this command may spend.")
     if ceiling is not None and not (math.isfinite(ceiling) and ceiling > 0):
         _fail(f"--ceiling USD must be a finite number above 0, not {ceiling}.")
+    if hops not in HOP_CHOICES:
+        _fail(f"--hops must be 0, 1 or 2, not {hops}.")
     base = Path(root)
     source: EvalSource | None = None
     asked = str(question)
@@ -1100,7 +1107,7 @@ def ask(
     if not _holds_held(graph):
         _fail(ASK_NEEDS_HELD)
 
-    pack = build_pack(graph, asked)
+    pack = build_pack(graph, asked, hops)
     asked_at = datetime.now(UTC)
     _say(f"Question: {asked}")
     if source is not None:

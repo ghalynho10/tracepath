@@ -74,6 +74,9 @@ HIT_LIMIT = 16
 HOPS = 2
 ITEM_LIMIT = 90
 
+#: The hop counts `ask --hops` takes (AC-10 note of 2026-10-20, experiment 0016).
+HOP_CHOICES = (0, 1, 2)
+
 #: The links whose source is history: both run old to new (AC-14). `amended-by` is not one.
 HISTORY_LINKS = frozenset({RelationshipType.SUPERSEDED_BY.name, RelationshipType.CORRECTED_BY.name})
 
@@ -105,6 +108,7 @@ class Pack:
     items: tuple[Item, ...]
     links: tuple[Link, ...]
     cut: int
+    hops: int = HOPS
 
     @property
     def hits(self) -> int:
@@ -212,7 +216,7 @@ def _neighbours(graph: GraphSlice, known: frozenset[str]) -> dict[str, tuple[str
 
 
 def _reached(
-    hits: tuple[str, ...], around: Mapping[str, tuple[str, ...]]
+    hits: tuple[str, ...], around: Mapping[str, tuple[str, ...]], hops: int
 ) -> tuple[tuple[str, ...], dict[str, int]]:
     """Hits, then each hop in the order of the highest ranked hit that reached it (AC-11).
 
@@ -222,7 +226,7 @@ def _reached(
     origin = {node: rank for rank, node in enumerate(hits)}
     ordered = list(hits)
     frontier = hits
-    for distance in range(1, HOPS + 1):
+    for distance in range(1, hops + 1):
         reached: dict[str, int] = {}
         for node in frontier:
             for other in around.get(node, ()):
@@ -238,21 +242,23 @@ def _reached(
     return tuple(ordered), hop
 
 
-def build_pack(graph: GraphSlice, question: str) -> Pack:
+def build_pack(graph: GraphSlice, question: str, hops: int = HOPS) -> Pack:
     """The items and links one question sends to the model (AC-7 to AC-12b, AC-14b).
 
     The hits are the `HIT_LIMIT` best scoring nodes above 0, then their neighbours up to
-    `HOPS` hops. A history item brings what replaces it in right behind it, counted
-    against `ITEM_LIMIT`; an item whose replacements would not fit is cut, with every
-    item after it. The cut counts every item left out, a replacement cut with its
-    history item included (AC-11 note).
+    `hops` hops (one of `HOP_CHOICES`, `HOPS` by default). A history item brings what
+    replaces it in right behind it, at any `hops`, counted against `ITEM_LIMIT`; an item
+    whose replacements would not fit is cut, with every item after it. The cut counts
+    every item left out, a replacement cut with its history item included (AC-11 note).
     """
+    if hops not in HOP_CHOICES:
+        raise ValueError(f"hops must be one of {HOP_CHOICES}, not {hops}")
     words = tokenise(question)
     nodes = {node.canonical_id: node for node in graph.nodes}
     ranked = scored(graph, words)
     score = {node.canonical_id: value for node, value in ranked}
     hits = tuple(node.canonical_id for node, value in ranked[:HIT_LIMIT] if value > 0)
-    ordered, hop = _reached(hits, _neighbours(graph, frozenset(nodes)))
+    ordered, hop = _reached(hits, _neighbours(graph, frozenset(nodes)), hops)
     replaced = replacements(graph)
 
     wanted: dict[str, int] = {}
@@ -291,6 +297,7 @@ def build_pack(graph: GraphSlice, question: str) -> Pack:
         items=items,
         links=tuple(link for link in graph.links if {link.source, link.target} <= sent),
         cut=len(wanted) - len(taken),
+        hops=hops,
     )
 
 
@@ -332,7 +339,7 @@ def pack_lines(pack: Pack) -> tuple[str, ...]:
         return (*lines, "No item matches the search words, so no call is made.")
     lines.append(
         f"Items sent: {len(pack.items)} ({pack.hits} hits, {len(pack.items) - pack.hits} "
-        f"neighbours, {pack.cut} cut)."
+        f"neighbours, {pack.cut} cut; hops {pack.hops})."
     )
     lines += [item_line(item) for item in pack.items]
     return tuple(lines)

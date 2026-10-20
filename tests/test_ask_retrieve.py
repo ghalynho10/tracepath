@@ -142,6 +142,49 @@ def test_ac_10_neighbours_are_added_both_ways_up_to_two_hops_held_links_included
     ]
 
 
+@pytest.mark.parametrize(
+    ("hops", "expected"),
+    [
+        (0, [("9101/AC-1", 0)]),
+        (1, [("9101/AC-1", 0), ("9101/AC-2", 1), ("unresolved:9101:feature-77", 1)]),
+    ],
+)
+def test_ac_10_note_hops_stops_the_neighbours_at_that_many_hops(
+    hops: int, expected: list[tuple[str, int]]
+) -> None:
+    """covers: AC-10 note of 2026-10-20 (`ask --hops`, experiment 0016)."""
+    pack = build_pack(fx.graph(), "profile", hops)
+
+    assert [(i.node.canonical_id, i.hop) for i in pack.items] == expected
+    assert pack.hops == hops
+    assert pack_lines(pack)[1].endswith(f"; hops {hops}).")
+
+
+def test_ac_10_note_two_hops_is_the_default() -> None:
+    """covers: AC-10 note of 2026-10-20: no `hops` given makes the same pack as before."""
+    assert build_pack(fx.graph(), "profile") == build_pack(fx.graph(), "profile", 2)
+    assert build_pack(fx.graph(), "profile").hops == 2
+
+
+def test_ac_10_note_at_zero_hops_a_history_hit_still_brings_its_replacement() -> None:
+    """covers: AC-10 note of 2026-10-20 with AC-14b: replacements are not hops."""
+    nodes = (entity("9101/AC-1", "alpha"), entity("9101/AC-2", "nothing"), *fillers(1))
+    links = (link("SUPERSEDED_BY", "9101/AC-1", "9101/AC-2"),)
+    pack = build_pack(graph_slice(nodes, links, with_held=True), "alpha", 0)
+
+    assert [(i.node.canonical_id, i.hop) for i in pack.items] == [
+        ("9101/AC-1", 0),
+        ("9101/AC-2", 1),
+    ]
+
+
+@pytest.mark.parametrize("hops", [-1, 3])
+def test_ac_10_note_a_hop_count_outside_0_to_2_is_refused(hops: int) -> None:
+    """covers: AC-10 note of 2026-10-20."""
+    with pytest.raises(ValueError, match="hops"):
+        build_pack(fx.graph(), "profile", hops)
+
+
 def test_ac_10_part_of_is_never_followed() -> None:
     """covers: AC-10."""
     part_of = Link(type="PART_OF", source="9101/AC-1", target="9101")
@@ -180,7 +223,7 @@ def test_ac_11_at_most_ninety_items_are_sent_and_the_cut_is_counted() -> None:
 
     assert len(pack.items) == 90
     assert pack.cut == 11
-    assert pack_lines(pack)[1] == "Items sent: 90 (1 hits, 89 neighbours, 11 cut)."
+    assert pack_lines(pack)[1] == "Items sent: 90 (1 hits, 89 neighbours, 11 cut; hops 2)."
 
 
 def test_ac_12_no_node_scoring_above_zero_sends_nothing_and_says_so() -> None:
@@ -307,7 +350,7 @@ def test_ac_14b_a_replacement_counts_against_the_limit(monkeypatch: pytest.Monke
 
     assert [i.node.canonical_id for i in pack.items] == ["9101/AC-1", "9101/AC-2"]
     assert pack.cut == 2
-    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 2 cut)."
+    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 2 cut; hops 2)."
 
 
 def test_ac_14b_an_item_after_a_cut_history_item_is_cut_too(
@@ -334,7 +377,7 @@ def test_ac_14b_an_item_after_a_cut_history_item_is_cut_too(
 
     assert [i.node.canonical_id for i in pack.items] == ["9101/AC-1", "9101/AC-2"]
     assert pack.cut == 3
-    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 3 cut)."
+    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 3 cut; hops 2)."
 
 
 def test_the_same_graph_and_question_always_make_the_same_pack() -> None:
