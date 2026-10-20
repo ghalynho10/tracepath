@@ -1043,7 +1043,9 @@ def ask(
         None, "--eval", help="Ask the question of eval entry N instead of a typed one."
     ),
     ceiling: float | None = typer.Option(
-        None, "--ceiling", help="The most this command may spend, in USD. Required."
+        None,
+        "--ceiling",
+        help="The most this command may spend, in USD. Required, except with --dry-run.",
     ),
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Find the items and price the call only: no call, no record."
@@ -1063,15 +1065,15 @@ def ask(
 
     Code finds the items, one model call reads them, and code checks every citation.
     Prints the items first, then the answer, then what the call cost. Spends API credit
-    unless `--dry-run`.
+    unless `--dry-run`, which makes no paid call and so needs no `--ceiling`.
     """
     if (question is None) == (eval_question is None):
         _fail("give one QUESTION or --eval N, not both and not neither.")
     if release_held_out and eval_question is None:
         _fail("--release-held-out reads an eval file, so it needs --eval N.")
-    if ceiling is None:
+    if ceiling is None and not dry_run:
         _fail("--ceiling USD is required: the most this command may spend.")
-    if not (math.isfinite(ceiling) and ceiling > 0):
+    if ceiling is not None and not (math.isfinite(ceiling) and ceiling > 0):
         _fail(f"--ceiling USD must be a finite number above 0, not {ceiling}.")
     base = Path(root)
     source: EvalSource | None = None
@@ -1107,7 +1109,7 @@ def ask(
     for line in pack_lines(pack):
         _say(line)
     if not pack.items:
-        if source is not None and not dry_run:
+        if source is not None and ceiling is not None and not dry_run:
             _write_no_call_record(base, asked_at, pack, ceiling, settings, built, source)
         return
 
@@ -1122,13 +1124,14 @@ def ask(
     except (anthropic.APIError, CountUnreadable) as exc:
         _fail(f"the token count endpoint failed, so nothing is priced ({exc})")
     bound = ask_bound(counted, settings.model)
+    limit = "no ceiling given" if ceiling is None else f"ceiling ${ceiling:.2f}"
     _say(
         f"Input: {counted:,} tokens counted. Bound: ${bound:.4f} ({counted:,} in at "
         f"${rates.input:.2f}, {ASK_MAX_TOKENS:,} out at ${rates.output:.2f}, per million "
-        f"tokens, model {settings.model}); ceiling ${ceiling:.2f}."
+        f"tokens, model {settings.model}); {limit}."
     )
-    if dry_run:
-        if bound > ceiling:
+    if dry_run or ceiling is None:  # no ceiling got this far only as a dry run
+        if ceiling is not None and bound > ceiling:
             _say("The bound is above the ceiling, so a real run would stop before the call.")
         _say("Dry run: no call made, no record written.")
         return
@@ -1150,6 +1153,12 @@ def ask(
         )
     except ArtifactCollisionError as exc:
         _fail(str(exc))
+    except KeyboardInterrupt as exc:
+        # Click turns the interrupt into a bare "Aborted!", so the note ask_metered()
+        # added (saved as failed, or lost) is printed here before it propagates.
+        for note in getattr(exc, "__notes__", ()):
+            err_console.print(note, markup=False, highlight=False, soft_wrap=True)
+        raise
     if outcome.stop is not None:
         _fail(outcome.stop)
     attempt = outcome.attempt
