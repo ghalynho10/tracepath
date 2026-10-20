@@ -83,15 +83,17 @@ flowchart TD
     end
 ```
 
-Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a time. Code first marks struck text and checkboxes. The model then reads each section three times, and each run is saved as a JSON file that is never overwritten. Loading compares the three runs. An item all three runs agree on is accepted, including one held only by a warning flag or by a link waiting on another item (the narrow hold rule, on by default). Items the runs disagree on, or that fail another check, are held, each with the reason. Held items still load, marked held. The graph is rebuilt from the run files every time. At question time, code picks the question's words, finds up to 16 items that share them, and adds their neighbours up to two hops away, at most 90 items in all. It prices the call before making it, makes one call, then checks every cited id against the items it sent, and saves the whole exchange.
+Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a time. Code first marks struck text and checkboxes. The model then reads each section three times, and each run is saved as a JSON file that is never overwritten. Loading compares the three runs. An item all three runs agree on is accepted, including one held only by a warning flag or by a link waiting on another item (the narrow hold rule, on by default). Items the runs disagree on, or that fail another check, are held, each with the reason. Held items still load, marked held.
+
+At question time, code picks the question's words, finds up to 16 items that share them, and adds their neighbours up to two hops away, at most 90 items in all. It prices the call before making it, makes one call, then checks every cited id against the items it sent, and saves the whole exchange.
 
 ## What I tried first
 
-I first tried LangChain's `LLMGraphTransformer`, with default settings, on four JobHunt files ([experiment 0007](experiments/0007-langchain-graph-transformer-baseline/README.md)). It dropped the acceptance criterion ids, so AC-7 and AC-16 never became nodes. It gave one feature three identities with nothing linking them. That was one of two reasons I chose an extraction pipeline with a closed set of item and link types and its own identity resolution.
+I first tried LangChain's `LLMGraphTransformer`, with default settings, on four JobHunt files ([experiment 0007](experiments/0007-langchain-graph-transformer-baseline/README.md)). It dropped the acceptance criterion ids, so AC-7 and AC-16 never became nodes. It gave one feature three identities with nothing linking them. I already had an extraction pipeline from earlier work, with closed vocabulary types, a validator and a run comparator, tested on this corpus, and this test confirmed that a general purpose library failed on the same data.
 
 The first version answered a question by walking from a start item along the graph's links. After extracting the whole corpus, the walk passed 1 of the 5 eval questions, and that one was the question whose right answer is "no documented connection" ([experiment 0015](experiments/0015-whole-corpus-run/README.md)). The other chains broke where one document should have led to another.
 
-So I tried answering at question time by hand: a session played the model's part on the five eval questions, with no API call. I marked its answers 4 right and 1 partly right. One hand run is a hint, not a measurement, but it was enough to redesign `ask` around retrieval plus one cited answer ([spec 0009](docs/specs/0009-answer-at-question-time/index.md)).
+So I tried answering at question time by hand: a session played the model's part on the five eval questions, with no API call. I marked its answers 4 right and 1 partly right. One hand run is too small to count as a measurement, but it was enough to redesign `ask` around retrieval plus one cited answer ([spec 0009](docs/specs/0009-answer-at-question-time/index.md)).
 
 ## Results
 
@@ -103,21 +105,27 @@ I asked each question once, on `claude-sonnet-5-5` with prompt `ask-1`.
 
 I froze the prompt in a commit before running the held out questions, and the tool refuses to ask a held out question a second time once it has an answer. I judged every answer myself against expected answers written down before the run.
 
-The limits are real. The set is small. I am the only judge. The four held out questions all sit in one small cluster of records, so passing them says little about the rest of the corpus. Claims marked `read from text` are trusted, not checked: code checks that a cited item was sent, not that it says what the claim says. And I have no baseline yet that shows the graph does better than plain retrieval over the same text.
-
 After the held out run, I added the `no_documented_link` verdict as prompt `ask-2`. Only eval question 4 was asked again under it. The held out questions were not.
 
 ## How I evaluated and controlled it
 
-**A deterministic eval runner.** `tracepath eval` scores each eval question pass, fail or inconclusive, and gives the reason for every expected item it did not reach. It reads the committed graph and makes no API call, so anyone can rerun it ([spec 0006](docs/specs/0006-eval-runner/index.md)).
+### A deterministic eval runner
 
-**A spend fence.** Every paid call in the tool goes through a guard that bounds it against a ceiling before the call is made. A test in CI, [`tests/test_spend_fence.py`](tests/test_spend_fence.py), fails if any file outside its allowlist imports the Anthropic SDK. Every test runs with a fake key and an unreachable API.
+`tracepath eval` scores each eval question pass, fail or inconclusive, and gives the reason for every expected item it did not reach. It reads the committed graph and makes no API call, so anyone can rerun it ([spec 0006](docs/specs/0006-eval-runner/index.md)).
 
-**Provenance.** Each run file records the model, the prompt version, the corpus commit and the token usage. Run files are append only: a newer run never replaces an older one, and superseded runs move to `artifacts/superseded/` instead of being deleted. So the cost of any run can be recomputed from the repository.
+### A spend fence
 
-**An experiment log.** [`experiments/`](experiments/) holds 15 records. Seven of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
+Every paid call in the tool goes through a guard that bounds it against a ceiling before the call is made. A test in CI, [`tests/test_spend_fence.py`](tests/test_spend_fence.py), fails if any file outside its allowlist imports the Anthropic SDK. Every test runs with a fake key and an unreachable API.
 
-## Decisions and results
+### Provenance
+
+Each run file records the model, the prompt version, the corpus commit and the token usage. Run files are append only: a newer run never replaces an older one, and superseded runs move to `artifacts/superseded/` instead of being deleted. So the cost of any run can be recomputed from the repository.
+
+### An experiment log
+
+[`experiments/`](experiments/) holds 15 records. Seven of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
+
+## Specs and experiments
 
 | Record | Outcome |
 | --- | --- |
