@@ -1,0 +1,338 @@
+{
+  "asked_at": "2026-10-20T17:36:30+00:00",
+  "question": "Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 2,
+  "called": true,
+  "hops": 0,
+  "search_words": [
+    "src",
+    "proxy.ts",
+    "proxy",
+    "treat",
+    "server",
+    "action",
+    "request",
+    "differently",
+    "every",
+    "other",
+    "detect",
+    "one",
+    "next-action",
+    "next",
+    "header",
+    "route"
+  ],
+  "items": [
+    {
+      "id": "0014/AC-20a",
+      "line": "0014/AC-20a  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:51  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-20a**: `src/proxy.ts` **withholds the refreshed session cookie from the response of a Server Action request**, while still handing the refreshed value to that request's own code through `request.cookies.set()`, so `recordApplication` can verify its caller. The branch keys on the presence of Next's `next-action` request header, never on the route, so binding rule 6's mechanical guard is untouched: the proxy still cannot tell a protected path from a public one. This is the criterion the 25 weekly Adzuna calls actually rest on. **The trade is deliberate**: the browser keeps its stale cookie until its next ordinary request, which refreshes and persists as usual. That refresh reuses a token the action already rotated, which GoTrue accepts inside `refresh_token_reuse_interval` (10 seconds on this project, read from the running container). **Driven, and the first version of this measurement did not cover the case that matters** (found by the fresh model review on 2026-09-05): three applies about six seconds apart all sit INSIDE the reuse interval, and a pause before an ordinary navigation proves nothing about a second action, because the navigation persists a fresh cookie anyway. The shape that actually tests it is two applies **sixteen seconds apart with no request of any kind between them**. Driven: both applies succeeded, both rows landed, no message on either, and the navigation after returned 200 still signed in with a freshly rotated cookie. The token family was not revoked. Amends spec [0008](../0008-app-shell-and-navigation/index.md) AC-10 and spec [0001](../0001-stack-and-architecture/index.md) binding rule 6, both dated the same day."
+    },
+    {
+      "id": "0008/AC-10b",
+      "line": "0008/AC-10b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:62  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-10b**: **On a Server Action request the refreshed session cookie is withheld from the response**, while the forwarded request still carries it so that request's own code can verify its caller. The branch keys on Next's `next-action` request header, **never on the route**, so AC-9's guard is untouched and the proxy still cannot tell a protected path from a public one. This is the one place the proxy treats two requests differently, and the difference is request kind, not destination. The cost is that the browser keeps its stale cookie until its next ordinary request; GoTrue's `refresh_token_reuse_interval` covers the reuse, driven as two applies sixteen seconds apart with no request between them, which is the shape that leaves the interval; both succeeded and the session survived."
+    },
+    {
+      "id": "0004#follow-up:8",
+      "line": "0004#follow-up:8  FollowUp  accepted  specs/0004-test-foundation/index.md:172  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Driving a Server Action without a browser is deferred to feature 9, deliberately.** Spec 0001 names it as one of three must satisfy constraints on the test runner; this feature meets the other two (the local stack with the real policies, and the development only session mint). Recorded here so it is not rediscovered a third time: fetch the page, read the hidden fields React renders on the form (`$ACTION_REF_<n>`, `$ACTION_<n>:0` carrying the action id, `$ACTION_<n>:1` carrying the previous `useActionState` state, `$ACTION_KEY`), then post those plus the real form fields as multipart to the same route; a `303` carrying the session cookie means it ran. **`<n>` is a per form index, not part of the name, corrected on 2026 09 02 when feature 9 proved this against React 19.2.8 and Next.js 16.3.1.** Read the index out of the rendered page rather than assuming it, and scope the read to the one form under test, or the sign out action's own field is harvested and posted alongside. See `test/integration/profile-form.test.ts`. The `Next-Action` header path is fiddlier and silently loses the form fields. Action ids come from `.next/server/server-reference-manifest.json`, and an id is only valid for a build made at that same directory path, so an id read locally is the wrong id on Vercel. Feature 9 owns proving it, and its done when clause in the scope now says so."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0001#binding-rules:32",
+      "line": "0001#binding-rules:32  Constraint  held  specs/0001-stack-and-architecture/index.md:143  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The branch keys on Next's `next-action` request header, never on the path, so the proxy still reads no session for a decision, still holds no list of routes, and still cannot tell a protected path from a public one."
+    },
+    {
+      "id": "0001#binding-rules:25",
+      "line": "0001#binding-rules:25  Constraint  accepted  specs/0001-stack-and-architecture/index.md:133  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**6. Authorisation is never decided in the proxy.** The proxy (`src/proxy.ts`, the file Next.js called `middleware.ts` before 16) refreshes the Supabase session cookie and does nothing else. The protected layout verifies the session, and every Server Action verifies its own caller independently. Row level security in Postgres is the guarantee behind both."
+    },
+    {
+      "id": "0009/AC-24",
+      "line": "0009/AC-24  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:163  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-24** (added 2026-09-18, revised the same day after a cross check): The cookie disclosure is enforced against the code and, primarily, against what a real visitor's browser actually receives, the same way AC-5 enforces the recipient list and AC-23 enforces the field list. A typed cookie registry names every cookie the codebase can set, whether by a literal name (`jobhunt_return_path`) or a documented pattern for one a library names at runtime (the Supabase session and PKCE verifier cookies). Two guards, not one: - **Primary: an integration test drives three real steps and asserts each step's own `Set-Cookie` names against the registry, not the combined set.** The three steps produce different cookies, and the test names each expectation so an absent cookie reads as a wrong assertion rather than a missing disclosure: 1. **Starting sign in** (the provider Server Action, `src/features/auth/actions.ts`) is where the PKCE verifier cookie is actually written. 2. **The callback** (`src/app/auth/callback/route.ts`) is driven against a session minted through the local stack rather than a real provider round trip, and is where the return path cookie is cleared. 3. **An ordinary signed in navigation** is where the Supabase session cookie itself is present and refreshed. The exact response on which the verifier cookie appears is inferred from the library's source above rather than traced end to end through a live request; confirm it against a real response during the build, before the assertion is written, and correct this note if the live behaviour differs. - **Secondary, cheap net: a unit test walks every non-test `.ts`/`.tsx` file under `src/` for a call that could set a cookie** (`cookieStore.set(`, `request.cookies.set(`, `response.cookies.set(`, `.setAll(`) and fails when a call site is found that no registry entry names, or when a registry entry names a call site that no longer exists. Nothing in the source tree is registered as a cookie unless it can put a `Set-Cookie` header on a real response. A call site that only ever writes to an in memory store never reaches a browser and is not a cookie at all."
+    },
+    {
+      "id": "0014#feature-design:28",
+      "line": "0014#feature-design:28  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:193  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The read only cookie adapter is a budget measure rather than a security one. It stops the action writing a refreshed session cookie, and the session still refreshes: `src/proxy.ts` does it on every request"
+    },
+    {
+      "id": "0014#follow-up:2",
+      "line": "0014#follow-up:2  FollowUp  accepted  specs/0014-apply-redirect-and-application-record/index.md:264  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Answered 2026-09-05 by `/debug`, and the answer is yes.** Driven against a real minted session whose `expires_at` was pushed two hours into the past: the default `next/headers` adapter refreshed and wrote `sb-127-auth-token`, while the read only adapter in the identical state wrote nothing and the apply still succeeded. So every link in AC-20's chain is now verified rather than inherited. **The same run also showed the chain was not the one that fired** (see AC-20a): the write that cost the call came from `src/proxy.ts`, one layer up, where the action could not defend against it."
+    },
+    {
+      "id": "0008#feature-design:4",
+      "line": "0008#feature-design:4  Constraint  held  specs/0008-app-shell-and-navigation/index.md:150  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The proxy writes no cookie **of its own** and holds no route knowledge. It cannot tell a protected path from a public one, which is what `src/proxy.test.ts` lines 49 to 70 assert and AC-9 keeps true. It has always passed the Supabase session cookie through on a refresh, which is its one job; AC-10b withholds even that from a Server Action response, keyed on request kind and never on route, so this invariant is untouched."
+    },
+    {
+      "id": "0008#decision:2",
+      "line": "0008#decision:2  Constraint  held  specs/0008-app-shell-and-navigation/index.md:91  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Three routes under `(app)`, a chrome only header primitive in `src/components/ui/` composed per page on both sides (revision 5), no mobile navigation machinery, one shared landing rule, the return path carried as a request header then a query parameter then a cookie written by the Server Action, and a small door route handler that lets `/` stay static while never inviting a signed in visitor to sign in."
+    },
+    {
+      "id": "0009/AC-14",
+      "line": "0009/AC-14  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:84  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24."
+    },
+    {
+      "id": "0014#decision:7",
+      "line": "0014#decision:7  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:69  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A cookie mutated during the action's request. The half it found: the shared cookie adapter writes cookies, so a session refresh inside the action's own caller check would trigger one, prevented by AC-20's read only adapter. **The half it missed, and the one that actually fired: `src/proxy.ts` runs on the action `POST` too, and refreshes there.** An action cannot defend against that from inside itself, however carefully it builds its own client. Prevented by AC-20a."
+    },
+    {
+      "id": "0008#summary:2",
+      "line": "0008#summary:2  Feature  accepted  specs/0008-app-shell-and-navigation/index.md:18  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A deep link a visitor followed while signed out survives sign in and returns them to it, carried by a request header the proxy echoes on every request, then a query parameter, then a short lived cookie written by the Server Action that already sends the visitor to the provider."
+    },
+    {
+      "id": "0007/AC-4",
+      "line": "0007/AC-4  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\n  - **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`. Documented expected behaviour, not a misconfiguration.\n  - **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`"
+    },
+    {
+      "id": "0008/AC-8",
+      "line": "0008/AC-8  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:59  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`, so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434). It **overwrites** any header of that name arriving on the request, so a client supplied value cannot be trusted forward. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**, per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it. Omitting it falls through to the landing rule, which is the honest outcome. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy, so one number governs both."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0008/AC-10b",
+      "phrase": "Spec 0001's binding rule 6 amendment gains a third item, dated the same day.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0001#binding-rules:25",
+      "target": "0014/AC-20a",
+      "phrase": "Amends spec 0008 AC-10 and spec 0001 binding rule 6, both dated the same day.",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0009/AC-14",
+      "target": "0009/AC-14",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-10b",
+      "target": "0014/AC-20a",
+      "phrase": "Added 2026-09-05 by spec 0014 AC-20a",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0008/AC-5b",
+      "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0009/AC-24",
+      "phrase": "the cookie half now has its own guard, AC-24",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#decision:7",
+      "target": "0014/AC-20a",
+      "phrase": "Prevented by AC-20a.",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 6751,
+  "bound_usd": 0.173502,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"The proxy withholds the refreshed session cookie from a Server Action response while still giving the refreshed value to that request's own code via request.cookies.set(), so recordApplication can verify its caller. This is the criterion the 25 weekly Adzuna calls rest on.\",\"cites\":[\"0014/AC-20a\"],\"basis\":\"text\"},{\"text\":\"The cause was that src/proxy.ts runs on the action POST too and refreshes there. That was the cookie mutation that actually fired, and an action cannot defend against it from inside itself. AC-20a prevents it.\",\"cites\":[\"0014#decision:7\",\"0014/AC-20a\"],\"basis\":\"link\"},{\"text\":\"The read only cookie adapter in the action was a budget measure that stopped the action writing a refreshed cookie. The debug run showed the write that cost the call came from the proxy, one layer up.\",\"cites\":[\"0014#feature-design:28\",\"0014#follow-up:2\"],\"basis\":\"text\"},{\"text\":\"The branch keys on the next-action request header and never on the route, so the proxy still cannot tell a protected path from a public one. This leaves binding rule 6's mechanical guard (AC-9) untouched.\",\"cites\":[\"0014/AC-20a\",\"0008/AC-10b\"],\"basis\":\"text\"},{\"text\":\"The proxy still reads no session for a decision and holds no list of routes. The difference between requests is request kind, not destination. (The 0001 constraint stating this is HELD, not yet reviewed.)\",\"cites\":[\"0001#binding-rules:32\",\"0008/AC-10b\"],\"basis\":\"text\"},{\"text\":\"The trade is deliberate. The browser keeps a stale cookie until its next ordinary request, and GoTrue's refresh_token_reuse_interval (10 seconds) covers the reuse. Two applies sixteen seconds apart with no request between them both succeeded and the token family was not revoked.\",\"cites\":[\"0014/AC-20a\"],\"basis\":\"text\"},{\"text\":\"Binding rule 6 says the proxy only refreshes the session cookie and decides no authorisation, while each Server Action verifies its own caller. The header branch amends that rule and AC-10 without breaking it.\",\"cites\":[\"0001#binding-rules:25\",\"0014/AC-20a\"],\"basis\":\"link\"}],\"missing\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [],
+  "claims": [
+    {
+      "text": "The proxy withholds the refreshed session cookie from a Server Action response while still giving the refreshed value to that request's own code via request.cookies.set(), so recordApplication can verify its caller. This is the criterion the 25 weekly Adzuna calls rest on.",
+      "cites": [
+        "0014/AC-20a"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The cause was that src/proxy.ts runs on the action POST too and refreshes there. That was the cookie mutation that actually fired, and an action cannot defend against it from inside itself. AC-20a prevents it.",
+      "cites": [
+        "0014#decision:7",
+        "0014/AC-20a"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The read only cookie adapter in the action was a budget measure that stopped the action writing a refreshed cookie. The debug run showed the write that cost the call came from the proxy, one layer up.",
+      "cites": [
+        "0014#feature-design:28",
+        "0014#follow-up:2"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The branch keys on the next-action request header and never on the route, so the proxy still cannot tell a protected path from a public one. This leaves binding rule 6's mechanical guard (AC-9) untouched.",
+      "cites": [
+        "0014/AC-20a",
+        "0008/AC-10b"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The proxy still reads no session for a decision and holds no list of routes. The difference between requests is request kind, not destination. (The 0001 constraint stating this is HELD, not yet reviewed.)",
+      "cites": [
+        "0001#binding-rules:32",
+        "0008/AC-10b"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0001#binding-rules:32"
+      ]
+    },
+    {
+      "text": "The trade is deliberate. The browser keeps a stale cookie until its next ordinary request, and GoTrue's refresh_token_reuse_interval (10 seconds) covers the reuse. Two applies sixteen seconds apart with no request between them both succeeded and the token family was not revoked.",
+      "cites": [
+        "0014/AC-20a"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Binding rule 6 says the proxy only refreshes the session cookie and decides no authorisation, while each Server Action verifies its own caller. The header branch amends that rule and AC-10 without breaking it.",
+      "cites": [
+        "0001#binding-rules:25",
+        "0014/AC-20a"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 6751,
+    "output_tokens": 776,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.021262,
+  "recorded_usd": 0.021262
+}

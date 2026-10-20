@@ -1,0 +1,284 @@
+{
+  "asked_at": "2026-10-20T17:37:08+00:00",
+  "question": "Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?",
+  "eval_file": "eval/linked-records-research.json",
+  "eval_question": 5,
+  "called": true,
+  "hops": 0,
+  "search_words": [
+    "feature",
+    "21",
+    "terms",
+    "privacy",
+    "notices",
+    "built",
+    "foundation",
+    "immediately",
+    "after",
+    "32",
+    "originally",
+    "scoped",
+    "into",
+    "slice",
+    "5",
+    "launch",
+    "readiness",
+    "work"
+  ],
+  "items": [
+    {
+      "id": "0007#consequences:11",
+      "line": "0007#consequences:11  Consequence  accepted  specs/0007-auth-and-per-user-isolation/index.md:313  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \"over the entire lifetime of the app\", so it never goes back down. Confirmed not to block feature 7: Branding flags no field, Verification status says verification is not required in Testing, and a real sign in completed. **Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:5",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:5  unclassified  held  scope/scope.md:179  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Moved here from Slice 5 on 2026-08-31, to build after feature 32."
+    },
+    {
+      "id": "0007#follow-up:12",
+      "line": "0007#follow-up:12  FollowUp  held  specs/0007-auth-and-per-user-isolation/index.md:336  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 21's row now carries the dependency in both directions, including the domain constraint (Google will not accept a `vercel.app` address, so the pages must be served from `usejobhunt.dev`) and what feature 7 puts into `auth.users` that the notice must describe. It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32"
+    },
+    {
+      "id": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "line": "unresolved:0007:feature-21-terms-and-privacy-notices  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:296  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "feature 21 (Terms and privacy notices)"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:15  BuildStep  accepted  scope/scope.md:188  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The terms content and effective dates, then the mail delivery check and the Google console work: authorized domain, both URLs, publish out of Testing, submit brand verification · **AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:7",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:7  Constraint  accepted  scope/scope.md:180  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "the privacy notice must describe what arrives from the provider into `auth.users`, meaning the email address, the display name and the avatar URL."
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:1",
+      "line": "feature-5#5-design-system-ui-foundation-done:1  Feature  accepted  scope/scope.md:105  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Port the locked visual decisions (seven token palette, finalized logo, Space Grotesk and JetBrains Mono typography) into a real token layer and a set of base components. These are inherited decisions, not open questions. Sets the responsive posture and the accessibility floor for every screen built after this."
+    },
+    {
+      "id": "0007#follow-up:10",
+      "line": "0007#follow-up:10  FollowUp  accepted  specs/0007-auth-and-per-user-isolation/index.md:335  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`. That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one."
+    },
+    {
+      "id": "scope#resolved:4",
+      "line": "scope#resolved:4  Consequence  accepted  scope/scope.md:526  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Closed on 2026-09-01 by feature 21**, which published a privacy policy and terms on `usejobhunt.dev`, letting the app register that Authorized domain, leave Testing and submit brand verification. Confirmed by starting a real sign in against production: the screen now reads \"to continue to JobHunt\"."
+    },
+    {
+      "id": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "line": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:324  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "feature 21 supplying a privacy policy and terms"
+    },
+    {
+      "id": "feature-21",
+      "line": "feature-21  record  accepted  scope/scope.md  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Terms & privacy notices"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:1  Feature  accepted  scope/scope.md:177  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A plain terms page and a privacy notice saying what is stored, why, and how to have it deleted. Owed the day the first person other than the author signs in. Written against the actual data model rather than from a template."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:10",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:10  BuildStep  accepted  scope/scope.md:183  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Design it (spec): `/architect terms & privacy notices` · written 2026-09-01, 23 acceptance criteria."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:11",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:11  BuildStep  accepted  scope/scope.md:184  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Build it: `/develop terms & privacy notices`"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:12",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:12  BuildStep  accepted  scope/scope.md:185  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The two typed registries (recipients, stored fields) and the three guard tests, plus the Sentry regression test · **AC-4**, **AC-5**, **AC-6**, **AC-23**, and the enforcement half of **AC-14**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:13",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:13  BuildStep  accepted  scope/scope.md:186  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The two routes under `(marketing)`, indexable, with their own metadata, linked from the entry page footer's reserved slot and from a static line under the provider forms on `/sign-in` · **AC-1**, **AC-17**, **AC-18**, **AC-19**, **AC-20**."
+    }
+  ],
+  "links": [
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#consequences:11",
+      "target": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "phrase": "Leaving Google's Testing mode is gated on feature 21",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#follow-up:10",
+      "target": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "phrase": "it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 3344,
+  "bound_usd": 0.166688,
+  "ceiling_usd": 0.25,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"Leaving Google's Testing mode was gated on feature 21: Publish app was greyed out because the privacy policy and terms links were empty, and feature 21 is what produces them.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"Until the app leaves Testing it is capped at 100 users, and Google counts that cap over the entire lifetime of the app, so it never goes back down. This is why the dependency could not wait in Slice 5.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"When the 0007 consequence was written, feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of that paragraph: the dependency was added to feature 21's row, and the feature moved to Foundation to be built after feature 32.\",\"cites\":[\"0007#consequences:11\",\"feature-21#21-terms-privacy-notices-done-alpha:5\"],\"basis\":\"text\"},{\"text\":\"The follow-up records that feature 21's row now carries the dependency in both directions, and that the move out of Slice 5 into Foundation went further than that item had asked.\",\"cites\":[\"0007#follow-up:12\"],\"basis\":\"text\"},{\"text\":\"The pages must be served from `usejobhunt.dev`, because Google will not accept a `vercel.app` address as an Authorized domain.\",\"cites\":[\"0007#follow-up:10\",\"0007#follow-up:12\"],\"basis\":\"text\"}],\"missing\":[\"Why the move was placed specifically after feature 32 rather than at another point in Foundation; the items give no reason for that position.\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [
+    "Why the move was placed specifically after feature 32 rather than at another point in Foundation; the items give no reason for that position."
+  ],
+  "claims": [
+    {
+      "text": "Leaving Google's Testing mode was gated on feature 21: Publish app was greyed out because the privacy policy and terms links were empty, and feature 21 is what produces them.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Until the app leaves Testing it is capped at 100 users, and Google counts that cap over the entire lifetime of the app, so it never goes back down. This is why the dependency could not wait in Slice 5.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "When the 0007 consequence was written, feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of that paragraph: the dependency was added to feature 21's row, and the feature moved to Foundation to be built after feature 32.",
+      "cites": [
+        "0007#consequences:11",
+        "feature-21#21-terms-privacy-notices-done-alpha:5"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "feature-21#21-terms-privacy-notices-done-alpha:5"
+      ]
+    },
+    {
+      "text": "The follow-up records that feature 21's row now carries the dependency in both directions, and that the move out of Slice 5 into Foundation went further than that item had asked.",
+      "cites": [
+        "0007#follow-up:12"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0007#follow-up:12"
+      ]
+    },
+    {
+      "text": "The pages must be served from `usejobhunt.dev`, because Google will not accept a `vercel.app` address as an Authorized domain.",
+      "cites": [
+        "0007#follow-up:10",
+        "0007#follow-up:12"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0007#follow-up:12"
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 3344,
+    "output_tokens": 546,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.012148,
+  "recorded_usd": 0.012148
+}
