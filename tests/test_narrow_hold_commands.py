@@ -19,6 +19,7 @@ from tests.test_code_pass_commands import (
     COMMIT,
     ROOT,
     SNAPSHOT,
+    SUBSET,
     eval_root,
     flat,
     invoke_unreachable,
@@ -65,23 +66,36 @@ class Queues:
     codes: tuple[int, ...]
 
 
-@pytest.fixture(scope="module")
-def queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
-    """`review-queue`, then `--no-narrow-hold`, then `--code-pass`, over every run file."""
-    root = runs_root(tmp_path_factory.mktemp("queues"))
+def write_queues(root: Path, other: str) -> Queues:
+    """`review-queue`, then `review-queue OTHER`, over the run files under `root`."""
     args = ["review-queue", "--root", str(root), "--snapshot", str(SNAPSHOT)]
     first = runner.invoke(app, args)
     default = (root / REVIEW_QUEUE).read_bytes()
-    second = runner.invoke(app, [*args, "--no-narrow-hold"])
-    third = runner.invoke(app, [*args, "--code-pass"])
+    second = runner.invoke(app, [*args, other])
     after = (root / REVIEW_QUEUE).read_bytes()
-    return Queues(root, default, after, (first.exit_code, second.exit_code, third.exit_code))
+    return Queues(root, default, after, (first.exit_code, second.exit_code))
+
+
+@pytest.fixture(scope="module")
+def queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
+    """`review-queue`, then `--no-narrow-hold`, over every run file: the committed queue."""
+    return write_queues(runs_root(tmp_path_factory.mktemp("queues")), "--no-narrow-hold")
+
+
+@pytest.fixture(scope="module")
+def code_pass_queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
+    """`review-queue`, then `--code-pass`, over the fixed subset `SUBSET`.
+
+    The whole corpus is not what these tests check, and a whole corpus rebuild routed
+    with the pass costs about 90 s.
+    """
+    return write_queues(runs_root(tmp_path_factory.mktemp("subset"), *SUBSET), "--code-pass")
 
 
 @pytest.mark.slow
 def test_ac_9b_the_default_queue_is_the_narrow_hold_queue(queues: Queues) -> None:
     """covers: AC-9b (the default flipped: the default file holds fewer rows than without it)."""
-    assert queues.codes == (0, 0, 0)
+    assert queues.codes == (0, 0)
     assert NARROW_HOLD_DEFAULT is True
     without = json.loads((queues.root / WITHOUT_NARROW).read_text())
     assert 0 < len(json.loads(queues.default)) < len(without)
@@ -89,9 +103,13 @@ def test_ac_9b_the_default_queue_is_the_narrow_hold_queue(queues: Queues) -> Non
 
 
 @pytest.mark.slow
-def test_ac_5e_a_queue_off_the_default_leaves_the_default_queue_alone(queues: Queues) -> None:
+def test_ac_5e_a_queue_off_the_default_leaves_the_default_queue_alone(
+    queues: Queues, code_pass_queues: Queues
+) -> None:
     """covers: AC-5e (each other routing writes its own file, never over the default one)."""
     assert queues.after == queues.default
+    assert code_pass_queues.codes == (0, 0)
+    assert code_pass_queues.after == code_pass_queues.default
     assert WITHOUT_NARROW.name == "review-queue-without-narrow-hold.json"
 
 
@@ -117,11 +135,13 @@ def test_ac_5e_each_routing_names_its_own_queue_file(
 
 
 @pytest.mark.slow
-def test_ac_5e_the_code_pass_writes_its_own_file_with_the_rule_on(queues: Queues) -> None:
+def test_ac_5e_the_code_pass_writes_its_own_file_with_the_rule_on(
+    code_pass_queues: Queues,
+) -> None:
     """covers: AC-5e, spec 0007 AC-8 (`--code-pass` still writes review-queue-code-pass.json)."""
     assert CODE_PASS == REVIEW_QUEUE_CODE_PASS
-    both = json.loads((queues.root / CODE_PASS).read_text())
-    assert len(both) <= len(json.loads(queues.default))
+    both = json.loads((code_pass_queues.root / CODE_PASS).read_text())
+    assert 0 < len(both) <= len(json.loads(code_pass_queues.default))
 
 
 # AC-5b, AC-5d: the refusal before any connection.

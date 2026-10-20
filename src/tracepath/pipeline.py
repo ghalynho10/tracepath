@@ -88,8 +88,9 @@ class HeldLink:
     """One relationship held because an endpoint entity was not accepted (AC-11c).
 
     It is not dropped: it goes to the review queue beside the entity it waits on, and
-    the review step releases it when that entity is accepted. `relationship` is the
-    relationship it holds, so the held item view can resolve it (spec 0005).
+    stays held until that endpoint is accepted or released by the narrow hold rule
+    (spec 0008). No review step releases it. `relationship` is the relationship it
+    holds, so the held item view can resolve it (spec 0005).
     """
 
     record: str

@@ -154,6 +154,18 @@ def test_ac_3_a_missing_or_bad_ceiling_exits_1_before_the_graph_is_read(
     assert out == ""
 
 
+def test_ac_3_note_a_bad_ceiling_on_a_dry_run_still_exits_1_before_the_graph_is_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-3 note of 2026-10-19 (a ceiling given to a dry run is still checked)."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+
+    code, _, err = ask(tmp_path, QUESTION, "--ceiling", "0", "--dry-run")
+
+    assert code == 1
+    assert "above 0" in flat(err)
+
+
 # AC-4, AC-5b, AC-5c, AC-6, AC-12: the dry run, the graph checks, no match.
 
 
@@ -171,6 +183,32 @@ def test_ac_4_a_dry_run_prints_words_items_count_and_bound_and_makes_no_call(
     assert len(api.counts) == 1
     assert api.packs == []
     assert records(repo) == []
+
+
+def test_ac_3_note_a_dry_run_needs_no_ceiling_and_says_none_was_given(
+    repo: Path, api: FakeApi
+) -> None:
+    """covers: AC-3 note of 2026-10-19, AC-4 (a dry run makes no paid call)."""
+    code, out, err = ask(repo, QUESTION, "--dry-run")
+
+    assert code == 0, err
+    assert f"Bound: ${BOUND:.4f}" in out
+    assert "; no ceiling given." in flat(out)
+    assert "a real run would stop" not in out
+    assert out.rstrip().endswith("Dry run: no call made, no record written.")
+    assert api.packs == []
+    assert records(repo) == []
+
+
+def test_ac_3_note_a_real_ask_without_a_ceiling_still_exits_1_before_any_call(
+    repo: Path, api: FakeApi
+) -> None:
+    """covers: AC-3 note of 2026-10-19 (only the dry run is let off)."""
+    code, out, err = ask(repo, QUESTION)
+
+    assert code == 1
+    assert "--ceiling USD is required" in flat(err)
+    assert (out, api.counts, api.packs, records(repo)) == ("", [], [], [])
 
 
 def test_ac_4_a_dry_run_says_when_the_bound_is_above_the_ceiling(repo: Path) -> None:
@@ -394,13 +432,16 @@ def test_ac_24_note_an_interrupted_call_is_saved_failed_and_exits_as_ctrl_c_does
 
     monkeypatch.setattr(cli, "ask_calls_through", through)
 
-    code, _, _ = ask(repo, QUESTION, "--ceiling", "1")
+    code, _, err = ask(repo, QUESTION, "--ceiling", "1")
 
     assert code == 130  # Typer's exit for KeyboardInterrupt, raised on from ask_metered()
     (path,) = records(repo)
     saved = json.loads(path.read_text())
     assert saved["settled"] is False
     assert saved["cost_usd"] == BOUND
+    # Note of 2026-10-19: the saved record's path is printed, since Click's "Aborted!"
+    # would otherwise hide the note ask_metered() adds.
+    assert f"saved as failed: {path}" in flat(err)
 
 
 def test_ac_27c_a_record_that_cannot_be_written_still_prints_the_answer_and_exits_1(

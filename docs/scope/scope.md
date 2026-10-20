@@ -228,7 +228,7 @@ The engineer types a why question in plain English. The tool finds the graph ite
 spec [0009](../specs/0009-answer-at-question-time/index.md) · code in `src/tracepath/ask/`, `src/tracepath/extract/metered.py`, `src/tracepath/cli.py`
 _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to 90 items; code picks the search words; the second look is dropped and kept as a Follow-up in the spec._
 - [x] Design it (spec): `/architect answer at question time` · decide how items are found, how the model is asked, how a claim cites an item, and how an inferred link is marked
-- [ ] Build it: `/develop answer at question time`
+- [x] Build it: `/develop answer at question time` · ticked 2026-10-19, every milestone below done
   - [x] Retrieval and `ask --dry-run`, no model (spec 0009 AC-2 to AC-14b) · built 2026-10-19, code in `src/tracepath/ask/retrieve.py` and the `ask` command in `src/tracepath/cli.py`; `ask --eval N` exits 1 as not built until the eval wiring milestone
   - [x] The answer type, prompt and claim checks (AC-15 to AC-20) · built 2026-10-19, code in `src/tracepath/ask/answer.py`, prompt version `ask-1`
   - [x] The guarded call and the record in `metered.py` (AC-21 to AC-28) · built 2026-10-19, code in `src/tracepath/extract/metered.py` (`ask_metered()`), `ask_bound()` in `src/tracepath/extract/cost.py`, `src/tracepath/ask/record.py`; tested with a fake call, no paid call made

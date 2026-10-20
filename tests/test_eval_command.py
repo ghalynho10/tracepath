@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 from collections.abc import Iterator
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,7 @@ from tracepath.artifacts import RUNS_DIR
 from tracepath.cli import NO_HELD_ITEMS, app
 from tracepath.config import Neo4jSettings
 from tracepath.graph import connect
+from tracepath.graph.schema import clear
 from tracepath.report import HELD_LABEL, HELD_MEANING, HELD_OUT_LABEL, UNCHECKED_LINE
 
 pytestmark = pytest.mark.integration
@@ -323,9 +325,29 @@ def test_ac_8d_an_unreadable_file_and_a_line_before_the_first_unit_are_unusable(
     assert "Question 3: PASS" in stdout
 
 
+#: The fixed small subset the undecodable file tests load: the record every question
+#: here cites. Their changed snapshot misses the test run's memo, so a whole corpus root
+#: would rebuild all 240 units for each of them.
+UNDECODABLE_UNITS = ("0012",)
+
+
+@dataclass(frozen=True)
+class Undecodable:
+    """A root loaded from spec 0012's runs alone, and a snapshot with one file not UTF-8."""
+
+    root: Path
+    snapshot: Path
+
+
 @pytest.fixture
-def undecodable(default_graph: Path, tmp_path: Path) -> Path:
-    """A snapshot copy holding one cited file that is not UTF-8, and a question citing it."""
+def undecodable(tmp_path: Path, neo4j_settings: Neo4jSettings) -> Iterator[Undecodable]:
+    """A snapshot copy holding one cited file that is not UTF-8, and a question citing it.
+
+    The graph is cleared after, so the next `default_graph` loads the whole corpus again.
+    """
+    root = tmp_path / "root"
+    for unit in UNDECODABLE_UNITS:
+        shutil.copytree(ROOT / RUNS_DIR / unit, root / RUNS_DIR / unit)
     snapshot = tmp_path / "docs"
     shutil.copytree(SNAPSHOT, snapshot)
     (snapshot / "specs" / "9998-undecodable").mkdir()
@@ -334,10 +356,12 @@ def undecodable(default_graph: Path, tmp_path: Path) -> Path:
         "question": "A question citing a file that is not UTF-8",
         "trace": [step("spec 9998 a paragraph", 1, "docs/specs/9998-undecodable/index.md")],
     }
-    (default_graph / "eval" / "undecodable.json").write_text(
-        json.dumps({"entries": [question, PASSING]})
-    )
-    return snapshot
+    (root / "eval").mkdir()
+    (root / "eval" / "undecodable.json").write_text(json.dumps({"entries": [question, PASSING]}))
+    load(root)
+    yield Undecodable(root, snapshot)
+    with connect(neo4j_settings) as driver:
+        clear(driver, neo4j_settings.database)
 
 
 def run_undecodable(root: Path, snapshot: Path, *args: str) -> tuple[int, str, str]:
@@ -354,10 +378,10 @@ def run_undecodable(root: Path, snapshot: Path, *args: str) -> tuple[int, str, s
 
 
 def test_ac_8d_a_cited_file_that_is_not_utf_8_makes_only_its_question_unusable(
-    default_graph: Path, undecodable: Path
+    undecodable: Undecodable,
 ) -> None:
     """covers: AC-8d (a file that cannot be decoded cannot be read either)."""
-    code, stdout, stderr = run_undecodable(default_graph, undecodable, "eval")
+    code, stdout, stderr = run_undecodable(undecodable.root, undecodable.snapshot, "eval")
 
     assert code == 1
     assert "Question 1: UNUSABLE, a cited file cannot be read" in stdout
@@ -366,10 +390,12 @@ def test_ac_8d_a_cited_file_that_is_not_utf_8_makes_only_its_question_unusable(
 
 
 def test_trace_eval_on_a_cited_file_that_is_not_utf_8_exits_1_with_no_traceback(
-    default_graph: Path, undecodable: Path
+    undecodable: Undecodable,
 ) -> None:
     """covers: AC-8c (`trace --eval` turns the same failure into a message)."""
-    code, stdout, stderr = run_undecodable(default_graph, undecodable, "trace", "--eval", "1")
+    code, stdout, stderr = run_undecodable(
+        undecodable.root, undecodable.snapshot, "trace", "--eval", "1"
+    )
 
     assert code == 1
     assert stderr.strip()
