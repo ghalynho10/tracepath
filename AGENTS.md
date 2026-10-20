@@ -39,7 +39,7 @@ uv run tracepath ask "QUESTION" --dry-run   # finds the items and prices the cal
 uv run tracepath ask --eval N --ceiling USD   # asks eval question N; --eval-file F --release-held-out runs a held out file, refusing a question already answered once
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
-uv run pytest                    # tests, needs Neo4j up for integration; about 20 minutes locally over the whole corpus
+uv run pytest                    # tests, needs Neo4j up for integration; about 15 minutes locally (tests that do not need the whole corpus run on a fixed subset)
 uv run pytest -m "not integration"   # unit tests only, no Neo4j needed
 uv run tracepath load            # after the suite: the ask integration tests (tests/test_ask_command.py) empty the shared Neo4j graph
 ```
