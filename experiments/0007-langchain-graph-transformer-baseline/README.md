@@ -113,3 +113,13 @@ ids, fragments one feature into identities that cannot be reconciled, links noth
 files, has no supersession vocabulary, and re-asserts a struck clause as current. Those are
 the failures spec 0001's rationale names, and they are why tracepath uses a closed
 vocabulary schema with per section extraction and its own identity resolution.
+
+## Correction, 2026-10-19
+
+The Conclusion above overstates finding 5 when it says the transformer "re-asserts a struck
+clause as current". In corpus spec 0006 only AC-7 is struck through
+(`corpus/jobhunt/docs/specs/0006-entry-page-and-link-metadata/index.md:29`). `COPY-1`
+itself, at `index.md:101`, is not struck: spec 0007 AC-16 deletes it, but 0006 still states
+it unmarked. So the graph repeats a string a later record deletes, not a clause struck in the
+file it read. Finding 5's other point stands: the two `Copy-1` nodes would merge with no trace
+of AC-16. The original text above is left as written.

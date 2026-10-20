@@ -1,6 +1,6 @@
 # tracepath
 
-A terminal tool that answers "why was this built this way?" by walking a chain across a project's decision records. Corpus: JobHunt's specs, pinned at commit `2e40bcf`.
+A terminal tool that answers "why was this built this way?" from a project's decision records. `tracepath ask` finds the graph items that bear on a plain English question by retrieval over the extracted graph, answers it in one model call, and checks every citation in code. Corpus: JobHunt's specs, pinned at commit `2e40bcf`.
 
 ## Stack
 
@@ -34,8 +34,8 @@ uv run tracepath eval --eval-file F --release-held-out   # run a held out file; 
 uv run tracepath load --code-pass   # spec 0007: route with the code pass; load, review-queue, eval and trace --eval each take --code-pass, off by default; eval and trace --eval refuse a graph loaded the other way
 uv run tracepath review-queue --code-pass   # writes artifacts/review-queue-code-pass.json, never over the default review-queue.json; --no-narrow-hold adds -without-narrow-hold to the name, so four queue files in all
 uv run tracepath extract RECORD:SECTION ... --ceiling USD --expect-model M   # refuses (exit 1) before any call when the settings model differs from M
-uv run tracepath ask "QUESTION" --ceiling USD   # spec 0009: answers a why question from the graph, every claim citing an item; one paid call, record written to artifacts/asks/; --ceiling is required
-uv run tracepath ask "QUESTION" --ceiling USD --dry-run   # finds the items and prices the call only: no call, no record (free)
+uv run tracepath ask "QUESTION" --ceiling USD   # spec 0009: answers a why question from the graph, every claim citing an item; one paid call, record written to artifacts/asks/; --ceiling is required except with --dry-run; verdict answered, partly, not_supported or no_documented_link (prompt ask-2)
+uv run tracepath ask "QUESTION" --dry-run   # finds the items and prices the call only: no call, no record (free), so no --ceiling needed
 uv run tracepath ask --eval N --ceiling USD   # asks eval question N; --eval-file F --release-held-out runs a held out file, refusing a question already answered once
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
