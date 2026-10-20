@@ -310,6 +310,33 @@ def test_ac_14b_a_replacement_counts_against_the_limit(monkeypatch: pytest.Monke
     assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 2 cut)."
 
 
+def test_ac_14b_an_item_after_a_cut_history_item_is_cut_too(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """covers: AC-14b, AC-11 note. 9101/AC-5 alone would fit the third place, but it comes
+    after 9101/AC-3 and its replacement, which do not, so it is cut and counted with them.
+    """
+    monkeypatch.setattr(retrieve, "ITEM_LIMIT", 3)
+    nodes = (
+        entity("9101/AC-1", "alpha"),
+        entity("9101/AC-2", "nothing"),
+        entity("9101/AC-3", "nothing"),
+        entity("9101/AC-4", "nothing"),
+        entity("9101/AC-5", "nothing"),
+    )
+    links = (
+        link("BLOCKED_BY", "9101/AC-1", "9101/AC-2"),
+        link("BLOCKED_BY", "9101/AC-2", "9101/AC-3"),
+        link("SUPERSEDED_BY", "9101/AC-3", "9101/AC-4"),
+        link("BLOCKED_BY", "9101/AC-2", "9101/AC-5"),
+    )
+    pack = build_pack(graph_slice(nodes, links, with_held=True), "alpha")
+
+    assert [i.node.canonical_id for i in pack.items] == ["9101/AC-1", "9101/AC-2"]
+    assert pack.cut == 3
+    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 3 cut)."
+
+
 def test_the_same_graph_and_question_always_make_the_same_pack() -> None:
     """Key invariant 3: retrieval is a pure function of the slice and the question."""
     assert build_pack(fx.graph(), "landing row") == build_pack(fx.graph(), "landing row")
