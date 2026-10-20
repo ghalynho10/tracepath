@@ -20,6 +20,9 @@ from tracepath.extract.metered import ResumeRefused, resume_runs
 from tracepath.rebuild import committed_units
 
 ROOT = Path(__file__).resolve().parents[1]
+
+#: The fake password the dotenv test writes; it must not outlive that test.
+DOTENV_PASSWORD = "from-the-dotenv-file"
 SNAPSHOT = ROOT / "corpus" / "jobhunt" / "docs"
 
 #: The text that marks a file able to reach the model (AC-72).
@@ -143,8 +146,17 @@ def test_ac_74_dotenv_still_supplies_the_neo4j_settings_under_the_fixture(
 ) -> None:
     """covers: AC-74 (`load_dotenv()` keeps working, so integration tests reach Neo4j)."""
     env = tmp_path / ".env"
-    env.write_text("NEO4J_PASSWORD=from-the-dotenv-file\n")
-    monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
+    env.write_text(f"NEO4J_PASSWORD={DOTENV_PASSWORD}\n")
+    # `load_dotenv()` writes `os.environ` itself, behind monkeypatch's back. Setting the
+    # variable first makes monkeypatch record its real value, or its absence, so teardown
+    # puts that back and the fake password never reaches a later test.
+    monkeypatch.setenv("NEO4J_PASSWORD", DOTENV_PASSWORD)
+    monkeypatch.delenv("NEO4J_PASSWORD")
     monkeypatch.setattr(config, "load_dotenv", lambda *a, **k: dotenv.load_dotenv(env))
 
-    assert config.load_neo4j_settings().password == "from-the-dotenv-file"
+    assert config.load_neo4j_settings().password == DOTENV_PASSWORD
+
+
+def test_ac_74_the_dotenv_password_is_gone_once_that_test_ends() -> None:
+    """covers: AC-74 (runs after the test above, in file order: nothing leaks from it)."""
+    assert os.environ.get("NEO4J_PASSWORD") != DOTENV_PASSWORD
