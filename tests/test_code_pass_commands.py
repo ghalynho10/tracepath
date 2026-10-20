@@ -52,6 +52,12 @@ def runs_root(root: Path, *units: str) -> Path:
     return root
 
 
+#: The fixed small subset the tests below run on when the whole corpus is not what they
+#: test: two records whose flag only criteria the code pass releases. A whole corpus
+#: rebuild routed with the pass costs about 90 s, once per routing.
+SUBSET = ("0002", "0007")
+
+
 # AC-6, AC-8, AC-8b: the two queues.
 
 
@@ -66,8 +72,8 @@ class Queues:
 
 @pytest.fixture(scope="module")
 def queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
-    """`review-queue`, then `review-queue --code-pass`, over every committed run file."""
-    root = runs_root(tmp_path_factory.mktemp("queues"))
+    """`review-queue`, then `review-queue --code-pass`, over the subset's run files."""
+    root = runs_root(tmp_path_factory.mktemp("queues"), *SUBSET)
     args = ["review-queue", "--root", str(root), "--snapshot", str(SNAPSHOT)]
     first = runner.invoke(app, args)
     plain = (root / REVIEW_QUEUE).read_bytes()
@@ -81,10 +87,21 @@ def queues(tmp_path_factory: pytest.TempPathFactory) -> Queues:
     )
 
 
-def test_ac_6_a_plain_review_queue_reproduces_the_committed_queue(queues: Queues) -> None:
-    """covers: AC-6."""
+def test_ac_6_a_plain_review_queue_reproduces_the_committed_queue(
+    tmp_path: Path,
+) -> None:
+    """covers: AC-6. Over every committed run file: the committed queue is the whole corpus's."""
+    root = runs_root(tmp_path)
+
+    result = runner.invoke(app, ["review-queue", "--root", str(root), "--snapshot", str(SNAPSHOT)])
+
+    assert result.exit_code == 0, result.stderr
+    assert (root / REVIEW_QUEUE).read_bytes() == (ROOT / REVIEW_QUEUE).read_bytes()
+
+
+def test_ac_6_a_plain_review_queue_exits_0_over_the_subset(queues: Queues) -> None:
+    """covers: AC-6 (the subset the two queue tests below compare)."""
     assert queues.plain_code == 0
-    assert queues.plain == (ROOT / REVIEW_QUEUE).read_bytes()
 
 
 def test_ac_8_review_queue_with_the_pass_writes_its_own_file(queues: Queues) -> None:
@@ -210,12 +227,14 @@ def test_trace_with_the_pass_needs_an_eval_question() -> None:
     assert "--code-pass changes the routing scored, so it needs --eval N." in stderr
 
 
-def test_ac_7d_the_scoring_routes_with_the_pass() -> None:
+def test_ac_7d_the_scoring_routes_with_the_pass(tmp_path: Path) -> None:
     """covers: AC-7d (what `eval` and `trace --eval` score is the pass routing)."""
-    on = _committed(ROOT, SNAPSHOT, COMMIT, True)
+    root = runs_root(tmp_path, *SUBSET)
+
+    on = _committed(root, SNAPSHOT, COMMIT, True)
 
     assert any(result.released for result in on.results)
-    assert on.results == apply_code_pass(committed_units(ROOT, SNAPSHOT))
+    assert on.results == apply_code_pass(committed_units(root, SNAPSHOT))
 
 
 # AC-6b, AC-7b, AC-16, AC-17: the load.
@@ -249,7 +268,7 @@ def test_load_with_and_without_the_pass(
     tmp_path: Path, driver: Driver, neo4j_settings: Neo4jSettings
 ) -> None:
     """covers: AC-7b, AC-16, AC-17, then AC-6b (a plain load after restores the manifest)."""
-    root = runs_root(tmp_path, "0002", "0007")
+    root = runs_root(tmp_path, *SUBSET)
     results = committed_units(root, SNAPSHOT)
     records = records_for_units(results, SNAPSHOT, COMMIT)
     with_pass = apply_code_pass(results)
