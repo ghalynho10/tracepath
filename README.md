@@ -87,6 +87,8 @@ Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a t
 
 At question time, code picks the question's words, finds up to 16 items that share them, and adds their neighbours up to two hops away, at most 90 items in all. It prices the call before making it, makes one call, then checks every cited id against the items it sent, and saves the whole exchange.
 
+The search runs over the extracted items, not the raw documents. That is what makes each citation point at one exact criterion, with its file and line, and what lets an answer label a struck or replaced item as history instead of quoting it as current. Following links brings in connected items that use different words, such as the criterion that replaced an old one.
+
 ## What I tried first
 
 I first tried LangChain's `LLMGraphTransformer`, with default settings, on four JobHunt files ([experiment 0007](experiments/0007-langchain-graph-transformer-baseline/README.md)). It dropped the acceptance criterion ids, so AC-7 and AC-16 never became nodes. It gave one feature three identities with nothing linking them. I already had an extraction pipeline from earlier work, with closed vocabulary types, a validator and a run comparator, tested on this corpus, and this test confirmed that a general purpose library failed on the same data.
