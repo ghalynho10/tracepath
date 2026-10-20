@@ -1024,10 +1024,14 @@ def _ask_graph() -> GraphSlice:
 
 
 def _graph_line(built: GraphBuildSummary) -> str:
-    """How the graph was loaded, read from `artifacts/graph-build.json` (AC-5c)."""
+    """How the graph was loaded, read from `artifacts/graph-build.json` (AC-5c and its note)."""
     held = "yes" if built.held_view else "no"
     narrow = "yes" if built.narrow_hold else "no"
-    return f"Graph: held view {held}, narrow hold {narrow}, corpus {built.corpus_commit}."
+    code = "yes" if built.code_pass else "no"
+    return (
+        f"Graph: held view {held}, narrow hold {narrow}, code pass {code}, "
+        f"corpus {built.corpus_commit}."
+    )
 
 
 @app.command()

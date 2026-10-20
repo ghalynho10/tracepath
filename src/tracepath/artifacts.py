@@ -450,11 +450,12 @@ class GraphBuildSummary:
 
     held_view: bool
     narrow_hold: bool
+    code_pass: bool
     corpus_commit: str
 
 
 def graph_build_summary(root: Path) -> GraphBuildSummary:
-    """The held view, the narrow hold setting and the corpus commit the last `load` wrote.
+    """The held view, narrow hold and code pass settings and the corpus commit `load` wrote.
 
     Raises:
         ManifestUnreadable: the manifest is missing, not a JSON object, or names no
@@ -469,6 +470,7 @@ def graph_build_summary(root: Path) -> GraphBuildSummary:
     return GraphBuildSummary(
         held_view="held_view" in manifest,
         narrow_hold=manifest.get("narrow_hold", False) is True,
+        code_pass=manifest.get("code_pass", False) is True,
         corpus_commit=commit,
     )
 

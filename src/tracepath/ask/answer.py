@@ -134,10 +134,30 @@ class CheckedClaim:
     history: bool
     held_ids: tuple[str, ...]
 
+    @property
+    def unsupported(self) -> bool:
+        """Whether the claim cites ids and every one of them was rejected (note on AC-17b)."""
+        return bool(self.claim.cites) and set(self.rejected_ids) >= set(self.claim.cites)
+
+    @property
+    def failed(self) -> bool:
+        """Whether a code check failed: a rejected id, no id, or a `link` not found (AC-20 note)."""
+        return (
+            bool(self.rejected_ids)
+            or self.uncited
+            or (self.claim.basis == "link" and self.inferred)
+        )
+
 
 def _linked(cited: frozenset[str], links: tuple[Link, ...]) -> bool:
-    """Whether a typed link sent joins two of the cited ids, either direction (AC-17)."""
-    return any(link.source != link.target and {link.source, link.target} <= cited for link in links)
+    """Whether every cited id is joined by a sent link to another cited id (AC-17 note)."""
+    joined = {
+        end
+        for link in links
+        if link.source != link.target and {link.source, link.target} <= cited
+        for end in (link.source, link.target)
+    }
+    return len(cited) > 1 and joined >= cited
 
 
 def check_claims(answer: Answer, pack: Pack) -> tuple[CheckedClaim, ...]:
@@ -148,7 +168,7 @@ def check_claims(answer: Answer, pack: Pack) -> tuple[CheckedClaim, ...]:
         cites = tuple(dict.fromkeys(claim.cites))
         found = tuple(c for c in cites if c in by_id)
         inferred = claim.basis == "inferred" or (
-            claim.basis == "link" and not _linked(frozenset(found), pack.links)
+            claim.basis == "link" and not _linked(frozenset(cites), pack.links)
         )
         checked.append(
             CheckedClaim(
@@ -176,14 +196,22 @@ def _claim_line(number: int, checked: CheckedClaim) -> str:
         marks.append(f"CITATION REJECTED: {', '.join(checked.rejected_ids)}")
     if checked.uncited:
         marks.append("UNCITED")
-    if not checked.inferred:
+    if checked.unsupported:
+        marks.append("unsupported")
+    elif not checked.inferred:
         marks.append("link" if checked.claim.basis == "link" else "read from text")
     return "  " + " ".join([f"{number}.", _flat(checked.claim.text), *cites, *marks])
 
 
 def answer_lines(answer: Answer, checked: tuple[CheckedClaim, ...]) -> tuple[str, ...]:
-    """The answer as printed: the verdict, the numbered claims, then what is missing."""
-    lines = [f"Answer (verdict: {answer.verdict}):"]
+    """The answer as printed: the verdict, the numbered claims, then what is missing.
+
+    When any claim failed a code check, the verdict line says how many, so the model's
+    verdict never reads alone above claims code has failed (AC-20 note).
+    """
+    failed = sum(1 for claim in checked if claim.failed)
+    tally = f"; {failed} of {len(checked)} claims failed a check" if failed else ""
+    lines = [f"Answer (verdict: {answer.verdict}{tally}):"]
     lines += [_claim_line(n, claim) for n, claim in enumerate(checked, start=1)]
     if not checked:
         lines.append("  (no claims)")

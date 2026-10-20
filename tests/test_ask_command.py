@@ -200,8 +200,17 @@ def test_ac_5c_one_line_names_how_the_graph_was_loaded(repo: Path) -> None:
 
     assert out.splitlines()[:2] == [
         f"Question: {QUESTION}",
-        "Graph: held view yes, narrow hold yes, corpus 2e40bcf.",
+        "Graph: held view yes, narrow hold yes, code pass no, corpus 2e40bcf.",
     ]
+
+
+def test_ac_5c_note_the_graph_line_says_when_the_code_pass_was_on(repo: Path) -> None:
+    """covers: AC-5c note of 2026-10-19 (review finding 4)."""
+    write_manifest(repo, {**MANIFEST, "code_pass": True})
+
+    _, out, _ = ask(repo, QUESTION, "--ceiling", "1", "--dry-run")
+
+    assert "Graph: held view yes, narrow hold yes, code pass yes, corpus 2e40bcf." in out
 
 
 def test_ac_5c_a_graph_loaded_without_either_setting_says_no(repo: Path) -> None:
@@ -210,7 +219,7 @@ def test_ac_5c_a_graph_loaded_without_either_setting_says_no(repo: Path) -> None
 
     _, out, _ = ask(repo, QUESTION, "--ceiling", "1", "--dry-run")
 
-    assert "Graph: held view no, narrow hold no, corpus abc1234." in out
+    assert "Graph: held view no, narrow hold no, code pass no, corpus abc1234." in out
 
 
 @pytest.mark.parametrize("manifest", ["not json", None])
@@ -322,11 +331,11 @@ def test_ac_1_ask_prints_the_items_then_the_answer_then_one_cost_line(
 
     assert code == 0, err
     items = lines.index("  9101/AC-1  AcceptanceCriterion  accepted  " + fx.FILE + ":10  hit")
-    answer = lines.index("Answer (verdict: answered):")
+    answer = lines.index("Answer (verdict: answered; 1 of 2 claims failed a check):")
     cost = next(n for n, line in enumerate(lines) if line.startswith("Cost: "))
     assert items < answer < cost
     assert lines[answer + 1] == "  1. It is amended. [9101/AC-1] [9101/AC-2 held] link"
-    assert lines[answer + 2].endswith("CITATION REJECTED: 0001/AC-1 read from text")
+    assert lines[answer + 2].endswith("CITATION REJECTED: 0001/AC-1 unsupported")
     assert sum(line.startswith("Cost: ") for line in lines) == 1
     assert lines[-1].startswith("Record: artifacts/asks/")
     assert api.built == 1
@@ -372,6 +381,28 @@ def test_ac_24_a_failed_call_is_saved_at_its_bound_and_exits_1(repo: Path, api: 
     assert json.loads(path.read_text())["settled"] is False
 
 
+def test_ac_24_note_an_interrupted_call_is_saved_failed_and_exits_as_ctrl_c_does(
+    repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """covers: AC-24 note of 2026-10-19 (review finding 1): Ctrl-C during the call."""
+
+    def through(client: object, settings: object) -> Callable[[Pack], AskAttempt]:
+        def call(pack: Pack) -> AskAttempt:
+            raise KeyboardInterrupt
+
+        return call
+
+    monkeypatch.setattr(cli, "ask_calls_through", through)
+
+    code, _, _ = ask(repo, QUESTION, "--ceiling", "1")
+
+    assert code == 130  # Typer's exit for KeyboardInterrupt, raised on from ask_metered()
+    (path,) = records(repo)
+    saved = json.loads(path.read_text())
+    assert saved["settled"] is False
+    assert saved["cost_usd"] == BOUND
+
+
 def test_ac_27c_a_record_that_cannot_be_written_still_prints_the_answer_and_exits_1(
     repo: Path,
 ) -> None:
@@ -381,7 +412,7 @@ def test_ac_27c_a_record_that_cannot_be_written_still_prints_the_answer_and_exit
     code, out, err = ask(repo, QUESTION, "--ceiling", "1")
 
     assert code == 1
-    assert "Answer (verdict: answered):" in out
+    assert "Answer (verdict: answered; 1 of 2 claims failed a check):" in out
     assert "Cost: 1 call, 6,000 in, 900 out" in out
     assert "Record: lost." in out
     assert "could not be written" in flat(err)

@@ -49,3 +49,14 @@ Both are verified by reading `src/tracepath/ask/retrieve.py`. Neither is harmful
 
 ## Test coverage
 112 non integration tests across `test_ask_answer.py`, `test_ask_retrieve.py`, `test_ask_metered.py`, `test_ask_command.py` and `test_spend_fence.py` pass. They cover the ceiling stop, failed call at bound, lost record, collision, the held out guard, and the per claim checks. Two gaps tie to the findings above: no test for an unexpected exception from `call()` (finding 1), and no test where a `link` claim cites three ids with one linked pair (finding 2).
+
+## Resolution, 2026-10-19
+Each change has a dated note in spec 0009 and its own tests.
+
+- Finding 1, fixed: any exception the call raises, `KeyboardInterrupt` included, is saved as a failed call at its bound before it propagates (note on AC-24).
+- Finding 2, fixed: a `link` claim passes only when every cited id is joined by a sent link to another cited id; otherwise it is marked INFERRED (note on AC-17).
+- Finding 3, fixed: the verdict line says how many claims failed a check when any did (note on AC-20).
+- Finding 4, fixed in part: the Graph line also says whether the code pass was on, read from `graph-build.json` (note on AC-5c). There is still no cross check against the live graph, as the finding advised.
+- Nit 1, fixed: a claim whose every citation is rejected prints `unsupported` in place of its basis (note on AC-17b).
+- Nit 2, not fixed: the held out guard stays keyed on the eval file name. It guards against accidents, not tampering.
+- Nit 3, fixed: the cut count includes a replacement cut together with its history item (note on AC-11).

@@ -288,7 +288,9 @@ def test_ac_14b_the_item_replacing_a_history_item_is_added_right_behind_it() -> 
 
 
 def test_ac_14b_a_replacement_counts_against_the_limit(monkeypatch: pytest.MonkeyPatch) -> None:
-    """covers: AC-14b. With room for three, the history item and its replacement do not fit."""
+    """covers: AC-14b, AC-11 note. With room for three, the history item and its replacement
+    do not fit, and the cut counts both, the replacement reached by no hop included.
+    """
     monkeypatch.setattr(retrieve, "ITEM_LIMIT", 3)
     nodes = (
         entity("9101/AC-1", "alpha"),
@@ -304,7 +306,8 @@ def test_ac_14b_a_replacement_counts_against_the_limit(monkeypatch: pytest.Monke
     pack = build_pack(graph_slice(nodes, links, with_held=True), "alpha")
 
     assert [i.node.canonical_id for i in pack.items] == ["9101/AC-1", "9101/AC-2"]
-    assert pack.cut == 1
+    assert pack.cut == 2
+    assert pack_lines(pack)[1] == "Items sent: 2 (1 hits, 1 neighbours, 2 cut)."
 
 
 def test_the_same_graph_and_question_always_make_the_same_pack() -> None:

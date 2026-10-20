@@ -244,7 +244,8 @@ def build_pack(graph: GraphSlice, question: str) -> Pack:
     The hits are the `HIT_LIMIT` best scoring nodes above 0, then their neighbours up to
     `HOPS` hops. A history item brings what replaces it in right behind it, counted
     against `ITEM_LIMIT`; an item whose replacements would not fit is cut, with every
-    item after it.
+    item after it. The cut counts every item left out, a replacement cut with its
+    history item included (AC-11 note).
     """
     words = tokenise(question)
     nodes = {node.canonical_id: node for node in graph.nodes}
@@ -254,21 +255,24 @@ def build_pack(graph: GraphSlice, question: str) -> Pack:
     ordered, hop = _reached(hits, _neighbours(graph, frozenset(nodes)))
     replaced = replacements(graph)
 
+    wanted: dict[str, int] = {}
     taken: dict[str, int] = {}
+    full = False
     for node in ordered:
-        if node in taken:
+        if node in wanted:
             continue
         group = {node: hop[node]}
         queue = [node]
         while queue:
             current = queue.pop(0)
             for newer in replaced.get(current, ()):
-                if newer in nodes and newer not in taken and newer not in group:
+                if newer in nodes and newer not in wanted and newer not in group:
                     group[newer] = hop.get(newer, group[current] + 1)
                     queue.append(newer)
-        if len(taken) + len(group) > ITEM_LIMIT:
-            break
-        taken.update(group)
+        wanted.update(group)
+        full = full or len(taken) + len(group) > ITEM_LIMIT
+        if not full:
+            taken.update(group)
 
     items = tuple(
         Item(
@@ -286,7 +290,7 @@ def build_pack(graph: GraphSlice, question: str) -> Pack:
         words=words,
         items=items,
         links=tuple(link for link in graph.links if {link.source, link.target} <= sent),
-        cut=sum(1 for node in ordered if node not in sent),
+        cut=len(wanted) - len(taken),
     )
 
 

@@ -674,7 +674,10 @@ def ask_metered(
 ) -> AskOutcome:
     """Make one ask call if its bound fits the ceiling, and write its record as it settles.
 
-    A failed call counts at its bound (AC-24); a settled one at its recorded usage.
+    A failed call counts at its bound (AC-24); a settled one at its recorded usage. An
+    exception the call raises, `KeyboardInterrupt` included, is saved as a failed call
+    at its bound before it propagates (AC-24 note), so a paid request never goes
+    unrecorded.
 
     Raises:
         ArtifactCollisionError: a record already sits where this one would land,
@@ -683,49 +686,68 @@ def ask_metered(
     if bound > ceiling:
         return AskOutcome(None, (), 0.0, 0.0, None, None, "stopping here before the call: ceiling")
     ensure_record_unwritten(root, name)
-    attempt = call(pack)
+
+    def record_of(attempt: AskAttempt, checked: tuple[CheckedClaim, ...]) -> AskRecord:
+        recorded = tokens_cost(
+            settings.model,
+            attempt.input_tokens or 0,
+            attempt.output_tokens or 0,
+            attempt.cache_creation_input_tokens,
+            attempt.cache_read_input_tokens,
+        )
+        return AskRecord(
+            asked_at=asked_at.isoformat(timespec="seconds"),
+            question=pack.question,
+            pack=pack,
+            called=True,
+            counted_input_tokens=counted,
+            bound_usd=bound,
+            ceiling_usd=ceiling,
+            model=settings.model,
+            effort=settings.effort or "default",
+            prompt_version=asking.PROMPT_VERSION,
+            corpus_commit=commit,
+            settled=attempt.answer is not None,
+            answer=attempt.answer,
+            checked=checked,
+            raw_response=attempt.raw_response,
+            stop_reason=attempt.stop_reason,
+            error=attempt.error,
+            usage=Usage(
+                input_tokens=attempt.input_tokens,
+                output_tokens=attempt.output_tokens,
+                cache_creation_input_tokens=attempt.cache_creation_input_tokens,
+                cache_read_input_tokens=attempt.cache_read_input_tokens,
+            ),
+            cost_usd=recorded if attempt.answer is not None else bound,
+            recorded_usd=recorded,
+            source=source,
+        )
+
+    try:
+        attempt = call(pack)
+    except BaseException as exc:
+        raised = AskAttempt(
+            input_tokens=None,
+            output_tokens=None,
+            error=f"the call raised {type(exc).__name__} ({exc})",
+        )
+        try:
+            saved = write_record(root, name, record_of(raised, ()))
+        except (OSError, ArtifactCollisionError) as lost:
+            exc.add_note(f"The call counts at its bound, but its record is lost ({lost}).")
+        else:
+            exc.add_note(f"The call counts at its bound and is saved as failed: {saved}")
+        raise
     checked = check_claims(attempt.answer, pack) if attempt.answer is not None else ()
-    recorded = tokens_cost(
-        settings.model,
-        attempt.input_tokens or 0,
-        attempt.output_tokens or 0,
-        attempt.cache_creation_input_tokens,
-        attempt.cache_read_input_tokens,
-    )
-    cost = recorded if attempt.answer is not None else bound
-    record = AskRecord(
-        asked_at=asked_at.isoformat(timespec="seconds"),
-        question=pack.question,
-        pack=pack,
-        called=True,
-        counted_input_tokens=counted,
-        bound_usd=bound,
-        ceiling_usd=ceiling,
-        model=settings.model,
-        effort=settings.effort or "default",
-        prompt_version=asking.PROMPT_VERSION,
-        corpus_commit=commit,
-        settled=attempt.answer is not None,
-        answer=attempt.answer,
-        checked=checked,
-        raw_response=attempt.raw_response,
-        stop_reason=attempt.stop_reason,
-        error=attempt.error,
-        usage=Usage(
-            input_tokens=attempt.input_tokens,
-            output_tokens=attempt.output_tokens,
-            cache_creation_input_tokens=attempt.cache_creation_input_tokens,
-            cache_read_input_tokens=attempt.cache_read_input_tokens,
-        ),
-        cost_usd=cost,
-        recorded_usd=recorded,
-        source=source,
-    )
+    record = record_of(attempt, checked)
     try:
         path: Path | None = write_record(root, name, record)
     except (OSError, ArtifactCollisionError) as exc:
-        return AskOutcome(attempt, checked, cost, recorded, None, str(exc), None)
-    return AskOutcome(attempt, checked, cost, recorded, path, None, None)
+        return AskOutcome(
+            attempt, checked, record.cost_usd, record.recorded_usd, None, str(exc), None
+        )
+    return AskOutcome(attempt, checked, record.cost_usd, record.recorded_usd, path, None, None)
 
 
 def _tokens(count: int | None) -> str:

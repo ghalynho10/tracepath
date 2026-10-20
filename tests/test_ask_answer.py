@@ -131,6 +131,40 @@ def test_ac_17_a_link_claim_citing_one_id_prints_inferred(pack: Pack) -> None:
     assert line.endswith("INFERRED")
 
 
+def test_ac_17_note_a_link_claim_with_one_cited_id_left_unlinked_prints_inferred(
+    pack: Pack,
+) -> None:
+    """covers: AC-17 note of 2026-10-19 (review finding 2). AC-1 and AC-2 are linked;
+    no sent link joins 9101/AC-4 to either.
+    """
+    (line,) = printed(pack, claim("Linked.", "9101/AC-1", "9101/AC-2", "9101/AC-4", basis="link"))[
+        1:
+    ]
+
+    assert line == "  1. Linked. [9101/AC-1] [9101/AC-2 held] [9101/AC-4] INFERRED"
+
+
+def test_ac_17_note_a_link_claim_whose_every_cited_id_is_linked_to_another_passes(
+    pack: Pack,
+) -> None:
+    """covers: AC-17 note of 2026-10-19. 9101/AC-1 to 9101/AC-2 to 9102/AC-1, a chain."""
+    (line,) = printed(pack, claim("A chain.", "9101/AC-1", "9101/AC-2", "9102/AC-1", basis="link"))[
+        1:
+    ]
+
+    assert line.endswith(" link")
+    assert "INFERRED" not in line
+
+
+def test_ac_17_note_a_link_claim_citing_an_id_not_sent_prints_inferred(pack: Pack) -> None:
+    """covers: AC-17 note of 2026-10-19. A rejected id is joined by no sent link."""
+    (line,) = printed(pack, claim("Linked.", "9101/AC-1", "9101/AC-2", "9999/AC-1", basis="link"))[
+        1:
+    ]
+
+    assert line.endswith("INFERRED CITATION REJECTED: 9999/AC-1")
+
+
 def test_ac_17b_an_inferred_claim_prints_inferred_and_a_text_claim_read_from_text(
     pack: Pack,
 ) -> None:
@@ -145,6 +179,48 @@ def test_ac_17b_an_inferred_claim_prints_inferred_and_a_text_claim_read_from_tex
         "  1. Guessed. [9101/AC-1] [9102/AC-1] INFERRED",
         "  2. Read. [9101/AC-1] read from text",
     )
+
+
+def test_ac_17b_note_a_claim_whose_every_citation_is_rejected_prints_unsupported(
+    pack: Pack,
+) -> None:
+    """covers: AC-17b note of 2026-10-19 (review nit 1), in place of its basis."""
+    lines = printed(
+        pack,
+        claim("Read.", "9999/AC-1", "9999/AC-2"),
+        claim("Linked.", "9999/AC-1", basis="link"),
+    )
+
+    assert lines[1:] == (
+        "  1. Read. [9999/AC-1] [9999/AC-2] CITATION REJECTED: 9999/AC-1, 9999/AC-2 unsupported",
+        "  2. Linked. [9999/AC-1] INFERRED CITATION REJECTED: 9999/AC-1 unsupported",
+    )
+
+
+def test_ac_20_note_the_verdict_line_counts_the_claims_that_failed_a_check(pack: Pack) -> None:
+    """covers: AC-20 note of 2026-10-19 (review finding 3): a rejected id, no id, and a
+    `link` not found each fail; a passing claim and the model's own `inferred` do not.
+    """
+    lines = printed(
+        pack,
+        claim("Read.", "9101/AC-1"),
+        claim("Guessed.", "9101/AC-1", basis="inferred"),
+        claim("Elsewhere.", "9999/AC-1"),
+        claim("Nothing."),
+        claim("Linked.", "9101/AC-1", "9101/AC-4", basis="link"),
+        verdict="answered",
+    )
+
+    assert lines[0] == "Answer (verdict: answered; 3 of 5 claims failed a check):"
+
+
+def test_ac_20_note_with_no_failed_check_the_verdict_line_is_unchanged(pack: Pack) -> None:
+    """covers: AC-20 note of 2026-10-19."""
+    lines = printed(
+        pack, claim("Read.", "9101/AC-1"), claim("Guessed.", "9101/AC-1", basis="inferred")
+    )
+
+    assert lines[0] == "Answer (verdict: answered):"
 
 
 def test_ac_18_a_claim_citing_a_history_item_prints_history_set_by_code(pack: Pack) -> None:

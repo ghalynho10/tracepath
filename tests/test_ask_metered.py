@@ -167,6 +167,76 @@ def test_ac_24_a_failed_call_counts_at_its_bound_is_saved_and_not_retried(
     assert saved["cost_usd"] == BOUND
 
 
+class Raises:
+    """An ask call that raises after the request is sent, and counts how often it ran."""
+
+    def __init__(self, error: BaseException) -> None:
+        self.error = error
+        self.calls = 0
+
+    def __call__(self, pack: Pack) -> AskAttempt:
+        self.calls += 1
+        raise self.error
+
+
+@pytest.mark.parametrize("error", [KeyboardInterrupt(), RuntimeError("stream broke")])
+def test_ac_24_note_a_call_that_raises_is_saved_failed_at_its_bound_before_it_propagates(
+    tmp_path: Path, pack: Pack, error: BaseException
+) -> None:
+    """covers: AC-24 note of 2026-10-19 (review finding 1)."""
+    call = Raises(error)
+
+    with pytest.raises(type(error)) as raised:
+        ask_metered(
+            pack,
+            call,
+            SETTINGS,
+            root=tmp_path,
+            name=record_name(ASKED_AT, "Why the landing rule?"),
+            asked_at=ASKED_AT,
+            commit="2e40bcf",
+            counted=COUNTED,
+            bound=BOUND,
+            ceiling=1.0,
+        )
+
+    assert call.calls == 1
+    (path,) = (tmp_path / ASKS_DIR).iterdir()
+    saved = json.loads(path.read_text())
+    assert saved["called"] is True
+    assert saved["settled"] is False
+    assert saved["error"].startswith(f"the call raised {type(error).__name__}")
+    assert saved["cost_usd"] == BOUND
+    assert saved["usage"]["input_tokens"] is None
+    assert any(str(path) in note for note in raised.value.__notes__)
+
+
+def test_ac_24_note_a_raising_call_whose_record_cannot_be_written_still_propagates(
+    tmp_path: Path, pack: Pack
+) -> None:
+    """covers: AC-24 note of 2026-10-19: the original error is raised, and says the record
+    is lost. `artifacts/asks` is a file, so nothing can be written under it.
+    """
+    (tmp_path / ASKS_DIR).parent.mkdir(parents=True)
+    (tmp_path / ASKS_DIR).write_text("in the way")
+
+    with pytest.raises(KeyboardInterrupt) as raised:
+        ask_metered(
+            pack,
+            Raises(KeyboardInterrupt()),
+            SETTINGS,
+            root=tmp_path,
+            name=record_name(ASKED_AT, "Why the landing rule?"),
+            asked_at=ASKED_AT,
+            commit="2e40bcf",
+            counted=COUNTED,
+            bound=BOUND,
+            ceiling=1.0,
+        )
+
+    assert any("record is lost" in note for note in raised.value.__notes__)
+
+
 def test_ac_25_the_cost_line_gives_calls_tokens_both_costs_and_the_ceiling(
     tmp_path: Path, pack: Pack
 ) -> None:
