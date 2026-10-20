@@ -1,0 +1,1148 @@
+[
+  {
+    "set": "eval/linked-records-research.json",
+    "question_number": 1,
+    "question": "Why does the landing rule's profile existence read (src/lib/landing-rule.ts) have its own dedicated query instead of reusing readOwnProfile(), which already reads the same row?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0146,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 5,
+        "entailment": 4
+      },
+      "provider_tokens": {
+        "prompt": 9069,
+        "completion": 1053
+      },
+      "accepted_records": [
+        "DM-0003",
+        "DM-0007",
+        "DM-0008",
+        "DM-0010"
+      ],
+      "accepted_chunks": [
+        "DM-0008 body[1]",
+        "DM-0007 decision.alternatives[1]",
+        "DM-0010 body[2]",
+        "DM-0008 body[2]",
+        "DM-0003 body[3]",
+        "DM-0010 body[2]",
+        "DM-0003 body[3]",
+        "DM-0007 body[2]"
+      ],
+      "facets": [
+        "F1: Why does the landing rule's profile existence read have its own dedicated query?",
+        "F2: Why not reuse readOwnProfile()?",
+        "F3: Does readOwnProfile() already read the same row?"
+      ],
+      "draft_before_verification": [
+        "S1: The landing rule's profile existence read has its own dedicated query to avoid marking the `profile.read` span as failed when no profile row exists, which is expected for first-time sign-ins and should not affect the failure ratio that feature 9 will alert on. [ch_b997d224312f80211a88edaabcb3a830220ca09b1fa1c000b7dd969e773e2dbb]",
+        "S2: The landing rule does not reuse `readOwnProfile()` because `readOwnProfile()` reports a `record_not_found` path to Sentry and marks the `profile.read` span as failed, which is not desired for first-time sign-ins where no profile row exists. [ch_b997d224312f80211a88edaabcb3a830220ca09b1fa1c000b7dd969e773e2dbb]",
+        "S3: `readOwnProfile()` reads the profile row and returns `record_not_found` as an expected failure when no profile row exists. [ch_eff6be1ab40cad5bfd8ff35d985b215e5dce8d7acff027716433114631fdf2c2]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "removed S1",
+        "removed S2",
+        "removed S3",
+        "F1 covered=False [] reason=no emitted answer sentence",
+        "F2 covered=False [] reason=no emitted answer sentence",
+        "F3 covered=False [] reason=no emitted answer sentence",
+        "uncovered F1: Why does the landing rule's profile existence read have its own dedicated query?",
+        "uncovered F2: Why not reuse readOwnProfile()?",
+        "uncovered F3: Does readOwnProfile() already read the same row?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S2 reason=decomposition_invalid",
+        "dropped_sentence S3 reason=unsupported_sub_claim"
+      ],
+      "trace": "eval-q1-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "The landing rule uses a dedicated existence read because readOwnProfile()'s record_not_found path reports to Sentry and marks the profile.read span failed. An absent profile row is a normal case for the landing rule, so its read returns false and builds no failure().",
+          "cites": [
+            "0008/AC-7"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The dedicated read is a new named export beside readOwnProfile() in src/features/profile/queries.ts, because it queries that feature's table. The landing rule in src/lib/landing-rule.ts imports it from there.",
+          "cites": [
+            "0008/AC-5b",
+            "0008#build-plan:6"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The exemption is narrow. A genuine query error is still a failure: the read goes through attempt(), and an error is never collapsed into false. On an errored read the landing rule sends the visitor to /search.",
+          "cites": [
+            "0008/AC-7a"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The existence read and the AC-7a error handling are built together with the landing rule.",
+          "cites": [
+            "0008#build-plan:6",
+            "0008/AC-7",
+            "0008/AC-7a"
+          ],
+          "basis": "link",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [],
+      "cost_usd": 0.049382
+    }
+  },
+  {
+    "set": "eval/linked-records-research.json",
+    "question_number": 2,
+    "question": "Why does src/proxy.ts treat a Server Action request differently from every other request, and why does it detect one by the next-action header rather than by the route?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0208,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 5,
+        "entailment": 4,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 18398,
+        "completion": 1334
+      },
+      "accepted_records": [
+        "DM-0001",
+        "DM-0004",
+        "DM-0007",
+        "DM-0008",
+        "DM-0014"
+      ],
+      "accepted_chunks": [
+        "DM-0008 body[1]",
+        "DM-0014 body[1]",
+        "DM-0001 body[3]",
+        "DM-0008 body[1]",
+        "DM-0014 rationale_summary",
+        "DM-0001 body[3]",
+        "DM-0004 body[4]",
+        "DM-0007 body[2]"
+      ],
+      "facets": [
+        "F1: Why does src/proxy.ts treat a Server Action request differently?",
+        "F2: Why does it detect a Server Action request by the next-action header?",
+        "F3: Why not detect a Server Action request by the route?"
+      ],
+      "draft_before_verification": [
+        "S1: src/proxy.ts treats a Server Action request differently because it withholds the refreshed session cookie from the response to prevent a re-render of the current route, which would incur additional costs such as re-running searches and spending limited API calls. [ch_3f2bb0f1c2d36041fb980ea9dd3923c49f87bde49612b99a3560ee2f30166a4b,ch_c729e7562abfdcbd7fe9ebe816bccd38ac995dc49775b0831385402c298a2b85,ch_e16587e1fa455e8042134038acdb622e2b3e8ef78a65cdb07c664f05b9f12b6c]",
+        "S2: It detects a Server Action request by the next-action header because this method allows the proxy to treat requests based on their kind rather than their destination, maintaining the mechanical guard on binding rule 6 and ensuring the proxy cannot distinguish between protected and public paths. [ch_3f2bb0f1c2d36041fb980ea9dd3923c49f87bde49612b99a3560ee2f30166a4b,ch_c729e7562abfdcbd7fe9ebe816bccd38ac995dc49775b0831385402c298a2b85,ch_e16587e1fa455e8042134038acdb622e2b3e8ef78a65cdb07c664f05b9f12b6c]",
+        "S3: It does not detect a Server Action request by the route because the proxy is designed to read no session, hold no list of routes, and cannot distinguish a protected path from a public one, ensuring that the proxy treats all paths equally and does not rely on route-based logic. [ch_3f2bb0f1c2d36041fb980ea9dd3923c49f87bde49612b99a3560ee2f30166a4b,ch_c729e7562abfdcbd7fe9ebe816bccd38ac995dc49775b0831385402c298a2b85,ch_e16587e1fa455e8042134038acdb622e2b3e8ef78a65cdb07c664f05b9f12b6c]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "removed S1",
+        "removed S3",
+        "F1 covered=False [] reason=The sentence does not explain why src/proxy.ts treats a Server Action request differently from other requests.",
+        "F2 covered=True [S2] reason=The sentence explains that detecting a Server Action request by the next-action header allows the proxy to treat requests based on their kind rather than their destination.",
+        "F3 covered=True [S2] reason=The sentence implies that detecting by the next-action header, rather than the route, helps maintain the mechanical guard on binding rule 6 and ensures the proxy cannot distinguish between protected and public paths.",
+        "uncovered F1: Why does src/proxy.ts treat a Server Action request differently?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S3 reason=decomposition_invalid"
+      ],
+      "trace": "eval-q2-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T21-57-44Z-eval-linked-records-research-q2.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "The proxy withholds the refreshed session cookie from a Server Action response because the proxy also runs on the action POST and refreshes there. That write cost one of the 25 weekly Adzuna calls, and the action cannot defend against it from inside itself.",
+          "cites": [
+            "0014#decision:7",
+            "0014/AC-20a"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The proxy still hands the refreshed value to the request's own code via request.cookies.set(), so recordApplication can verify its caller.",
+          "cites": [
+            "0014/AC-20a",
+            "0008/AC-10b"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The action's read-only cookie adapter (AC-20) was measured not to be what makes an expired-session apply hold; AC-20a is. AC-20a amends AC-20.",
+          "cites": [
+            "0014/AC-20",
+            "0014/AC-20a"
+          ],
+          "basis": "link",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The branch keys on the next-action request header rather than the route so that binding rule 6's guard is untouched. The proxy still cannot tell a protected path from a public one, and the difference is request kind, not destination.",
+          "cites": [
+            "0014/AC-20a",
+            "0008/AC-10b",
+            "0001#binding-rules:32"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The cost is that the browser keeps a stale cookie until its next ordinary request. GoTrue's refresh_token_reuse_interval (10 seconds) covers the reuse, and it was driven as two applies sixteen seconds apart with no request between them, which succeeded without revoking the token family.",
+          "cites": [
+            "0014/AC-20a",
+            "0008/AC-10b"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "Why detecting by the next-action header was chosen over other ways of recognising an action request; the items only give the route-blindness rationale."
+      ],
+      "cost_usd": 0.053872
+    }
+  },
+  {
+    "set": "eval/linked-records-research.json",
+    "question_number": 3,
+    "question": "Why is password sign in impossible on production?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0111,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 4
+      },
+      "provider_tokens": {
+        "prompt": 5892,
+        "completion": 609
+      },
+      "accepted_records": [
+        "DM-0002",
+        "DM-0004",
+        "DM-0007",
+        "DM-0008",
+        "DM-0015"
+      ],
+      "accepted_chunks": [
+        "DM-0007 body[0]",
+        "DM-0002 body[1]",
+        "DM-0007 body[1]",
+        "DM-0002 body[1]",
+        "DM-0004 rationale_summary",
+        "DM-0004 context.problem",
+        "DM-0015 body[5]",
+        "DM-0008 body[1]"
+      ],
+      "facets": [
+        "F1: Why is password sign in impossible on production?"
+      ],
+      "draft_before_verification": [
+        "S1: Password sign in is impossible on production because feature 7 deleted the password path outright, making it impossible in every environment rather than just blocked in one. [ch_5d0afada25ac659787dfda62ff2333f06e88f06a7ad42272af768ab1d7581ea4]",
+        "S2: The development only password sign in was deleted along with the browser client reserved for it, ensuring no environment can accept a password. [ch_e84de38ff18402015b97872c99b9904d89ed7a08e55939624c0832fb1c781f84,ch_165635b721974eb99acec3915dbae891ced21e471c6c39ff4cd6c811ad20fa88]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "removed S1",
+        "removed S2",
+        "F1 covered=False [] reason=no emitted answer sentence",
+        "uncovered F1: Why is password sign in impossible on production?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S2 reason=decomposition_invalid"
+      ],
+      "trace": "eval-q3-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T21-57-56Z-eval-linked-records-research-q3.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "partly",
+      "claims": [
+        {
+          "text": "The original reason, per spec 0002 AC-10 (HISTORY: struck through and replaced by 0007), was that the enabling variable is absent on production, so both guards (the sign in page and the Server Action) fail closed. That no longer depended on how a build labels NODE_ENV.",
+          "cites": [
+            "0002/AC-10"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": true
+        },
+        {
+          "text": "The build step that satisfies AC-10 replaced the NODE_ENV guard with the validated DEV_SESSION_ENABLED check, failing closed, in both the action and the page guard.",
+          "cites": [
+            "0002#build-plan:7",
+            "0002/AC-10"
+          ],
+          "basis": "link",
+          "inferred": false,
+          "history": true
+        },
+        {
+          "text": "The design constraint was that dev password sign in is enabled by an explicit variable defaulting to false, set only on Vercel Preview and locally, and production never carries it.",
+          "cites": [
+            "0002#feature-design:27"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0007 builds real sign in via Google and GitHub OAuth with no password anywhere, and deletes the development only password sign in from feature 1, so password sign in is gone altogether rather than merely blocked on production.",
+          "cites": [
+            "0007#summary:1",
+            "0007#summary:4",
+            "feature-7#7-auth-per-user-isolation-done-ga:6"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "DEV_SESSION_ENABLED now has one job, guarding the test mint, and is no longer set on Vercel Preview.",
+          "cites": [
+            "0007/AC-13"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "The items do not state how the 0007 record explicitly replaces AC-10 beyond its being marked superseded; the superseding text is not given.",
+        "Scope item for feature 27 mentions email and password sign up as a possible later alternative, but no decision on it is recorded."
+      ],
+      "cost_usd": 0.02016
+    }
+  },
+  {
+    "set": "eval/linked-records-research.json",
+    "question_number": 4,
+    "question": "Why is the return path cookie's max age 10 minutes? Is it matched to the lifetime of the PKCE code verifier cookie Supabase writes on the same sign in action, or to the session policy spec 0007 AC-19 records?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.015,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 4,
+        "entailment": 3,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 8070,
+        "completion": 761
+      },
+      "accepted_records": [
+        "DM-0007",
+        "DM-0008",
+        "DM-0009",
+        "DM-0014"
+      ],
+      "accepted_chunks": [
+        "DM-0009 body[2]",
+        "DM-0009 body[2]",
+        "DM-0007 rationale_summary",
+        "DM-0007 body[1]",
+        "DM-0014 body[1]",
+        "DM-0008 body[1]",
+        "DM-0008 body[1]",
+        "DM-0009 rationale_summary"
+      ],
+      "facets": [
+        "F1: Why is the return path cookie's max age 10 minutes?",
+        "F2: Is it matched to the lifetime of the PKCE code verifier cookie?",
+        "F3: Is it matched to the session policy spec 0007 AC-19 records?"
+      ],
+      "draft_before_verification": [
+        "S1: The return path cookie's max age is 10 minutes to ensure that the cookie is cleared after a short period, preventing stale values from being used in future sign-in attempts. [ch_f79f5da59a2c15029d161d689552e92171b8a14dda854ecb94fb8592da2d6156]",
+        "S2: The return path cookie's max age is not explicitly matched to the lifetime of the PKCE code verifier cookie. [ch_ddd53917ef1cdb86ea4ae5b81135f50fcda0e4b0f128cf15378b21a9141b9e52]",
+        "S3: The return path cookie's max age is not explicitly matched to the session policy spec 0007 AC-19 records. [ch_c729e7562abfdcbd7fe9ebe816bccd38ac995dc49775b0831385402c298a2b85]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "removed S1",
+        "removed S3",
+        "F1 covered=False [] reason=No sentence directly states why the return path cookie's max age is 10 minutes.",
+        "F2 covered=True [S2] reason=S2 directly states that the return path cookie's max age is not explicitly matched to the lifetime of the PKCE code verifier cookie.",
+        "F3 covered=False [] reason=No sentence directly states whether the return path cookie's max age is matched to the session policy spec 0007 AC-19 records.",
+        "uncovered F1: Why is the return path cookie's max age 10 minutes?",
+        "uncovered F3: Is it matched to the session policy spec 0007 AC-19 records?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S3 reason=unsupported_sub_claim"
+      ],
+      "trace": "eval-q4-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T21-58-07Z-eval-linked-records-research-q4.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "not_supported",
+      "claims": [
+        {
+          "text": "The items state that the return cookie has a 10 minute max age, along with httpOnly, SameSite=Lax and a Path scoped to /auth/callback. They give no reason for choosing 10 minutes.",
+          "cites": [
+            "0008/AC-14",
+            "0008#feature-design:13"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0009 describes the same cookie as short lived at 600 seconds, which is 10 minutes. It does not say why that length was chosen.",
+          "cites": [
+            "0009#follow-up:9"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0007 AC-19 only says the session policy (token lifetime, refresh, forced logout, auth rate limits, manual linking) is recorded for all three environments. It gives no value and does not mention the return cookie, so nothing ties the 10 minutes to it.",
+          "cites": [
+            "0007/AC-19"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The PKCE verifier cookies are described as short lived cookies that @supabase/ssr writes during the OAuth handshake. No item gives their lifetime or relates it to the return cookie's max age.",
+          "cites": [
+            "0009/AC-14",
+            "0009/AC-24"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "The rationale for the 10 minute max age of the return path cookie",
+        "The max age of the Supabase PKCE code verifier cookie",
+        "Any session policy value in 0007 AC-19 that the 10 minutes could be matched to",
+        "Any statement that the return cookie's lifetime was chosen to match either the verifier cookie or the session policy"
+      ],
+      "cost_usd": 0.05389
+    }
+  },
+  {
+    "set": "eval/linked-records-research.json",
+    "question_number": 5,
+    "question": "Why was feature 21 (terms and privacy notices) built in Foundation immediately after feature 32, when it was originally scoped into Slice 5 as launch readiness work?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0152,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 5,
+        "entailment": 4
+      },
+      "provider_tokens": {
+        "prompt": 12151,
+        "completion": 1142
+      },
+      "accepted_records": [
+        "DM-0001",
+        "DM-0003",
+        "DM-0007",
+        "DM-0009",
+        "DM-0012",
+        "DM-0013"
+      ],
+      "accepted_chunks": [
+        "DM-0009 context.problem",
+        "DM-0007 body[5]",
+        "DM-0007 consequences.negative[6]",
+        "DM-0009 body[5]",
+        "DM-0001 context.problem",
+        "DM-0013 body[5]",
+        "DM-0012 body[6]",
+        "DM-0003 body[1]"
+      ],
+      "facets": [
+        "F1: Why was feature 21 built immediately after feature 32?",
+        "F2: Why was feature 21 originally scoped into Slice 5?",
+        "F3: Why was feature 21 considered launch readiness work?"
+      ],
+      "draft_before_verification": [
+        "S1: Feature 21 was built immediately after feature 32 because the user cap imposed by Google's Testing mode is counted over the app's entire lifetime, and every sign-in before the necessary pages exist permanently uses one of the limited slots, making it urgent to address this before launch readiness. [ch_9067fd41ad175350e8e254d2cb8b22faf00d4bc04cf2ff214aa2a28dd6560305,ch_f6316150e3c82e4d69b4331414896c6775f9c76a8793b3516e73299f54f85a51,ch_d73b368ccbae1f74aafd8025f46aeeffffe57867d54ef17459722c43519e6c69]",
+        "S2: Feature 21 was originally scoped into Slice 5 but was moved to Foundation because the Google OAuth app's user cap is counted over its entire lifetime, and delaying the feature would have permanently used up user slots. [ch_9067fd41ad175350e8e254d2cb8b22faf00d4bc04cf2ff214aa2a28dd6560305,ch_f6316150e3c82e4d69b4331414896c6775f9c76a8793b3516e73299f54f85a51,ch_d73b368ccbae1f74aafd8025f46aeeffffe57867d54ef17459722c43519e6c69]",
+        "S3: Feature 21 was considered launch readiness work because it involved creating the privacy policy and terms of service links necessary to lift the app's user cap and move out of Google's Testing mode. [ch_d73b368ccbae1f74aafd8025f46aeeffffe57867d54ef17459722c43519e6c69]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "removed S1",
+        "removed S2",
+        "removed S3",
+        "F1 covered=False [] reason=no emitted answer sentence",
+        "F2 covered=False [] reason=no emitted answer sentence",
+        "F3 covered=False [] reason=no emitted answer sentence",
+        "uncovered F1: Why was feature 21 built immediately after feature 32?",
+        "uncovered F2: Why was feature 21 originally scoped into Slice 5?",
+        "uncovered F3: Why was feature 21 considered launch readiness work?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S2 reason=unsupported_sub_claim",
+        "dropped_sentence S3 reason=decomposition_invalid"
+      ],
+      "trace": "eval-q5-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T21-58-18Z-eval-linked-records-research-q5.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "Feature 21 moved because leaving Google's Testing mode was gated on it: Publish app was greyed out since the privacy policy and terms links were empty, and feature 21 is what produces them.",
+          "cites": [
+            "0007#consequences:11"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The urgency was that the app stayed capped at 100 users until it was published. Google counts that cap over the app's whole lifetime, so it never goes back down.",
+          "cites": [
+            "0007#consequences:11"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "When that paragraph was written, feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both rows were changed on the strength of it, and the feature moved to Foundation, to be built after feature 32.",
+          "cites": [
+            "0007#consequences:11",
+            "feature-21#21-terms-privacy-notices-done-alpha:5"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "A follow-up says the move went further than the follow-up itself asked: the dependency was recorded on feature 21's row, and the feature moved out of Slice 5 into Foundation.",
+          "cites": [
+            "0007#follow-up:12"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Feature 21 and feature 7 depend on each other. Feature 21 unblocks Publish app, which lifts the lifetime 100 user cap, and feature 7 is what makes the notices load bearing rather than paperwork.",
+          "cites": [
+            "0007#follow-up:11"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The pages had to be served from `usejobhunt.dev`, because Google would not accept a `vercel.app` address as an Authorized domain.",
+          "cites": [
+            "0007#follow-up:10"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Feature 21 was owed the day the first person other than the author signs in, which fits pulling it forward.",
+          "cites": [
+            "feature-21#21-terms-privacy-notices-done-alpha:1"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The outcome: on 2026-09-01 feature 21 published the policy and terms on `usejobhunt.dev`, which let the app register that Authorized domain, leave Testing and submit brand verification.",
+          "cites": [
+            "scope#resolved:4"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "Why feature 32 specifically is the point after which feature 21 was placed; the items do not describe feature 32 or why the order is after it."
+      ],
+      "cost_usd": 0.033642
+    }
+  },
+  {
+    "set": "eval/held-out.json",
+    "question_number": 1,
+    "question": "Why does test/integration/profile-form.test.ts read the $ACTION_ field index out of the rendered /profile page and scope its read to one form, when spec 0010's build plan says to confirm the fields $ACTION_REF_1 / $ACTION_1:0 / $ACTION_1:1 are present?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0164,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 4,
+        "entailment": 8,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 10673,
+        "completion": 1193
+      },
+      "accepted_records": [
+        "DM-0001",
+        "DM-0003",
+        "DM-0004",
+        "DM-0008",
+        "DM-0010",
+        "DM-0014"
+      ],
+      "accepted_chunks": [
+        "DM-0004 body[4]",
+        "DM-0010 body[3]",
+        "DM-0010 body[1]",
+        "DM-0004 body[4]",
+        "DM-0008 consequences.negative[4]",
+        "DM-0014 body[2]",
+        "DM-0003 consequences.positive[3]",
+        "DM-0001 body[1]"
+      ],
+      "facets": [
+        "F1: Why does test/integration/profile-form.test.ts read the $ACTION_ field index out of the rendered /profile page?",
+        "F2: Why does it scope its read to one form?",
+        "F3: Why does spec 0010's build plan say to confirm the fields $ACTION_REF_1 / $ACTION_1:0 / $ACTION_1:1 are present?"
+      ],
+      "draft_before_verification": [
+        "S1: The test reads the $ACTION_ field index out of the rendered /profile page to avoid assuming the index, as the identity form is rendered as $ACTION_REF_2 due to the signed-in header's sign-out form being numbered first. [ch_383f905c6f2f6a06ec1bcefd07d3b24dbc215ca25324723e1cf8b17bb78c2f4d]",
+        "S2: It scopes its read to one form to prevent the sign-out action's field from being harvested and posted alongside. [ch_383f905c6f2f6a06ec1bcefd07d3b24dbc215ca25324723e1cf8b17bb78c2f4d]",
+        "S3: Spec 0010's build plan says to confirm the fields $ACTION_REF_1 / $ACTION_1:0 / $ACTION_1:1 are present to ensure the identity form does not fall back to rendering its errors from a search parameter instead of useActionState. [ch_88b238f00422760b0e2b15df72dd18d4bbe84bd286f245fe8a8a2d3f7f8e34ce]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "removed S3",
+        "F1 covered=True [S1] reason=The sentence explains that the test reads the $ACTION_ field index to avoid assuming the index due to the identity form being rendered differently.",
+        "F2 covered=True [S2] reason=The sentence explains that the read is scoped to one form to prevent the sign-out action's field from being included.",
+        "F3 covered=False [] reason=None of the sentences address why spec 0010's build plan says to confirm the fields are present.",
+        "uncovered F3: Why does spec 0010's build plan say to confirm the fields $ACTION_REF_1 / $ACTION_1:0 / $ACTION_1:1 are present?"
+      ],
+      "dropped": [
+        "dropped_sentence S3 reason=decomposition_invalid"
+      ],
+      "trace": "held-out-q1-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T22-17-23Z-eval-held-out-q1.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "The build plan's wording (`$ACTION_REF_1` / `$ACTION_1:0` / `$ACTION_1:1`) was a spike, written before the field shape was proven; it assumed the shape from spec 0004's Follow up recipe and asked for it to be confirmed in the rendered HTML.",
+          "cites": [
+            "0010#build-plan:3"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0004's Follow up later corrected this: `<n>` is a per form index, not part of the field name. The correction was dated 2026 09 02, when feature 9 proved it against React 19.2.8 and Next.js 16.3.1, so the test reads the index out of the rendered page rather than assuming 1.",
+          "cites": [
+            "0004#follow-up:8"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The read is scoped to the one form under test because otherwise the sign out action's own hidden field is harvested and posted alongside the identity form's fields.",
+          "cites": [
+            "0004#follow-up:8"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The test is the one the Follow up points to as meeting spec 0001's third runner constraint, and it implements AC-14: fetch the page with the edit form open, read the hidden action fields, post them back, and expect a redirect carrying the session cookie.",
+          "cites": [
+            "0004#follow-up:7",
+            "0010/AC-14",
+            "0010#build-plan:9"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "The test file's own contents are not among the items; the explanation rests on the spec 0004 Follow up's description of it.",
+        "Spec 0001's third runner constraint is unresolved in the records, so its exact wording is not available."
+      ],
+      "cost_usd": 0.056114
+    }
+  },
+  {
+    "set": "eval/held-out.json",
+    "question_number": 2,
+    "question": "Why does spec 0018 say to read a pair's `distribution` and never its `summary` when asking how the five reruns split, given that spec 0017 requires every verdict to carry a count like '5 of 5 succeeded'?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0195,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 6,
+        "entailment": 8,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 13504,
+        "completion": 1684
+      },
+      "accepted_records": [
+        "DM-0015",
+        "DM-0016",
+        "DM-0017",
+        "DM-0018"
+      ],
+      "accepted_chunks": [
+        "DM-0017 body[1]",
+        "DM-0017 body[1]",
+        "DM-0018 body[2]",
+        "DM-0018 body[4]",
+        "DM-0016 body[4]",
+        "DM-0016 rationale_summary",
+        "DM-0015 body[4]",
+        "DM-0015 body[4]"
+      ],
+      "facets": [
+        "F1: Why does spec 0018 say to read a pair's `distribution`?",
+        "F2: Why never read a pair's `summary`?",
+        "F3: How do the five reruns split?",
+        "F4: What does spec 0017 require for every verdict?"
+      ],
+      "draft_before_verification": [
+        "S1: Spec 0018 says to read a pair's `distribution` because the `summary` field can be misread as a band count when it is actually a success denominator, which caused a wrong conclusion in the spec's first draft. [ch_06dd7fee33ed4abc14458ce3b99d1144c5cf2058864e454dac80a62d60fdaab3,ch_54ffc2667ca8d5f6777038fd403804cd80a7275230d1dbad561e20da8d14171a]",
+        "S2: Never read a pair's `summary` because it can be misinterpreted as the count landing on a band, leading to incorrect conclusions about stability, as it is actually the success denominator. [ch_06dd7fee33ed4abc14458ce3b99d1144c5cf2058864e454dac80a62d60fdaab3,ch_54ffc2667ca8d5f6777038fd403804cd80a7275230d1dbad561e20da8d14171a]",
+        "S3: The five reruns split into a distribution that shows how many successes landed on each band, rather than a single band verdict, to avoid trusting a single run as the answer. [ch_ff962cc5bc08476e51b649d71bd8fb17099c447d270e194ebf53afbe1d14780d]",
+        "S4: Spec 0017 requires that every verdict is based on five reruns per pair, with a `stability-probe` pair passing only when every rerun succeeds, and `tags` plus `acceptableBands` feeding a strict majority with a 3 of 5 floor. [ch_4878bce89355c1fbc32049f5c9caddb7a54706a93c7f8cee08a5fbd7f12dff22]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "S4 containment=False",
+        "removed S1",
+        "removed S2",
+        "removed S3",
+        "F1 covered=False [] reason=The sentence does not explain why spec 0018 says to read a pair's `distribution`.",
+        "F2 covered=False [] reason=The sentence does not explain why a pair's `summary` should never be read.",
+        "F3 covered=False [] reason=The sentence does not explain how the five reruns split.",
+        "F4 covered=True [S4] reason=The sentence states that spec 0017 requires every verdict to be based on five reruns per pair, with specific conditions for passing.",
+        "uncovered F1: Why does spec 0018 say to read a pair's `distribution`?",
+        "uncovered F2: Why never read a pair's `summary`?",
+        "uncovered F3: How do the five reruns split?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S2 reason=decomposition_invalid",
+        "dropped_sentence S3 reason=unsupported_sub_claim"
+      ],
+      "trace": "held-out-q2-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T22-17-37Z-eval-held-out-q2.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "Spec 0018 says the `5 of 5` in a `summary` like \"possible_match, 5 of 5 succeeded\" is the success denominator, meaning all five reruns returned a band. It is not the count landing on that band, so it cannot show how the reruns split.",
+          "cites": [
+            "0018#review-findings:1"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0018 therefore tells readers to use `distribution`, never `summary`, when the question is how the reruns split.",
+          "cites": [
+            "0018#review-findings:2"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "This does not contradict spec 0017's AC-6, which requires every verdict to name its denominator, such as \"good_match, 3 of 3 succeeded\", never just a band. That denominator is the count of successful reruns, not a per-band count.",
+          "cites": [
+            "0017/AC-6"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Spec 0017 reports a distribution-shaped verdict as a per-band split with the denominator, e.g. \"3 strong_match / 2 possible_match, 5 of 5 succeeded\". A stability-probe pair is always reported as its observed distribution, never a lone band. So the per-band split lives in the distribution, and the denominator only says how many reruns were scored.",
+          "cites": [
+            "0017/AC-6",
+            "0017/AC-4"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "The items do not show spec 0018's own wording explaining why `distribution` is preferred beyond the denominator-versus-band-count distinction, nor the structure of the `distribution` field itself."
+      ],
+      "cost_usd": 0.03262
+    }
+  },
+  {
+    "set": "eval/held-out.json",
+    "question_number": 3,
+    "question": "control-one-gap passed its confirming run by only 3 to 2 (possible_match over good_match). Why can't it be given acceptableBands [good_match, possible_match] so it stops sitting one rerun away from having no majority?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0159,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 3,
+        "entailment": 7,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 9266,
+        "completion": 1100
+      },
+      "accepted_records": [
+        "DM-0015",
+        "DM-0016",
+        "DM-0017",
+        "DM-0018"
+      ],
+      "accepted_chunks": [
+        "DM-0018 context.problem",
+        "DM-0018 body[4]",
+        "DM-0017 body[1]",
+        "DM-0017 body[1]",
+        "DM-0016 body[4]",
+        "DM-0016 body[3]",
+        "DM-0015 body[2]",
+        "DM-0015 body[2]"
+      ],
+      "facets": [
+        "F1: Why can't control-one-gap be given acceptableBands [good_match, possible_match]?",
+        "F2: Why is control-one-gap sitting one rerun away from having no majority?"
+      ],
+      "draft_before_verification": [
+        "S1: Control-one-gap cannot be given acceptableBands [good_match, possible_match] because the evidence this review started from was wrong, and the wrong version is committed text rather than something said in passing, leading to a misreading of the distribution field which actually shows control-one-gap at good_match 1 and possible_match 4, then possible_match 5, and key-domain-mismatch at weak_match 3 and not_a_match 2, then not_a_match 5. [ch_27b2274d7147a8f4d1eebcc4db3065e3affcdf2b801606d9e523357b0129fe8d]",
+        "S2: Control-one-gap is sitting one rerun away from having no majority because if no band holds a strict majority, the pair is inconclusive unless acceptableBands is present and every successful rerun's band is inside it, which is not the case here. [ch_8d3255e086161f70cef1442a9f899e2be1dec6e4c0a82a13a4f7ff3bc3f688d8]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "removed S2",
+        "F1 covered=True [S1] reason=The sentence explains that control-one-gap cannot be given acceptableBands [good_match, possible_match] because the evidence was wrong and misread, showing incorrect distribution values.",
+        "F2 covered=False [] reason=The sentence does not explain why control-one-gap is sitting one rerun away from having no majority. It only discusses the misreading of evidence and distribution values.",
+        "uncovered F2: Why is control-one-gap sitting one rerun away from having no majority?"
+      ],
+      "dropped": [
+        "dropped_sentence S2 reason=decomposition_invalid"
+      ],
+      "trace": "held-out-q3-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T22-17-49Z-eval-held-out-q3.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "partly",
+      "claims": [
+        {
+          "text": "Widening `control-one-gap` with `acceptableBands` is refused outright by the Key invariants of spec 0018, and `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`.",
+          "cites": [
+            "0018#follow-up:4"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "Retagging the pair `boundary` is not a way out either, because it would concede the anchors do not settle the pair, which contradicts spec 0018's finding that they do. So the retag and the tolerance are not independent choices.",
+          "cites": [
+            "0018#follow-up:4"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The pair's expectation is `possible_match` with no `acceptableBands`, argued from the existing `possible_match` anchor text.",
+          "cites": [
+            "0018/AC-1",
+            "0018#review-findings:3"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The earlier expectation of `good_match` is HISTORY: it was corrected to `possible_match` by feature-16#16-eval-harness-runner:17, so a range containing `good_match` would reintroduce the expectation that was dropped.",
+          "cites": [
+            "feature-16#16-eval-harness-runner:16",
+            "feature-16#16-eval-harness-runner:17"
+          ],
+          "basis": "link",
+          "inferred": false,
+          "history": true
+        },
+        {
+          "text": "Under the harness rules, a 3 to 2 result still counts as a strict majority and passes. With no `acceptableBands`, a rerun with no majority would be `inconclusive` (`no-majority`).",
+          "cites": [
+            "0017#requirements:7"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The follow-up records the question of whether the pair keeps its `control` tag as recorded but not answered.",
+          "cites": [
+            "0018#follow-up:4"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "Text of the Key invariants section of spec 0018, which the follow-up cites as the reason `acceptableBands` is refused for control pairs",
+        "Any decision on whether `control-one-gap` keeps its `control` tag"
+      ],
+      "cost_usd": 0.038346
+    }
+  },
+  {
+    "set": "eval/held-out.json",
+    "question_number": 4,
+    "question": "Why does band-anchors.test.ts pin BAND_ANCHORS twice, once as five inline strings and once as bandAnchorsHash(BAND_ANCHORS), when either assertion alone fails on an anchor edit?",
+    "decision_memory": {
+      "answer_verbatim": "not enough evidence here",
+      "citations": [],
+      "state": "abstained",
+      "abstention_stage": "claim_verification",
+      "cost_usd": 0.0174,
+      "provider_calls": {
+        "embedding": 1,
+        "facets": 1,
+        "answer": 1,
+        "decompose": 7,
+        "entailment": 4,
+        "coverage": 1
+      },
+      "provider_tokens": {
+        "prompt": 10450,
+        "completion": 1325
+      },
+      "accepted_records": [
+        "DM-0015",
+        "DM-0016",
+        "DM-0017",
+        "DM-0018"
+      ],
+      "accepted_chunks": [
+        "DM-0016 body[4]",
+        "DM-0018 body[2]",
+        "DM-0018 body[2]",
+        "DM-0016 body[4]",
+        "DM-0017 body[1]",
+        "DM-0017 body[3]",
+        "DM-0015 body[4]",
+        "DM-0015 body[3]"
+      ],
+      "facets": [
+        "F1: Why does band-anchors.test.ts pin BAND_ANCHORS twice?",
+        "F2: Why pin as five inline strings?",
+        "F3: Why pin as bandAnchorsHash(BAND_ANCHORS)?",
+        "F4: Why does either assertion alone fail on an anchor edit?"
+      ],
+      "draft_before_verification": [
+        "S1: band-anchors.test.ts pins BAND_ANCHORS twice to ensure that both the literal text and the hash of BAND_ANCHORS are checked for changes, catching any drift in the anchor wording or the hash function. [ch_6bda687cfd4945892ab194e7e226f7a08560ee6ca8d5839687636700a18d7653]",
+        "S2: BAND_ANCHORS is pinned as five inline strings to prevent a routine update from silently rewriting the test, ensuring that any change is caught at commit time. [ch_5124c83a688e52c1880343e52f36004e653e0e93276cfe84c7ebaa4ec9a0f133]",
+        "S3: bandAnchorsHash(BAND_ANCHORS) is pinned to catch changes to the hash function itself, ensuring that the value written into every eval report remains consistent. [ch_6bda687cfd4945892ab194e7e226f7a08560ee6ca8d5839687636700a18d7653]",
+        "S4: Either assertion alone fails on an anchor edit because the text assertion would pass if only the hash function changed, and the hash assertion would pass if only the text changed, so both are needed to catch all changes. [ch_6bda687cfd4945892ab194e7e226f7a08560ee6ca8d5839687636700a18d7653]"
+      ],
+      "verification": [
+        "S1 containment=False",
+        "S2 containment=False",
+        "S3 containment=False",
+        "S4 containment=False",
+        "removed S1",
+        "removed S2",
+        "removed S3",
+        "F1 covered=False [] reason=The sentence does not explain why band-anchors.test.ts pins BAND_ANCHORS twice. It only explains why either assertion alone fails on an anchor edit.",
+        "F2 covered=False [] reason=The sentence does not explain why BAND_ANCHORS is pinned as five inline strings. It only discusses the failure of assertions when an anchor edit occurs.",
+        "F3 covered=False [] reason=The sentence does not explain why BAND_ANCHORS is pinned as bandAnchorsHash(BAND_ANCHORS). It only discusses the failure of assertions when an anchor edit occurs.",
+        "F4 covered=True [S4] reason=The sentence directly explains why either assertion alone fails on an anchor edit by stating the conditions under which each assertion would pass despite changes.",
+        "uncovered F1: Why does band-anchors.test.ts pin BAND_ANCHORS twice?",
+        "uncovered F2: Why pin as five inline strings?",
+        "uncovered F3: Why pin as bandAnchorsHash(BAND_ANCHORS)?"
+      ],
+      "dropped": [
+        "dropped_sentence S1 reason=decomposition_invalid",
+        "dropped_sentence S2 reason=decomposition_invalid",
+        "dropped_sentence S3 reason=decomposition_invalid"
+      ],
+      "trace": "held-out-q4-trace.txt.gz"
+    },
+    "tracepath": {
+      "record": "artifacts/asks/2026-10-19T22-18-05Z-eval-held-out-q4.json",
+      "prompt_version": "ask-1",
+      "model": "claude-sonnet-5-5",
+      "verdict": "answered",
+      "claims": [
+        {
+          "text": "The two assertions guard different things. The inline `toEqual` pins the anchor wording, and the hash assertion pins `bandAnchorsHash(BAND_ANCHORS)`, which is the value written into every eval report. A change to the hash function alone is therefore caught too, even if the anchor text is untouched.",
+          "cites": [
+            "0016#follow-up:6"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The inline strings are used instead of a snapshot file because a routine `vitest -u` could silently rewrite a snapshot. The hash is checked against today's computed value.",
+          "cites": [
+            "0017/AC-10"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The hash is defined once and shared between the report and the drift test, so the report's hash and the test's hash are computed the same way by construction. Pinning it in the test therefore protects the value that reports carry for comparison.",
+          "cites": [
+            "0017/AC-9"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The wording pin exists because the anchors' own comment says the wording is expected to change, and every expected band and rationale in the ground truth set derives from today's wording. Spec 0016 asked the harness spec to detect that drift, and AC-10 is the item that does so.",
+          "cites": [
+            "0016#follow-up:5",
+            "0016#follow-up:6"
+          ],
+          "basis": "text",
+          "inferred": false,
+          "history": false
+        },
+        {
+          "text": "The build step for the drift test satisfies AC-10 with both a literal `toEqual` pin and a `bandAnchorsHash()` equality check, each failing by name and pointing at spec 0016's dataset.",
+          "cites": [
+            "0017#build-plan:6",
+            "0017/AC-10"
+          ],
+          "basis": "link",
+          "inferred": false,
+          "history": false
+        }
+      ],
+      "missing": [
+        "No item states explicitly why the hash check is kept beyond catching a hash function change, for example whether the two were meant to cross check each other on an anchor edit."
+      ],
+      "cost_usd": 0.043752
+    }
+  }
+]
