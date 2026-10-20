@@ -185,6 +185,40 @@ def test_ac_4_a_dry_run_prints_words_items_count_and_bound_and_makes_no_call(
     assert records(repo) == []
 
 
+def test_ac_10_note_hops_reaches_the_pack_and_the_items_sent_line(repo: Path, api: FakeApi) -> None:
+    """covers: AC-10 note of 2026-10-20 (`ask --hops`, experiment 0016)."""
+    code, out, err = ask(repo, QUESTION, "--ceiling", "1", "--hops", "0")
+
+    assert code == 0, err
+    (sent,) = (line for line in out.splitlines() if line.startswith("Items sent: "))
+    assert sent.endswith("; hops 0).")
+    assert all(item.hop == 0 for pack in api.packs for item in pack.items)
+    assert api.packs[0].hops == 0
+
+
+@pytest.mark.parametrize(("args", "hops"), [((), 2), (("--hops", "1"), 1)])
+def test_ac_10_note_the_record_holds_the_hops_value(
+    repo: Path, args: tuple[str, ...], hops: int
+) -> None:
+    """covers: AC-10 note of 2026-10-20: two hops when none is given, as before."""
+    ask(repo, QUESTION, "--ceiling", "1", *args)
+
+    (path,) = records(repo)
+    assert json.loads(path.read_text())["hops"] == hops
+
+
+@pytest.mark.parametrize("hops", ["3", "-1"])
+def test_ac_10_note_a_bad_hops_exits_1_before_the_graph_is_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, hops: str
+) -> None:
+    """covers: AC-10 note of 2026-10-20."""
+    monkeypatch.setattr(cli, "_ask_graph", no_graph_read)
+    code, _, err = ask(tmp_path, QUESTION, "--ceiling", "1", "--hops", hops)
+
+    assert code == 1
+    assert "--hops must be 0, 1 or 2" in flat(err)
+
+
 def test_ac_3_note_a_dry_run_needs_no_ceiling_and_says_none_was_given(
     repo: Path, api: FakeApi
 ) -> None:

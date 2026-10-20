@@ -149,6 +149,7 @@ class AskRecord:
             "eval_file": self.source.file if self.source else None,
             "eval_question": self.source.number if self.source else None,
             "called": self.called,
+            "hops": self.pack.hops,
             "search_words": list(self.pack.words),
             "items": [_item(item) for item in self.pack.items],
             "links": [
