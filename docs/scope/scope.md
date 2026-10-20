@@ -236,7 +236,7 @@ _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to
   - [x] Eval wiring (`--eval`, the held out refusals, the one run guard; AC-29 to AC-33) · built 2026-10-19 (`946705e`), records named `<UTC time>-eval-<stem>-q<N>.json`; tested on temporary eval files only, no paid call
   - [x] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt · done 2026-10-19: each run once on prompt `ask-1` with no tuning, $0.2110 for the five calls, records in `artifacts/asks/` (`f7dbc7c`, `8977f29`); engineer's marks: all five right; **prompt `ask-1` frozen by the engineer on 2026-10-19**, this commit being the freeze commit the held out run follows
   - [x] Held out questions, once each, after the freeze; result reported against the bar · done 2026-10-19 (`6dd1aa1`): 3 of 4 right and 1 partly right (question 3, retrieval), $0.1708 for the four calls; result recorded under the v1 finish line, bar met
-- [ ] Verify it: `/check verify answer at question time`
+- [x] Verify it: `/check verify answer at question time`
 - [ ] Test it: `/test answer at question time`
 
 ## Slice 3: Name resolution
