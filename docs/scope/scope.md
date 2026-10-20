@@ -30,7 +30,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 13 | Extraction accuracy | after feature 6, before feature 11 | in-progress |
 | 14 | Held item view | Slice 1, before Slice 2 | done |
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
-| 16 | Answer at question time | v1, replaces the remaining v1 needs | in-progress |
+| 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 
 ## v1 finish line
 
@@ -215,7 +215,7 @@ Let a person type a plain English question and get a start item for the walk, in
 
 ## Answer at question time (v1)
 
-### 16. Answer at question time · in progress
+### 16. Answer at question time · done
 The engineer types a why question in plain English. The tool finds the graph items that bear on it, asks the model to answer using only those items, and prints the answer with every claim citing a graph item. A link the model inferred rather than read in the text is printed marked as inferred. This takes in feature 15 (question to start item). It does not need the walk to cross a document boundary, which is where all seven questions run so far fail.
 **Done when:** the new v1 line holds: a plain English question prints an answer whose every claim cites a graph item, and any inferred link is marked as inferred; and the success bar is met or reported as missed (see the v1 finish line): at least 4 of the 5 eval questions and at least 3 of the 4 held out questions answered right, each judged by the engineer against its expected answer.
 **Rules set 2026-10-19, before design:**
@@ -237,7 +237,7 @@ _Design decided 2026-10-19: one call to Claude Sonnet 5.5 over one pack of up to
   - [x] Eval questions 1 to 5, one per command, prompt tuning allowed; the engineer freezes the prompt · done 2026-10-19: each run once on prompt `ask-1` with no tuning, $0.2110 for the five calls, records in `artifacts/asks/` (`f7dbc7c`, `8977f29`); engineer's marks: all five right; **prompt `ask-1` frozen by the engineer on 2026-10-19**, this commit being the freeze commit the held out run follows
   - [x] Held out questions, once each, after the freeze; result reported against the bar · done 2026-10-19 (`6dd1aa1`): 3 of 4 right and 1 partly right (question 3, retrieval), $0.1708 for the four calls; result recorded under the v1 finish line, bar met
 - [x] Verify it: `/check verify answer at question time`
-- [ ] Test it: `/test answer at question time`
+- [x] Test it: `/test answer at question time`
 
 ## Slice 3: Name resolution
 

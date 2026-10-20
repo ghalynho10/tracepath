@@ -1,7 +1,7 @@
 # 0009. Answer at question time
 
 **Date**: 2026-10-19
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
