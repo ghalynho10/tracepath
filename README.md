@@ -2,6 +2,8 @@
 
 A terminal tool that answers "why was this built this way?" over a project's specs, with an answer whose every claim cites an item in a graph extracted from those specs.
 
+![tracepath ask answering "Why is password sign in impossible on production?": the items it found, a cited answer, and the cost line](demo/demo.gif)
+
 ## Example
 
 This is eval question 1, asked against JobHunt's specs. The output below is copied from its saved record, [`artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json`](artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json). It ran under prompt `ask-1`. The search words, the 84 item lines and the record path are cut.
@@ -64,24 +66,7 @@ The answer's verdict is one of four:
 
 ## How it works
 
-```mermaid
-flowchart TD
-    subgraph build["Build the graph"]
-        A["Spec section"] --> B["Pre-check in code:<br/>struck text, checkboxes"]
-        B --> C["Three extraction runs<br/>(Claude, structured output)"]
-        C --> D[("Append only run files<br/>artifacts/runs/")]
-        D --> E["Compare the runs and route:<br/>accepted or held, with a reason"]
-        E --> F[("Load into Neo4j")]
-    end
-    subgraph askflow["tracepath ask"]
-        Q["Question"] --> G["Word overlap search"]
-        F --> G
-        G --> H["Two hops from the hits,<br/>up to 90 items"]
-        H --> I["One guarded model call"]
-        I --> J["Claims checked in code"]
-        J --> K[("Saved record<br/>artifacts/asks/")]
-    end
-```
+![tracepath runtime architecture](docs/architecture.png)
 
 Extraction reads JobHunt's specs, pinned at commit `2e40bcf`, one section at a time. Code first marks struck text and checkboxes. The model then reads each section three times, and each run is saved as a JSON file that is never overwritten. Loading compares the three runs. An item all three runs agree on is accepted, including one held only by a warning flag or by a link waiting on another item (the narrow hold rule, on by default). Items the runs disagree on, or that fail another check, are held, each with the reason. Held items still load, marked held.
 
