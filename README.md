@@ -4,6 +4,8 @@ A terminal tool that answers "why was this built this way?" over a project's spe
 
 ![tracepath ask answering "Why is password sign in impossible on production?": the items it found, a cited answer, and the cost line](demo/demo.gif)
 
+Read the case study: [how I built and evaluated tracepath](docs/case-study.md).
+
 ## Example
 
 This is eval question 1, asked against JobHunt's specs. The output below is copied from its saved record, [`artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json`](artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json). It ran under prompt `ask-1`. The search words, the 84 item lines and the record path are cut.
@@ -110,7 +112,7 @@ Each run file records the model, the prompt version, the corpus commit and the t
 
 ### An experiment log
 
-[`experiments/`](experiments/) holds 15 records. Seven of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
+[`experiments/`](experiments/) holds 17 records. Several of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
 
 ## Specs and experiments
 
