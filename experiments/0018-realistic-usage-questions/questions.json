@@ -1,0 +1,158 @@
+[
+  {
+    "question": "why does error handling pass back explicit values instead of throwing exceptions?",
+    "expected": "A correct answer must explain that returning failures as values allows TypeScript's type system to enforce handling at compile time so errors cannot be silently swallowed. It must also mention that each failure immediately reports itself to Sentry upon creation.",
+    "source": "0001: \"Failures are returned as values that the type system forces you to handle\"",
+    "records_needed": 1
+  },
+  {
+    "question": "which spec decided to put the emergency stop toggle as a single row in the database instead of an environment variable?",
+    "expected": "A correct answer must identify spec 0002 as making this decision. It must also explain that storing the toggle in Postgres allows the operator to shut down external spend immediately from a dashboard without triggering or waiting for a redeployment.",
+    "source": "0002: \"flipped from a dashboard with no deploy, and failing closed\"",
+    "records_needed": 1
+  },
+  {
+    "question": "what did we decide about setting up automated end-to-end browser tests in the test suite?",
+    "expected": "A correct answer must state that Playwright was chosen as the end-to-end runner but intentionally left uninstalled in the foundation. It must explain that setup was postponed until a feature genuinely requires real browser testing so CI does not have to maintain an empty test suite.",
+    "source": "0004: \"Playwright is the recorded choice for end to end and is not installed\"",
+    "records_needed": 1
+  },
+  {
+    "question": "why does the design system reserve monospace font only for certain pieces of text?",
+    "expected": "A correct answer must note that monospace typography is strictly reserved for literal data and generated reasoning explanations such as salaries, dates, and fit reasoning. It must also note that decorative labels, badges, and headers must use tracked uppercase sans-serif instead.",
+    "source": "0005: \"mono reserved for written reasoning and literal data\"",
+    "records_needed": 1
+  },
+  {
+    "question": "why did we publish the privacy and terms pages before most of the product was even built?",
+    "expected": "A correct answer must explain that publishing live terms and privacy notices was required to unblock Google OAuth verification. It must mention that Google's developer console caps testing mode at 100 lifetime users until real policy pages are provided.",
+    "source": "0009: \"exist to unblock Google: the OAuth app is stuck in Testing\"",
+    "records_needed": 1
+  },
+  {
+    "question": "why does updating candidate skills do a diff instead of just wiping them all and re-inserting?",
+    "expected": "A correct answer must explain that saving skills compares incoming names case-insensitively against existing rows to delete only removed items and insert only new ones. It must note that this avoids unnecessary database churn, preserves stored capitalization, and respects unique constraints.",
+    "source": "0010: \"deletes only the names that were removed and inserts only the names that are new\"",
+    "records_needed": 1
+  },
+  {
+    "question": "why does hitting a usage limit return an ordinary successful response rather than an error?",
+    "expected": "A correct answer must explain that a rate limit refusal is a successful business decision whose answer is simply no. It must also state that treating a refusal as a failure would incorrectly mark observability spans as failed when the system worked as intended.",
+    "source": "0011: \"A refusal that were reported as a failure would mark the gate's own span failed\"",
+    "records_needed": 1
+  },
+  {
+    "question": "what replaced sending users to the diagnostic screen after they log in?",
+    "expected": "A correct answer must state that logging in initially routed directly to the health check page under spec 0007. It must explain that spec 0008 replaced this with a landing rule directing users with no profile to the profile setup page and users with an existing profile to search.",
+    "source": "0007: \"arrives signed in at /health\"; 0008: \"A user with no profile row lands on /profile after sign in\"",
+    "records_needed": 2
+  },
+  {
+    "question": "is it still true that the job listings search screen doesn't ship any client javascript?",
+    "expected": "A correct answer must state that the search page no longer runs completely without client-side JavaScript. It must explain that spec 0014 added a client component for the apply button to prevent form submissions from causing a full page re-render that would re-run and waste a paid job search call.",
+    "source": "0013: \"No longer true: that /search ships no client JavaScript.\"; 0014: \"/search ships client JavaScript for the first time.\"",
+    "records_needed": 2
+  },
+  {
+    "question": "what did we decide about the timeout limit for the secondary model verification call?",
+    "expected": "A correct answer must state that the secondary verification tier originally shared a thirty-second timeout with the primary scoring tier in spec 0012. It must explain that spec 0019 reduced this timeout to twenty seconds based on real observed latencies measured from live model calls.",
+    "source": "0012: \"Superseded for ai_check by spec 0019 AC-6 on 2026-09-09\"; 0019: \"ai_check's timeoutMs in tiers.ts is shortened from the 30000ms it currently shares\"",
+    "records_needed": 2
+  },
+  {
+    "question": "Hey, why did we end up going with Neo4j for mapping company connections instead of just using Postgres foreign keys?",
+    "kind": "false_premise",
+    "terms": "Neo4j company graph",
+    "expected": "should decline"
+  },
+  {
+    "question": "Why did we decide to use an event sourcing pattern for updating application status instead of normal CRUD updates?",
+    "kind": "false_premise",
+    "terms": "event sourcing pattern",
+    "expected": "should decline"
+  },
+  {
+    "question": "Did we ever decide on building auto-import for job listings via a Chrome extension, or is that still shelved?",
+    "kind": "missing_feature",
+    "terms": "Chrome extension import",
+    "expected": "should decline"
+  },
+  {
+    "question": "Did we add a salary comparison tool for the offer stage, or are people just tracking compensation in plain notes?",
+    "kind": "missing_feature",
+    "terms": "salary comparison tool",
+    "expected": "should decline"
+  },
+  {
+    "question": "What's our monthly AWS bill running at right now since we started getting more active job seekers?",
+    "kind": "outside",
+    "terms": "monthly AWS bill",
+    "expected": "should decline"
+  },
+  {
+    "question": "How are we handling competition with Huntr now that they rolled out their AI resume analyzer?",
+    "kind": "outside",
+    "terms": "Huntr competitor features",
+    "expected": "should decline"
+  },
+  {
+    "question": "why did we put the job listings in Mongo instead of postgres? feels like a weird split if the rest of the user data is relational",
+    "kind": "false_premise",
+    "terms": [
+      "Mongo",
+      "MongoDB",
+      "document store"
+    ],
+    "expected": "should decline"
+  },
+  {
+    "question": "is the ranking pipeline hitting elasticsearch for the match score, or is that just used for keyword search?",
+    "kind": "false_premise",
+    "terms": [
+      "Elasticsearch",
+      "OpenSearch",
+      "full-text index"
+    ],
+    "expected": "should decline"
+  },
+  {
+    "question": "did we ever add a daily email digest when new ranked jobs show up, or is that still a tab-you-have-to-open thing?",
+    "kind": "missing_feature",
+    "terms": [
+      "email digest",
+      "job alerts",
+      "notification email"
+    ],
+    "expected": "should answer: it must say the daily email digest was not built and that it is a deferred idea."
+  },
+  {
+    "question": "is there an interview calendar in the app so you can log phone screens against the jobs you marked as applied?",
+    "kind": "missing_feature",
+    "terms": [
+      "interview calendar",
+      "phone screen",
+      "scheduling"
+    ],
+    "expected": "should decline"
+  },
+  {
+    "question": "what's the typical monthly openai plus vercel bill when it's just me and a couple of friends using it?",
+    "kind": "outside",
+    "terms": [
+      "monthly bill",
+      "openai invoice",
+      "vercel spend"
+    ],
+    "expected": "should decline"
+  },
+  {
+    "question": "was anyone else on the team besides the original author, or is this still a one-person repo?",
+    "kind": "outside",
+    "terms": [
+      "team members",
+      "coauthor",
+      "collaborators"
+    ],
+    "expected": "should answer along the lines of one author; if it does not, decline."
+  }
+]
