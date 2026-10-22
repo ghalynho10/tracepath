@@ -1,0 +1,1640 @@
+{
+  "asked_at": "2026-10-22T20:25:38+00:00",
+  "question": "did we ever add a daily email digest when new ranked jobs show up, or is that still a tab-you-have-to-open thing?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "ever",
+    "add",
+    "daily",
+    "email",
+    "digest",
+    "new",
+    "ranked",
+    "jobs",
+    "show",
+    "still",
+    "tab-you-have-to-open",
+    "tab",
+    "you",
+    "open",
+    "thing"
+  ],
+  "items": [
+    {
+      "id": "0019#feature-design:7",
+      "line": "0019#feature-design:7  Constraint  held  specs/0019-cross-vendor-self-check/index.md:73  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-9's stated assumption, made explicit and falsifiable**: because `checkFitScore()` for a listing is only ever called after that listing's own `scoreListing()` succeeds (AC-5), and `usage_cap`'s seeded ceilings are identical for `ai_scoring` and `ai_check` at every cadence (spec 0012 AC-8), the check tier's budget cannot be exhausted while the scoring tier's own budget still has room, PROVIDED every `ai_check` call in production is one this feature dispatches. Four named ways this can break, any one of which is reason to revisit AC-9: (1) this feature's sample rate is ever lowered below 1.0; (2) `usage_cap`'s two tiers are ever set to different ceilings; (3) a batch straddles a `usage_cap` window boundary (the daily and monthly caps reset on a UTC clock), since a listing scored just before the boundary can be checked just after it, spending against the new window's `ai_check` cap while the matching `ai_scoring` spend landed in the window that just closed, breaking the same window assumption even though the per listing ordering (score, then check) never does; (4) any future caller dispatches an `ai_check` call outside this feature's own scored-then-checked chain (a live test, a future eval of the check itself), which would consume budget this invariant does not account for."
+    },
+    {
+      "id": "0015#follow-up:7",
+      "line": "0015#follow-up:7  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:205  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "If feature 16's eval harness later shows the five bands clustering rather than spreading (the condition **AC-2** defers to that harness), the band anchors in `rubric.ts` are the first thing to revise, not the vendor or any of this prompt's other instructions. **Still open, and its trigger has not fired.** Feature 16's harness ran the full sixteen pairs twice on 2026-09-08 and both runs observed all five bands, `strong_match` 35, `good_match` 5, `possible_match` 21, `weak_match` 11, `not_a_match` 8 in the first and 35, 4, 21, 8, 12 in the second, so the bands spread rather than clustered and AC-2's bar of at least three of five was already met. Spec 0018 did review the anchors, but for a different reason, two pairs disagreeing with their recorded expectation, and it concluded that `BAND_ANCHORS` holds and one committed expectation was wrong. No anchor changed and the hash is still `1b45f524b356`. So this item is neither satisfied nor superseded by that review; it is waiting on a clustering condition that has not been seen."
+    },
+    {
+      "id": "0011#follow-up:1",
+      "line": "0011#follow-up:1  FollowUp  accepted  specs/0011-usage-gating-and-kill-switch/index.md:204  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A direct email to Adzuna confirming the multi user reading of their terms is still open (residual from spec 0001's own follow-up list, line 199), and it bears directly on every number in this spec."
+    },
+    {
+      "id": "0014#requirements:3",
+      "line": "0014#requirements:3  Feature  accepted  specs/0014-apply-redirect-and-application-record/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "As a job seeker, I want a search to show me which jobs I already applied to,"
+    },
+    {
+      "id": "scope#preamble:1",
+      "line": "scope#preamble:1  Feature  accepted  scope/scope.md:3  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A multi user job search web app: enter a profile, search real listings, see them ranked with the reasoning shown, click through to apply, and record that you applied. Free, no billing, built for the author's own job search plus a few friends and recruiters evaluating it as a portfolio piece."
+    },
+    {
+      "id": "scope#preamble:5",
+      "line": "scope#preamble:5  Constraint  accepted  scope/scope.md:10  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "_You are in charge. Every box below is a **suggestion**, not a gate: run any, skip any, and mark a feature `done` when you decide it is. The workflow records what you actually did (including \"skipped\"), it never requires a step. The one thing it asks is that a load bearing decision be written down (a spec), not that any check be run._"
+    },
+    {
+      "id": "0021#feature-design:42",
+      "line": "0021#feature-design:42  Constraint  accepted  specs/0021-seeded-demo-account/index.md:532  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`DEMO_REFRESH_SECRET`: server only, the shared secret `/api/demo/refresh` compares its caller against (as a SHA-256 digest). New in `src/env.ts`; must be set in every Vercel environment this branch deploys to before the pull request opens, and added to both the unit test job's and the integration job's `env:` blocks in `.github/workflows/ci.yml` with a placeholder value."
+    },
+    {
+      "id": "0006/AC-8",
+      "line": "0006/AC-8  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:30  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: The \"What's real today\" card is true in **both** its lists. Nothing sits under `working` that is not shipped, so profile, filtered search, ranked results with reasoning and application tracking all move to `planned`. And nothing sits under `planned` that is not actually planned, so `email digests` is removed. `a no sign in demo account` stays, because it is a real scope feature (31, Seeded demo account)."
+    },
+    {
+      "id": "0011#feature-design:31",
+      "line": "0011#feature-design:31  FollowUp  held  specs/0011-usage-gating-and-kill-switch/index.md:157  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "If that limit is ever actually hit, the fix is a fourth, minute scoped window in the same `usage_cap` / `usage_gate_counter` shape, not a lower daily cap."
+    },
+    {
+      "id": "0021#build-plan:10",
+      "line": "0021#build-plan:10  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:646  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**The wording pass**: update `src/app/(marketing)/demo/page.tsx`'s `metadata.description`, `<h1>`, and intro copy; `DEMO_COPY`'s banner and read-failed strings (plus a new \"not yet refreshed\" string for AC-15); and `DemoCard`'s own doc comment, none of which may still assert the page is fabricated. Add the search query and last refreshed line (AC-14), both personas' full profiles shown somewhere on the page (AC-14), and AC-15's distinct visible state alongside AC-12's. Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0003#follow-up:3",
+      "line": "0003#follow-up:3  FollowUp  accepted  specs/0003-data-model/index.md:275  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**`application` has no column for whether a snapshotted salary was predicted.** Recorded from spec 0013 on 2026-09-04: feature 11's `Listing` shape carries `salaryIsPredicted` (driving its \"(estimated)\" label), and feature 12 is named as the importer of that same shape for its own field mapping (this spec's Value sourcing table above, the `salary_min`/`salary_max` row). As `application` stands today (`salary_min`, `salary_max`, `salary_currency`, no predicted flag), snapshotting a predicted salary into it loses the distinction, and any later screen reading the row (an applications dashboard, feature 23) would show it as stated fact. Feature 12's own spec must decide: add a column (an additive migration) or make dropping the flag an explicit, documented choice."
+    },
+    {
+      "id": "0013#follow-up:13",
+      "line": "0013#follow-up:13  FollowUp  accepted  specs/0013-job-search-and-results-list/index.md:232  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**`Listing.salaryIsPredicted` has nowhere to land.** Confirmed directly against `supabase/migrations/20260825162457_data_model.sql:168` to `188`: `application` carries `salary_min`, `salary_max`, `salary_currency`, and no column for whether the figure was predicted. If feature 12 snapshots a `Listing` straight into `application` as the table stands today, AC-7's \"(estimated)\" label silently disappears the moment a user applies to a predicted salary listing, and every later screen reading from `application` (an applications dashboard, feature 23) would show it as a stated figure. My own lean, for feature 12's spec to weigh rather than inherit as settled: add the column (a small, additive migration) rather than drop the flag on snapshot,"
+    },
+    {
+      "id": "0020#consequences:6",
+      "line": "0020#consequences:6  Consequence  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:195  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "If this ever grows to show `ai_scoring` or `ai_check` usage too, a location decided for `job_search` alone (the search page) may need to move; accepted here as a small, later cost"
+    },
+    {
+      "id": "0002#build-plan:6",
+      "line": "0002#build-plan:6  BuildStep  accepted  specs/0002-deployment-and-environments/index.md:243  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Add `.github/workflows/db-migrate.yml`: `supabase db push` to the development project on `pull_request` (`opened`, `synchronize`, `reopened`), to production on a push to `main`, failing the run visibly on a failed migration. Make `supabase/seed.sql` idempotent and apply it to the development project only, in the same workflow, with `psql \"$SUPABASE_DB_URL_DEV\" -f supabase/seed.sql`. Correct that file's header comment while you are in it. A failing seed step fails the workflow, the same as a failing migration. Satisfies **AC-11**."
+    },
+    {
+      "id": "0010/AC-13",
+      "line": "0010/AC-13  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:40  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-13**: Every section's edit, add, and delete confirmation state is reachable at a stable URL on `/profile`, parsed against a closed set of known section names; an unrecognised value renders the plain view, never an error page. An `entry` id is parsed as a uuid; one that is malformed, or valid but no longer one of the caller's own work history rows (deleted in another tab, or never the caller's), also renders the plain view, with a visible line saying the entry is no longer there, never a blank form that would silently turn an edit into an insert. Cancel returns to `/profile` with nothing submitted."
+    },
+    {
+      "id": "0015#build-plan:13",
+      "line": "0015#build-plan:13  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:170  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Prove it in a real browser: drive `/search`, tab into a pending card, wait out the reveal, and assert the same control is focused afterwards. Add the steps to `verify.md` and let `/check verify` own them."
+    },
+    {
+      "id": "0012/AC-8",
+      "line": "0012/AC-8  AcceptanceCriterion  accepted  specs/0012-model-client-router/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-8**: `usage_cap` holds six seed rows from this feature's migration: `(ai_scoring, account, week, 500)`, `(ai_scoring, global, day, 1320)`, `(ai_scoring, global, month, 40000)`, `(ai_check, account, week, 500)`, `(ai_check, global, day, 1320)`, `(ai_check, global, month, 40000)`. These are `job_search`'s own cadence numbers (25 / 66 / 2000 searches) multiplied by `RESULTS_PER_PAGE` (`src/features/search/adzuna.ts:36`, `= 20`); `ai_check` mirrors `ai_scoring` at its own sample rate of 1.0. Neither tier is `usage_gate_misconfigured` from the moment this feature ships."
+    },
+    {
+      "id": "0019/AC-5",
+      "line": "0019/AC-5  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:22  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: A listing's check runs only after that listing's own `scoreListing()` call resolves with `{ allowed: true }`. A refused or failed score never triggers a check call."
+    },
+    {
+      "id": "0019/AC-9",
+      "line": "0019/AC-9  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:26  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: An `ai_check` gate refusal adds no page level notice of its own (unlike spec 0015 AC-11's scoring refusal notice); it renders only through AC-7's unverifiable state. This rests on an explicit, falsifiable assumption, stated in this spec's Key invariants: because a check only ever follows a successful score, and both tiers share identical `usage_cap` ceilings (spec 0012 AC-8), `ai_check`'s budget cannot exhaust before `ai_scoring`'s already has, by which point spec 0015 AC-11's own notice is already showing."
+    },
+    {
+      "id": "0006#build-plan:9",
+      "line": "0006#build-plan:9  BuildStep  accepted  specs/0006-entry-page-and-link-metadata/index.md:173  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Build the about section at `standard` on `paper`, with the status card as `tone=\"flat\"` and rewritten so nothing sits under `working` that the scope still calls `planned`, satisfies **AC-5**, **AC-8**."
+    },
+    {
+      "id": "0006#feature-design:41",
+      "line": "0006#feature-design:41  TestScenario  accepted  specs/0006-entry-page-and-link-metadata/index.md:153  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`manual` Honesty, both directions: the status card's `working` list contains nothing the scope still marks `planned`, and its `planned` list contains nothing that has no scope row at all, verifies **AC-8**."
+    },
+    {
+      "id": "0010/AC-16",
+      "line": "0010/AC-16  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:43  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16**: The entry page's \"What's real today\" card moves its `profile` claim from planned to working (spec 0006, AC-8)."
+    },
+    {
+      "id": "0013#build-plan:9",
+      "line": "0013#build-plan:9  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:190  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Retire the entry page's `filtered search` planned claim to working (spec 0006, AC-8, the status card). Satisfies **AC-12**."
+    },
+    {
+      "id": "0013/AC-12",
+      "line": "0013/AC-12  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: This feature moves its own claim (`filtered search`) from planned to working in the entry page's \"What's real today\" card (spec 0006, AC-8)."
+    },
+    {
+      "id": "0014/AC-16",
+      "line": "0014/AC-16  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:46  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16**: The entry page's \"What's real today\" card moves `application tracking` out of `planned` and into `working` (spec 0006, **AC-8**), and the `planned` list no longer names it."
+    },
+    {
+      "id": "0015/AC-15",
+      "line": "0015/AC-15  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:37  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: The entry page's \"What's real today\" card (spec 0006, AC-8) moves `ranked results with reasoning` from its `planned` list to its `working` list."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:6",
+      "line": "feature-11#11-job-search-results-list:6  AcceptanceCriterion  held  scope/scope.md:226  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Also, this feature moves its own claim (`filtered search`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**)."
+    },
+    {
+      "id": "feature-12#12-apply-redirect-application-record-done:8",
+      "line": "feature-12#12-apply-redirect-application-record-done:8  AcceptanceCriterion  accepted  scope/scope.md:246  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Also, this feature moves its own claim (`application tracking`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**)."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:7",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:7  AcceptanceCriterion  accepted  scope/scope.md:281  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Also, this feature moves its own claim (`ranked results with reasoning`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**)."
+    },
+    {
+      "id": "feature-6#6-entry-page-link-metadata-done:13",
+      "line": "feature-6#6-entry-page-link-metadata-done:13  BuildStep  accepted  scope/scope.md:127  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "About and the sign in band: the status card rewritten so nothing claims to work that does not, and the band stripped of its centred and narrow axes while keeping dark, satisfies AC-5, AC-6, AC-8"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:7",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:7  AcceptanceCriterion  accepted  scope/scope.md:134  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Also, this feature is the first user facing thing that actually works, so it **retires the `working` placeholder** in the entry page's \"What's real today\" card, which read `nothing yet, this page is the first of it` (spec 0006, **AC-8**). It moves no claim across, because sign in was never one of the five listed under `planned`, which is exactly why nothing else would have prompted this."
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:7",
+      "line": "feature-9#9-profile-entry-done:7  AcceptanceCriterion  held  scope/scope.md:197  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Also, this feature moves its own claim (`profile`) from planned to working in the entry page's \"What's real today\" card (spec 0006, **AC-8**)."
+    },
+    {
+      "id": "0021/AC-1",
+      "line": "0021/AC-1  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:37  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1**: A visitor reaches `/demo` and sees a list of results with no sign in, no redirect, and no account required."
+    },
+    {
+      "id": "0021/AC-10",
+      "line": "0021/AC-10  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:100  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "That claim is now false and reversed: a visible line states plainly that the listings are real, live Adzuna results, refreshed periodically, and that the two candidate profiles judged against them are fictional (AC-14 names what else that line shows). Every other place on the page or in its code that asserted the old claim (page metadata, heading, intro copy, the demo card's own doc comment, the not mentioned skills caption's justification) is corrected in the same pass (**Build plan**, \"the wording pass\")."
+    },
+    {
+      "id": "0021/AC-11",
+      "line": "0021/AC-11  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:107  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-11**: The page is not indexed by search engines."
+    },
+    {
+      "id": "0021/AC-12",
+      "line": "0021/AC-12  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:108  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: If the seeded data cannot be read because of a genuine fault (the database is unreachable, or a row fails to parse), the page answers a normal 200 and shows a visible failure state rather than an empty, broken looking, or server error page. This is a different case from AC-15, and the two must render distinguishable copy."
+    },
+    {
+      "id": "0021/AC-14",
+      "line": "0021/AC-14  AcceptanceCriterion  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:121  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14** (new 2026-09-14): The page shows both search queries the current results answer (both titles, and the shared location when one is set; revised 2026-09-15) and when the data was last refreshed, both read from the single `demo_refresh` row (**Feature design**). It also shows both persona profiles' full content (summary, skills, experience, preferences) somewhere on the page, which is the disclosure AC-3 now depends on."
+    },
+    {
+      "id": "0021/AC-15",
+      "line": "0021/AC-15  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:127  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15** (new 2026-09-14): If no refresh has ever run since the current schema was deployed (`demo_refresh.refreshed_at is null`), the page shows a visible \"results are not available yet\" state, worded distinctly from AC-12's failure state (the first is expected and temporary, the second is a fault), never a blank or partially rendered page. This is a normal, successful read of an empty state, not a `Failure`."
+    },
+    {
+      "id": "0003#follow-up:4",
+      "line": "0003#follow-up:4  FollowUp  accepted  specs/0003-data-model/index.md:275  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column: `salary_is_predicted boolean`, nullable, with `application_predicted_pairing` making it present exactly when a pay figure is. The deliberation added the nullability, which the lean did not consider. Migration `20260905120000_application_salary_is_predicted.sql`."
+    },
+    {
+      "id": "0013#follow-up:14",
+      "line": "0013#follow-up:14  FollowUp  accepted  specs/0013-job-search-and-results-list/index.md:232  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Resolved 2026-09-05.** Spec 0014 AC-6 weighed the lean above rather than inheriting it, and agreed with it: the column was added, not the flag dropped. The deliberation added what the lean had not considered, that the column must be NULLABLE, because Adzuna sends the flag on every advert including ones quoting no pay, so writing the boolean straight through would have stamped `false` on rows with no salary at all. Migration `20260905120000_application_salary_is_predicted.sql`, with `application_predicted_pairing` refusing both halves of the mistake."
+    },
+    {
+      "id": "0002/AC-11",
+      "line": "0002/AC-11  AcceptanceCriterion  accepted  specs/0002-deployment-and-environments/index.md:32  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-11**: Migrations reach the hosted databases through CI: the development project on a pull request, production on merge to `main`. A migration that fails to apply fails the workflow visibly and does not silently leave the two projects on different schemas."
+    },
+    {
+      "id": "0010#build-plan:3",
+      "line": "0010#build-plan:3  BuildStep  accepted  specs/0010-profile-entry/index.md:188  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Thin slice: `src/features/profile/actions.ts` with `saveIdentity` (named span, caller check, Zod parse mirroring `public.profile`'s own checks, the upsert on `id`, `useActionState` shaped return), and `src/app/(app)/profile/page.tsx` reading and Zod parsing the `edit` search parameter, rendering the identity edit form (no profile row, or `?edit=identity`) or the identity view plus the \"what comes next\" line (a first time visitor with no other section built yet) or the full view (once other sections exist). Before building the other four forms, spike the `useActionState` hidden field shape spec 0004's Follow up recipe assumes: render the identity form, fetch the page, confirm `$ACTION_REF_1` / `$ACTION_1:0` / `$ACTION_1:1` / `$ACTION_KEY` are present in the HTML. If they are not, the identity form falls back to rendering its errors from a search parameter instead of `useActionState`, and that fallback is recorded here rather than discovered at step 8. Prove create, reload, and edit against the real local stack. Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13** (the entry id half arrives at step 4, the first step with an entry to resolve)."
+    },
+    {
+      "id": "0010#build-plan:5",
+      "line": "0010#build-plan:5  BuildStep  accepted  specs/0010-profile-entry/index.md:190  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Thicken: work history. Extend `readProfileSections()` to include `work_experience`, ordered per Value sourcing, add `addWorkExperience` and `updateWorkExperience` (sharing the `profile.save_work_experience` span, distinguished by an `operation` attribute) and `deleteWorkExperience` (its own span), the month and year `Select` controls and their date construction, the entry list, the per entry edit form, the stale entry id fallback, and the named delete confirmation step. Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**."
+    },
+    {
+      "id": "0010#feature-design:33",
+      "line": "0010#feature-design:33  TestScenario  accepted  specs/0010-profile-entry/index.md:177  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Failure case, stale entry: `?edit=experience&entry=<id>` for an id already deleted in another tab renders the plain view with the \"no longer there\" line, not a blank insert form, verifies **AC-13**."
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:12",
+      "line": "feature-9#9-profile-entry-done:12  BuildStep  accepted  scope/scope.md:202  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14"
+    },
+    {
+      "id": "0012#build-plan:2",
+      "line": "0012#build-plan:2  BuildStep  accepted  specs/0012-model-client-router/index.md:83  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the migration seeding the six `usage_cap` rows for `ai_scoring` and `ai_check` at the corrected values (`500` / `1320` / `40000`, see Rationale). Blocked until feature 10's `usage_cap` table exists on `main` (see Consequences), satisfies **AC-8**."
+    },
+    {
+      "id": "0012#build-plan:9",
+      "line": "0012#build-plan:9  BuildStep  accepted  specs/0012-model-client-router/index.md:90  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the critical test scenarios above: the `classify()` unit tests (no vendor call needed), a zeroed cap refusing without reaching a vendor, and, gated behind `TEST_LIVE_MODEL_CALLS_ENABLED`, both tiers reaching two real, different vendors, satisfies **AC-1** through **AC-8**."
+    },
+    {
+      "id": "0012#feature-design:15",
+      "line": "0012#feature-design:15  TestScenario  accepted  specs/0012-model-client-router/index.md:77  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: a `usage_cap` row set to `0` for a tier in a test refuses every call to that tier with `success({ allowed: false, reason: \"account_week_cap_reached\" })` (or the matching reason), and the vendor is never called, verifies **AC-4**, **AC-8**."
+    },
+    {
+      "id": "0015/AC-11",
+      "line": "0015/AC-11  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:33  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: When any of the concurrent calls is refused by the usage gate (`{ allowed: false }`), the affected cards show no band and no per card failure note. Instead, one page level notice appears once, naming the limit reached (reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011). When refusals in the same batch carry more than one distinct reason, the notice uses whichever reason the first refused call, in the listing's original order, carried. Kept visibly distinct from the per card failure state in AC-10."
+    },
+    {
+      "id": "0019#build-plan:4",
+      "line": "0019#build-plan:4  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:102  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Extend `score-listings.ts`: change `scoreListings()`'s per listing dispatch to, after `scoreListing()` resolves, call `checkFitScore()` (threading the same `cookieAdapter` seam) when the score succeeded and `matchedSkills` is non-empty (AC-4, AC-5), otherwise record the matching skip variant; change the return type to `readonly ListingOutcome[]`; extend the existing `scoring.score_listings` span with the four new attributes once every outcome resolves, satisfies **AC-4**, **AC-5**, **AC-10**."
+    },
+    {
+      "id": "0019#build-plan:7",
+      "line": "0019#build-plan:7  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:105  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `score-listings.test.ts` and `src/app/(app)/search/page.test.ts` for the new `ListingOutcome` return shape (spec 0015's own scoring assertions are unaffected; `scoreListing()` itself is untouched), and write this feature's own critical test scenarios above, satisfies **AC-1** through **AC-13**."
+    },
+    {
+      "id": "0019#feature-design:18",
+      "line": "0019#feature-design:18  TestScenario  accepted  specs/0019-cross-vendor-self-check/index.md:93  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case, unverifiable: a constructed `ai_check` vendor error and a zeroed `ai_check` `usage_cap` row both resolve to the AC-7 unverifiable state on the affected card, with the displayed matched skills unchanged, verifies **AC-7**, **AC-9**."
+    },
+    {
+      "id": "0019#follow-up:6",
+      "line": "0019#follow-up:6  FollowUp  accepted  specs/0019-cross-vendor-self-check/index.md:128  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "If a future change ever lowers the check tier's sample rate below 1.0, gives `ai_scoring` and `ai_check` different `usage_cap` ceilings, or adds any `ai_check` caller outside this feature's own scored-then-checked chain, AC-9's decision to skip a page level notice for a check refusal must be revisited; the four named ways this can break are stated in Key invariants specifically so they can be checked again, including the UTC window boundary case."
+    },
+    {
+      "id": "0019/AC-7",
+      "line": "0019/AC-7  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: Once a listing's score and, when applicable, its check have both resolved, the card renders exactly one of three states: clean (nothing to note), flagged (each ungrounded skill removed from the displayed matched list, with one note naming the removed skill or skills, stating they could not be verified against the excerpt shown), or unverifiable (a note that skill matches could not be checked for this listing, with the displayed matched list left exactly as scored). Unverifiable covers a check timeout, a vendor error, and a gate refusal alike, rendered identically at the card level, even though a refusal and a failure remain two structurally distinct results (spec 0012's own invariant, unchanged)."
+    },
+    {
+      "id": "feature-13#13-model-client-router-done:11",
+      "line": "feature-13#13-model-client-router-done:11  BuildStep  accepted  scope/scope.md:270  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Configuration: `@ai-sdk/openai`, `@ai-sdk/google` and `ai` added, the two vendor keys validated in `src/env.ts`, and the six `usage_cap` seed rows migrated for `ai_scoring` and `ai_check` (AC-8, AC-10)"
+    },
+    {
+      "id": "feature-13#13-model-client-router-done:15",
+      "line": "feature-13#13-model-client-router-done:15  BuildStep  accepted  scope/scope.md:274  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Tests: the source guard, the `classify()` unit tests, and the gated real vendor integration tests (AC-1 through AC-8)"
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:10  BuildStep  accepted  scope/scope.md:339  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Wire the check into `scoreListings()`'s dispatch and into `page.tsx` / `score-card.tsx`'s rendering (the three card states, the reasoning caveat, the unchanged band), covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13."
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:11  BuildStep  accepted  scope/scope.md:340  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Observability and tests: extend the `scoring.score_listings` span, update the existing test suites for the new `ListingOutcome` shape, and write this feature's own critical test scenarios, covers AC-1 through AC-13."
+    },
+    {
+      "id": "unresolved:0012:see-rationale",
+      "line": "unresolved:0012:see-rationale  unresolved  held  specs/0012-model-client-router/index.md:11  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "(see Rationale)"
+    },
+    {
+      "id": "0006/AC-5",
+      "line": "0006/AC-5  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: Both comparison cards render as flat `Card`s on `bg-paper`, styled identically to each other. The \"What's real today\" status card is also `tone=\"flat\"`. The hero result card is the only elevated `Card` on the page."
+    },
+    {
+      "id": "0006/AC-6",
+      "line": "0006/AC-6  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: The sign in band uses the same left aligned, full width content measure as every other section. Its dark background is its only distinguishing axis: it is neither centred nor narrowed."
+    },
+    {
+      "id": "0010#build-plan:8",
+      "line": "0010#build-plan:8  BuildStep  accepted  specs/0010-profile-entry/index.md:193  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Move the entry page's `profile` claim from planned to working in `about-section.tsx`. Satisfies **AC-16**."
+    },
+    {
+      "id": "0014#build-plan:13",
+      "line": "0014#build-plan:13  BuildStep  accepted  specs/0014-apply-redirect-and-application-record/index.md:230  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Move `application tracking` from `planned` to `working` in `src/features/entry-page/about-section.tsx`. This is outside this feature's own code area. Satisfies **AC-16**."
+    },
+    {
+      "id": "0015#build-plan:10",
+      "line": "0015#build-plan:10  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:164  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Move `ranked results with reasoning` from `planned` to `working` in `src/features/entry-page/about-section.tsx`. Satisfies **AC-15**."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:17",
+      "line": "feature-11#11-job-search-results-list:17  BuildStep  accepted  scope/scope.md:238  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Retire the entry page's `filtered search` claim, prove and test (AC-12, every AC via the critical test scenarios) · done 2026-09-04."
+    },
+    {
+      "id": "feature-12#12-apply-redirect-application-record-done:16",
+      "line": "feature-12#12-apply-redirect-application-record-done:16  BuildStep  accepted  scope/scope.md:254  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Close out · **done 2026-09-05, and the half that was open turned out to be a real bug rather than a missing measurement**. Done earlier that day: the four spans registered in `spans.md`, and the entry page claim moved from `planned` to `working`. Fixed by `/debug`, locked by proxy-action-refresh.test.ts which was proved to fail without the fix, recorded by `/architect` as spec 0014 **AC-20a**, spec 0008 **AC-10b** and a third item on spec 0001's binding rule 6, then re-measured end to end: counter flat across an expired session apply, row landed, no `x-action-revalidated`. The stale build case (AC-21) was measured the same way and passes (AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)"
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:19",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:19  BuildStep  accepted  scope/scope.md:292  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Entry page: move `ranked results with reasoning` from `planned` to `working` (AC-15)"
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:8",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:8  Consequence  held  scope/scope.md:134  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**This clause was not actually met when the feature was marked done on 2026-08-30.** The row was ticked and the string in `about-section.tsx` was never touched, so the live site went on telling every visitor that nothing worked for two days after signing in worked. Noticed and fixed on 2026-09-01; the card now reads `sign in with Google or GitHub`."
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:14",
+      "line": "feature-9#9-profile-entry-done:14  BuildStep  accepted  scope/scope.md:204  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16"
+    },
+    {
+      "id": "0021#build-plan:12",
+      "line": "0021#build-plan:12  BuildStep  held  specs/0021-seeded-demo-account/index.md  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**The 2026-09-15 revision** (two searches, the kept walk, the migration comment), for `/develop`. First reconfirm `supabase/migrations/20260913120000_demo_result.sql` has still not applied to any hosted project, since editing it in place rests on that; if it has, this step needs a second migration instead. In the migration: replace `demo_refresh.search_title` with `search_titles text[] not null`, add `demo_result.search_title` with its check, seed the singleton with `array['backend engineer', 'frontend engineer']`, change `replace_demo_results()` to take `p_search_titles text[]`, change the `revoke execute` and `grant execute` statements at lines 390 to 391, correct every comment that describes one search or Adzuna's own rank, and correct the heading of the `where true` comment. Then `pnpm db:reset` and `pnpm db:types`. In `src/features/demo/refresh.ts`: run both searches in order, backend first, replace `keepListings()` with the exported pure walk, write `search_title` on every row, compute `skillCounts`, pass `p_search_titles` to the write, and change `KEPT_LISTING_COUNT`'s **value from 8 to 4**. Add the four `skillCounts` values to the `200` body of `src/app/api/demo/refresh/route.ts`; update `queries.ts`, `copy.ts`, `page.tsx`, `demo-card.tsx`, `personas.ts`, `stored-fields.ts` and `docs/observability/spans.md` to match. Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**."
+    },
+    {
+      "id": "0021#build-plan:3",
+      "line": "0021#build-plan:3  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:595  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Edit `supabase/migrations/20260913120000_demo_result.sql` in place: update `demo_result`'s check constraints, change `salary_min`/`salary_max` to `numeric(12, 2)`, and add `source_job_id`, `salary_currency` (with its pairing check), `salary_is_predicted`, and `ungrounded_skills`; remove the twelve seeded `insert` statements; grant `insert`/`delete` on `demo_result` to `service_role` alongside the existing `select`. Add the new `demo_refresh` table (singleton pattern, row level security enabled and forced, zero policies, `service_role` select and update only), inserting its one row with `refreshed_at` null. Add `replace_demo_results()` (`security invoker`, one transaction: delete, `jsonb_to_recordset` insert, `insert ... on conflict (id) do update` on `demo_refresh`). Run `pnpm db:types` after. Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0021#build-plan:4",
+      "line": "0021#build-plan:4  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:606  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Extend `src/features/demo/personas.ts` with the two `ScoringProfile` shaped constants named in **Seed content**, replacing `product-designer` with `frontend-engineer` everywhere its slug is referenced (including the doc comment's cross reference to the migration's check constraint). Satisfies **AC-3**, **AC-5**, **AC-14**."
+    },
+    {
+      "id": "0021#build-plan:8",
+      "line": "0021#build-plan:8  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:632  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `readDemoResults()` (or a renamed equivalent) in `src/features/demo/queries.ts`: one query reads every `demo_result` row (both personas) ordered by `sort_order`, parsed (including the new columns), paired by `source_job_id` into `{ own: DemoResult; otherBand: Band }` for the active persona's ordered list (re-sorted by band then `sort_order` within that persona's subset); a second, separate query reads the `demo_refresh` singleton row. An empty `demo_result` with `demo_refresh.refreshed_at is null` returns a normal success value carrying that fact, never a `Failure`; a genuine database or parse fault still returns a `Failure` exactly as before. Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**."
+    },
+    {
+      "id": "0021#consequences:9",
+      "line": "0021#consequences:9  Consequence  accepted  specs/0021-seeded-demo-account/index.md:747  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what keeps honest rather than silent."
+    },
+    {
+      "id": "0021#feature-design:44",
+      "line": "0021#feature-design:44  TestScenario  held  specs/0021-seeded-demo-account/index.md:542  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a visitor opens `/demo` with no session, sees the first profile's real results ordered by band, each card naming the other persona's band, both search queries and the refresh time visible, and both attributions where they apply. Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**."
+    },
+    {
+      "id": "0021#feature-design:53",
+      "line": "0021#feature-design:53  TestScenario  held  specs/0021-seeded-demo-account/index.md:573  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Not yet refreshed: a fresh database with the migration applied but no refresh ever run shows AC-15's distinct visible state, not AC-12's failure wording and not a blank page. Verifies **AC-15**."
+    },
+    {
+      "id": "0021#requirements:8",
+      "line": "0021#requirements:8  AcceptanceCriterion  held  STRUCK  specs/0021-seeded-demo-account/index.md:100  hop 2",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0021/AC-10"
+      ],
+      "hop": 2,
+      "text": "A visible line on the page states plainly that this is sample data, not live postings."
+    },
+    {
+      "id": "0021/AC-3",
+      "line": "0021/AC-3  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:47  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The opposite is now true on purpose: every listing (company name, title, description, location) is real, exactly as Adzuna returned it, including a real employer's name on a `weak_match` or `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and they are shown on the page in full (AC-14) as the disclosure that makes this honest."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:14",
+      "line": "feature-31#31-seeded-demo-account-done:14  BuildStep  accepted  scope/scope.md:399  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Schema and legal registry: the `demo_result` migration edited in place (new columns, `security invoker` atomic write function, `demo_refresh` table), `pnpm db:types`, and reclassifying `demo_result`/`demo_refresh` in the legal registry, satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18"
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:15",
+      "line": "feature-31#31-seeded-demo-account-done:15  BuildStep  accepted  scope/scope.md:400  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Persona content: the two `ScoringProfile` shaped fictional candidates (a backend engineer and a frontend engineer, contrasting stacks) in `personas.ts`, satisfies AC-3, AC-5, AC-14"
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:17",
+      "line": "feature-31#31-seeded-demo-account-done:17  BuildStep  accepted  scope/scope.md:402  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Read path and rendering: both personas read in one pass, the cross persona band line, ungrounded skill rendering, real Adzuna/Jobsworth attribution, and the wording pass removing every claim that the page is fabricated, satisfies AC-1, AC-7, AC-10 through AC-16, AC-19"
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:18",
+      "line": "feature-31#31-seeded-demo-account-done:18  BuildStep  accepted  scope/scope.md:403  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The 2026-09-15 revision (spec 0021 Build plan step 10): two searches, \"backend engineer\" and \"frontend engineer\", replacing the one \"software engineer\" search, the per search kept walk with a `search_title` on each row; own role and cross role skill counts for the stopping rule; the query line naming both titles; and the migration's `where true` comment heading corrected to \"local or hosted\", satisfies AC-2, AC-6, AC-7, AC-14, AC-17"
+    },
+    {
+      "id": "0014/AC-6",
+      "line": "0014/AC-6  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: `application.salary_is_predicted` exists as a nullable boolean, and a check constraint makes it present exactly when `salary_min` or `salary_max` is present. When Adzuna stated no pay at all, the column is written `null` and never `false`,"
+    },
+    {
+      "id": "0002#build-plan:5",
+      "line": "0002#build-plan:5  BuildStep  accepted  specs/0002-deployment-and-environments/index.md:242  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Prove the seed's write path by hand against the real development project, before any of it goes into CI.** Run the seed manually once the project exists. If it is refused, the fix is small (insert the rows through the secret key client, or add a narrowly scoped insert policy). Satisfies **AC-5**, **AC-11**."
+    },
+    {
+      "id": "0002#feature-design:43",
+      "line": "0002#feature-design:43  TestScenario  accepted  specs/0002-deployment-and-environments/index.md:229  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: a migration written to fail is pushed, and the workflow fails visibly rather than reporting success, verifies **AC-11**."
+    },
+    {
+      "id": "0010/AC-1",
+      "line": "0010/AC-1  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: A signed in user with no profile row sees only the identity section open for editing (full_name, location, summary) on `/profile`. No other section card renders; a single plain text line names what comes next (skills, experience, search preferences) instead of a control that cannot yet do anything."
+    },
+    {
+      "id": "0010/AC-11",
+      "line": "0010/AC-11  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:38  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: Every Server Action verifies the caller itself, independently of the page (binding rule 6), before it writes, and every write reaches only the caller's own rows, enforced by row level security. A caller with no session is refused visibly. A write that row level security silently excludes (zero rows affected) is reported as a named failure, never read as success."
+    },
+    {
+      "id": "0010/AC-12",
+      "line": "0010/AC-12  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: Validation errors render next to the field they belong to, using each edit form's own state. A failed submission keeps what the user typed rather than clearing the form."
+    },
+    {
+      "id": "0010/AC-14",
+      "line": "0010/AC-14  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14**: The identity save Server Action, as this feature's representative write path, is driven once from a test with no browser (spec 0001's third runner constraint, deferred here by spec 0004's Follow up): fetch the page with the edit form open, read the rendered form's hidden action fields, and post them back; a redirect carrying the session cookie means it ran."
+    },
+    {
+      "id": "0010/AC-2",
+      "line": "0010/AC-2  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: Submitting the identity form with a non blank `full_name` (trimmed, at most 200 characters) creates the profile row, with `id` set to the caller's own auth id. `/profile` then renders its full view first shape: the identity view, Skills, Experience, Search preferences, and the Tracked applications link."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0006/AC-8",
+      "target": "feature-7#7-auth-per-user-isolation-done-ga:7",
+      "phrase": "**retires the `working` placeholder** in the entry page's \"What's real today\" card",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0002#build-plan:5",
+      "target": "0002/AC-11",
+      "phrase": "Satisfies **AC-5**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0002#build-plan:6",
+      "target": "0002/AC-11",
+      "phrase": "Satisfies **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:9",
+      "target": "0006/AC-5",
+      "phrase": "satisfies **AC-5**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:9",
+      "target": "0006/AC-8",
+      "phrase": "satisfies **AC-5**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-11",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-13",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-14",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-2",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:5",
+      "target": "0010/AC-13",
+      "phrase": "Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:8",
+      "target": "0010/AC-16",
+      "phrase": "Satisfies **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0012#build-plan:2",
+      "target": "0012/AC-8",
+      "phrase": "satisfies **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0012#build-plan:9",
+      "target": "0012/AC-8",
+      "phrase": "satisfies **AC-1** through **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:9",
+      "target": "0013/AC-12",
+      "phrase": "Satisfies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0014#build-plan:13",
+      "target": "0014/AC-16",
+      "phrase": "Satisfies **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:10",
+      "target": "0015/AC-15",
+      "phrase": "Satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:4",
+      "target": "0019/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-5",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-7",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-9",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-10",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-11",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-3",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:4",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:4",
+      "target": "0021/AC-3",
+      "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-12",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:17",
+      "target": "0013/AC-12",
+      "phrase": "(AC-12, every AC via the critical test scenarios)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-12#12-apply-redirect-application-record-done:16",
+      "target": "0014/AC-16",
+      "phrase": "(AC-10, AC-12, AC-14, AC-16, AC-20a, AC-21)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-13#13-model-client-router-done:11",
+      "target": "0012/AC-8",
+      "phrase": "(AC-8, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:19",
+      "target": "0015/AC-15",
+      "phrase": "(AC-15)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-5",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-7",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-9",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-5",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-7",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-9",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-3",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:15",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-3, AC-5, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:15",
+      "target": "0021/AC-3",
+      "phrase": "satisfies AC-3, AC-5, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-1",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-10",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-11",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-12",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:13",
+      "target": "0006/AC-5",
+      "phrase": "satisfies AC-5, AC-6, AC-8",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:13",
+      "target": "0006/AC-6",
+      "phrase": "satisfies AC-5, AC-6, AC-8",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:13",
+      "target": "0006/AC-8",
+      "phrase": "satisfies AC-5, AC-6, AC-8",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-1",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-11",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-12",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-13",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-14",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-2",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:14",
+      "target": "0010/AC-16",
+      "phrase": "AC-9, AC-10, AC-16",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#requirements:8",
+      "target": "0021/AC-10",
+      "phrase": "**SUPERSEDED 2026-09-14.**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:3",
+      "target": "0003#follow-up:4",
+      "phrase": "**Decided and built 2026-09-05.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:4",
+      "target": "0014/AC-6",
+      "phrase": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0010/AC-16",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, AC-8)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0012/AC-8",
+      "target": "unresolved:0012:see-rationale",
+      "phrase": "(see Rationale)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013#build-plan:9",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, AC-8, the status card)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013#follow-up:13",
+      "target": "0013#follow-up:14",
+      "phrase": "**Resolved 2026-09-05.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013#follow-up:14",
+      "target": "0014/AC-6",
+      "phrase": "Spec 0014 AC-6 weighed the lean above rather than inheriting it",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-12",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, AC-8)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-16",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, **AC-8**)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-15",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, AC-8)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0012/AC-8",
+      "phrase": "(spec 0012 AC-8)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0019/AC-5",
+      "phrase": "(AC-5)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0019/AC-9",
+      "phrase": "any one of which is reason to revisit AC-9",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#follow-up:6",
+      "target": "0019/AC-9",
+      "phrase": "AC-9's decision to skip a page level notice for a check refusal must be revisited",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0012/AC-8",
+      "phrase": "both tiers share identical `usage_cap` ceilings (spec 0012 AC-8)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0015/AC-11",
+      "phrase": "unlike spec 0015 AC-11's scoring refusal notice",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0019/AC-7",
+      "phrase": "it renders only through AC-7's unverifiable state",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021#consequences:9",
+      "target": "0021/AC-14",
+      "phrase": "which AC-14's visible timestamp is what keeps honest rather than silent",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-12",
+      "target": "0021/AC-15",
+      "phrase": "This is a different case from AC-15",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-3",
+      "target": "0021/AC-14",
+      "phrase": "shown on the page in full (AC-14)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-11#11-job-search-results-list:6",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, **AC-8**)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-12#12-apply-redirect-application-record-done:8",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, **AC-8**)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:7",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, **AC-8**)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:8",
+      "target": "feature-7#7-auth-per-user-isolation-done-ga:7",
+      "phrase": "This clause was not actually met when the feature was marked done on 2026-08-30.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-9#9-profile-entry-done:7",
+      "target": "0006/AC-8",
+      "phrase": "(spec 0006, **AC-8**)",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0002#feature-design:43",
+      "target": "0002/AC-11",
+      "phrase": "verifies **AC-11**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0006#feature-design:41",
+      "target": "0006/AC-8",
+      "phrase": "verifies **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:33",
+      "target": "0010/AC-13",
+      "phrase": "verifies **AC-13**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0012#feature-design:15",
+      "target": "0012/AC-8",
+      "phrase": "verifies **AC-4**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:18",
+      "target": "0019/AC-7",
+      "phrase": "verifies **AC-7**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:18",
+      "target": "0019/AC-9",
+      "phrase": "verifies **AC-7**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-1",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-14",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:53",
+      "target": "0021/AC-15",
+      "phrase": "Verifies **AC-15**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "feature-13#13-model-client-router-done:15",
+      "target": "0012/AC-8",
+      "phrase": "(AC-1 through AC-8)",
+      "held": true
+    }
+  ],
+  "cut": 5,
+  "counted_input_tokens": 22314,
+  "bound_usd": 0.204628,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[{\"text\":\"The only item that mentions email digests is spec 0006 AC-8, which removed `email digests` from the entry page's `planned` list because it was not actually planned. The card is meant to show only what is really planned or working.\",\"cites\":[\"0006/AC-8\"],\"basis\":\"text\"},{\"text\":\"Ranked results with reasoning are shown on the search page, and refused scoring calls produce an on-page notice. No item describes any email or notification delivery of new ranked jobs.\",\"cites\":[\"0015/AC-11\",\"0015/AC-15\"],\"basis\":\"text\"},{\"text\":\"The scope document describes the app as one where you enter a profile, search listings, see them ranked, click through to apply and record the application. It does not mention a digest.\",\"cites\":[\"scope#preamble:1\"],\"basis\":\"text\"}],\"missing\":[\"Any item stating that a daily email digest was built, planned, or declined\",\"Any scope row or spec for email or notification delivery of ranked jobs\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "Any item stating that a daily email digest was built, planned, or declined",
+    "Any scope row or spec for email or notification delivery of ranked jobs"
+  ],
+  "claims": [
+    {
+      "text": "The only item that mentions email digests is spec 0006 AC-8, which removed `email digests` from the entry page's `planned` list because it was not actually planned. The card is meant to show only what is really planned or working.",
+      "cites": [
+        "0006/AC-8"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Ranked results with reasoning are shown on the search page, and refused scoring calls produce an on-page notice. No item describes any email or notification delivery of new ranked jobs.",
+      "cites": [
+        "0015/AC-11",
+        "0015/AC-15"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The scope document describes the app as one where you enter a profile, search listings, see them ranked, click through to apply and record the application. It does not mention a digest.",
+      "cites": [
+        "scope#preamble:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 22314,
+    "output_tokens": 331,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.047938,
+  "recorded_usd": 0.047938
+}

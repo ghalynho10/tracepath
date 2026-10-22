@@ -1,0 +1,1509 @@
+{
+  "asked_at": "2026-10-22T20:24:55+00:00",
+  "question": "Hey, why did we end up going with Neo4j for mapping company connections instead of just using Postgres foreign keys?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "hey",
+    "end",
+    "going",
+    "neo4j",
+    "mapping",
+    "company",
+    "connections",
+    "instead",
+    "just",
+    "using",
+    "postgres",
+    "foreign",
+    "keys"
+  ],
+  "items": [
+    {
+      "id": "0003#consequences:3",
+      "line": "0003#consequences:3  Consequence  accepted  specs/0003-data-model/index.md:254  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The deployed end to end proof survives the removal of the scaffold table instead of going dark until feature 9."
+    },
+    {
+      "id": "0002#follow-up:23",
+      "line": "0002#follow-up:23  FollowUp  held  specs/0002-deployment-and-environments/index.md:322  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**An already-pushed migration edited in place leaves every hosted project it already reached silently stale, and `db-migrate.yml` cannot detect it, because invariant 5 names the workflow as the only sanctioned path but says nothing about a file changing after that path has already run once.** Found on feature 10 (spec 0011), 2026-09-04, a third fresh model review: `20260902120000_usage_gating.sql` was pushed to the development project on 2026-09-03, then edited in place twice more. `supabase db push` compares the migrations directory against the migration history table by version and applies only what is missing, so every push since silently skipped the file, the workflow reported \"Remote database is up to date\", and the pull request stayed green throughout. Remediated by hand this once with `supabase db reset --linked`, and confirmed afterward by a schema dump against the hosted project. Two things worth deciding, not yet decided: whether a CI step could catch this class of drift going forward, and whether the convention should simply be \"never edit a migration file once any hosted project has applied it, write a follow-up migration instead\". Production has never had this specific file's content diverge from what was pushed, since it is not on `main` yet."
+    },
+    {
+      "id": "0009#feature-design:3",
+      "line": "0009#feature-design:3  Constraint  accepted  specs/0009-terms-and-privacy-notices/index.md:244  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The AC-5 test asserts that the set of keys declared in `src/env.ts` is exactly the union of the two lists, with no key claimed twice and no entry naming a key that no longer exists. A stale entry fails just as loudly as an unclassified key"
+    },
+    {
+      "id": "0003#feature-design:15",
+      "line": "0003#feature-design:15  Constraint  held  specs/0003-data-model/index.md:208  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**The clause differs by action, and Postgres refuses the wrong one.** `select` and `delete` policies carry `using` only; an `insert` policy carries `with check` only; an `update` policy carries both, and it needs both,"
+    },
+    {
+      "id": "0011#follow-up:11",
+      "line": "0011#follow-up:11  FollowUp  held  specs/0011-usage-gating-and-kill-switch/index.md:211  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A real engaged kill switch reaching `checkUsageGate()` end to end could not be a committed integration test at first, and the reason was structural rather than a one off flake to route around. `app_settings` is a single row by design (spec 0002), so no test can hold its own copy of it, and `checkUsageGate()` reads that same row on every call, from every integration file. Vitest schedules different integration files to run in parallel by default, so ANY committed test that flips the switch races every other file's concurrent gate calls, not just one specific assertion."
+    },
+    {
+      "id": "0020#build-plan:11",
+      "line": "0020#build-plan:11  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:172  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Tests: the boundary case end to end, a kill switch refusal render, a search that fails at Adzuna after passing the gate, and the bare visit. Each asserts the rendered figure, not just that a read happened. Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "feature-30#30-company-research-lite-needs-a-decision:5",
+      "line": "feature-30#30-company-research-lite-needs-a-decision:5  AcceptanceCriterion  accepted  scope/scope.md:486  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "a site that cannot be read says so plainly instead of returning an empty summary,"
+    },
+    {
+      "id": "scope#deferred:16",
+      "line": "scope#deferred:16  unclassified  held  scope/scope.md:507  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one."
+    },
+    {
+      "id": "0009#feature-design:11",
+      "line": "0009#feature-design:11  Constraint  held  specs/0009-terms-and-privacy-notices/index.md:369  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**What \"reaches\" means**, since features 11, 13 and 14 will each have to apply it: a key reaches a recipient when it is what connects this app to that company, its credential, its address, or a value transmitted to it. It reaches nobody only when no company is on the other end of it at all. A key supplied *by* a company is not thereby a key that reaches it, and if its value is sent onward to somebody else it belongs to that somebody."
+    },
+    {
+      "id": "0009/AC-2",
+      "line": "0009/AC-2  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:43  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-2**: The privacy notice names every category of personal data stored, and its list matches the applied schema. From the identity provider: the email address, display name and avatar URL in `auth.users`. From this app's own tables: full name, location and written summary (`profile`); skill names (`profile_skill`); company, job title, location, description and start and end month (`work_experience`); desired titles, desired locations, remote preference, minimum pay and its currency (`job_preference`); the source and its job id, job title, company, location, link, description, salary range and currency, posted and applied timestamps (`application`); and the question key with the person's own typed answer (`application_answer`). It also names the `created_at` and `updated_at` timestamps every one of these tables carries,"
+    },
+    {
+      "id": "0008/AC-16",
+      "line": "0008/AC-16  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:71  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-16**: Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply."
+    },
+    {
+      "id": "feature-3#3-deployment-environments-done:1",
+      "line": "feature-3#3-deployment-environments-done:1  Feature  accepted  scope/scope.md:75  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Get the bare scaffold live on a real URL before auth exists, so hosting, environment variables, and the preview versus production split are solved while the app is tiny instead of at the end. The portfolio URL exists from week one, and later OAuth callback work has a known production origin to point at."
+    },
+    {
+      "id": "0003#follow-up:3",
+      "line": "0003#follow-up:3  FollowUp  accepted  specs/0003-data-model/index.md:275  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**`application` has no column for whether a snapshotted salary was predicted.** Recorded from spec 0013 on 2026-09-04: feature 11's `Listing` shape carries `salaryIsPredicted` (driving its \"(estimated)\" label), and feature 12 is named as the importer of that same shape for its own field mapping (this spec's Value sourcing table above, the `salary_min`/`salary_max` row). As `application` stands today (`salary_min`, `salary_max`, `salary_currency`, no predicted flag), snapshotting a predicted salary into it loses the distinction, and any later screen reading the row (an applications dashboard, feature 23) would show it as stated fact. Feature 12's own spec must decide: add a column (an additive migration) or make dropping the flag an explicit, documented choice."
+    },
+    {
+      "id": "0006#consequences:5",
+      "line": "0006#consequences:5  Consequence  accepted  specs/0006-entry-page-and-link-metadata/index.md:189  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The status card becomes a maintenance point. It is copy that must change every time a feature ships, with nothing enforcing it. Ownership is assigned in `## Follow-up`, but assignment is not enforcement, and this card going stale is the most likely way this page becomes untrue again."
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "0009#summary:3",
+      "line": "0009#summary:3  Feature  held  specs/0009-terms-and-privacy-notices/index.md:23  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A typed registry plus a test keeps the recipient list\nfrom quietly going stale when features 11, 13 and 14 add their own."
+    },
+    {
+      "id": "0011#follow-up:12",
+      "line": "0011#follow-up:12  FollowUp  held  specs/0011-usage-gating-and-kill-switch/index.md:211  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Implemented the same day: a third Vitest project, `integration-serial` (`test/integration-serial/`, `sequence.groupOrder: 1`), added to `vitest.config.mts` and to `test:integration` in `package.json`. Merged into one file, `test/integration-serial/shared-global-state.test.ts`. Every future scenario needing this same real shared state belongs in that one file too, not a new one of its own. `groupOrder` still isolates the project from `integration`; `fileParallelism` now serialises the files within it. The scenarios still belong in one file, but because that stays simpler than splitting it, not because a split would be unsafe."
+    },
+    {
+      "id": "0020/AC-11",
+      "line": "0020/AC-11  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:31  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-11**: On a render that runs a search, `UsageNotice`'s read is ordered after that search by an `await` it performs itself. `SearchPage` calls `searchListings()` WITHOUT awaiting it and passes the promise to `UsageNotice` and to `SearchResults`; `UsageNotice` awaits that promise as its first statement, then reads usage. The ordering is therefore an `await` in the component that depends on it, guarded two ways: the page tests catch any reordering, including folding the two awaits into one `Promise.all`, and lint catches deleting the `await` outright, because the prop then goes unused. **No claim is made that a refactor cannot undo this.** Two such claims have now been made about this one line and both were wrong, so the criterion states what is true and stays true: where the ordering lives, and what catches its removal. **Rewritten 2026-09-13**: this criterion previously described the prop itself as the guarantee, which was false, and the code satisfying it has changed to match."
+    },
+    {
+      "id": "0020/AC-12",
+      "line": "0020/AC-12  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:32  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: One mechanism serves every render. The number always comes from `get_job_search_usage_summary()`, on the bare visit and the search render alike. There is no second source and therefore no rule deciding which applies,"
+    },
+    {
+      "id": "0020/AC-13",
+      "line": "0020/AC-13  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:33  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-13**: The figure shown after a search that was allowed counts that search; the figure shown after a search that was refused, for any of the five reasons, is unchanged by it, which is the true position in both cases. The boundary case is the test that matters: an account one below its cap runs its last allowed search, and the line must read the post increment figure, never the figure that implies another search remains."
+    },
+    {
+      "id": "0020/AC-14",
+      "line": "0020/AC-14  AcceptanceCriterion  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: A search that passes the gate and then fails at Adzuna still shows the incremented figure. This is the path where somebody spent budget and got nothing, so a line that under reported here would be wrong in the most costly direction. It falls out of AC-11 for free, since the read runs after the search resolves whatever the outcome, and it is stated separately because `withUsageGate()` discards the gate decision on that path and an implementation carrying the number through the decision instead would silently lose it."
+    },
+    {
+      "id": "0021",
+      "line": "0021  record  accepted  specs/0021-seeded-demo-account/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Seeded demo account"
+    },
+    {
+      "id": "scope#deferred:13",
+      "line": "scope#deferred:13  FollowUp  held  scope/scope.md:505  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25,"
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0009#build-plan:5",
+      "line": "0009#build-plan:5  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:471  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write the privacy notice's real content: the stored field list, the recipient list rendered from the registry, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, the rights and lawful basis, the Google disclosure, and the cookie line, satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:14  BuildStep  accepted  scope/scope.md:187  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The privacy notice's content: stored fields, recipients, the Sentry claim, retention, the deletion procedure and contact address, the responsible party, lawful basis and rights, the Google disclosure, cookies · **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0008#build-plan:9",
+      "line": "0008#build-plan:9  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:206  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`completeSignIn()` returns its claims, and the callback consumes, validates and clears the cookie on every path, passes the claims into the landing rule, then redirects to the deep link or the landing rule, carrying the value onto its own error redirect and removing the literal `/health` redirect, satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**"
+    },
+    {
+      "id": "0008#copy:5",
+      "line": "0008#copy:5  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:188  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: a signed out visitor deep links to `/search?q=react`, signs in, and lands on `/search?q=react`; a second user with a profile row and no deep link lands on `/search`; a third with no profile row lands on `/profile`, verifies **AC-6**, **AC-16**"
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:15",
+      "line": "feature-32#32-app-shell-navigation-done:15  BuildStep  accepted  scope/scope.md:169  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it · **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. Starts by proving the one mechanic the spec marks inferred rather than verified."
+    },
+    {
+      "id": "0003#follow-up:4",
+      "line": "0003#follow-up:4  FollowUp  accepted  specs/0003-data-model/index.md:275  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column: `salary_is_predicted boolean`, nullable, with `application_predicted_pairing` making it present exactly when a pay figure is. The deliberation added the nullability, which the lean did not consider. Migration `20260905120000_application_salary_is_predicted.sql`."
+    },
+    {
+      "id": "0008/AC-24a",
+      "line": "0008/AC-24a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:87  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-24a**: Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing, so a call inside either records the operation as having failed when it succeeded. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48; this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "0008/AC-6",
+      "line": "0008/AC-6  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:53  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes."
+    },
+    {
+      "id": "0008/AC-7",
+      "line": "0008/AC-7  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:54  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed."
+    },
+    {
+      "id": "0008/AC-7a",
+      "line": "0008/AC-7a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:55  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7a**: A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported."
+    },
+    {
+      "id": "0020#build-plan:10",
+      "line": "0020#build-plan:10  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:171  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Lift the search call and pass it down: move `await searchListings()` from `SearchResults` into `SearchPage`, give `UsageNotice` a `searchResult` prop carrying that awaited value (`undefined` on a bare visit), and pass the already resolved result into `SearchResults` rather than letting it fetch. `UsageNotice` keeps its own `getJobSearchUsageSummary()` call, unchanged, inside itself. Nothing reads a value out of the prop; it exists to order the render, so the component opens with `void searchResult;` and a comment saying why. Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0020#build-plan:15",
+      "line": "0020#build-plan:15  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:180  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Pass the promise instead of the resolved value: in `SearchPage`, call `searchListings()` without `await`; hand the promise to both `UsageNotice` and `SearchResults`. Widen `SearchResults`'s `result` prop from `Awaited<ReturnType<typeof searchListings>>` to `ReturnType<typeof searchListings>` and await it as its first statement; `SearchOutcome`'s own prop stays the awaited type. The `searchResult === undefined` branch at the call site still routes the bare visit correctly, because a promise is never `undefined`. Satisfies **AC-11**."
+    },
+    {
+      "id": "0020#build-plan:16",
+      "line": "0020#build-plan:16  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:181  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Make `UsageNotice` await its prop: rename it to `searchInFlight`, type it `Promise<unknown> | undefined`, drop the now unneeded `import type { searchListings }`, and replace `void searchResult;` with `if (searchInFlight !== undefined) await searchInFlight;` as the component's first statement. `Promise<unknown>` on purpose: the notice waits on the search and must not grow a dependency on what it returns. Delete the paragraph defending an unread prop. Satisfies **AC-11**, **AC-12**."
+    },
+    {
+      "id": "0020#build-plan:17",
+      "line": "0020#build-plan:17  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:182  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Correct EVERY comment that states the false mechanism, not just the two the first draft of this step named. In `src/app/(app)/search/page.tsx`: the block at line 87 (\"Awaiting it here is what lets the resolved value become a prop\"), line 112 (\"Removing the prop ... quietly brings the boundary bug back\"), line 122 (the `searchResult` branch comment) and line 188 (\"ALREADY RESOLVED, BY `SearchPage`\"). In `src/features/search/usage-notice.tsx`: the header, and the prop's own doc comment (\"already resolved ... Never read\"). Each must say where the ordering lives and what guards it, and the component header must name the `Promise.all` fold as the forbidden edit. No comment may claim a refactor cannot undo the ordering. Satisfies **AC-11**."
+    },
+    {
+      "id": "0020#build-plan:18",
+      "line": "0020#build-plan:18  BuildStep  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:183  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Prove both guards bite, and prove the forbidden edit is caught: with the inner `await` deleted, the three ordering tests must fail AND `pnpm lint` must report the prop unused; with the two awaits folded into one `Promise.all`, lint must stay clean and those same three tests must still fail. Run the existing suites UNCHANGED, all 74 page tests and the integration files. do not \"fix\" the tests to await the mock. Satisfies **AC-11**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0020#feature-design:26",
+      "line": "0020#feature-design:26  TestScenario  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:148  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The boundary case, driven end to end, verifies **AC-11**, **AC-13**. An account seeded to one below its cap runs its last allowed search; the rendered line must read the post increment figure (`25 of 25`, not `24 of 25`), and the following search must be refused."
+    },
+    {
+      "id": "0020#feature-design:27",
+      "line": "0020#feature-design:27  TestScenario  held  specs/0020-spend-visibility-and-gating-polish/index.md:149  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Bare visit, verifies **AC-12**: the line renders with no search having run, through the same read."
+    },
+    {
+      "id": "0020#feature-design:28",
+      "line": "0020#feature-design:28  TestScenario  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:150  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "A refused search render, verifies **AC-13**'s refused half: the figure is unchanged and states the true cap position beside the refusal. Drive at least one KILL SWITCH refusal here, not only a cap refusal,"
+    },
+    {
+      "id": "0020#feature-design:29",
+      "line": "0020#feature-design:29  TestScenario  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:151  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "A search that passes the gate and then fails at Adzuna, verifies **AC-14**: the figure includes the increment even though the search returned a failure and the gate decision was discarded."
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:10  BuildStep  accepted  scope/scope.md:372  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Order the usage read behind the search: lift `searchListings()` into `SearchPage`, pass the awaited result to `UsageNotice` as a prop (AC-11, AC-12, AC-13, AC-14)"
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:11",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:11  BuildStep  accepted  scope/scope.md:373  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Tests for the revision: the cap boundary end to end, a kill switch refusal, an Adzuna failure after the gate allowed, and the `anon` grant on both `security definer` functions (AC-11 through AC-15)"
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:12",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:12  BuildStep  accepted  scope/scope.md:374  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Correction (spec 0020, 2026-09-13): pass the search promise and await it inside `UsageNotice`, rename the prop to `searchInFlight`, and correct the six comments that state the old mechanism (AC-11, AC-12)"
+    },
+    {
+      "id": "0013/AC-6",
+      "line": "0013/AC-6  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`."
+    },
+    {
+      "id": "0013/AC-7",
+      "line": "0013/AC-7  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution."
+    },
+    {
+      "id": "0015",
+      "line": "0015  record  accepted  HISTORY  specs/0015-fit-scoring-with-shown-reasoning/index.md  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0020#follow-up:3"
+      ],
+      "hop": 2,
+      "text": "Fit scoring with shown reasoning"
+    },
+    {
+      "id": "0020#follow-up:3",
+      "line": "0020#follow-up:3  FollowUp  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:218  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**Done 2026-09-13**: a sweep of all of `docs/` for numeric references into that file found exactly four, all re read against the file on 2026-09-13: this spec's `index.md:110`, the `hasQuery` conditional, 94 to **129**; this spec's `rationale.md:111`, the `Promise.all` over the applied and scoring reads inside `SearchOutcome`, 243 to **291**; and spec 0015's `index.md:211` and `verify.md:78`, both citing the `ScoredResults` index pairing (`const paired = listings.map(...)`), 383 to **442** in each. Corrected in the same pass rather than one at a time."
+    },
+    {
+      "id": "0016",
+      "line": "0016  record  accepted  specs/0016-eval-ground-truth-set/index.md  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Eval ground truth set"
+    },
+    {
+      "id": "scope#deferred:1",
+      "line": "scope#deferred:1  FollowUp  accepted  scope/scope.md:493  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Richer seeded demo account**: a fuller version of feature 31 with applications across every status, discard history and a populated dashboard, instead of the no sign in read only demo. Needs feature 23 (applications dashboard) and likely feature 22 (discard with reason) to exist first,"
+    },
+    {
+      "id": "0009/AC-10",
+      "line": "0009/AC-10  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:71  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The privacy notice describes deletion truthfully: the operator removes the account record, which cascades to every table holding that person's data. Nothing is left behind."
+    },
+    {
+      "id": "0009/AC-11",
+      "line": "0009/AC-11  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:73  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The privacy notice identifies JobHunt as the service, Ghaly Nicolas Jules, resident in the United States, as the person responsible, and the contact address above."
+    },
+    {
+      "id": "0009/AC-12",
+      "line": "0009/AC-12  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:75  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: The privacy notice carries the GDPR and UK GDPR shape, and names the lawful basis for each purpose rather than the word alone: contract necessity for the identity, profile and application data; and legitimate interest for error monitoring. It lists the rights (access, correction, deletion, portability, objection, restriction) and how to exercise each."
+    },
+    {
+      "id": "0009/AC-13",
+      "line": "0009/AC-13  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:81  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: The privacy notice discloses how data received from Google is accessed, used, stored and shared, and states plainly that data is not sold, not used for advertising, not shared with data brokers, and not used to train models. It carries no Limited Use affirmation."
+    },
+    {
+      "id": "0009/AC-14",
+      "line": "0009/AC-14  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:84  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14**: Replaced by: the privacy notice discloses every cookie the codebase sets, each described as strictly necessary and none used for tracking: - The Supabase session cookie, possibly split into numbered chunks (name and count chosen by `@supabase/ssr`, `sb-<project-ref>-auth-token`), written by `src/lib/supabase/server.ts` and refreshed by `src/proxy.ts`. - The short lived PKCE verifier cookies `@supabase/ssr` writes during the OAuth handshake itself (`<storageKey>-code-verifier` and, per flow, `<storageKey>-flow-<flowId>-code-verifier` plus a `<storageKey>-flows-code-verifier` index). - `jobhunt_return_path` (spec 0008 AC-5b), a short lived, first party, `httpOnly` cookie written by `rememberReturnPath()` in `src/features/auth/actions.ts` only when a signed out visitor follows a protected deep link, and cleared by the callback (`src/app/auth/callback/route.ts:73`). It also still states there is no analytics and no tracking today. A test fails if an analytics dependency or a third party script tag is introduced, so that half of the claim cannot become false in silence; the cookie half now has its own guard, AC-24."
+    },
+    {
+      "id": "0009/AC-3",
+      "line": "0009/AC-3  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:53  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The privacy notice names every third party receiving data today and what each receives: Supabase (everything, as the database and the identity store), Vercel (IP address and IP derived location data, per Vercel's own Privacy Notice), Sentry (error and performance events), Google and GitHub (only the sign in handshake, and only for whichever the person chooses)."
+    },
+    {
+      "id": "0009/AC-7",
+      "line": "0009/AC-7  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:63  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The privacy notice states the retention policy in words: data is kept until the person asks for it to be removed, there is no fixed period, and dormant accounts are not deleted automatically."
+    },
+    {
+      "id": "0009/AC-8",
+      "line": "0009/AC-8  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:66  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: The privacy notice publishes `contact@usejobhunt.dev` for deletion and data requests, phrased as requesting deletion by contacting, never as a control the person can operate."
+    },
+    {
+      "id": "0008/AC-10",
+      "line": "0008/AC-10  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:61  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run."
+    },
+    {
+      "id": "0008/AC-10a",
+      "line": "0008/AC-10a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:63  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10a**: The test for AC-10 asserts **both** halves after a refresh: the pathname header is present, and the forwarded request carries the refreshed session cookie. A test asserting only the pathname passes while the second bug ships, which is the whole reason this criterion is split out. The vehicle is whichever suite can drive a real refresh: `src/proxy.test.ts` records that its unit half works only because `getClaims()` returns early with no session, so this likely belongs in `test/integration/`. A mock whose `setAll` merely rebuilds the response would encode the same assumption as the code under test and is forbidden by AGENTS.md."
+    },
+    {
+      "id": "0008/AC-11",
+      "line": "0008/AC-11  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:64  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The `(app)` layout, at the moment it redirects an unauthenticated visitor, reads the header through `headers()` and appends the value as a `next` query parameter on `/sign-in`, percent encoded so a nested query string survives intact. When the header is absent it redirects to a bare `/sign-in` and nothing fails."
+    },
+    {
+      "id": "0008/AC-14a",
+      "line": "0008/AC-14a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:68  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14a**: The deep link survives a failed sign in attempt, on both error paths, or the spec says it does not. When `startProviderSignIn` fails, `signInWithGoogle` and `signInWithGitHub` redirect to `signInErrorPath(code)` (`src/features/auth/actions.ts:53` and `:79`); that path carries the accepted `next` value so the retry keeps it. When the callback fails it redirects to `/sign-in?error=...` and AC-15 has already cleared the cookie, so that path carries the value forward on the redirect too."
+    },
+    {
+      "id": "0008/AC-15",
+      "line": "0008/AC-15  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:69  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15**: The callback consumes, validates and clears the cookie on **every** path through it, including when validation fails and when the provider returned an error, so a stale value cannot fire at a later sign in. The clear repeats the same `Path` the cookie was written with, or it silently fails to match and the value survives."
+    },
+    {
+      "id": "0008/AC-15a",
+      "line": "0008/AC-15a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:70  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15a**: `completeSignIn()` returns the resolved claims alongside `{ signedIn: true }`, and the callback passes them into the landing rule rather than building a second Supabase client to re-read them. It also means the session is read once per callback rather than twice."
+    },
+    {
+      "id": "0008/AC-8",
+      "line": "0008/AC-8  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:59  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`, so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434). It **overwrites** any header of that name arriving on the request, so a client supplied value cannot be trusted forward. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**, per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it. Omitting it falls through to the landing rule, which is the honest outcome. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy, so one number governs both."
+    },
+    {
+      "id": "0008/AC-9",
+      "line": "0008/AC-9  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:60  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: The two existing assertions in `src/proxy.test.ts` pass **unmodified**: that the proxy treats a protected route exactly as it treats a public one (lines 49 to 62), and that it sets no cookies (lines 64 to 70)."
+    },
+    {
+      "id": "0014/AC-6",
+      "line": "0014/AC-6  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: `application.salary_is_predicted` exists as a nullable boolean, and a check constraint makes it present exactly when `salary_min` or `salary_max` is present. When Adzuna stated no pay at all, the column is written `null` and never `false`,"
+    },
+    {
+      "id": "0007/AC-1",
+      "line": "0007/AC-1  AcceptanceCriterion  accepted  HISTORY  specs/0007-auth-and-per-user-isolation/index.md:22  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0008/AC-6"
+      ],
+      "hop": 2,
+      "text": "**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session."
+    },
+    {
+      "id": "0008#build-plan:10",
+      "line": "0008#build-plan:10  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:207  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The door at `/go`, **opening `door.decide` first and keeping `redirect()` outside it**, with its `no-store` and `noindex` headers and its errored read falling to `/sign-in`, plus the `/` swap replacing both `SignInControls` renders and the header control with the door CTA, satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**"
+    },
+    {
+      "id": "0008#build-plan:3",
+      "line": "0008#build-plan:3  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:200  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`src/lib/return-path.ts`: the header name, the cookie name and the length cap as exported constants, plus one Zod schema with the rules of AC-12, and unit tests naming each hostile string, satisfies **AC-12**, **AC-5b**"
+    },
+    {
+      "id": "0008/AC-12",
+      "line": "0008/AC-12  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:65  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: One Zod schema validates the return path, and it is parsed at all three boundaries it crosses: the `next` query parameter on `/sign-in`, the hidden form field reaching the Server Action, and the cookie read by the callback. It accepts only a safe single leading slash path. It rejects a protocol relative `//`, a backslash, a scheme, control characters, and any value over **2048 characters** (the shared cap of AC-8). It rejects `/sign-in`, `/auth/callback` and `/go` as return targets: `/sign-in` and `/auth/callback` would loop, and `/go` would not loop but would resolve straight back to the landing rule, making the deep link a no op that looks honoured. It keeps the query string and drops the fragment, which is a property of the validator in isolation, since a browser never sends the fragment and the value can now also arrive typed into `?next=`. A rejected value falls back to the landing rule. A unit test names each hostile string, including one that is harmless before percent decoding and hostile after."
+    },
+    {
+      "id": "0008/AC-24",
+      "line": "0008/AC-24  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:86  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-24**: The door route, the `/sign-in` bounce and the landing rule each open a named span as their **first statement**, before any guard clause or early return, per binding rule 4. The names are `door.decide`, `sign_in.bounce` and `landing_rule.decide`, following the `<domain>.<verb>` convention the existing rows in `docs/observability/spans.md` use, and all three are registered there. The bounce's span wraps the session read as well as the decision that follows it, so the operation whose failure rate is measured is \"decide whether to bounce\" rather than \"render `/sign-in`\", and a signed out render is outside it entirely."
+    },
+    {
+      "id": "0008/AC-5",
+      "line": "0008/AC-5  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides."
+    },
+    {
+      "id": "0015/AC-7",
+      "line": "0015/AC-7  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: A profile with zero `profile_skill` rows and zero `work_experience` rows is never scored. `/search` renders its plain, unscored result list (today's shape) plus a visible line linking to `/profile` to add skills or experience (`COPY-5`), and no `ai_scoring` call is made for any listing on that render. A profile with either skills or work history, even if the other is empty, is scored normally. This gate layers onto spec 0008's AC-6 landing rule without replacing it: a thin profile still lands on `/search`."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8  Constraint  accepted  scope/scope.md:282  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**The scoring gate layers onto the landing rule's callers, it does not replace the rule.** Spec 0008 AC-6 decides where a visitor lands after sign in, and its invariant says the rule reads profile row existence only, never profile sufficiency. Whatever gate this feature adds for a profile too thin to score against belongs at the callers of that rule"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "**The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6**",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0008/AC-10a",
+      "phrase": "AC-10 and AC-10a (the request headers must be re-derived before each `NextResponse.next()`, not hoisted, or the refreshed session cookie is lost instead of the pathname)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-15",
+      "target": "0008/AC-15a",
+      "phrase": "AC-15a having `completeSignIn()` return its claims",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-24",
+      "target": "0008/AC-24a",
+      "phrase": "AC-24a keeping `redirect()` outside every span",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5b",
+      "phrase": "AC-5b naming `src/lib/return-path.ts` and `src/lib/landing-rule.ts` with the header and cookie strings fixed",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-7",
+      "target": "0008/AC-7a",
+      "phrase": "AC-7a (a genuine query error is still a failure, since AC-7's ban on `failure()` had over corrected against binding rule 5)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0011#follow-up:11",
+      "target": "0011#follow-up:12",
+      "phrase": "**Corrected again 2026-09-04, a third fresh model review**",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "target": "feature-28#28-spend-visibility-gating-polish-done:12",
+      "phrase": "Correction (spec 0020, 2026-09-13)",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0009/AC-14",
+      "target": "0009/AC-14",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0015",
+      "target": "0020#follow-up:3",
+      "phrase": "Corrected in the same pass",
+      "held": true
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0020/AC-11",
+      "target": "0020/AC-11",
+      "phrase": "**Rewritten 2026-09-13**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:10",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-12",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:3",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-12**, **AC-5b**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-6",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-14a",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-15",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-15a",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:9",
+      "target": "0008/AC-16",
+      "phrase": "satisfies **AC-15**, **AC-15a**, **AC-16**, **AC-14a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-10",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-11",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-12",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-13",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-14",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-2",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-3",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-7",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:5",
+      "target": "0009/AC-8",
+      "phrase": "satisfies **AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:10",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:10",
+      "target": "0020/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:10",
+      "target": "0020/AC-13",
+      "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:10",
+      "target": "0020/AC-14",
+      "phrase": "Satisfies **AC-1**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:11",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:11",
+      "target": "0020/AC-12",
+      "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:11",
+      "target": "0020/AC-13",
+      "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:11",
+      "target": "0020/AC-14",
+      "phrase": "Satisfies **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:15",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:16",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-11**, **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:16",
+      "target": "0020/AC-12",
+      "phrase": "Satisfies **AC-11**, **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:17",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:18",
+      "target": "0020/AC-11",
+      "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:18",
+      "target": "0020/AC-13",
+      "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0020#build-plan:18",
+      "target": "0020/AC-14",
+      "phrase": "Satisfies **AC-11**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-10",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-11",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-12",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-13",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-14",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-2",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-3",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-7",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:14",
+      "target": "0009/AC-8",
+      "phrase": "**AC-2**, **AC-3**, **AC-7**, **AC-8**, **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "target": "0020/AC-11",
+      "phrase": "(AC-11, AC-12, AC-13, AC-14)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "target": "0020/AC-12",
+      "phrase": "(AC-11, AC-12, AC-13, AC-14)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "target": "0020/AC-13",
+      "phrase": "(AC-11, AC-12, AC-13, AC-14)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:10",
+      "target": "0020/AC-14",
+      "phrase": "(AC-11, AC-12, AC-13, AC-14)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:11",
+      "target": "0020/AC-11",
+      "phrase": "(AC-11 through AC-15)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:11",
+      "target": "0020/AC-12",
+      "phrase": "(AC-11 through AC-15)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:11",
+      "target": "0020/AC-13",
+      "phrase": "(AC-11 through AC-15)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:11",
+      "target": "0020/AC-14",
+      "phrase": "(AC-11 through AC-15)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:12",
+      "target": "0020/AC-11",
+      "phrase": "(AC-11, AC-12)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-28#28-spend-visibility-gating-polish-done:12",
+      "target": "0020/AC-12",
+      "phrase": "(AC-11, AC-12)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-11",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-16",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-24a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-5b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-6",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-8",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-9",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "AC-6 replaces it.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:3",
+      "target": "0003#follow-up:4",
+      "phrase": "**Decided and built 2026-09-05.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:4",
+      "target": "0014/AC-6",
+      "phrase": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-12",
+      "target": "0008/AC-8",
+      "phrase": "the shared cap of AC-8",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-14a",
+      "target": "0008/AC-15",
+      "phrase": "AC-15 has already cleared the cookie",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-15a",
+      "target": "0008/AC-10",
+      "phrase": "the same snapshot question AC-10 exists for",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-12",
+      "phrase": "the AC-12 Zod schema",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-6",
+      "phrase": "exports the one function of AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-7",
+      "phrase": "The existence read of AC-7 is a new named export",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-8",
+      "target": "0008/AC-12",
+      "phrase": "a valid looking wrong destination that AC-12 would accept",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-14",
+      "target": "0008/AC-5b",
+      "phrase": "`jobhunt_return_path` (spec 0008 AC-5b)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-7",
+      "target": "0008/AC-6",
+      "phrase": "This gate layers onto spec 0008's AC-6 landing rule without replacing it",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0020/AC-14",
+      "target": "0020/AC-11",
+      "phrase": "It falls out of AC-11 for free",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8",
+      "target": "0008/AC-6",
+      "phrase": "Spec 0008 AC-6 decides where a visitor lands after sign in",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:1",
+      "target": "0021",
+      "phrase": "`from spec 0021`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:13",
+      "target": "0015",
+      "phrase": "`from spec 0015`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "0021",
+      "phrase": "That result fired spec 0021's own pre-registered stopping rule",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:13",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:17",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-6",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-7",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0016",
+      "phrase": "spec 0016's Consequences already names the switching cost",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "scope#deferred:13",
+      "phrase": "as an alternative to the approach above, not an addition to it",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:5",
+      "target": "0008/AC-16",
+      "phrase": "verifies **AC-6**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:5",
+      "target": "0008/AC-6",
+      "phrase": "verifies **AC-6**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:26",
+      "target": "0020/AC-11",
+      "phrase": "verifies **AC-11**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:26",
+      "target": "0020/AC-13",
+      "phrase": "verifies **AC-11**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:27",
+      "target": "0020/AC-12",
+      "phrase": "verifies **AC-12**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:28",
+      "target": "0020/AC-13",
+      "phrase": "verifies **AC-13**'s refused half",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0020#feature-design:29",
+      "target": "0020/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 22374,
+  "bound_usd": 0.204748,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[],\"missing\":[\"Any item mentioning Neo4j or a graph database\",\"Any item about mapping company connections or relationships between companies\",\"Any decision record comparing a graph database with Postgres foreign keys\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "Any item mentioning Neo4j or a graph database",
+    "Any item about mapping company connections or relationships between companies",
+    "Any decision record comparing a graph database with Postgres foreign keys"
+  ],
+  "claims": [],
+  "usage": {
+    "input_tokens": 22374,
+    "output_tokens": 85,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.045598,
+  "recorded_usd": 0.045598
+}

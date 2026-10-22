@@ -1,0 +1,819 @@
+{
+  "asked_at": "2026-10-22T20:25:28+00:00",
+  "question": "why did we put the job listings in Mongo instead of postgres? feels like a weird split if the rest of the user data is relational",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "put",
+    "job",
+    "listings",
+    "mongo",
+    "instead",
+    "postgres",
+    "feels",
+    "like",
+    "weird",
+    "split",
+    "rest",
+    "user",
+    "data",
+    "relational"
+  ],
+  "items": [
+    {
+      "id": "0001#decision:2",
+      "line": "0001#decision:2  Constraint  accepted  specs/0001-stack-and-architecture/index.md:14  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Build JobHunt as a single Next.js 16 application whose data path runs entirely on the server through `@supabase/ssr`, with authorisation enforced by Postgres row level security and no object relational mapper in between."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:5",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:5  AcceptanceCriterion  accepted  scope/scope.md:134  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "an unauthenticated request to a protected route fails visibly rather than returning empty data that looks like success,"
+    },
+    {
+      "id": "0001#summary:2",
+      "line": "0001#summary:2  Constraint  held  specs/0001-stack-and-architecture/index.md:8  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Postgres row level security (a rule in the database itself that decides which rows a request may see) is the real guarantee that one user never reads another user's data"
+    },
+    {
+      "id": "0013#feature-design:22",
+      "line": "0013#feature-design:22  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:167  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**."
+    },
+    {
+      "id": "0013#requirements:1",
+      "line": "0013#requirements:1  Feature  accepted  specs/0013-job-search-and-results-list/index.md:16  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "As a signed in user, I want to search real job listings by title and location,"
+    },
+    {
+      "id": "0013#summary:1",
+      "line": "0013#summary:1  Feature  accepted  specs/0013-job-search-and-results-list/index.md:11  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "This spec builds the first real search screen: a signed in user types a title and or a location, the app spends one budget checked call against Adzuna (the job board this project already committed to), and real listings come back with the attribution Adzuna's own terms require."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:2",
+      "line": "feature-11#11-job-search-results-list:2  AcceptanceCriterion  held  scope/scope.md:226  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done when:** a signed in user runs a search and sees real listings;"
+    },
+    {
+      "id": "scope#preamble:1",
+      "line": "scope#preamble:1  Feature  accepted  scope/scope.md:3  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A multi user job search web app: enter a profile, search real listings, see them ranked with the reasoning shown, click through to apply, and record that you applied. Free, no billing, built for the author's own job search plus a few friends and recruiters evaluating it as a portfolio piece."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:1",
+      "line": "feature-11#11-job-search-results-list:1  Feature  accepted  scope/scope.md:225  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Search real listings by title and location and render them. Deliberately narrow for this slice: the data quality fixes come in v1.5, the structured filters come later in v2, and ranking comes in Slice 2. Results are fresh per search and never persist"
+    },
+    {
+      "id": "0017#requirements:7",
+      "line": "0017#requirements:7  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:30  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A pair's verdict needs at least 3 of its 5 reruns to be scored successes; with fewer than 3, the pair is `inconclusive` (sub reason `insufficient-successes`), reporting whatever successes did land, never silently folded into a pass or a fail. With 3 or more successes, and the pair is not tagged `stability-probe` (AC-4 covers that case separately): compute how many of the successes landed on each band. If one band holds a strict majority (more than half of the successes), that is the pair's verdict band, and the pair passes if that band equals `expectedBand`, or, when `acceptableBands` is present, if it is one of them. If no band holds a strict majority (e.g. a 2 and 2 split out of 4 successes, or a 1, 1, 1 split out of 3), the pair is `inconclusive` (sub reason `no-majority`) UNLESS `acceptableBands` is present and every successful rerun's band is inside it, in which case the pair passes with no single verdict band, reporting the full observed split instead"
+    },
+    {
+      "id": "feature-3#3-deployment-environments-done:1",
+      "line": "feature-3#3-deployment-environments-done:1  Feature  accepted  scope/scope.md:75  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Get the bare scaffold live on a real URL before auth exists, so hosting, environment variables, and the preview versus production split are solved while the app is tiny instead of at the end. The portfolio URL exists from week one, and later OAuth callback work has a known production origin to point at."
+    },
+    {
+      "id": "0018#consequences:1",
+      "line": "0018#consequences:1  Consequence  accepted  specs/0018-band-anchor-review/index.md:85  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Live scoring does not change. No user sees a different band, and the anchor hash stays put,"
+    },
+    {
+      "id": "0013#feature-design:25",
+      "line": "0013#feature-design:25  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:170  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Failure case: a batch where one of several returned listings fails its own item level parse renders the rest normally and drops only the bad one, verifies **AC-1**, **AC-5** (the \"every item fails\" branch is a separate case, same kind)."
+    },
+    {
+      "id": "0006/AC-9",
+      "line": "0006/AC-9  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:31  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-9**: The hero result card is visibly labelled as an illustration, so it cannot be read as live data. The label is a `Text` eyebrow at the top of `Card.Header`, and the wrapping `<figure>` carries an `aria-label` saying the same thing. The label is NOT put in the `figcaption`"
+    },
+    {
+      "id": "0021#follow-up:5",
+      "line": "0021#follow-up:5  FollowUp  held  specs/0021-seeded-demo-account/index.md:800  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Two listing data defects the first real refresh put on this public page, both feature 19's** (`docs/scope/scope.md`, \"Listing data quality\"): (1) Everpure, Inc. appears twice under Adzuna ids `5883839578` and `5883870504`, byte identical snippets with different titles (\"Software Engineering Manager, Platform\" and \"Software Engineer\"). That different title is exactly the risk feature 19's row names for a dedup key. (2) PNC Financial Services Group's snippet (id `5854960477`) carries literal `\\n` character sequences, rendered as text."
+    },
+    {
+      "id": "0015#feature-design:15",
+      "line": "0015#feature-design:15  Constraint  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:120  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Untrusted input: a job posting's title and description reach a model automatically, not text the user chose to paste (a named risk, verified against `MadsLorentzen/ai-job-search`'s own pattern in `docs/archive/jobhunt-carry-forward.md`). Mitigation: the system prompt instructs the model to treat the listing's text purely as data, never follow an instruction embedded in it, and never fetch or act on a link inside it (AC-12). This is instruction level defense, not a sandbox, the same limit the verified reference project accepts."
+    },
+    {
+      "id": "0013/AC-1",
+      "line": "0013/AC-1  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:23  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1**: A signed in user who submits a search with at least one of title or location filled sees real Adzuna listings for the configured country (United States) rendered on the page, first page only, up to 20 results, no pagination this slice."
+    },
+    {
+      "id": "0013/AC-6",
+      "line": "0013/AC-6  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`."
+    },
+    {
+      "id": "0013/AC-8",
+      "line": "0013/AC-8  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:30  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-8**: Each result shows its title, company, location, a relative posted date (e.g. \"posted 3 days ago\", computed at render from the raw timestamp), a salary range when present, and its description snippet, plus a real, working link that opens the source posting (`job_url`) in a new tab."
+    },
+    {
+      "id": "0017/AC-4",
+      "line": "0017/AC-4  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:31  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-4**: A pair tagged `stability-probe` is judged differently, but only once AC-3's own 3 of 5 successes floor is met (fewer than 3 successes is still `inconclusive` under AC-3, unchanged). With 3 or more successes, `expectedBand` is not consulted and no majority is computed: the pair passes only if every one of its successful reruns' band is inside `acceptableBands`. One success landing outside that set fails the pair even if every other success matched, since this pair's whole point is that no single run should be trusted as the answer. Because there may be no single winning band, this pair's verdict is always reported as its observed distribution (e.g. `{ strong_match: 3, possible_match: 2 }`), never a lone band."
+    },
+    {
+      "id": "0013/AC-5",
+      "line": "0013/AC-5  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: An Adzuna call that fails outright (network error, timeout, a non success response) is reported through `failure()` with `external_service_failed`; a response that does not match the expected shape is reported with `response_malformed`. Either renders a visible failure state distinct from AC-4's empty state."
+    },
+    {
+      "id": "0006#build-plan:5",
+      "line": "0006#build-plan:5  BuildStep  accepted  specs/0006-entry-page-and-link-metadata/index.md:169  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Thicken the hero: the full copy, a plain `<figure>` wrapping the elevated result `Card`, the `COPY-2` example label as a `Text` eyebrow in `Card.Header`, `MatchBar` at 8 of 11, the matched and missing `Chip` clusters, the reasoning lines, and the inert apply control in `Card.Footer`, laid out on the 60/40 `grid-split`, satisfies **AC-5**, **AC-9**, **AC-17**."
+    },
+    {
+      "id": "0006#feature-design:10",
+      "line": "0006#feature-design:10  Constraint  accepted  specs/0006-entry-page-and-link-metadata/index.md:102  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**`COPY-2`, the example label** (**AC-9**), the `Text` eyebrow on the hero card and the `<figure>`'s `aria-label`. `Example result`."
+    },
+    {
+      "id": "0006#feature-design:45",
+      "line": "0006#feature-design:45  TestScenario  accepted  specs/0006-entry-page-and-link-metadata/index.md:157  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`automated` Example label: the hero `<figure>` carries its `aria-label` and the `COPY-2` eyebrow is present, verifies **AC-9**."
+    },
+    {
+      "id": "feature-6#6-entry-page-link-metadata-done:11",
+      "line": "feature-6#6-entry-page-link-metadata-done:11  BuildStep  accepted  scope/scope.md:125  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The hero: a `<figure>` wrapping the one elevated `Card`, the example label, `MatchBar` at 8 of 11, the chip clusters, and every dead control rendered inert rather than linked, satisfies AC-5, AC-7, AC-9, AC-17"
+    },
+    {
+      "id": "0005#follow-up:3",
+      "line": "0005#follow-up:3  FollowUp  accepted  specs/0005-design-system-and-ui-foundation/index.md:180  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The asset is `src/features/search/adzuna-logo.svg`, rendered inline from `adzuna-logo-geometry.ts`. Both the word and the mark link to `https://www.adzuna.com`, verified against Adzuna's own terms of service and recorded in spec 0013 AC-6. The row at line 86 below guessed those targets and guessed wrong; it has been corrected in the same pass."
+    },
+    {
+      "id": "0005/AC-10",
+      "line": "0005/AC-10  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The `Card` component's footer slot accepts an optional `attribution` node beside the primary action link, laid out `justify-between` and wrapping to a stacked layout before a 116 by 23 pixel block would otherwise compress. This feature builds and tests the slot mechanism only; the real Adzuna attribution content is built in feature 11 (see `## Follow-up`)."
+    },
+    {
+      "id": "0013#build-plan:5",
+      "line": "0013#build-plan:5  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:186  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build `src/features/search/adzuna.ts`: the Zod schemas (the envelope, the per item listing shape parsed individually per the Data model sketch's drop and count rule, and the `SearchQuery` input requiring at least one of title or location), the `source` constant, the `Listing` type, and `searchListings()` (accepting the same optional `cookieAdapter`), opening the `search.run` span as its first statement, building the request from the named endpoint/`results_per_page`/timeout constants, checking `res.ok` explicitly before parsing (a non success status is `external_service_failed`, never handed to the parser), wrapping the `fetch` in `attempt()` for a thrown network error, and calling `withUsageGate(\"job_search\", ...)` around it. Register `search.run` in `docs/observability/spans.md`. Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-10**."
+    },
+    {
+      "id": "0013#build-plan:6",
+      "line": "0013#build-plan:6  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:187  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The thin end to end thread: `src/features/search/search-form.tsx` (the plain `GET` form) and repoint `src/app/(app)/search/page.tsx` off its placeholder to read `searchParams`, call `searchListings()`, and render real listings through `Card`/`Card.Footer`, with a plain text attribution stand in until the real logo lands. Satisfies **AC-1**, **AC-8** (partial)."
+    },
+    {
+      "id": "0013#build-plan:7",
+      "line": "0013#build-plan:7  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:188  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: the `AdzunaAttribution` component (the real logo asset once sourced, both link targets) placed in `Card.Footer`'s `attribution` slot, and the Jobsworth badge (icon, text, link, mouseover) shown beside a predicted salary, plus the \"(estimated)\" label. Satisfies **AC-6**, **AC-7**, **AC-8**."
+    },
+    {
+      "id": "0014/AC-8",
+      "line": "0014/AC-8  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:38  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: Every application row displayed on `/applications` carries its own `Jobs by Adzuna` attribution through `Card.Footer`'s attribution slot, on the same terms spec 0013 AC-6 sets for a search result, with the link target read from `ADZUNA_ATTRIBUTION_URL`. Attribution renders once per displayed row and never once per screen (spec 0013, invariant 4). A page with no rows shows no attribution block."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:15",
+      "line": "feature-11#11-job-search-results-list:15  BuildStep  accepted  scope/scope.md:236  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The Adzuna client and the thin end to end thread: the search form, `searchListings()`, and the repointed `/search` page proving one real query end to end, gate through render (AC-1, AC-2, AC-5, AC-8, AC-10) · done 2026-09-04"
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:16",
+      "line": "feature-11#11-job-search-results-list:16  BuildStep  accepted  scope/scope.md:237  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Full attribution and states: the real \"Jobs by Adzuna\" and Jobsworth attribution, the estimated salary label, the `job_preference` prefill, and the three distinct visible states (AC-4, AC-6, AC-7, AC-9) · done 2026-09-04."
+    },
+    {
+      "id": "feature-19#19-listing-data-quality-needs-a-decision:8",
+      "line": "feature-19#19-listing-data-quality-needs-a-decision:8  Consequence  accepted  scope/scope.md:422  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "One **Done when** clause is already met, ahead of this feature's own design. \"A single salary figure renders as a figure rather than a fake range\" was closed on 2026-09-13 by #130 (the equal salary minimum and maximum fix): `salaryText` in `src/lib/listing-format.ts` returns one formatted figure when the two are equal, which fixes `/search` and `/applications` together because both screens format pay through that one helper. **The other three clauses are untouched and this feature stays unstarted.**"
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0017#build-plan:3",
+      "line": "0017#build-plan:3  BuildStep  accepted  specs/0017-eval-harness-runner/index.md:104  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Export `resolvedModel()` from `src/lib/ai/tiers.ts`, and add `bandAnchorsHash()` as a small pure function in `src/features/scoring/eval/band-anchors-hash.ts`. Write the pure verdict logic in `test/helpers/eval-verdict.ts`: the three way outcome classification (refusal, rerun failure, scored success) from AC-3, the majority vote with the 3 of 5 inconclusive floor and the no majority/`acceptableBands` exception, the distinct `stability-probe` \"every success inside `acceptableBands`\" rule (AC-4), and the `preference-isolation` baseline comparison (AC-5). Wire `test/helpers/eval-verdict.test.ts` against constructed fixtures for each rule, no vendor call involved. Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**."
+    },
+    {
+      "id": "0017/AC-3",
+      "line": "0017/AC-3  AcceptanceCriterion  accepted  specs/0017-eval-harness-runner/index.md:25  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: `scoreListing()` can return three kinds of outcome, and each is handled differently:"
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:8",
+      "line": "feature-16#16-eval-harness-runner:8  BuildStep  accepted  scope/scope.md:321  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Verdict logic: the pure rerun outcome classification, majority vote with its no majority and `acceptableBands` exception, the `stability-probe` rule, and the `preference-isolation` baseline comparison, each proved against constructed fixtures with no vendor call, satisfies AC-3, AC-4, AC-5, AC-6."
+    },
+    {
+      "id": "0013#feature-design:23",
+      "line": "0013#feature-design:23  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:168  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: Adzuna forced to time out and, separately, forced to return a malformed body, each renders the failure state and reports the matching kind, verifies **AC-5**."
+    },
+    {
+      "id": "0013#feature-design:24",
+      "line": "0013#feature-design:24  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:169  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: Adzuna forced to return a non success HTTP status (e.g. a `429`), renders the same failure state and reports `external_service_failed`, verifies **AC-5**."
+    },
+    {
+      "id": "0013/AC-4",
+      "line": "0013/AC-4  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:26  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: A search that runs successfully and matches zero listings renders a visible \"no results\" state, clearly distinct from both the gate refusal state (AC-3) and the failure state (AC-5)."
+    },
+    {
+      "id": "0006/AC-17",
+      "line": "0006/AC-17  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-17**: The hero card's \"Apply on the real posting\" control is not a link either (`JobHuntLanding.tsx` line 259 has it as `href=\"#\"`). It renders as `Text` with the `ExternalLinkIcon`, inside `Card.Footer`. Together with **AC-7** this gives the page one rule with no exceptions: nothing that cannot work is a link, and an example listing has nothing real to apply to."
+    },
+    {
+      "id": "0006/AC-5",
+      "line": "0006/AC-5  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: Both comparison cards render as flat `Card`s on `bg-paper`, styled identically to each other. The \"What's real today\" status card is also `tone=\"flat\"`. The hero result card is the only elevated `Card` on the page."
+    },
+    {
+      "id": "0006/AC-7",
+      "line": "0006/AC-7  AcceptanceCriterion  accepted  HISTORY  specs/0006-entry-page-and-link-metadata/index.md:29  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0007#consequences:21",
+        "0007/AC-16"
+      ],
+      "hop": 2,
+      "text": "**AC-7**: both provider controls become real `<form action={...}>` submits. What survives untouched: **AC-17**, the inert apply control, and with it this spec's one rule with no exceptions, that nothing which cannot work is a link."
+    },
+    {
+      "id": "0007#consequences:21",
+      "line": "0007#consequences:21  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:321  hop 3",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "spec 0006 **AC-7** is superseded;"
+    },
+    {
+      "id": "0007/AC-16",
+      "line": "0007/AC-16  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:39  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**AC-16**: The entry page's two provider controls are real submits. `COPY-1` and both `Chip state=\"status\"` labels are gone. Spec 0006 **AC-17**, the inert apply control, is untouched and its half of the \"no dead controls\" test still runs."
+    }
+  ],
+  "links": [
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:5",
+      "target": "0006/AC-17",
+      "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:5",
+      "target": "0006/AC-5",
+      "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:5",
+      "target": "0006/AC-9",
+      "phrase": "satisfies **AC-5**, **AC-9**, **AC-17**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:5",
+      "target": "0013/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:5",
+      "target": "0013/AC-5",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-5**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:6",
+      "target": "0013/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-8** (partial)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:6",
+      "target": "0013/AC-8",
+      "phrase": "Satisfies **AC-1**, **AC-8** (partial)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-6",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-8",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-3",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0017#build-plan:3",
+      "target": "0017/AC-4",
+      "phrase": "Satisfies **AC-3**, **AC-4**, **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:15",
+      "target": "0013/AC-1",
+      "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:15",
+      "target": "0013/AC-5",
+      "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:15",
+      "target": "0013/AC-8",
+      "phrase": "(AC-1, AC-2, AC-5, AC-8, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-4",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-6",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-3",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-16#16-eval-harness-runner:8",
+      "target": "0017/AC-4",
+      "phrase": "satisfies AC-3, AC-4, AC-5, AC-6",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-17",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-5",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-7",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:11",
+      "target": "0006/AC-9",
+      "phrase": "satisfies AC-5, AC-7, AC-9, AC-17",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006/AC-7",
+      "target": "0007#consequences:21",
+      "phrase": "spec 0006 **AC-7** is superseded",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006/AC-7",
+      "target": "0007/AC-16",
+      "phrase": "spec 0007 **AC-16** superseded spec 0006 **AC-7**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005#follow-up:3",
+      "target": "0013/AC-6",
+      "phrase": "recorded in spec 0013 AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006#feature-design:10",
+      "target": "0006/AC-9",
+      "phrase": "(**AC-9**)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006/AC-17",
+      "target": "0006/AC-7",
+      "phrase": "Together with **AC-7** this gives the page one rule with no exceptions",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006/AC-7",
+      "target": "0006/AC-17",
+      "phrase": "What survives untouched: **AC-17**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-4",
+      "target": "0013/AC-5",
+      "phrase": "the failure state (AC-5)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-5",
+      "target": "0013/AC-4",
+      "phrase": "distinct from AC-4's empty state",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-6",
+      "target": "0005/AC-10",
+      "phrase": "(spec 0005, AC-10)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-8",
+      "target": "0013/AC-6",
+      "phrase": "on the same terms spec 0013 AC-6 sets for a search result",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017#requirements:7",
+      "target": "0017/AC-4",
+      "phrase": "AC-4 covers that case separately",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0017/AC-4",
+      "target": "0017/AC-3",
+      "phrase": "only once AC-3's own 3 of 5 successes floor is met",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-19#19-listing-data-quality-needs-a-decision:8",
+      "target": "0013/AC-8",
+      "phrase": "spec 0013 AC-8, which says \"a salary range when present\", had simply never considered the equal case",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-6",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0006#feature-design:45",
+      "target": "0006/AC-9",
+      "phrase": "verifies **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:22",
+      "target": "0013/AC-1",
+      "phrase": "verifies **AC-1**, **AC-6**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:22",
+      "target": "0013/AC-6",
+      "phrase": "verifies **AC-1**, **AC-6**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:22",
+      "target": "0013/AC-8",
+      "phrase": "verifies **AC-1**, **AC-6**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:23",
+      "target": "0013/AC-5",
+      "phrase": "verifies **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:24",
+      "target": "0013/AC-5",
+      "phrase": "verifies **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:25",
+      "target": "0013/AC-1",
+      "phrase": "verifies **AC-1**, **AC-5**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:25",
+      "target": "0013/AC-5",
+      "phrase": "verifies **AC-1**, **AC-5**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 10949,
+  "bound_usd": 0.181898,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[{\"text\":\"The items do not say listings are stored in Mongo. They describe a data path through `@supabase/ssr` with authorisation enforced by Postgres row level security and no ORM, so the question's premise isn't supported here.\",\"cites\":[\"0001#decision:2\"],\"basis\":\"text\"},{\"text\":\"Search results are fetched live from Adzuna on each search and are never persisted, which means the search listings are not kept in any database.\",\"cites\":[\"feature-11#11-job-search-results-list:1\",\"0013#requirements:1\"],\"basis\":\"text\"},{\"text\":\"Listing fields are stored on `application` rows, but the items do not say where those rows live or give any reason for a Mongo versus Postgres choice.\",\"cites\":[\"scope#deferred:17\"],\"basis\":\"text\"}],\"missing\":[\"Any item mentioning Mongo or a decision to store job listings outside Postgres\",\"The rationale for a split between listing storage and relational user data\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "Any item mentioning Mongo or a decision to store job listings outside Postgres",
+    "The rationale for a split between listing storage and relational user data"
+  ],
+  "claims": [
+    {
+      "text": "The items do not say listings are stored in Mongo. They describe a data path through `@supabase/ssr` with authorisation enforced by Postgres row level security and no ORM, so the question's premise isn't supported here.",
+      "cites": [
+        "0001#decision:2"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Search results are fetched live from Adzuna on each search and are never persisted, which means the search listings are not kept in any database.",
+      "cites": [
+        "feature-11#11-job-search-results-list:1",
+        "0013#requirements:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Listing fields are stored on `application` rows, but the items do not say where those rows live or give any reason for a Mongo versus Postgres choice.",
+      "cites": [
+        "scope#deferred:17"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "scope#deferred:17"
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 10949,
+    "output_tokens": 323,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.025128,
+  "recorded_usd": 0.025128
+}
