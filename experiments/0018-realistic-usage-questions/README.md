@@ -54,6 +54,13 @@
 
 Answer questions (12): 9 right, 1 partly right, 2 wrong. Decline questions (10): 10 declined, 0 invented. Marked by the engineer on 2026-10-23.
 
+## What it showed
+
+Drafted from checks ran on 2026-10-23. Neither finding changes a mark, and no fix below has been tested.
+
+1. **Word matching misses items that are in the graph (Q1, Q2, Q19).** In each case the item holding the answer was in the graph but not among the 16 hits `build_pack` keeps: `0001#summary:3` ranked 40th (it matched only "values"), `0002#summary:3` ranked 351st (only "row"), and `scope#deferred:5` ranked 35th (only "digest"). The questions used everyday words ("error", "throwing", "emergency stop toggle", "daily email digest") where the specs say "failures", "thrown", "kill switch" and "Scheduled push digest", and pairs of common question words outscored the one rare match. Checked by rerunning `build_pack` on the live graph for each question, with no model call.
+2. **The reasons live in `rationale.md`, which is not extracted (Q1, Q4, Q7, partly Q6).** Spec 0001's extraction scope covers each spec's `index.md` only. The reasoning behind Q1 (`specs/0001-stack-and-architecture/rationale.md:92`) and Q7 (`specs/0011-usage-gating-and-kill-switch/rationale.md:40-48`), and part of it for Q4 (`specs/0005-design-system-and-ui-foundation/rationale.md:60`) and Q6 (`specs/0010-profile-entry/rationale.md:11`), is only in `rationale.md`, so no graph item could carry it. Scope feature 10 (rationale extraction) is the planned change.
+
 ## Results
 
 ### Q1
