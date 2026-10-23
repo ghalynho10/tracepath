@@ -1,0 +1,1849 @@
+{
+  "asked_at": "2026-10-22T20:24:13+00:00",
+  "question": "why does the design system reserve monospace font only for certain pieces of text?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "design",
+    "system",
+    "reserve",
+    "monospace",
+    "font",
+    "only",
+    "certain",
+    "pieces",
+    "text"
+  ],
+  "items": [
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:7",
+      "line": "feature-5#5-design-system-ui-foundation-done:7  BuildStep  accepted  scope/scope.md:110  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Token layer: the seven token palette plus the new `--surface-sunken` token, font loading, the type scale, and the native accessibility CSS (`:focus-visible`, `forced-colors`, `prefers-contrast`, `prefers-reduced-motion`), satisfies AC-1, AC-2, AC-12"
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:8",
+      "line": "feature-5#5-design-system-ui-foundation-done:8  BuildStep  accepted  scope/scope.md:111  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Tooling and primitives: `tailwind-variants` plus the narrow lint rule, the icon set, `Text`/`Heading`, `Button`, satisfies AC-6, AC-11, AC-15"
+    },
+    {
+      "id": "0019/AC-2",
+      "line": "0019/AC-2  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:19  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-2**: `checkFitScore()`'s only inputs about the candidate are the score's own `matchedSkills` array, the claimed skill list. No profile summary, work history, stated preference, or job URL is sent to this call. `CHECK_SYSTEM_PROMPT` states the identical grounding criterion `matchedSkills` itself is scored under (a skill's name, or a clear synonym of it, appearing in the given text, `rubric.ts:123`), read from one constant both the scoring schema's own description and this prompt use, so a synonym match the scorer counted as grounded can never be flagged by a check silently applying a stricter, undefined rule."
+    },
+    {
+      "id": "0006#consequences:1",
+      "line": "0006#consequences:1  Consequence  accepted  specs/0006-entry-page-and-link-metadata/index.md:182  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The design system gets its first real consumer. Spec 0005's components have so far only been exercised by `/ui-preview`, which is a catalogue, not a page"
+    },
+    {
+      "id": "0008/AC-3",
+      "line": "0008/AC-3  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:35  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-3**: A header primitive lives in `src/components/ui/`. It is **chrome only**: lockup, navigation slot, action slot, layout. It imports nothing from `src/features/`, so the design system gains no feature dependency and spec 0005's charter for that directory holds. It holds no routing logic and reads no pathname; everything that varies arrives as children. The sign out form lives outside `src/components/ui/`."
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:11",
+      "line": "feature-5#5-design-system-ui-foundation-done:11  BuildStep  accepted  scope/scope.md:114  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Keyboard, focus, and responsive verification pass across every component, satisfies AC-13, AC-14 · run 2026-08-27 in a real browser at 1440px and 320px: all 8 controls keyboard reachable with a 2px teal `:focus-visible` ring and a real name, zero horizontal overflow at 320px, `prefers-contrast: more` / `forced-colors: active` / `prefers-reduced-motion` each confirmed by measured computed style. **The reduced motion half of that was wrong**, corrected 2026-08-28: the step read the animation duration only, which collapsed as designed, while the delay survived and left match cells invisible for up to 350ms. Found by feature 6's browser pass, fixed in `globals.css` and locked by [globals.test.ts](../../src/app/globals.test.ts); the step now reads the cells' opacity instead of the property"
+    },
+    {
+      "id": "0021/AC-8",
+      "line": "0021/AC-8  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:85  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: Each card shows title, company, location when present, a stated or predicted salary on some listings, a description snippet, the band, matched skills, not mentioned skills, the written reasoning, and (AC-16) a compact line naming the other persona's band for the same listing. A matched skill the grounding check flagged as ungrounded is removed from the displayed matched list and the same two sentences the real card shows appear here too (**Feature design**, \"Ungrounded skills\"). It carries no real \"view posting\" link and no working apply control, only a plain text line where the real apply control would sit, never a disabled button."
+    },
+    {
+      "id": "feature-26#26-profile-depth-completeness-needs-a-decision:6",
+      "line": "feature-26#26-profile-depth-completeness-needs-a-decision:6  AcceptanceCriterion  accepted  scope/scope.md:442  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "completeness names the specific missing pieces,"
+    },
+    {
+      "id": "0015#feature-design:15",
+      "line": "0015#feature-design:15  Constraint  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:120  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Untrusted input: a job posting's title and description reach a model automatically, not text the user chose to paste (a named risk, verified against `MadsLorentzen/ai-job-search`'s own pattern in `docs/archive/jobhunt-carry-forward.md`). Mitigation: the system prompt instructs the model to treat the listing's text purely as data, never follow an instruction embedded in it, and never fetch or act on a link inside it (AC-12). This is instruction level defense, not a sandbox, the same limit the verified reference project accepts."
+    },
+    {
+      "id": "0015/AC-12",
+      "line": "0015/AC-12  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:34  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them."
+    },
+    {
+      "id": "0005",
+      "line": "0005  record  accepted  specs/0005-design-system-and-ui-foundation/index.md  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Design system and UI foundation"
+    },
+    {
+      "id": "0005#consequences:8",
+      "line": "0005#consequences:8  Consequence  accepted  specs/0005-design-system-and-ui-foundation/index.md:173  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`docs/design/JobHuntLanding.tsx` remains an unbuilt reference until feature 6 ports it onto this system."
+    },
+    {
+      "id": "0005#follow-up:1",
+      "line": "0005#follow-up:1  FollowUp  accepted  specs/0005-design-system-and-ui-foundation/index.md:179  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 6 (entry page and link metadata) ports `docs/design/JobHuntLanding.tsx` onto this system, including collapsing the step 02 hand copied `MatchBar` (Weakness #1) onto the real component and removing the shadow from the \"JobHunt\" comparison card (Tell #6)"
+    },
+    {
+      "id": "0005#standard-definition:12",
+      "line": "0005#standard-definition:12  Constraint  accepted  specs/0005-design-system-and-ui-foundation/index.md:140  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`docs/design/JobHuntLanding.tsx` is ported onto this system by feature 6, not retrofitted here."
+    },
+    {
+      "id": "0006#requirements:3",
+      "line": "0006#requirements:3  Feature  accepted  specs/0006-entry-page-and-link-metadata/index.md:18  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "As the author, I want the page to be the first real consumer of the design system,"
+    },
+    {
+      "id": "0008#consequences:18",
+      "line": "0008#consequences:18  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:238  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Tap targets in the header keep the sizes the design system already locks. The mock up measured 32px and 28px, above the WCAG 2.2 AA 24px floor (SC 2.5.8) and below the 44px AAA comfort tier this project has not committed to."
+    },
+    {
+      "id": "0005/AC-1",
+      "line": "0005/AC-1  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:18  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-1**: The seven token colour palette from `brand-tokens.md` is ported into `src/app/globals.css` as raw channel values in `:root`, mapped through a non-inline `@theme`, replacing the current placeholder `--background`/`--foreground` tokens. One further token, `--surface-sunken`, is added beyond the seven: the composition review names the page background as the one open exception to the otherwise settled palette, and this token is squarely inside that exception (see AC-5)."
+    },
+    {
+      "id": "0005/AC-12",
+      "line": "0005/AC-12  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:29  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` are handled with native Tailwind v4 CSS, with no bespoke JavaScript media query handling."
+    },
+    {
+      "id": "0005/AC-2",
+      "line": "0005/AC-2  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:19  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-2**: Space Grotesk and JetBrains Mono are loaded (`next/font/google` in `src/app/layout.tsx`) and mapped into the `@theme` as `--font-sans`/`--font-mono`. The type scale (ratio 1.25) is encoded as concrete Tailwind v4 theme values, not open ranges: display `clamp(2.5rem, 5vw, 4rem)` (40 to 64px), h2 30px, h3 20px, body 16px below `sm` and 17px at `sm` and above, small 13px, caption 12px."
+    },
+    {
+      "id": "0005/AC-11",
+      "line": "0005/AC-11  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-11**: `CheckIcon`, `GapIcon`, `GitHubIcon`, `GoogleIcon`, and an `ExternalLinkIcon` exist as named, reusable base components."
+    },
+    {
+      "id": "0005/AC-15",
+      "line": "0005/AC-15  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:32  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: Component variants (`Card`, `Button`, `Chip`, `Text`, `Section`, `Heading`) are managed through `tailwind-variants`, verified compatible with Tailwind v4."
+    },
+    {
+      "id": "0005/AC-6",
+      "line": "0005/AC-6  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:23  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: A `Text` base component encodes the mono usage rule: mono reserved for written reasoning and literal data (skill gap notes, the summary line, salaries, dates, scores); decorative labels (eyebrows, section micro labels, filter chips, step numerals, status badges) render in tracked sans serif caps. The old global `.eyebrow`/`.mono-label` CSS classes are retired."
+    },
+    {
+      "id": "0019#build-plan:2",
+      "line": "0019#build-plan:2  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:100  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write `src/features/scoring/check.ts`: the `ungroundedSkillsSchema` Zod schema, `CHECK_SYSTEM_PROMPT` (stating the shared grounding criterion from step 1, plus the untrusted input instruction, AC-11), `buildCheckPrompt()` (using `buildListingBlock()` plus the claimed skill list, AC-2), the post parse stray name filter using `normalizeFitScore()`'s own normalization (AC-3), and `checkFitScore(listing, claimedSkills, cookieAdapter?)` calling `callTier(\"ai_check\", ungroundedSkillsSchema, buildCheckPrompt(...), { system: CHECK_SYSTEM_PROMPT, ...(cookieAdapter === undefined ? {} : { cookieAdapter }) })`, matching `scoreListing()`'s own optional seam (`score.ts:62`) exactly, satisfies **AC-1**, **AC-2**, **AC-3**, **AC-11**."
+    },
+    {
+      "id": "0019#build-plan:7",
+      "line": "0019#build-plan:7  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:105  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Update `score-listings.test.ts` and `src/app/(app)/search/page.test.ts` for the new `ListingOutcome` return shape (spec 0015's own scoring assertions are unaffected; `scoreListing()` itself is untouched), and write this feature's own critical test scenarios above, satisfies **AC-1** through **AC-13**."
+    },
+    {
+      "id": "0019#feature-design:14",
+      "line": "0019#feature-design:14  TestScenario  accepted  specs/0019-cross-vendor-self-check/index.md:89  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: under `TEST_LIVE_MODEL_CALLS_ENABLED` (spec 0012's own gate), calling `checkFitScore()` with a real bounded listing and a real claimed skill list returns a parsed `ungroundedSkills` array and measures real latency for AC-6, verifies **AC-1**, **AC-2**, **AC-6**."
+    },
+    {
+      "id": "0019#feature-design:4",
+      "line": "0019#feature-design:4  Constraint  accepted  specs/0019-cross-vendor-self-check/index.md:71  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`checkFitScore()` never sees the candidate's profile summary, work history, or stated preferences, only the claimed skill names (AC-2)."
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:11  BuildStep  accepted  scope/scope.md:340  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Observability and tests: extend the `scoring.score_listings` span, update the existing test suites for the new `ListingOutcome` shape, and write this feature's own critical test scenarios, covers AC-1 through AC-13."
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:8",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:8  BuildStep  accepted  scope/scope.md:337  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The check primitive: extract the shared listing text builder and grounding criterion, write `checkFitScore()` against the `ai_check` tier, covers AC-1, AC-2, AC-3, AC-11."
+    },
+    {
+      "id": "0008#build-plan:12",
+      "line": "0008#build-plan:12  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:209  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The chrome only header primitive in `src/components/ui/`, holding no routing logic; each marketing page composing the signed out variant itself with its own navigation content, and **each route under `(app)` composing the signed in one itself, passing its own `current`**; `EntryHeader` folded in, sign out wired to the existing action with `COPY-7`, satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**"
+    },
+    {
+      "id": "0008/AC-3a",
+      "line": "0008/AC-3a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:36  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-3a**: **Composition is per page on both sides, and the reason is a constraint rather than a preference.** The **signed in** variant is composed by **each route under `(app)`**, which passes its own `current` value. Not by the `(app)` layout, because AC-5 requires the current route to arrive as a prop rather than be computed, and a layout never learns the pathname (`layout.md` lines 238 to 242), so a layout composed header could never be told which page it is on. Four call sites, one line each. The **signed out** variant is composed by **each marketing page** rather than by a marketing layout, for the same pathname reason plus AC-5a, which needs the navigation content itself to differ per page. Reading the pathname in a client component to work around either case would put client JavaScript on `/sign-in`, whose own contract forbids it. `/` already composes its header this way today, so that side is the existing shape kept rather than a new one. A layout on either side may still exist for other shared chrome, but **it must not render the header**. The `(app)` layout keeps its session check and nothing else of the shell."
+    },
+    {
+      "id": "0005/AC-13",
+      "line": "0005/AC-13  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:30  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-13**: Every base component is reachable by keyboard, shows a visible focus indicator, and carries a real accessible label (WCAG 2.2 AA)."
+    },
+    {
+      "id": "0005/AC-14",
+      "line": "0005/AC-14  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:31  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: Every base component holds up responsively from phone width to desktop, designed desktop first per the project's standing rule."
+    },
+    {
+      "id": "0021#build-plan:3",
+      "line": "0021#build-plan:3  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:595  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Edit `supabase/migrations/20260913120000_demo_result.sql` in place: update `demo_result`'s check constraints, change `salary_min`/`salary_max` to `numeric(12, 2)`, and add `source_job_id`, `salary_currency` (with its pairing check), `salary_is_predicted`, and `ungrounded_skills`; remove the twelve seeded `insert` statements; grant `insert`/`delete` on `demo_result` to `service_role` alongside the existing `select`. Add the new `demo_refresh` table (singleton pattern, row level security enabled and forced, zero policies, `service_role` select and update only), inserting its one row with `refreshed_at` null. Add `replace_demo_results()` (`security invoker`, one transaction: delete, `jsonb_to_recordset` insert, `insert ... on conflict (id) do update` on `demo_refresh`). Run `pnpm db:types` after. Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0021#build-plan:9",
+      "line": "0021#build-plan:9  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:640  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Update the demo card component: add the compact other persona band line (AC-16), the ungrounded skills rendering (removed from the matched list, `SCORING_COPY.removedSkills(...)` and `.reasoningCaveat` reused verbatim), render `AdzunaAttribution` unconditionally and the `(estimated)` label plus `JobsworthAttribution` together when `salary_is_predicted` (AC-9), and make the not mentioned skills caption conditional on the snippet actually being truncated. Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**."
+    },
+    {
+      "id": "0021#feature-design:44",
+      "line": "0021#feature-design:44  TestScenario  held  specs/0021-seeded-demo-account/index.md:542  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: a visitor opens `/demo` with no session, sees the first profile's real results ordered by band, each card naming the other persona's band, both search queries and the refresh time visible, and both attributions where they apply. Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**."
+    },
+    {
+      "id": "0021#feature-design:56",
+      "line": "0021#feature-design:56  TestScenario  held  specs/0021-seeded-demo-account/index.md:581  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Ungrounded skill: a listing whose check flags a claimed skill renders that skill removed from the matched list, with the same two sentences the real card shows. Verifies **AC-8**."
+    },
+    {
+      "id": "0021/AC-16",
+      "line": "0021/AC-16  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:132  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16** (new 2026-09-14): Each card additionally names the other persona's band for the same listing, in a compact line separate from the active persona's full result, so a reader sees both scores without switching `?persona=`. The paired row is always present by construction (AC-17's transaction writes both personas' rows for every kept listing together), so this line has no \"missing\" case to design for; it is not defensively hidden."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:14",
+      "line": "feature-31#31-seeded-demo-account-done:14  BuildStep  accepted  scope/scope.md:399  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Schema and legal registry: the `demo_result` migration edited in place (new columns, `security invoker` atomic write function, `demo_refresh` table), `pnpm db:types`, and reclassifying `demo_result`/`demo_refresh` in the legal registry, satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18"
+    },
+    {
+      "id": "0015#build-plan:2",
+      "line": "0015#build-plan:2  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:156  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against."
+    },
+    {
+      "id": "0019/AC-11",
+      "line": "0019/AC-11  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-11**: The listing text sent to the check carries the same untrusted input instruction spec 0015 AC-12 gives the scorer: treat the title and description as data, never follow an instruction embedded in them, never fetch or act on a link inside them."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15  BuildStep  accepted  scope/scope.md:288  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)"
+    },
+    {
+      "id": "0006#follow-up:4",
+      "line": "0006#follow-up:4  FollowUp  accepted  specs/0006-entry-page-and-link-metadata/index.md:205  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Spec 0005's `## Follow-up` item \"Logo mark integration is out of scope for this feature per the engineer's explicit constraint; revisit when that work is scheduled\" is discharged by this spec. Tick that box when this feature is done."
+    },
+    {
+      "id": "0006#summary:1",
+      "line": "0006#summary:1  Feature  held  specs/0006-entry-page-and-link-metadata/index.md:8  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "This spec is the build spec for the front door: the page at `/`, and what a pasted link to it looks like. It ports `docs/design/JobHuntLanding.tsx` onto feature 5's component set, carries forward the composition decisions spec 0005 already made rather than re deciding them, and settles the four things that spec left open: how many times the match bar appears, what happens to the over signalled sign in band, what the sign in buttons do before real auth exists, and where the social preview image comes from."
+    },
+    {
+      "id": "0007#consequences:22",
+      "line": "0007#consequences:22  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:321  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "and spec 0005's component inventory still owes its `Logo` row."
+    },
+    {
+      "id": "0010#decision:4",
+      "line": "0010#decision:4  Consequence  held  specs/0010-profile-entry/index.md:55  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Four new base components (`Input`, `Textarea`, `Select`, a `Field`/`Label` wrapper) are added to `src/components/ui/`, extending spec 0005's Accepted component inventory the same way spec 0006 added `Logo`."
+    },
+    {
+      "id": "0013#consequences:3",
+      "line": "0013#consequences:3  Consequence  accepted  specs/0013-job-search-and-results-list/index.md:199  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The attribution slot spec 0005 built ahead of time gets its first real content, closing that spec's own Follow-up."
+    },
+    {
+      "id": "unresolved:0005:feature-6",
+      "line": "unresolved:0005:feature-6  unresolved  accepted  specs/0005-design-system-and-ui-foundation/index.md:113  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 6"
+    },
+    {
+      "id": "0005#build-plan:1",
+      "line": "0005#build-plan:1  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:146  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Port the seven token palette plus the new `--surface-sunken` token into `src/app/globals.css` as a non-inline `@theme`, and load Space Grotesk/JetBrains Mono via `next/font/google` in `src/app/layout.tsx`, mapped as `--font-sans`/`--font-mono`, replacing the placeholder tokens, satisfies **AC-1**"
+    },
+    {
+      "id": "0005#build-plan:2",
+      "line": "0005#build-plan:2  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:147  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Encode the type scale as concrete Tailwind v4 theme values (the `clamp()` display size, the fixed h2/h3/small/caption sizes, the `sm` breakpoint body size), satisfies **AC-2**"
+    },
+    {
+      "id": "0005#build-plan:3",
+      "line": "0005#build-plan:3  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:148  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add native `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` CSS, porting the existing focus outline and adding explicit borders and heavier contrast under those media features, satisfies **AC-12**"
+    },
+    {
+      "id": "0005#component-design:13",
+      "line": "0005#component-design:13  TestScenario  accepted  specs/0005-design-system-and-ui-foundation/index.md:110  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`forced-colors: active` and `prefers-contrast: more` emulation confirms borders and text remain visible without relying on shadow or fill alone, verifies **AC-12**."
+    },
+    {
+      "id": "0005/AC-5",
+      "line": "0005/AC-5  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:22  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: Section level background alternation is a documented, deliberate convention between `paper` (`#FFFAFB`) and the new `--surface-sunken` token (roughly `oklch(0.965 0.006 3)`, about 3.5% lighter than paper, a real, visible gap unlike the 1% paper/surface gap the review flagged), and the hairline divider renders only where two adjacent sections share the same background."
+    },
+    {
+      "id": "0005#build-plan:11",
+      "line": "0005#build-plan:11  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:156  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the `Section` component (rhythm, background, divider) and the 60/40 asymmetric grid utility, satisfies **AC-4**, **AC-5**, **AC-8**, **AC-15**"
+    },
+    {
+      "id": "0005#build-plan:4",
+      "line": "0005#build-plan:4  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:149  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Install `tailwind-variants`, wire its Tailwind v4 `@source` scanning, and add the narrow `no-restricted-syntax` ESLint rule from `## Standard definition`, satisfies **AC-15**"
+    },
+    {
+      "id": "0005#build-plan:5",
+      "line": "0005#build-plan:5  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:150  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the icon set (`CheckIcon`, `GapIcon`, `GitHubIcon`, `GoogleIcon`, `ExternalLinkIcon`) as plain server components, satisfies **AC-11**"
+    },
+    {
+      "id": "0005#build-plan:6",
+      "line": "0005#build-plan:6  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:151  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the `Text` and `Heading` components, retiring the old `.eyebrow`/`.mono-label` CSS classes, satisfies **AC-6**, **AC-15**"
+    },
+    {
+      "id": "0005#build-plan:7",
+      "line": "0005#build-plan:7  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:152  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the `Button` component (primary, secondary, tertiary variants, the `href` link affordance), satisfies **AC-15**"
+    },
+    {
+      "id": "0005#build-plan:9",
+      "line": "0005#build-plan:9  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:154  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the `Chip` component (matched, missing, status variants), collapsing the three hand written \"SOON\" class strings into one, satisfies **AC-15**"
+    },
+    {
+      "id": "0019#build-plan:3",
+      "line": "0019#build-plan:3  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:101  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Once step 2 exists, run at least 5 live `checkFitScore()` calls under `TEST_LIVE_MODEL_CALLS_ENABLED`, apply AC-6's derivation rule to the observed latencies, and set `ai_check`'s `timeoutMs` in `tiers.ts` to the result (from its current 30000, shared with `ai_scoring`, to the derived value); record the measured latencies and the resulting timeout in Follow-up, satisfies **AC-6**."
+    },
+    {
+      "id": "0019/AC-1",
+      "line": "0019/AC-1  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:18  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: `checkFitScore()` (`src/features/scoring/check.ts`) builds the listing text it sends from `buildListingBlock()`, one function extracted from `rubric.ts`'s existing listing block (title, company, location, description) that `buildScoringPrompt()` is changed to call too, so the check can never see more or less listing evidence than the scorer had. The extraction is mandatory, not conditional; a test additionally asserts the two prompts' listing fields stay identical, as a drift guard on top of the shared function, not a fallback in place of it."
+    },
+    {
+      "id": "0019/AC-10",
+      "line": "0019/AC-10  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The existing `scoring.score_listings` span (spec 0015 AC-14) gains four new attributes, recorded once every listing's full outcome (score and check) has resolved: `checked` (a check completed and returned a value, clean or flagged alike), `checkSkippedEmpty` (AC-4's skip), `flagged` (the subset of `checked` whose `ungroundedSkills` was non-empty, so `flagged` never exceeds `checked`), and `checkUnverifiable` (a check that failed or was refused). Every scored listing lands in exactly one of `checked`, `checkSkippedEmpty`, or `checkUnverifiable`, so `scored` (the span's existing spec 0015 attribute) always equals the sum of those three; a test asserts that identity so the four counts can never silently stop partitioning `scored` the way they do today."
+    },
+    {
+      "id": "0019/AC-12",
+      "line": "0019/AC-12  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: No check outcome ever changes a listing's displayed band. Band selection and the one time re-sort (spec 0015 AC-9) are computed before any check outcome exists and are never revisited by one."
+    },
+    {
+      "id": "0019/AC-13",
+      "line": "0019/AC-13  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:30  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: When a listing's check flags at least one skill, a caveat renders above the written `reasoning` text (`COPY-11`), worded as a verification limit rather than an accusation, The `reasoning` string itself is never edited, truncated, or regenerated; the caveat is a separate element rendered before it. This is the only render case AC-13 applies to; a clean check, an unverifiable check, or either skip variant adds no caveat. A listing where every claimed skill is flagged gets no further treatment beyond this caveat, the emptied matched list, and `COPY-9`'s note naming what was removed: together they already state what happened, and AC-12's rule that the band itself never changes has no exception for this case."
+    },
+    {
+      "id": "0019/AC-3",
+      "line": "0019/AC-3  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:20  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The check's schema output, `ungroundedSkills`, is filtered after parsing to only names present in the `matchedSkills` list sent to it, using the same normalization `normalizeFitScore()` already applies to `matchedSkills` itself (case, whitespace, canonicalised to the caller's own spelling), so a name that only differs in case or formatting is matched rather than dropped as invented. This mirrors spec 0015 AC-5's own filter and reuses its normalization rather than a second, independently written one."
+    },
+    {
+      "id": "0019/AC-4",
+      "line": "0019/AC-4  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:21  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: A listing whose `matchedSkills` came back empty never calls `ai_check` at all. This is tallied as its own count, distinct from a completed check, so a page of listings with nothing claimed never reads as a page of verified ones."
+    },
+    {
+      "id": "0019/AC-5",
+      "line": "0019/AC-5  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:22  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: A listing's check runs only after that listing's own `scoreListing()` call resolves with `{ allowed: true }`. A refused or failed score never triggers a check call."
+    },
+    {
+      "id": "0019/AC-6",
+      "line": "0019/AC-6  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: `ai_check`'s `timeoutMs` in `tiers.ts` is shortened from the 30000ms it currently shares with `ai_scoring` to a value derived from a real measurement, not a guess: during this feature's build, at least 5 live calls are made under `TEST_LIVE_MODEL_CALLS_ENABLED`, the slowest observed latency is multiplied by 3, rounded up to the nearest 5 seconds, and clamped between a 15 second floor and a 30 second ceiling. The measured figure and the resulting value are recorded in Follow-up."
+    },
+    {
+      "id": "0019/AC-7",
+      "line": "0019/AC-7  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: Once a listing's score and, when applicable, its check have both resolved, the card renders exactly one of three states: clean (nothing to note), flagged (each ungrounded skill removed from the displayed matched list, with one note naming the removed skill or skills, stating they could not be verified against the excerpt shown), or unverifiable (a note that skill matches could not be checked for this listing, with the displayed matched list left exactly as scored). Unverifiable covers a check timeout, a vendor error, and a gate refusal alike, rendered identically at the card level, even though a refusal and a failure remain two structurally distinct results (spec 0012's own invariant, unchanged)."
+    },
+    {
+      "id": "0019/AC-8",
+      "line": "0019/AC-8  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:25  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: A skipped check (AC-4) and a listing whose score itself never succeeded (already covered by spec 0015 AC-10, AC-11) render with no check related note at all, kept visibly distinct from the unverifiable state in AC-7,"
+    },
+    {
+      "id": "0019/AC-9",
+      "line": "0019/AC-9  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:26  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: An `ai_check` gate refusal adds no page level notice of its own (unlike spec 0015 AC-11's scoring refusal notice); it renders only through AC-7's unverifiable state. This rests on an explicit, falsifiable assumption, stated in this spec's Key invariants: because a check only ever follows a successful score, and both tiers share identical `usage_cap` ceilings (spec 0012 AC-8), `ai_check`'s budget cannot exhaust before `ai_scoring`'s already has, by which point spec 0015 AC-11's own notice is already showing."
+    },
+    {
+      "id": "0008/AC-21",
+      "line": "0008/AC-21  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:83  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-21**: Header sign out uses the existing Server Action in `src/features/auth/actions.ts` and returns the visitor to `/`."
+    },
+    {
+      "id": "0008/AC-4",
+      "line": "0008/AC-4  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:40  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The signed in shell renders no hamburger, no drawer and no tab bar at any width, and shows no horizontal overflow at 320 pixels. The overflow half is the checkable half; the absence half is a code review check, recorded here as intent."
+    },
+    {
+      "id": "0008/AC-5",
+      "line": "0008/AC-5  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides."
+    },
+    {
+      "id": "0008/AC-5a",
+      "line": "0008/AC-5a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:42  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5a**: The marketing navigation varies by page. `EntryHeader`'s in page anchors (`#how-it-works`, `#reasoning`, `#about`) render **only on `/`**, because no other marketing route has those sections and a link that cannot work is forbidden by `src/features/entry-page/AGENTS.md`. `/sign-in` and `/ui-preview` render the header with an empty navigation slot. Observably: no marketing page renders an anchor whose target is not on that page."
+    },
+    {
+      "id": "0005#build-plan:12",
+      "line": "0005#build-plan:12  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:157  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the gated preview route at `src/app/(marketing)/ui-preview/page.tsx`, rendering every component above at every variant behind `UI_PREVIEW_ENABLED` (see `## Configuration required`), then run the keyboard, focus, `prefers-reduced-motion`, and responsive pass against it, satisfies **AC-13**, **AC-14**. The same surface is what step 3's `forced-colors` and `prefers-contrast` checks are exercised against too; those remain **AC-12**'s and are not re-tagged here"
+    },
+    {
+      "id": "0005#component-design:11",
+      "line": "0005#component-design:11  TestScenario  accepted  specs/0005-design-system-and-ui-foundation/index.md:108  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Keyboard only pass over every base component (`Button`, `Card`'s interactive regions, `Chip`, `Section` anchors) confirms focus order and visible focus, verifies **AC-13**."
+    },
+    {
+      "id": "0021#build-plan:8",
+      "line": "0021#build-plan:8  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:632  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `readDemoResults()` (or a renamed equivalent) in `src/features/demo/queries.ts`: one query reads every `demo_result` row (both personas) ordered by `sort_order`, parsed (including the new columns), paired by `source_job_id` into `{ own: DemoResult; otherBand: Band }` for the active persona's ordered list (re-sorted by band then `sort_order` within that persona's subset); a second, separate query reads the `demo_refresh` singleton row. An empty `demo_result` with `demo_refresh.refreshed_at is null` returns a normal success value carrying that fact, never a `Failure`; a genuine database or parse fault still returns a `Failure` exactly as before. Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**."
+    },
+    {
+      "id": "0021#feature-design:55",
+      "line": "0021#feature-design:55  TestScenario  held  specs/0021-seeded-demo-account/index.md:578  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Cross profile: switching `?persona=` shows the same real listing scored differently, and each card's compact line names the band the switch would reveal before the reader switches. Verifies **AC-5**, **AC-6**, **AC-16**."
+    },
+    {
+      "id": "0021/AC-1",
+      "line": "0021/AC-1  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: A visitor reaches `/demo` and sees a list of results with no sign in, no redirect, and no account required."
+    },
+    {
+      "id": "0021/AC-14",
+      "line": "0021/AC-14  AcceptanceCriterion  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:121  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14** (new 2026-09-14): The page shows both search queries the current results answer (both titles, and the shared location when one is set; revised 2026-09-15) and when the data was last refreshed, both read from the single `demo_refresh` row (**Feature design**). It also shows both persona profiles' full content (summary, skills, experience, preferences) somewhere on the page, which is the disclosure AC-3 now depends on."
+    },
+    {
+      "id": "0021/AC-15",
+      "line": "0021/AC-15  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:127  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15** (new 2026-09-14): If no refresh has ever run since the current schema was deployed (`demo_refresh.refreshed_at is null`), the page shows a visible \"results are not available yet\" state, worded distinctly from AC-12's failure state (the first is expected and temporary, the second is a fault), never a blank or partially rendered page. This is a normal, successful read of an empty state, not a `Failure`."
+    },
+    {
+      "id": "0021/AC-17",
+      "line": "0021/AC-17  AcceptanceCriterion  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:139  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-17** (new 2026-09-14): A refresh, triggered as described in AC-18, runs exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure, since it is the budget working as designed. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built."
+    },
+    {
+      "id": "0021/AC-18",
+      "line": "0021/AC-18  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:159  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-18** (new 2026-09-14): The refresh is reachable only via a `POST` to a dedicated route handler, authorized by hashing the caller supplied secret (from an `Authorization: Bearer` header) and the configured `env.DEMO_REFRESH_SECRET` with SHA-256 and comparing the two digests; no other path triggers it. To spend real `job_search` and `ai_scoring`/`ai_check` budget through the existing gate (which requires a verified session, **Feature design**), the refresh authenticates as a dedicated, permanent internal identity that holds no `profile` or `application` row and is never reachable by a real visitor. That identity's own weekly account scope budget is therefore always separate from any real signed in user's."
+    },
+    {
+      "id": "0021/AC-19",
+      "line": "0021/AC-19  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:167  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-19** (new 2026-09-14): A real employer's name and a real listing's content render exactly as returned, whatever band either persona receives, including `weak_match` and `not_a_match`. Nothing on the page is hidden, blurred, or altered based on a score."
+    },
+    {
+      "id": "0021/AC-3",
+      "line": "0021/AC-3  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:47  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The opposite is now true on purpose: every listing (company name, title, description, location) is real, exactly as Adzuna returned it, including a real employer's name on a `weak_match` or `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and they are shown on the page in full (AC-14) as the disclosure that makes this honest."
+    },
+    {
+      "id": "0021/AC-6",
+      "line": "0021/AC-6  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:67  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Every kept listing (AC-17) appears under both profiles now, not just two of them, because both personas are scored against the same kept set, drawn from both searches (revised 2026-09-15). Each listing's band, matched skills, not mentioned skills, ungrounded skills, and reasoning are computed independently per persona by the real scorer and the real grounding check, and are expected to differ, but nothing in the build may select or discard a listing based on whether they actually do, and a refresh that returns fewer than the target count (**Feature design**, \"The kept listing count\") is still published as is, never padded or retried to reach it, as long as it kept at least one listing; a refresh that kept zero aborts (**Feature design**, \"Refresh outcomes\", recorded 2026-09-15)."
+    },
+    {
+      "id": "0021/AC-7",
+      "line": "0021/AC-7  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:80  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: Within one profile, listings are ordered best band first, ties broken by the order the kept walk kept each listing, which interleaves the two searches' own Adzuna order (revised 2026-09-15; **Feature design**, \"The kept listing count\") (stored as `sort_order`), the same band ordering rule `/search` already uses."
+    },
+    {
+      "id": "0021/AC-9",
+      "line": "0021/AC-9  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:92  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:17",
+      "line": "feature-31#31-seeded-demo-account-done:17  BuildStep  accepted  scope/scope.md:402  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Read path and rendering: both personas read in one pass, the cross persona band line, ungrounded skill rendering, real Adzuna/Jobsworth attribution, and the wording pass removing every claim that the page is fabricated, satisfies AC-1, AC-7, AC-10 through AC-16, AC-19"
+    },
+    {
+      "id": "0015/AC-1",
+      "line": "0015/AC-1  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0005",
+      "target": "0007#consequences:22",
+      "phrase": "They are amended alongside this spec",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0005",
+      "target": "0010#decision:4",
+      "phrase": "extending spec 0005's Accepted component inventory",
+      "held": true
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-3",
+      "target": "0008/AC-3a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-3a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5a",
+      "phrase": "AC-5a (the marketing navigation varies by page, so `/sign-in` ships no dead anchors)",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0019#build-plan:3",
+      "target": "0019#build-plan:2",
+      "phrase": "Once step 2 exists",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:1",
+      "target": "0005/AC-1",
+      "phrase": "satisfies **AC-1**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:11",
+      "target": "0005/AC-15",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-8**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:11",
+      "target": "0005/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-8**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:12",
+      "target": "0005/AC-13",
+      "phrase": "satisfies **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:12",
+      "target": "0005/AC-14",
+      "phrase": "satisfies **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:2",
+      "target": "0005/AC-2",
+      "phrase": "satisfies **AC-2**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:3",
+      "target": "0005/AC-12",
+      "phrase": "satisfies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:4",
+      "target": "0005/AC-15",
+      "phrase": "satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:5",
+      "target": "0005/AC-11",
+      "phrase": "satisfies **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:6",
+      "target": "0005/AC-15",
+      "phrase": "satisfies **AC-6**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:6",
+      "target": "0005/AC-6",
+      "phrase": "satisfies **AC-6**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:7",
+      "target": "0005/AC-15",
+      "phrase": "satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:9",
+      "target": "0005/AC-15",
+      "phrase": "satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-21",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-3",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-3a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-4",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:2",
+      "target": "0019/AC-1",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:2",
+      "target": "0019/AC-11",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:2",
+      "target": "0019/AC-2",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:2",
+      "target": "0019/AC-3",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:3",
+      "target": "0019/AC-6",
+      "phrase": "satisfies **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-1",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-10",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-11",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-12",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-13",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-2",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-3",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-4",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-5",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-6",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-7",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-8",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-9",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-17",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-18",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-3",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-6",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-8",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-9",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-16",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-7",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-16",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-19",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-8",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-9",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-1",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-12",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-1",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-10",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-11",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-12",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-13",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-2",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-3",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-4",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-5",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-6",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-7",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-8",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-9",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:8",
+      "target": "0019/AC-1",
+      "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:8",
+      "target": "0019/AC-11",
+      "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:8",
+      "target": "0019/AC-2",
+      "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:8",
+      "target": "0019/AC-3",
+      "phrase": "covers AC-1, AC-2, AC-3, AC-11",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-17",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-18",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-3",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-6",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-8",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-9",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-1",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-16",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-19",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-7",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:11",
+      "target": "0005/AC-13",
+      "phrase": "satisfies AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:11",
+      "target": "0005/AC-14",
+      "phrase": "satisfies AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:7",
+      "target": "0005/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:7",
+      "target": "0005/AC-12",
+      "phrase": "satisfies AC-1, AC-2, AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:7",
+      "target": "0005/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:8",
+      "target": "0005/AC-11",
+      "phrase": "satisfies AC-6, AC-11, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:8",
+      "target": "0005/AC-15",
+      "phrase": "satisfies AC-6, AC-11, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:8",
+      "target": "0005/AC-6",
+      "phrase": "satisfies AC-6, AC-11, AC-15",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005#consequences:8",
+      "target": "unresolved:0005:feature-6",
+      "phrase": "remains an unbuilt reference until feature 6 ports it onto this system",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005#standard-definition:12",
+      "target": "unresolved:0005:feature-6",
+      "phrase": "is ported onto this system by feature 6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005/AC-1",
+      "target": "0005/AC-5",
+      "phrase": "(see AC-5)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006#follow-up:4",
+      "target": "0005",
+      "phrase": "is discharged by this spec",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006#summary:1",
+      "target": "0005",
+      "phrase": "carries forward the composition decisions spec 0005 already made",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5",
+      "phrase": "because AC-5 requires the current route to arrive as a prop rather than be computed",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5a",
+      "phrase": "plus AC-5a, which needs the navigation content itself to differ per page",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013#consequences:3",
+      "target": "0005",
+      "phrase": "closing that spec's own Follow-up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:4",
+      "target": "0019/AC-2",
+      "phrase": "only the claimed skill names (AC-2)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-10",
+      "target": "0019/AC-4",
+      "phrase": "checkSkippedEmpty (AC-4's skip)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-11",
+      "target": "0015/AC-12",
+      "phrase": "the same untrusted input instruction spec 0015 AC-12 gives the scorer",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-13",
+      "target": "0019/AC-12",
+      "phrase": "AC-12's rule that the band itself never changes has no exception for this case",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-8",
+      "target": "0019/AC-4",
+      "phrase": "A skipped check (AC-4)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-8",
+      "target": "0019/AC-7",
+      "phrase": "kept visibly distinct from the unverifiable state in AC-7",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0019/AC-7",
+      "phrase": "it renders only through AC-7's unverifiable state",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-16",
+      "target": "0021/AC-17",
+      "phrase": "AC-17's transaction writes both personas' rows",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-17",
+      "target": "0021/AC-18",
+      "phrase": "triggered as described in AC-18",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-3",
+      "target": "0021/AC-14",
+      "phrase": "shown on the page in full (AC-14)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-3",
+      "target": "0021/AC-19",
+      "phrase": "(AC-19)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-8",
+      "target": "0021/AC-16",
+      "phrase": "(AC-16) a compact line naming the other persona's band",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0005#component-design:11",
+      "target": "0005/AC-13",
+      "phrase": "verifies **AC-13**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0005#component-design:13",
+      "target": "0005/AC-12",
+      "phrase": "verifies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:14",
+      "target": "0019/AC-1",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:14",
+      "target": "0019/AC-2",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:14",
+      "target": "0019/AC-6",
+      "phrase": "verifies **AC-1**, **AC-2**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-1",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-14",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-16",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-7",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-8",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-9",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:55",
+      "target": "0021/AC-16",
+      "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:55",
+      "target": "0021/AC-6",
+      "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:56",
+      "target": "0021/AC-8",
+      "phrase": "Verifies **AC-8**",
+      "held": true
+    }
+  ],
+  "cut": 6,
+  "counted_input_tokens": 24221,
+  "bound_usd": 0.208442,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"partly\",\"claims\":[{\"text\":\"The design system's `Text` base component encodes the mono usage rule: mono is reserved for written reasoning and literal data (skill gap notes, the summary line, salaries, dates, scores), while decorative labels (eyebrows, section micro labels, filter chips, step numerals, status badges) render in tracked sans serif caps.\",\"cites\":[\"0005/AC-6\"],\"basis\":\"text\"},{\"text\":\"A build step built the `Text` and `Heading` components and retired the old `.eyebrow`/`.mono-label` CSS classes; it is listed as satisfying AC-6, as is the completed feature 5 build step.\",\"cites\":[\"0005#build-plan:6\",\"0005/AC-6\",\"feature-5#5-design-system-ui-foundation-done:8\"],\"basis\":\"link\"},{\"text\":\"JetBrains Mono is loaded alongside Space Grotesk and mapped as `--font-mono` next to `--font-sans`, so a mono face exists to be reserved.\",\"cites\":[\"0005/AC-2\"],\"basis\":\"text\"}],\"missing\":[\"An explicit statement of the rationale for reserving mono, beyond the rule itself (which text gets mono and which gets tracked sans caps).\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "partly",
+  "missing": [
+    "An explicit statement of the rationale for reserving mono, beyond the rule itself (which text gets mono and which gets tracked sans caps)."
+  ],
+  "claims": [
+    {
+      "text": "The design system's `Text` base component encodes the mono usage rule: mono is reserved for written reasoning and literal data (skill gap notes, the summary line, salaries, dates, scores), while decorative labels (eyebrows, section micro labels, filter chips, step numerals, status badges) render in tracked sans serif caps.",
+      "cites": [
+        "0005/AC-6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "A build step built the `Text` and `Heading` components and retired the old `.eyebrow`/`.mono-label` CSS classes; it is listed as satisfying AC-6, as is the completed feature 5 build step.",
+      "cites": [
+        "0005#build-plan:6",
+        "0005/AC-6",
+        "feature-5#5-design-system-ui-foundation-done:8"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "JetBrains Mono is loaded alongside Space Grotesk and mapped as `--font-mono` next to `--font-sans`, so a mono face exists to be reserved.",
+      "cites": [
+        "0005/AC-2"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 24221,
+    "output_tokens": 415,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.052592,
+  "recorded_usd": 0.052592
+}

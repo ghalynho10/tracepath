@@ -1,0 +1,1492 @@
+{
+  "asked_at": "2026-10-22T20:25:54+00:00",
+  "question": "was anyone else on the team besides the original author, or is this still a one-person repo?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "anyone",
+    "else",
+    "team",
+    "besides",
+    "original",
+    "author",
+    "still",
+    "one-person",
+    "one",
+    "person",
+    "repo"
+  ],
+  "items": [
+    {
+      "id": "0008#follow-up:4",
+      "line": "0008#follow-up:4  FollowUp  held  specs/0008-app-shell-and-navigation/index.md:255  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done**: recorded against feature 32's `Build it` box on 2026-08-31 rather than edited into the row, so the row still reads as it was scoped. Three clauses are amended there, not one. Original item: update scope feature 32's done when wording from \"everyone else on `/`\" to the landing rule of AC-6, when the feature ships (`/develop` records it against the row)."
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:14",
+      "line": "feature-4#4-data-model-done-ga:14  BuildStep  held  scope/scope.md:100  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Test it: `/test data model` · done 2026-08-27. Five tests in [test/integration/profile-read.test.ts](../../test/integration/profile-read.test.ts) against the real local stack, covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**. Two claims were checked for vacuousness rather than trusted: swapping the Zod parse for a type assertion fails the AC-15 test with `expected null to be undefined`, and misnaming the missing profile failure fails the AC-14 test. **The schema half was deliberately not ported**, by decision this run: AC-1 to AC-13 and AC-16 are proved by [verify.sql](../specs/0003-data-model/verify.sql) at 83 of 83 and by [verify-production.sql](../specs/0003-data-model/verify-production.sql). The aimed slice the fresh model review then asked for IS covered, in [test/integration/data-model-constraints.test.ts](../../test/integration/data-model-constraints.test.ts): four tests on a SECOND table besides `profile`, proving AC-4's `with check` trap in both directions (an update onto another user's row changes zero rows and does not raise, while moving a row under another profile is refused with 42501) and AC-7 in both directions (a duplicate is refused with 23505, and a different user may still apply to the same listing, which is what the constraint leading with `profile_id` buys). The remaining checks stay a manual `verify.sql` run rather than a CI gate, worth revisiting when feature 9 and feature 12 build the write paths that hit them through real code."
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0009#follow-up:11",
+      "line": "0009#follow-up:11  FollowUp  held  specs/0009-terms-and-privacy-notices/index.md:610  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A cross check the same day found the first draft of this correction still wrong, twice.** First, AC-14's replacement text named only two cookie kinds; `@supabase/ssr` also writes short lived PKCE verifier cookies during the OAuth handshake, a fact already documented in this repo (`src/features/auth/AGENTS.md:29`, \"the PKCE code verifier is a host only cookie\") but never carried to the page a visitor reads. Second, AC-24's first draft proposed registering `src/features/demo/refresh-session.ts` as a cookie that reaches nobody: verified against the actual code, that module never touches an HTTP cookie store at all, `createCookieJar()` holds its state in a plain `Map`, so it was about to be named, even as an undisclosed one, in a legal document it has nothing to do with."
+    },
+    {
+      "id": "0006#consequences:2",
+      "line": "0006#consequences:2  Consequence  accepted  specs/0006-entry-page-and-link-metadata/index.md:183  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The front door stops lying. Two concrete untruths (four features claimed as working, two dead primary controls) are removed before anyone outside the author sees the page."
+    },
+    {
+      "id": "0013#feature-design:17",
+      "line": "0013#feature-design:17  Constraint  held  specs/0013-job-search-and-results-list/index.md:154  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The only things sent outward are the caller's typed query text, the app's own shared Adzuna credentials, and (for the prefill) the caller's own previously stated preferences, never a value belonging to anyone else."
+    },
+    {
+      "id": "0012#follow-up:11",
+      "line": "0012#follow-up:11  FollowUp  accepted  specs/0012-model-client-router/index.md:121  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`.env.local` currently holds `ANTHROPIC_API_KEY`, set ahead of this spec's original vendor pick; this revision leaves it with no consumer anywhere in this codebase. Before `/develop model client router` can run against a real vendor and before the pull request for this revision opens, **both** `OPENAI_API_KEY` **and** `GOOGLE_GENERATIVE_AI_API_KEY` must be set in `.env.local` and in all three Vercel environments (development, preview, production). This item originally named only `OPENAI_API_KEY`; both are equally required by AC-10, and a preview build with only one set fails the same way a build with neither set would. `ANTHROPIC_API_KEY` can stay in `.env.local` harmlessly (nothing reads it), but should not be assumed to still matter when reasoning about this feature's configuration."
+    },
+    {
+      "id": "feature-28#28-spend-visibility-gating-polish-done:15",
+      "line": "feature-28#28-spend-visibility-gating-polish-done:15  unclassified  held  scope/scope.md:378  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "This tier carries no `Review it` box, so the two rounds that ran are recorded here. Reviewed 2026-09-13 on **Fable 5.1** over 20 files, verdict **Changes requested**: one major, four minors, findings. The major was that the spec recorded a mechanism that was not the one operating, the `searchResult` prop said to hold the ordering when `SearchPage`'s own `await` did, proved by removing the prop entirely and watching all 74 tests still pass. That drove the correction slice and a second spec revision. A second round then reviewed the correction slice alone, over 5 files, verdict **Approve with nits**: no blockers, no majors, two minors and one nit, findings. **The cross model guarantee is unconfirmed for that second round**: the reviewer was spawned with `model: sonnet` but named itself Opus 5, the author family, and a model cannot reliably name itself."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:1  Feature  accepted  scope/scope.md:177  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "A plain terms page and a privacy notice saying what is stored, why, and how to have it deleted. Owed the day the first person other than the author signs in. Written against the actual data model rather than from a template."
+    },
+    {
+      "id": "0008/AC-3a",
+      "line": "0008/AC-3a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:36  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-3a**: **Composition is per page on both sides, and the reason is a constraint rather than a preference.** The **signed in** variant is composed by **each route under `(app)`**, which passes its own `current` value. Not by the `(app)` layout, because AC-5 requires the current route to arrive as a prop rather than be computed, and a layout never learns the pathname (`layout.md` lines 238 to 242), so a layout composed header could never be told which page it is on. Four call sites, one line each. The **signed out** variant is composed by **each marketing page** rather than by a marketing layout, for the same pathname reason plus AC-5a, which needs the navigation content itself to differ per page. Reading the pathname in a client component to work around either case would put client JavaScript on `/sign-in`, whose own contract forbids it. `/` already composes its header this way today, so that side is the existing shape kept rather than a new one. A layout on either side may still exist for other shared chrome, but **it must not render the header**. The `(app)` layout keeps its session check and nothing else of the shell."
+    },
+    {
+      "id": "0008/AC-7a",
+      "line": "0008/AC-7a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:55  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-7a**: A genuine query error is still a failure. The read wraps its database call in `attempt()` per binding rule 5, so a driver throw reports and marks the span failed exactly as everywhere else. The absent row exemption in AC-7 is narrow and applies to that one case. **An error must not be collapsed into `false`**, which would land a visitor on `/profile` during a database outage as though their profile were merely empty, a default that reads like success. On an errored read the landing rule sends the visitor to `/search`, the destination that assumes nothing about their data, and the failure is already reported."
+    },
+    {
+      "id": "0009#requirements:1",
+      "line": "0009#requirements:1  Feature  accepted  specs/0009-terms-and-privacy-notices/index.md:30  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "As a person signing in, I want to read plainly what is stored about me and who else sees it,"
+    },
+    {
+      "id": "0006#feature-design:46",
+      "line": "0006#feature-design:46  TestScenario  accepted  specs/0006-entry-page-and-link-metadata/index.md:158  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`automated` Robots: `layout.tsx` still exports `robots: { index: false, follow: false }`, and no `robots.ts` or `robots.txt` exists anywhere in the repo, verifies **AC-12**."
+    },
+    {
+      "id": "0002#consequences:6",
+      "line": "0002#consequences:6  Consequence  accepted  specs/0002-deployment-and-environments/index.md:281  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Two hosted projects means two sets of secrets and a schema that can drift if anyone applies a migration by hand. The workflow is the mitigation; the discipline is still a discipline."
+    },
+    {
+      "id": "0020#consequences:10",
+      "line": "0020#consequences:10  Consequence  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:202  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The gate still cannot tell anyone what a single call cost. If a later feature needs that (a per call spend breakdown, an audit line), it will have to reopen the option dropped here and pay the cost then, with the collision and grant hazards this spec recorded."
+    },
+    {
+      "id": "0008#follow-up:3",
+      "line": "0008#follow-up:3  FollowUp  held  specs/0008-app-shell-and-navigation/index.md:254  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done 2026-08-31**, at the moment the status advanced: all five notes now read as settled rather than pending, and the \"(status Proposed, so ... still ...)\" caveats are gone. Original item: revisit all five notes and drop the pending qualifier, or update them if the spec changed again. `/develop` owns this, at the same moment it advances the Status line."
+    },
+    {
+      "id": "0003/AC-14",
+      "line": "0003/AC-14  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: The health page reads the caller's own `profile` through the real server client under a real policy. Each of the two seeded development users with a profile sees only their own row, and a third seeded user, deliberately given no profile row, sees a visible expected failure naming the missing profile rather than an empty page."
+    },
+    {
+      "id": "0003/AC-15",
+      "line": "0003/AC-15  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:35  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: `src/lib/supabase/database.types.ts` is regenerated from the applied schema, and the profile read parses its row with Zod at the boundary, reporting a row that does not match as a visible `response_malformed` failure."
+    },
+    {
+      "id": "0003/AC-4",
+      "line": "0003/AC-4  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:24  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-4**: A signed in user can insert, update and delete their own rows on five of the six tables, and insert and delete on `profile_skill`, which has no update path by design. An insert or update that would place a row under another user's profile is refused by the policy's `with check`, not merely hidden from reads."
+    },
+    {
+      "id": "0003/AC-7",
+      "line": "0003/AC-7  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: A second `application` row with the same profile, `source` and `source_job_id` is refused by the database with a unique violation. The refusal comes from the constraint, so it holds even for a caller that forgot to check first."
+    },
+    {
+      "id": "unresolved:feature-4:feature-12",
+      "line": "unresolved:feature-4:feature-12  unresolved  held  scope/scope.md:88  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 12"
+    },
+    {
+      "id": "unresolved:feature-4:feature-9",
+      "line": "unresolved:feature-4:feature-9  unresolved  held  scope/scope.md:88  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 9"
+    },
+    {
+      "id": "0013/AC-6",
+      "line": "0013/AC-6  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`."
+    },
+    {
+      "id": "0013/AC-7",
+      "line": "0013/AC-7  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:29  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution."
+    },
+    {
+      "id": "0016",
+      "line": "0016  record  accepted  specs/0016-eval-ground-truth-set/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Eval ground truth set"
+    },
+    {
+      "id": "scope#deferred:13",
+      "line": "scope#deferred:13  FollowUp  held  scope/scope.md:505  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25,"
+    },
+    {
+      "id": "scope#deferred:16",
+      "line": "scope#deferred:16  unclassified  held  scope/scope.md:507  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one."
+    },
+    {
+      "id": "unresolved:feature-21:feature-32",
+      "line": "unresolved:feature-21:feature-32  unresolved  accepted  scope/scope.md:176  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 32"
+    },
+    {
+      "id": "unresolved:feature-21:feature-7",
+      "line": "unresolved:feature-21:feature-7  unresolved  accepted  scope/scope.md:176  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 7"
+    },
+    {
+      "id": "0008#build-plan:12",
+      "line": "0008#build-plan:12  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:209  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The chrome only header primitive in `src/components/ui/`, holding no routing logic; each marketing page composing the signed out variant itself with its own navigation content, and **each route under `(app)` composing the signed in one itself, passing its own `current`**; `EntryHeader` folded in, sign out wired to the existing action with `COPY-7`, satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**"
+    },
+    {
+      "id": "0008/AC-3",
+      "line": "0008/AC-3  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:35  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-3**: A header primitive lives in `src/components/ui/`. It is **chrome only**: lockup, navigation slot, action slot, layout. It imports nothing from `src/features/`, so the design system gains no feature dependency and spec 0005's charter for that directory holds. It holds no routing logic and reads no pathname; everything that varies arrives as children. The sign out form lives outside `src/components/ui/`."
+    },
+    {
+      "id": "0008/AC-5",
+      "line": "0008/AC-5  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:41  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: A signed in visitor reaching `/search`, `/profile` or `/applications` sees the signed in header on every one of them, and a signed out visitor reaching `/` or `/sign-in` sees the signed out header on both. The signed in navigation marks the current route with `aria-current=\"page\"`, which each route passes in at composition time rather than any component computing it, keeping the WCAG 2.2 AA commitment without a pathname read. No extra visual treatment is required beyond the link states the design system already provides."
+    },
+    {
+      "id": "0008/AC-5a",
+      "line": "0008/AC-5a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:42  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5a**: The marketing navigation varies by page. `EntryHeader`'s in page anchors (`#how-it-works`, `#reasoning`, `#about`) render **only on `/`**, because no other marketing route has those sections and a link that cannot work is forbidden by `src/features/entry-page/AGENTS.md`. `/sign-in` and `/ui-preview` render the header with an empty navigation slot. Observably: no marketing page renders an anchor whose target is not on that page."
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "0008/AC-7",
+      "line": "0008/AC-7  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:54  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: The landing rule reads profile row existence through a dedicated existence read. **An absent row is not a failure**: it returns `false` and constructs no `failure()`. It does not reuse `readOwnProfile()` in `src/features/profile/queries.ts:162-166`, whose `record_not_found` path reports to Sentry and marks the `profile.read` span failed."
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:15",
+      "line": "feature-32#32-app-shell-navigation-done:15  BuildStep  accepted  scope/scope.md:169  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it · **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. Starts by proving the one mechanic the spec marks inferred rather than verified."
+    },
+    {
+      "id": "0006/AC-12",
+      "line": "0006/AC-12  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: `robots` stays `index: false, follow: false` in `src/app/layout.tsx`, and no `robots.ts` or `robots.txt` is added anywhere."
+    },
+    {
+      "id": "0003#build-plan:3",
+      "line": "0003#build-plan:3  BuildStep  accepted  specs/0003-data-model/index.md:238  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the migration creating the shared `public.set_updated_at()` trigger function (`security invoker`, empty `search_path`, fully qualified names, matching the `app_settings` precedent), then the six tables with their checks, unique constraints, foreign key indexes, the explicit `grant` per table to `authenticated` and to nothing else, `enable` plus `force row level security`, and the twenty three policies (four per table, three on `profile_skill`), each carrying the clause its action actually permits. Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**."
+    },
+    {
+      "id": "0003#build-plan:4",
+      "line": "0003#build-plan:4  BuildStep  accepted  specs/0003-data-model/index.md:239  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `supabase/seed.sql`: give each of the two existing synthetic users a profile row, and add a **third** synthetic user with an auth row and an identity but deliberately no profile row. Keep every statement idempotent, and keep the existing `scaffold_check` rows for now. Satisfies **AC-3**, **AC-14**."
+    },
+    {
+      "id": "0003#build-plan:5",
+      "line": "0003#build-plan:5  BuildStep  accepted  specs/0003-data-model/index.md:240  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Run `pnpm db:reset` locally, then `pnpm db:types` to regenerate `src/lib/supabase/database.types.ts` from the applied schema. Satisfies **AC-15**."
+    },
+    {
+      "id": "0003#build-plan:6",
+      "line": "0003#build-plan:6  BuildStep  accepted  specs/0003-data-model/index.md:241  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add `src/features/profile/queries.ts` with `readOwnProfile()`: the named span `profile.read` as the first statement per binding rule 4, the session check per binding rule 6, the Supabase call, and a Zod parse at the boundary, returning `record_not_found` as an expected failure when no profile row exists. Register `profile.read` in [docs/observability/spans.md](../../observability/spans.md). Satisfies **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0003#build-plan:7",
+      "line": "0003#build-plan:7  BuildStep  accepted  specs/0003-data-model/index.md:242  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Repoint `src/app/(app)/health/page.tsx` at `readOwnProfile()`, keeping the existing failure rendering shape so a failure is still shown rather than swallowed. Satisfies **AC-14**."
+    },
+    {
+      "id": "0003#build-plan:8",
+      "line": "0003#build-plan:8  BuildStep  accepted  specs/0003-data-model/index.md:243  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Prove the constraints by hand against the real development project as each seeded user: isolation both ways, the `with check` refusal on both insert and update, the duplicate application, the orphan application, the pay pairing in both tables, the skill uniqueness ignoring case, the date checks, and both cascade paths. Also confirm directly that `anon` and `service_role` hold nothing on all six, with `has_table_privilege`, the same test spec 0002's task 10 used. Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**."
+    },
+    {
+      "id": "0003#build-plan:9",
+      "line": "0003#build-plan:9  BuildStep  accepted  specs/0003-data-model/index.md:244  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Confirm the repointed health page on a real preview deployment as all three seeded users: the first two each see only their own profile, the third sees the visible missing profile failure. Satisfies **AC-3**, **AC-14**."
+    },
+    {
+      "id": "0003#feature-design:22",
+      "line": "0003#feature-design:22  TestScenario  accepted  specs/0003-data-model/index.md:221  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a seeded development user signs in on a real preview and the health page shows their own profile row, verifies **AC-14**, **AC-3**."
+    },
+    {
+      "id": "0003#feature-design:25",
+      "line": "0003#feature-design:25  TestScenario  accepted  specs/0003-data-model/index.md:224  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write refusal: an insert placing a row under another user's profile is refused by the insert policy's `with check`, and an update moving an owned row under another profile is refused by the update policy's `with check`, verifies **AC-4**."
+    },
+    {
+      "id": "0003#feature-design:26",
+      "line": "0003#feature-design:26  TestScenario  accepted  specs/0003-data-model/index.md:225  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Missing profile: a signed in user with no profile row sees a visible expected failure, not a blank page, verifies **AC-14**."
+    },
+    {
+      "id": "0003#feature-design:27",
+      "line": "0003#feature-design:27  TestScenario  accepted  specs/0003-data-model/index.md:226  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Duplicate application: inserting the same `(profile_id, source, source_job_id)` twice is refused by the database, verifies **AC-7**."
+    },
+    {
+      "id": "0007#consequences:5",
+      "line": "0007#consequences:5  Consequence  accepted  specs/0007-auth-and-per-user-isolation/index.md:307  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Between this feature and feature 9, a brand new user's happy path ends on a visible error.** They land on `/health` and see the `record_not_found` that spec 0003 **AC-14** exists to prove. That is the honest state and the tracer bullet working, not a defect, and verify.md carries it as an expected outcome so `/check verify` does not read it as a failure. It ends when feature 9 ships."
+    },
+    {
+      "id": "0014/AC-4",
+      "line": "0014/AC-4  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: A second apply to the same `(profile_id, source, source_job_id)` writes no second row and produces a visible expected failure carrying `COPY-2`, kind `validation_failed`, severity `expected`. The refusal comes from the unique constraint, so it holds for a caller that never checked first (spec 0003, AC-7)."
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:10",
+      "line": "feature-4#4-data-model-done-ga:10  BuildStep  accepted  scope/scope.md:96  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The replacement read: `readOwnProfile()` with its named span and Zod parse, the span registered, the health page repointed off `scaffold_check` (AC-14, AC-15)"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:11",
+      "line": "feature-4#4-data-model-done-ga:11  BuildStep  accepted  scope/scope.md:97  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Proved against the real project: isolation both ways, the `with check` refusals, every constraint, the privilege check, and the preview confirmed as all three seeded users (AC-2 to AC-11, AC-14) · done 2026-08-25 on pull request [#9](https://github.com/ghalynho10/JobHunt/pull/9). The sweep in [verify.sql](../specs/0003-data-model/verify.sql) ran against the hosted development project with zero failures, and all three seeded users were driven through the preview page: dev-one and dev-two each saw only their own profile, dev-three saw the named `record_not_found` failure rather than an empty page"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:8",
+      "line": "feature-4#4-data-model-done-ga:8  BuildStep  accepted  scope/scope.md:94  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The schema migration: the shared timestamp trigger, six tables with their checks and unique constraints, an explicit grant per table, and the twenty three policies (AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12)"
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:9",
+      "line": "feature-4#4-data-model-done-ga:9  BuildStep  accepted  scope/scope.md:95  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Fixtures and types: the seed grows a profile for each of the two synthetic users plus a third carrying none, then `database.types.ts` is regenerated from the applied schema (AC-3, AC-14, AC-15)"
+    },
+    {
+      "id": "0005#follow-up:3",
+      "line": "0005#follow-up:3  FollowUp  accepted  specs/0005-design-system-and-ui-foundation/index.md:180  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The asset is `src/features/search/adzuna-logo.svg`, rendered inline from `adzuna-logo-geometry.ts`. Both the word and the mark link to `https://www.adzuna.com`, verified against Adzuna's own terms of service and recorded in spec 0013 AC-6. The row at line 86 below guessed those targets and guessed wrong; it has been corrected in the same pass."
+    },
+    {
+      "id": "0005/AC-10",
+      "line": "0005/AC-10  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The `Card` component's footer slot accepts an optional `attribution` node beside the primary action link, laid out `justify-between` and wrapping to a stacked layout before a 116 by 23 pixel block would otherwise compress. This feature builds and tests the slot mechanism only; the real Adzuna attribution content is built in feature 11 (see `## Follow-up`)."
+    },
+    {
+      "id": "0013#build-plan:7",
+      "line": "0013#build-plan:7  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:188  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: the `AdzunaAttribution` component (the real logo asset once sourced, both link targets) placed in `Card.Footer`'s `attribution` slot, and the Jobsworth badge (icon, text, link, mouseover) shown beside a predicted salary, plus the \"(estimated)\" label. Satisfies **AC-6**, **AC-7**, **AC-8**."
+    },
+    {
+      "id": "0013#feature-design:22",
+      "line": "0013#feature-design:22  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:167  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**."
+    },
+    {
+      "id": "0013#feature-design:30",
+      "line": "0013#feature-design:30  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:175  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Predicted salary: a listing carrying `salary_is_predicted: true` renders the estimate label and the Jobsworth attribution; one carrying `false` (or no salary) renders neither, verifies **AC-7**."
+    },
+    {
+      "id": "0014/AC-7",
+      "line": "0014/AC-7  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: An application row whose stored salary was predicted renders `(estimated)` beside the figure and carries the Jobsworth attribution, matching spec 0013's AC-7 exactly: a 20 by 20 pixel icon plus the words `Adzuna Jobsworth`, both linked to `ADZUNA_JOBSWORTH_URL`, with the mouseover text `Salary estimate powered by Adzuna Jobsworth`. A stored non predicted salary renders neither."
+    },
+    {
+      "id": "0014/AC-8",
+      "line": "0014/AC-8  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:38  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: Every application row displayed on `/applications` carries its own `Jobs by Adzuna` attribution through `Card.Footer`'s attribution slot, on the same terms spec 0013 AC-6 sets for a search result, with the link target read from `ADZUNA_ATTRIBUTION_URL`. Attribution renders once per displayed row and never once per screen (spec 0013, invariant 4). A page with no rows shows no attribution block."
+    },
+    {
+      "id": "0015",
+      "line": "0015  record  accepted  HISTORY  specs/0015-fit-scoring-with-shown-reasoning/index.md  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0020#follow-up:3"
+      ],
+      "hop": 2,
+      "text": "Fit scoring with shown reasoning"
+    },
+    {
+      "id": "0020#follow-up:3",
+      "line": "0020#follow-up:3  FollowUp  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:218  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**Done 2026-09-13**: a sweep of all of `docs/` for numeric references into that file found exactly four, all re read against the file on 2026-09-13: this spec's `index.md:110`, the `hasQuery` conditional, 94 to **129**; this spec's `rationale.md:111`, the `Promise.all` over the applied and scoring reads inside `SearchOutcome`, 243 to **291**; and spec 0015's `index.md:211` and `verify.md:78`, both citing the `ScoredResults` index pairing (`const paired = listings.map(...)`), 383 to **442** in each. Corrected in the same pass rather than one at a time."
+    },
+    {
+      "id": "0018#follow-up:1",
+      "line": "0018#follow-up:1  FollowUp  accepted  specs/0018-band-anchor-review/index.md:103  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The `weak_match` and `not_a_match` boundary is still undefined and is still recorded as a gap in spec [0016](../0016-eval-ground-truth-set/index.md)'s Follow up. **Three pairs sit on it, not two**, across thirty reruns: `key-domain-mismatch` (3 to 2, then 0 to 5), `weak-match-shallow-overlap` (4 to 1, then 3 to 2) and `boundary-seniority-gap` (`weak_match` 4 of 5 both runs, passing only through its widened tolerance). The one to watch is `weak-match-shallow-overlap`: it carries no tolerance and at 3 to 2 is a single rerun away from having no majority at all, so it is the pair most likely to fail next and the failure would be the boundary, not the pair. What would justify acting is repeated flipping, not one split."
+    },
+    {
+      "id": "0018#follow-up:4",
+      "line": "0018#follow-up:4  FollowUp  accepted  specs/0018-band-anchor-review/index.md:106  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Should `control-one-gap` keep its `control` tag?** This pair no longer behaves that way: `possible_match` won it 4 to 1, then 5 to 0, then 3 to 2 on the confirming run, so it now passes on the narrowest majority the harness accepts. Spec [0016](../0016-eval-ground-truth-set/index.md) draws this exact distinction when it explains why `mild-stretch-possible-match` carries \"no `acceptableBands` and the plain `control` tag rather than `boundary`\": the tag tracks whether the anchor text settles the pair, not how the model happens to answer. **Recorded here, not answered.** Whoever takes it up should know the two obvious moves are both constrained: retagging it `boundary` would concede that the anchors do not settle it, which contradicts this spec's own finding that they do, and widening it with `acceptableBands` is refused outright by the Key invariants above. `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`, so the retag and the tolerance are not independent choices."
+    },
+    {
+      "id": "0018/AC-4b",
+      "line": "0018/AC-4b  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:25  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4b**: Spec 0016's two now stale references to `control-one-gap` are corrected: its table row at line 141 lists the pair as `good_match`, and its Follow up at line 182 quotes that pair's rationale saying \"That is good_match's wording\" as present tense evidence of how the set was authored. The row is updated and the Follow up quote is marked as historical, true of the set as authored and superseded here. Both are recording edits, not changes to what spec 0016 decides."
+    },
+    {
+      "id": "0021",
+      "line": "0021  record  accepted  specs/0021-seeded-demo-account/index.md  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Seeded demo account"
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:16",
+      "line": "feature-11#11-job-search-results-list:16  BuildStep  accepted  scope/scope.md:237  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Full attribution and states: the real \"Jobs by Adzuna\" and Jobsworth attribution, the estimated salary label, the `job_preference` prefill, and the three distinct visible states (AC-4, AC-6, AC-7, AC-9) · done 2026-09-04."
+    },
+    {
+      "id": "0008#build-plan:13",
+      "line": "0008#build-plan:13  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:210  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The three routes under `(app)` with their copy slots, the nav rendering only Search and Profile and marking the current one with `aria-current=\"page\"`, and the `/profile` link to `/applications`, satisfies **AC-1**, **AC-2**, **AC-5**"
+    },
+    {
+      "id": "0008#consequences:13",
+      "line": "0008#consequences:13  Constraint  held  specs/0008-app-shell-and-navigation/index.md:231  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`EntryHeader`'s in page anchors must not travel with it or those pages ship dead links; **AC-5a is the criterion that prevents it**"
+    },
+    {
+      "id": "0008/AC-21",
+      "line": "0008/AC-21  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:83  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-21**: Header sign out uses the existing Server Action in `src/features/auth/actions.ts` and returns the visitor to `/`."
+    },
+    {
+      "id": "0008/AC-4",
+      "line": "0008/AC-4  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:40  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The signed in shell renders no hamburger, no drawer and no tab bar at any width, and shows no horizontal overflow at 320 pixels. The overflow half is the checkable half; the absence half is a code review check, recorded here as intent."
+    },
+    {
+      "id": "0008/AC-5b",
+      "line": "0008/AC-5b  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:46  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5b**: Two new modules hold everything more than one caller needs, because the callers span two features plus a bare route handler and AGENTS.md says anything two features share moves to `src/lib`. `src/lib/return-path.ts` exports `RETURN_PATH_HEADER` (the string `x-jobhunt-pathname`), `RETURN_PATH_COOKIE` (the string `jobhunt_return_path`), `RETURN_PATH_MAX_LENGTH` (2048) and the AC-12 Zod schema. `src/proxy.ts`, the `(app)` layout, `/sign-in`, the Server Actions and the callback all import from here. **Two spellings that differ by one byte is a silent no op**, which is why the strings are fixed in this criterion rather than left to the build. `src/lib/landing-rule.ts` exports the one function of AC-6. It imports the existence read from `src/features/profile/`, and its three callers import it from here. Neither `/go` nor `src/proxy.ts` may import from a feature. The existence read of AC-7 is a new named export beside `readOwnProfile()` in `src/features/profile/queries.ts`, because it queries that feature's table and belongs with the other queries against it."
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:17",
+      "line": "feature-32#32-app-shell-navigation-done:17  BuildStep  accepted  scope/scope.md:171  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The shell itself: the chrome only header, the marketing pages composing their own variant, the three routes with their copy slots, `/health` tidied · **AC-1** to **AC-5a**, **AC-21**, **AC-22**, **AC-23**."
+    },
+    {
+      "id": "0008/AC-10",
+      "line": "0008/AC-10  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:61  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The request header survives a session refresh, **and so does the refreshed session cookie**. The headers passed to `NextResponse.next({ request: { headers } })` are read once, at construction, and copied onto the response as internal forwarding headers. They are a snapshot, not a live view. So the request headers must be **re-derived immediately before each `NextResponse.next()` call**, as `new Headers(request.headers)` plus the pathname `set()`, including inside `setAll` and **after** its `request.cookies.set()` loop has run."
+    },
+    {
+      "id": "0008/AC-10a",
+      "line": "0008/AC-10a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:63  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10a**: The test for AC-10 asserts **both** halves after a refresh: the pathname header is present, and the forwarded request carries the refreshed session cookie. A test asserting only the pathname passes while the second bug ships, which is the whole reason this criterion is split out. The vehicle is whichever suite can drive a real refresh: `src/proxy.test.ts` records that its unit half works only because `getClaims()` returns early with no session, so this likely belongs in `test/integration/`. A mock whose `setAll` merely rebuilds the response would encode the same assumption as the code under test and is forbidden by AGENTS.md."
+    },
+    {
+      "id": "0008/AC-11",
+      "line": "0008/AC-11  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:64  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The `(app)` layout, at the moment it redirects an unauthenticated visitor, reads the header through `headers()` and appends the value as a `next` query parameter on `/sign-in`, percent encoded so a nested query string survives intact. When the header is absent it redirects to a bare `/sign-in` and nothing fails."
+    },
+    {
+      "id": "0008/AC-16",
+      "line": "0008/AC-16  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:71  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-16**: Observable end to end: a signed out visitor follows `/search?q=react`, signs in with a provider, and arrives at `/search?q=react`. The same visitor with a hostile value in place of the path arrives at the landing rule instead, with the cookie cleared. A deep link beats the profile gap rule when both could apply."
+    },
+    {
+      "id": "0008/AC-24a",
+      "line": "0008/AC-24a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:87  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-24a**: Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing, so a call inside either records the operation as having failed when it succeeded. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48; this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec."
+    },
+    {
+      "id": "0008/AC-6",
+      "line": "0008/AC-6  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:53  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes."
+    },
+    {
+      "id": "0008/AC-8",
+      "line": "0008/AC-8  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:59  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: The proxy sets a request header carrying the requested pathname and query on **every** request its matcher already covers, unconditionally. It reads no session, holds no list of routes, and cannot distinguish a protected path from a public one. It uses `NextResponse.next({ request: { headers } })`, never `NextResponse.next({ headers })`, so the value travels upstream only and is never exposed to the client (`proxy.md` lines 431 to 434). It **overwrites** any header of that name arriving on the request, so a client supplied value cannot be trusted forward. When the value exceeds the length cap the proxy **omits the header entirely rather than truncating it**, per `proxy.md` line 438 on oversized headers: a truncated path is a valid looking wrong destination that AC-12 would accept, so the visitor would land somewhere plausible and incorrect with nothing reporting it. Omitting it falls through to the landing rule, which is the honest outcome. The cap is a shared constant, defined beside the AC-12 validator and imported by the proxy, so one number governs both."
+    },
+    {
+      "id": "0008/AC-9",
+      "line": "0008/AC-9  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:60  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: The two existing assertions in `src/proxy.test.ts` pass **unmodified**: that the proxy treats a protected route exactly as it treats a public one (lines 49 to 62), and that it sets no cookies (lines 64 to 70)."
+    },
+    {
+      "id": "0006#build-plan:3",
+      "line": "0006#build-plan:3  BuildStep  held  specs/0006-entry-page-and-link-metadata/index.md:167  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**The thin thread.** Commit `assets/SpaceGrotesk-SemiBold.ttf` beside its licence file after confirming the licence permits it; build `src/app/opengraph-image.tsx` with its `alt`, `size` and `contentType` exports, drawing the mark inline as SVG rectangles; set the page's title, description and `metadataBase` from `canonicalSiteUrl`; and stand up `EntryHeader`, a bare hero `Section`, and `EntryFooter`. Deploy to a Vercel preview and confirm in a real client that the card unfurls. Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**. The footer's copyright is `COPY-4` and the image headline is `COPY-3`, so both must be written before this step runs."
+    },
+    {
+      "id": "feature-6#6-entry-page-link-metadata-done:10",
+      "line": "feature-6#6-entry-page-link-metadata-done:10  BuildStep  accepted  scope/scope.md:124  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The thin thread: the `Logo` base component, the committed Space Grotesk file and its licence, the generated `opengraph-image.tsx`, page title and description off `canonicalSiteUrl`, a header and footer shell, then a real preview deployment whose link card is confirmed to unfurl, plus the token drift guard, satisfies AC-1, AC-10, AC-11, AC-12, AC-13, AC-15, AC-16"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-10",
+      "target": "0008/AC-10a",
+      "phrase": "AC-10 and AC-10a (the request headers must be re-derived before each `NextResponse.next()`, not hoisted, or the refreshed session cookie is lost instead of the pathname)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-3",
+      "target": "0008/AC-3a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-3a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5a",
+      "phrase": "AC-5a (the marketing navigation varies by page, so `/sign-in` ships no dead anchors)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-5",
+      "target": "0008/AC-5b",
+      "phrase": "AC-5b naming `src/lib/return-path.ts` and `src/lib/landing-rule.ts` with the header and cookie strings fixed",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-7",
+      "target": "0008/AC-7a",
+      "phrase": "AC-7a (a genuine query error is still a failure, since AC-7's ban on `failure()` had over corrected against binding rule 5)",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0016",
+      "target": "0018/AC-4b",
+      "phrase": "Both are recording edits, not changes to what spec 0016 decides.",
+      "held": true
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "target": "unresolved:feature-21:feature-32",
+      "phrase": "to build after feature 32",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0015",
+      "target": "0020#follow-up:3",
+      "phrase": "Corrected in the same pass",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:3",
+      "target": "0003/AC-4",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:4",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:5",
+      "target": "0003/AC-15",
+      "phrase": "Satisfies **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:6",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:6",
+      "target": "0003/AC-15",
+      "phrase": "Satisfies **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:7",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:8",
+      "target": "0003/AC-4",
+      "phrase": "Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:8",
+      "target": "0003/AC-7",
+      "phrase": "Satisfies **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-7**, **AC-8**, **AC-9**, **AC-10**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:9",
+      "target": "0003/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:3",
+      "target": "0006/AC-12",
+      "phrase": "Satisfies **AC-10**, **AC-11**, **AC-12**, **AC-13**, **AC-15**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-21",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-3",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-3a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-4",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:12",
+      "target": "0008/AC-5a",
+      "phrase": "satisfies **AC-3**, **AC-3a**, **AC-5**, **AC-5a**, **AC-21**, **AC-4**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:13",
+      "target": "0008/AC-5",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-5**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-5b",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-6",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-7a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-6",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-7",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-6",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-7",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-10a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-11",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-16",
+      "phrase": "**AC-11** to **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-24a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-5b",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-6",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-7a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-8",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-9",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:17",
+      "target": "0008/AC-21",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:17",
+      "target": "0008/AC-5a",
+      "phrase": "**AC-1** to **AC-5a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:10",
+      "target": "0003/AC-14",
+      "phrase": "AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:10",
+      "target": "0003/AC-15",
+      "phrase": "AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-14",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-4",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:11",
+      "target": "0003/AC-7",
+      "phrase": "AC-2 to AC-11, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-14",
+      "phrase": "covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-15",
+      "phrase": "covering the code half of **AC-14** (the row the caller wrote, `record_not_found` for a signed in user with no profile, `session_missing` for no session at all, and one user seeing nothing of another's) and **AC-15**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-4",
+      "phrase": "proving AC-4's `with check` trap in both directions",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "0003/AC-7",
+      "phrase": "and AC-7 in both directions",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:8",
+      "target": "0003/AC-4",
+      "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:9",
+      "target": "0003/AC-14",
+      "phrase": "AC-3, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:9",
+      "target": "0003/AC-15",
+      "phrase": "AC-3, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:10",
+      "target": "0006/AC-12",
+      "phrase": "satisfies AC-1, AC-10, AC-11, AC-12, AC-13, AC-15, AC-16",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005#follow-up:3",
+      "target": "0013/AC-6",
+      "phrase": "recorded in spec 0013 AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#consequences:5",
+      "target": "0003/AC-14",
+      "phrase": "the `record_not_found` that spec 0003 **AC-14** exists to prove",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008#consequences:13",
+      "target": "0008/AC-5a",
+      "phrase": "**AC-5a is the criterion that prevents it**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5",
+      "phrase": "because AC-5 requires the current route to arrive as a prop rather than be computed",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-3a",
+      "target": "0008/AC-5a",
+      "phrase": "plus AC-5a, which needs the navigation content itself to differ per page",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-6",
+      "phrase": "exports the one function of AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008/AC-5b",
+      "target": "0008/AC-7",
+      "phrase": "The existence read of AC-7 is a new named export",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-6",
+      "target": "0005/AC-10",
+      "phrase": "(spec 0005, AC-10)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-4",
+      "target": "0003/AC-7",
+      "phrase": "(spec 0003, AC-7)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-7",
+      "target": "0013/AC-7",
+      "phrase": "matching spec 0013's AC-7 exactly",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-8",
+      "target": "0013/AC-6",
+      "phrase": "on the same terms spec 0013 AC-6 sets for a search result",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:1",
+      "target": "0016",
+      "phrase": "still recorded as a gap in spec 0016's Follow up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:4",
+      "target": "0016",
+      "phrase": "Spec 0016 draws this exact distinction",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:1",
+      "target": "unresolved:feature-21:feature-7",
+      "phrase": "Depends on feature 7, both ways",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "unresolved:feature-4:feature-12",
+      "phrase": "worth revisiting when feature 9 and feature 12 build the write paths",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-4#4-data-model-done-ga:14",
+      "target": "unresolved:feature-4:feature-9",
+      "phrase": "worth revisiting when feature 9 and feature 12 build the write paths",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:13",
+      "target": "0015",
+      "phrase": "`from spec 0015`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "0021",
+      "phrase": "That result fired spec 0021's own pre-registered stopping rule",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:13",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:17",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-6",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-7",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0016",
+      "phrase": "spec 0016's Consequences already names the switching cost",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "scope#deferred:13",
+      "phrase": "as an alternative to the approach above, not an addition to it",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:22",
+      "target": "0003/AC-14",
+      "phrase": "verifies **AC-14**, **AC-3**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:25",
+      "target": "0003/AC-4",
+      "phrase": "verifies **AC-4**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:26",
+      "target": "0003/AC-14",
+      "phrase": "verifies **AC-14**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:27",
+      "target": "0003/AC-7",
+      "phrase": "verifies **AC-7**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0006#feature-design:46",
+      "target": "0006/AC-12",
+      "phrase": "verifies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:22",
+      "target": "0013/AC-6",
+      "phrase": "verifies **AC-1**, **AC-6**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:30",
+      "target": "0013/AC-7",
+      "phrase": "verifies **AC-7**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 21217,
+  "bound_usd": 0.202434,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"partly\",\"claims\":[{\"text\":\"The records do not state a team size or contributor list. The closest evidence is that the terms and privacy notice is described as owed on the day the first person other than the author signs in, which implies that at the time of writing the author was the only user, though it says nothing about collaborators.\",\"cites\":[\"feature-21#21-terms-privacy-notices-done-alpha:1\"],\"basis\":\"text\"},{\"text\":\"Spec 0006 says its fixes land before anyone outside the author sees the page, which again speaks about outside viewers rather than team members.\",\"cites\":[\"0006#consequences:2\"],\"basis\":\"text\"},{\"text\":\"A review record says a reviewer was spawned on a model that named itself as the author's family, so reviews appear to be done by AI models. That suggests, but does not prove, that review was not done by other people.\",\"cites\":[\"feature-28#28-spend-visibility-gating-polish-done:15\"],\"basis\":\"inferred\"}],\"missing\":[\"Any statement of how many people have contributed to the repository\",\"Any list of team members or collaborators\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "partly",
+  "missing": [
+    "Any statement of how many people have contributed to the repository",
+    "Any list of team members or collaborators"
+  ],
+  "claims": [
+    {
+      "text": "The records do not state a team size or contributor list. The closest evidence is that the terms and privacy notice is described as owed on the day the first person other than the author signs in, which implies that at the time of writing the author was the only user, though it says nothing about collaborators.",
+      "cites": [
+        "feature-21#21-terms-privacy-notices-done-alpha:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Spec 0006 says its fixes land before anyone outside the author sees the page, which again speaks about outside viewers rather than team members.",
+      "cites": [
+        "0006#consequences:2"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "A review record says a reviewer was spawned on a model that named itself as the author's family, so reviews appear to be done by AI models. That suggests, but does not prove, that review was not done by other people.",
+      "cites": [
+        "feature-28#28-spend-visibility-gating-polish-done:15"
+      ],
+      "basis": "inferred",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": true,
+      "history": false,
+      "held_ids": [
+        "feature-28#28-spend-visibility-gating-polish-done:15"
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 21217,
+    "output_tokens": 352,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.045954,
+  "recorded_usd": 0.045954
+}

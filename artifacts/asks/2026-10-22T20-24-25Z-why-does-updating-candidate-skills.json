@@ -1,0 +1,1899 @@
+{
+  "asked_at": "2026-10-22T20:24:25+00:00",
+  "question": "why does updating candidate skills do a diff instead of just wiping them all and re-inserting?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "updating",
+    "candidate",
+    "skills",
+    "diff",
+    "instead",
+    "just",
+    "wiping",
+    "them",
+    "all",
+    "re-inserting",
+    "inserting"
+  ],
+  "items": [
+    {
+      "id": "scope#deferred:16",
+      "line": "scope#deferred:16  unclassified  held  scope/scope.md:507  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one."
+    },
+    {
+      "id": "0021/AC-10",
+      "line": "0021/AC-10  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:100  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "That claim is now false and reversed: a visible line states plainly that the listings are real, live Adzuna results, refreshed periodically, and that the two candidate profiles judged against them are fictional (AC-14 names what else that line shows). Every other place on the page or in its code that asserted the old claim (page metadata, heading, intro copy, the demo card's own doc comment, the not mentioned skills caption's justification) is corrected in the same pass (**Build plan**, \"the wording pass\")."
+    },
+    {
+      "id": "0010#consequences:7",
+      "line": "0010#consequences:7  Consequence  accepted  specs/0010-profile-entry/index.md:211  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The skills diff, the write ordering that protects it, and the delete's and update's zero row checks all cost real code a naive implementation would skip: a read before the write, a specific statement order, and a `failure()` on a write that silently matched nothing."
+    },
+    {
+      "id": "0021/AC-6",
+      "line": "0021/AC-6  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:67  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Every kept listing (AC-17) appears under both profiles now, not just two of them, because both personas are scored against the same kept set, drawn from both searches (revised 2026-09-15). Each listing's band, matched skills, not mentioned skills, ungrounded skills, and reasoning are computed independently per persona by the real scorer and the real grounding check, and are expected to differ, but nothing in the build may select or discard a listing based on whether they actually do, and a refresh that returns fewer than the target count (**Feature design**, \"The kept listing count\") is still published as is, never padded or retried to reach it, as long as it kept at least one listing; a refresh that kept zero aborts (**Feature design**, \"Refresh outcomes\", recorded 2026-09-15)."
+    },
+    {
+      "id": "0021#build-plan:3",
+      "line": "0021#build-plan:3  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:595  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Edit `supabase/migrations/20260913120000_demo_result.sql` in place: update `demo_result`'s check constraints, change `salary_min`/`salary_max` to `numeric(12, 2)`, and add `source_job_id`, `salary_currency` (with its pairing check), `salary_is_predicted`, and `ungrounded_skills`; remove the twelve seeded `insert` statements; grant `insert`/`delete` on `demo_result` to `service_role` alongside the existing `select`. Add the new `demo_refresh` table (singleton pattern, row level security enabled and forced, zero policies, `service_role` select and update only), inserting its one row with `refreshed_at` null. Add `replace_demo_results()` (`security invoker`, one transaction: delete, `jsonb_to_recordset` insert, `insert ... on conflict (id) do update` on `demo_refresh`). Run `pnpm db:types` after. Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0015#follow-up:11",
+      "line": "0015#follow-up:11  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:208  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Resolved 2026-09-07 by feature 15, and it took two passes to cover all four dimensions.** Spec 0016's AC-4 built three `preference-isolation` tagged pairs against one archetype (`src/features/scoring/eval/pairs.ts`): `preference-match` where every stated preference agrees, `preference-violation` where location, remote language and pay all conflict at once, and `preference-title-conflict` where only the posting's title falls outside `desired_titles`. All three share one `BASELINE_REQUIREMENTS` constant, so skills and experience really are held fixed, and all three carry the same `expectedBand`, so a harness run scoring them differently is the evidence this item asked for. The title pair was missing from the first version and added on review: AC-4 originally named only three of the four dimensions this line lists, which left `desired_titles` conflicted nowhere in the set. `src/features/scoring/eval/prompt.test.ts` locks the rendered result, the title pair's prompt differing from its baseline on the `Title:` line alone."
+    },
+    {
+      "id": "0010#build-plan:4",
+      "line": "0010#build-plan:4  BuildStep  accepted  specs/0010-profile-entry/index.md:189  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Thicken: the skills section. Add `readProfileSections()` covering `profile_skill` (its first table), `saveSkills` (named span, the read-before-write diff, the insert-then-delete order, the parse and dedupe rules), and the skills view and edit cards. Satisfies **AC-5**, **AC-6**."
+    },
+    {
+      "id": "0010#feature-design:29",
+      "line": "0010#feature-design:29  TestScenario  accepted  specs/0010-profile-entry/index.md:173  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Happy path, skills diff: a profile already holding skills `a`, `b`, `c` submits `a`, `c`, `d`; `b` is deleted, `d` is inserted, `a` and `c` are untouched, verifies **AC-5**, **AC-6**."
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:13",
+      "line": "feature-9#9-profile-entry-done:13  BuildStep  accepted  scope/scope.md:203  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Thicken: skills (the diff based save) and work history (per entry add, edit, delete with a confirmation step) · AC-5 to AC-8, AC-7a"
+    },
+    {
+      "id": "0001#binding-rules:41",
+      "line": "0001#binding-rules:41  Constraint  accepted  specs/0001-stack-and-architecture/index.md:155  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**8. The deferred tooling choices are not free choices.** Each row of the \"Deliberately left open\" table above carries a **Must satisfy** column. a candidate tool that cannot meet them is not a candidate."
+    },
+    {
+      "id": "0006#feature-design:7",
+      "line": "0006#feature-design:7  Constraint  held  specs/0006-entry-page-and-link-metadata/index.md:97  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "OG image alt: `JobHunt. Shows its work, not just a score. An example match of 8 out of 11 skills.` It describes what the card actually renders (the mark, the `COPY-3` headline, the match chip). If `COPY-3` ever changes, this changes with it."
+    },
+    {
+      "id": "0015#requirements:2",
+      "line": "0015#requirements:2  Feature  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:18  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "As a job seeker, I want to see which of my skills matched and which were not mentioned in the posting, not just a number,"
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:1",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:1  Feature  accepted  scope/scope.md:280  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Score a listing against the profile and stated preferences, and show the work: the skills that matched and the skills that are missing, not just a number."
+    },
+    {
+      "id": "0002#follow-up:10",
+      "line": "0002#follow-up:10  FollowUp  accepted  specs/0002-deployment-and-environments/index.md:309  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A custom domain is deferred, not declined.** Moving from the `vercel.app` subdomain later means updating three redirect lists (Google, GitHub, Supabase) plus one Vercel setting. Cheapest to do before feature 7 wires OAuth, not after."
+    },
+    {
+      "id": "0008/AC-20",
+      "line": "0008/AC-20  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:79  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-20**: A signed in visitor at `/sign-in` is bounced instead of seeing the provider buttons again. The bounce honours an accepted `next` value and sends them there, falling back to the landing rule when there is none, so a valid deep link is not discarded by the bounce that exists to help them. The bounce **does not fire when an `error` parameter is present**, because `signInErrorPath(code)` sends a failed callback to `/sign-in?error=...` and bouncing would discard the message the person needs to see."
+    },
+    {
+      "id": "0014#decision:6",
+      "line": "0014#decision:6  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:68  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The action calling `revalidatePath`, `updateTag`, `refresh` or `redirect`. Prevented by calling none of them and returning an `ActionState` instead."
+    },
+    {
+      "id": "0021",
+      "line": "0021  record  accepted  specs/0021-seeded-demo-account/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Seeded demo account"
+    },
+    {
+      "id": "scope#deferred:13",
+      "line": "scope#deferred:13  FollowUp  held  scope/scope.md:505  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25,"
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0021#build-plan:10",
+      "line": "0021#build-plan:10  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:646  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**The wording pass**: update `src/app/(marketing)/demo/page.tsx`'s `metadata.description`, `<h1>`, and intro copy; `DEMO_COPY`'s banner and read-failed strings (plus a new \"not yet refreshed\" string for AC-15); and `DemoCard`'s own doc comment, none of which may still assert the page is fabricated. Add the search query and last refreshed line (AC-14), both personas' full profiles shown somewhere on the page (AC-14), and AC-15's distinct visible state alongside AC-12's. Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0021#requirements:8",
+      "line": "0021#requirements:8  AcceptanceCriterion  held  STRUCK  specs/0021-seeded-demo-account/index.md:100  hop 1",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0021/AC-10"
+      ],
+      "hop": 1,
+      "text": "A visible line on the page states plainly that this is sample data, not live postings."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:17",
+      "line": "feature-31#31-seeded-demo-account-done:17  BuildStep  accepted  scope/scope.md:402  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Read path and rendering: both personas read in one pass, the cross persona band line, ungrounded skill rendering, real Adzuna/Jobsworth attribution, and the wording pass removing every claim that the page is fabricated, satisfies AC-1, AC-7, AC-10 through AC-16, AC-19"
+    },
+    {
+      "id": "0021#build-plan:12",
+      "line": "0021#build-plan:12  BuildStep  held  specs/0021-seeded-demo-account/index.md  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**The 2026-09-15 revision** (two searches, the kept walk, the migration comment), for `/develop`. First reconfirm `supabase/migrations/20260913120000_demo_result.sql` has still not applied to any hosted project, since editing it in place rests on that; if it has, this step needs a second migration instead. In the migration: replace `demo_refresh.search_title` with `search_titles text[] not null`, add `demo_result.search_title` with its check, seed the singleton with `array['backend engineer', 'frontend engineer']`, change `replace_demo_results()` to take `p_search_titles text[]`, change the `revoke execute` and `grant execute` statements at lines 390 to 391, correct every comment that describes one search or Adzuna's own rank, and correct the heading of the `where true` comment. Then `pnpm db:reset` and `pnpm db:types`. In `src/features/demo/refresh.ts`: run both searches in order, backend first, replace `keepListings()` with the exported pure walk, write `search_title` on every row, compute `skillCounts`, pass `p_search_titles` to the write, and change `KEPT_LISTING_COUNT`'s **value from 8 to 4**. Add the four `skillCounts` values to the `200` body of `src/app/api/demo/refresh/route.ts`; update `queries.ts`, `copy.ts`, `page.tsx`, `demo-card.tsx`, `personas.ts`, `stored-fields.ts` and `docs/observability/spans.md` to match. Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:45",
+      "line": "0021#feature-design:45  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:546  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The refresh, happy path: `POST /api/demo/refresh` with the correct secret runs two searches, scores up to 16 listings across both personas, and replaces both tables atomically. Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0021#feature-design:55",
+      "line": "0021#feature-design:55  TestScenario  held  specs/0021-seeded-demo-account/index.md:578  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Cross profile: switching `?persona=` shows the same real listing scored differently, and each card's compact line names the band the switch would reveal before the reader switches. Verifies **AC-5**, **AC-6**, **AC-16**."
+    },
+    {
+      "id": "0021#requirements:6",
+      "line": "0021#requirements:6  AcceptanceCriterion  held  STRUCK  specs/0021-seeded-demo-account/index.md:67  hop 1",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0021/AC-6"
+      ],
+      "hop": 1,
+      "text": "Exactly two seeded listings (the same title and company each time) appear under both profiles, each with a different band, different matched and not mentioned skills, and different written reasoning per profile. Their exact content is named in **Seed content** below."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:14",
+      "line": "feature-31#31-seeded-demo-account-done:14  BuildStep  accepted  scope/scope.md:399  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Schema and legal registry: the `demo_result` migration edited in place (new columns, `security invoker` atomic write function, `demo_refresh` table), `pnpm db:types`, and reclassifying `demo_result`/`demo_refresh` in the legal registry, satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18"
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:18",
+      "line": "feature-31#31-seeded-demo-account-done:18  BuildStep  accepted  scope/scope.md:403  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The 2026-09-15 revision (spec 0021 Build plan step 10): two searches, \"backend engineer\" and \"frontend engineer\", replacing the one \"software engineer\" search, the per search kept walk with a `search_title` on each row; own role and cross role skill counts for the stopping rule; the query line naming both titles; and the migration's `where true` comment heading corrected to \"local or hosted\", satisfies AC-2, AC-6, AC-7, AC-14, AC-17"
+    },
+    {
+      "id": "0021/AC-14",
+      "line": "0021/AC-14  AcceptanceCriterion  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:121  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14** (new 2026-09-14): The page shows both search queries the current results answer (both titles, and the shared location when one is set; revised 2026-09-15) and when the data was last refreshed, both read from the single `demo_refresh` row (**Feature design**). It also shows both persona profiles' full content (summary, skills, experience, preferences) somewhere on the page, which is the disclosure AC-3 now depends on."
+    },
+    {
+      "id": "0021/AC-15",
+      "line": "0021/AC-15  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:127  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15** (new 2026-09-14): If no refresh has ever run since the current schema was deployed (`demo_refresh.refreshed_at is null`), the page shows a visible \"results are not available yet\" state, worded distinctly from AC-12's failure state (the first is expected and temporary, the second is a fault), never a blank or partially rendered page. This is a normal, successful read of an empty state, not a `Failure`."
+    },
+    {
+      "id": "0021/AC-17",
+      "line": "0021/AC-17  AcceptanceCriterion  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:139  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-17** (new 2026-09-14): A refresh, triggered as described in AC-18, runs exactly two real Adzuna searches using the fixed queries in **Feature design**, de-duplicates across both by Adzuna's own listing id, and keeps up to four listings from each search in that search's own returned order, by the walk **Feature design** states (revised 2026-09-15) (never selected, reordered, or padded by how any score turns out), and scores every kept listing against both personas exactly as `scoreListings()` already does for a real search (AC-2), including the chained grounding check. The refresh aborts, writing nothing, if any one of those `ai_scoring` calls does not come back as an allowed score, or if the chained `ai_check` call for a listing that claimed a skill does not come back as a clean verdict, whether refused by the usage gate or genuinely failed either way. Only once every kept listing has a clean, allowed score under both personas does the refresh atomically replace the entire contents of `demo_result` and the single `demo_refresh` row in one database transaction. A gate refusal (of any of the three call types, `job_search`, `ai_scoring` or `ai_check`) is reported at a different Sentry severity than a genuine failure, since it is the budget working as designed. A refresh whose searches leave zero kept listings in total also aborts, writing nothing. **Feature design**, \"Refresh outcomes\", states the exact shape of each outcome, both recorded 2026-09-15 from what `/develop` built."
+    },
+    {
+      "id": "0021/AC-18",
+      "line": "0021/AC-18  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:159  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-18** (new 2026-09-14): The refresh is reachable only via a `POST` to a dedicated route handler, authorized by hashing the caller supplied secret (from an `Authorization: Bearer` header) and the configured `env.DEMO_REFRESH_SECRET` with SHA-256 and comparing the two digests; no other path triggers it. To spend real `job_search` and `ai_scoring`/`ai_check` budget through the existing gate (which requires a verified session, **Feature design**), the refresh authenticates as a dedicated, permanent internal identity that holds no `profile` or `application` row and is never reachable by a real visitor. That identity's own weekly account scope budget is therefore always separate from any real signed in user's."
+    },
+    {
+      "id": "0021/AC-3",
+      "line": "0021/AC-3  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:47  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The opposite is now true on purpose: every listing (company name, title, description, location) is real, exactly as Adzuna returned it, including a real employer's name on a `weak_match` or `not_a_match` row (AC-19). The two candidate personas are the only fictional element left, and they are shown on the page in full (AC-14) as the disclosure that makes this honest."
+    },
+    {
+      "id": "0021/AC-8",
+      "line": "0021/AC-8  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:85  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-8**: Each card shows title, company, location when present, a stated or predicted salary on some listings, a description snippet, the band, matched skills, not mentioned skills, the written reasoning, and (AC-16) a compact line naming the other persona's band for the same listing. A matched skill the grounding check flagged as ungrounded is removed from the displayed matched list and the same two sentences the real card shows appear here too (**Feature design**, \"Ungrounded skills\"). It carries no real \"view posting\" link and no working apply control, only a plain text line where the real apply control would sit, never a disabled button."
+    },
+    {
+      "id": "0021/AC-9",
+      "line": "0021/AC-9  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:92  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders."
+    },
+    {
+      "id": "0015#follow-up:10",
+      "line": "0015#follow-up:10  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:208  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Feature 15's ground truth set should include at least one pair that varies stated preferences (title, location, remote, pay) while holding skills and experience fixed."
+    },
+    {
+      "id": "0010/AC-5",
+      "line": "0010/AC-5  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:31  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: Skills are entered as one field, one skill per line, and saved as a whole. Saving compares the submitted list against the caller's current `profile_skill` rows, case insensitively, matching the unique index that is the authority on skill identity, and deletes only the names that were removed and inserts only the names that are new, never a blanket delete followed by a blanket insert. A submission that changes only a name's capitalisation (`react` for stored `React`) is a no-op; the stored casing stands."
+    },
+    {
+      "id": "0010/AC-6",
+      "line": "0010/AC-6  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:32  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: The skills parser trims each line, drops empty lines, removes duplicates ignoring case, and enforces the 100 character per name limit before writing, matching the unique index on `(profile_id, lower(name))`. A name that still collides after that cleanup is a visible error, not a silent drop."
+    },
+    {
+      "id": "0010/AC-7",
+      "line": "0010/AC-7  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:33  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: Work history entries are added and edited one at a time, each its own form. The started month and the ended month are each a `Select` of the twelve named months, submitted as the values `1` to `12`; the month names themselves are fixed by this spec (ordinary calendar names, not product voice), not a `Copy` slot. The started year and the ended year are each a `Select` bounded from 1950 to the current year (no later; a work history entry never starts or ends in the future). Together they are stored as the first day of that month. A started month and year later than the current month is rejected with a visible error. The ended month and year are both present or both absent, never one without the other; an absent pair means the role is current, and there is no separate \"current role\" control. An ended date before the started date is rejected with a visible error."
+    },
+    {
+      "id": "0010/AC-7a",
+      "line": "0010/AC-7a  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:34  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7a**: `company` and `title` are required, trimmed, and at most 200 characters, mirroring `work_experience`'s own check constraints. `description` is optional and at most 4000 characters, also mirroring its check. `location` is optional; `work_experience.location` carries no database check, so its 200 character cap is an application only limit chosen here to match `company` and `title`, not a mirrored constraint."
+    },
+    {
+      "id": "0010/AC-8",
+      "line": "0010/AC-8  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:35  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-8**: A work history entry can be removed. Removing one is gated by a confirmation step that names the entry before it is deleted. A delete that touches zero rows (the entry was already gone, or never belonged to the caller) is reported as a visible failure, never treated as a successful removal."
+    },
+    {
+      "id": "0008#build-plan:11",
+      "line": "0008#build-plan:11  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:208  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The `/sign-in` bounce, **opening `sign_in.bounce` first** around the session read and the decision, honouring an accepted `next`, skipping on an error parameter, and not bouncing on an errored read, satisfies **AC-20**, **AC-17a**"
+    },
+    {
+      "id": "0008#copy:9",
+      "line": "0008#copy:9  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:192  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Auth or permission: a signed out visitor at `/search` is bounced and never sees placeholder content; a signed in visitor at `/sign-in` is bounced, but a signed in visitor at `/sign-in?error=account_exists` sees the message, verifies **AC-20**"
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:16",
+      "line": "feature-32#32-app-shell-navigation-done:16  BuildStep  accepted  scope/scope.md:170  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The door, the entry page swap and the sign in bounce: `/go` with `no-store`, `/` losing every provider form, and a signed in visitor at `/sign-in` bounced · **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-20**. `/` still builds as a static prerender, so its accepted contract holds. The band's opening clause \"Sign in with Google or GitHub\" was **deleted at the engineer's direction**"
+    },
+    {
+      "id": "unresolved:0008:spec-0007-security-model",
+      "line": "unresolved:0008:spec-0007-security-model  unresolved  accepted  specs/0008-app-shell-and-navigation/index.md:214  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Spec 0007, security model**"
+    },
+    {
+      "id": "0013/AC-6",
+      "line": "0013/AC-6  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`."
+    },
+    {
+      "id": "0013/AC-7",
+      "line": "0013/AC-7  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution."
+    },
+    {
+      "id": "0015",
+      "line": "0015  record  accepted  HISTORY  specs/0015-fit-scoring-with-shown-reasoning/index.md  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0020#follow-up:3"
+      ],
+      "hop": 2,
+      "text": "Fit scoring with shown reasoning"
+    },
+    {
+      "id": "0020#follow-up:3",
+      "line": "0020#follow-up:3  FollowUp  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:218  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**Done 2026-09-13**: a sweep of all of `docs/` for numeric references into that file found exactly four, all re read against the file on 2026-09-13: this spec's `index.md:110`, the `hasQuery` conditional, 94 to **129**; this spec's `rationale.md:111`, the `Promise.all` over the applied and scoring reads inside `SearchOutcome`, 243 to **291**; and spec 0015's `index.md:211` and `verify.md:78`, both citing the `ScoredResults` index pairing (`const paired = listings.map(...)`), 383 to **442** in each. Corrected in the same pass rather than one at a time."
+    },
+    {
+      "id": "0016",
+      "line": "0016  record  accepted  specs/0016-eval-ground-truth-set/index.md  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Eval ground truth set"
+    },
+    {
+      "id": "scope#deferred:1",
+      "line": "scope#deferred:1  FollowUp  accepted  scope/scope.md:493  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Richer seeded demo account**: a fuller version of feature 31 with applications across every status, discard history and a populated dashboard, instead of the no sign in read only demo. Needs feature 23 (applications dashboard) and likely feature 22 (discard with reason) to exist first,"
+    },
+    {
+      "id": "0021/AC-1",
+      "line": "0021/AC-1  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: A visitor reaches `/demo` and sees a list of results with no sign in, no redirect, and no account required."
+    },
+    {
+      "id": "0021/AC-11",
+      "line": "0021/AC-11  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:107  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: The page is not indexed by search engines."
+    },
+    {
+      "id": "0021/AC-12",
+      "line": "0021/AC-12  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:108  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: If the seeded data cannot be read because of a genuine fault (the database is unreachable, or a row fails to parse), the page answers a normal 200 and shows a visible failure state rather than an empty, broken looking, or server error page. This is a different case from AC-15, and the two must render distinguishable copy."
+    },
+    {
+      "id": "0021/AC-13",
+      "line": "0021/AC-13  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:112  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: The entry page's hero carries a real, working link to `/demo`, and the \"what's real today\" status card moves \"a no sign in demo account\" from planned to working. **Built 2026-09-17**, once its own stated condition was met: the real data version shipped in pull request #135 and the first production refresh ran 2026-09-16, so `/demo` shows real scored postings rather than the fabricated set this was waiting out."
+    },
+    {
+      "id": "0021/AC-16",
+      "line": "0021/AC-16  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:132  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-16** (new 2026-09-14): Each card additionally names the other persona's band for the same listing, in a compact line separate from the active persona's full result, so a reader sees both scores without switching `?persona=`. The paired row is always present by construction (AC-17's transaction writes both personas' rows for every kept listing together), so this line has no \"missing\" case to design for; it is not defensively hidden."
+    },
+    {
+      "id": "0021/AC-19",
+      "line": "0021/AC-19  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:167  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-19** (new 2026-09-14): A real employer's name and a real listing's content render exactly as returned, whatever band either persona receives, including `weak_match` and `not_a_match`. Nothing on the page is hidden, blurred, or altered based on a score."
+    },
+    {
+      "id": "0021/AC-7",
+      "line": "0021/AC-7  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:80  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: Within one profile, listings are ordered best band first, ties broken by the order the kept walk kept each listing, which interleaves the two searches' own Adzuna order (revised 2026-09-15; **Feature design**, \"The kept listing count\") (stored as `sort_order`), the same band ordering rule `/search` already uses."
+    },
+    {
+      "id": "0021/AC-2",
+      "line": "0021/AC-2  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The page still makes no external paid call on any render. Every paid call (two Adzuna searches, revised 2026-09-15, then one `ai_scoring` call, and, for any listing whose score claims at least one skill, one chained `ai_check` call, per listing per persona, exactly the sequence `scoreListings()` already runs for a real search) now happens only inside the refresh described in AC-17, gated exactly like every other real call in this app, never inside a page render."
+    },
+    {
+      "id": "0021/AC-5",
+      "line": "0021/AC-5  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:60  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: The page offers exactly two example candidate profiles, `backend-engineer` (\"Backend engineer\", the default) and `frontend-engineer` (\"Frontend engineer\"), switchable through a `?persona=` link. Any value that is not exactly one of those two slugs (absent, unrecognized, empty, or a repeated query param) shows the default profile rather than erroring."
+    },
+    {
+      "id": "0013",
+      "line": "0013  record  accepted  specs/0013-job-search-and-results-list/index.md  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Job search and results list"
+    },
+    {
+      "id": "0021#build-plan:4",
+      "line": "0021#build-plan:4  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:606  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Extend `src/features/demo/personas.ts` with the two `ScoringProfile` shaped constants named in **Seed content**, replacing `product-designer` with `frontend-engineer` everywhere its slug is referenced (including the doc comment's cross reference to the migration's check constraint). Satisfies **AC-3**, **AC-5**, **AC-14**."
+    },
+    {
+      "id": "0021#build-plan:6",
+      "line": "0021#build-plan:6  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:615  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the refresh core under `src/features/demo/`: `demo-refresh@example.test`'s existence ensured (create if absent), the admin mint (jar first, `createClient(jar)`, `verifyOtp` on that client, assert the jar is non empty, reimplemented rather than importing `test/helpers/session.ts`), the fixed query call into `searchListings()`, de-duplicating and keeping the first 8 by `sourceJobId`, `scoreListings()` called once per persona with the matching `ScoringProfile` and the minted `cookieAdapter`, checking every outcome's score and, when attempted, its chained check both came back clean and allowed (aborting otherwise, on either kind of failure or refusal), and the single call to `replace_demo_results()` once every score and check has landed clean. A named span (`demo.refresh`) opens first (binding rule 4), registered in `docs/observability/spans.md`. Satisfies **AC-2**, **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0021#build-plan:7",
+      "line": "0021#build-plan:7  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:627  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add `src/app/api/demo/refresh/route.ts` (`POST`), reading `Authorization: Bearer <secret>`, comparing SHA-256 digests, calling the refresh core and returning its outcome; document the route write scope clarification (**Feature design**) in the file's own doc comment. Add `DEMO_REFRESH_SECRET` to `src/env.ts` and both `.github/workflows/ci.yml` `env:` blocks. Satisfies **AC-17**, **AC-18**."
+    },
+    {
+      "id": "0021#build-plan:8",
+      "line": "0021#build-plan:8  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:632  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `readDemoResults()` (or a renamed equivalent) in `src/features/demo/queries.ts`: one query reads every `demo_result` row (both personas) ordered by `sort_order`, parsed (including the new columns), paired by `source_job_id` into `{ own: DemoResult; otherBand: Band }` for the active persona's ordered list (re-sorted by band then `sort_order` within that persona's subset); a second, separate query reads the `demo_refresh` singleton row. An empty `demo_result` with `demo_refresh.refreshed_at is null` returns a normal success value carrying that fact, never a `Failure`; a genuine database or parse fault still returns a `Failure` exactly as before. Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**."
+    },
+    {
+      "id": "0021#build-plan:9",
+      "line": "0021#build-plan:9  BuildStep  accepted  specs/0021-seeded-demo-account/index.md:640  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update the demo card component: add the compact other persona band line (AC-16), the ungrounded skills rendering (removed from the matched list, `SCORING_COPY.removedSkills(...)` and `.reasoningCaveat` reused verbatim), render `AdzunaAttribution` unconditionally and the `(estimated)` label plus `JobsworthAttribution` together when `salary_is_predicted` (AC-9), and make the not mentioned skills caption conditional on the snippet actually being truncated. Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**."
+    },
+    {
+      "id": "0021#consequences:11",
+      "line": "0021#consequences:11  Consequence  accepted  specs/0021-seeded-demo-account/index.md:753  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "A flaky `ai_check` vendor call blocks an otherwise successful refresh entirely, since a check failure or refusal now aborts the whole run rather than writing the listing without its ungrounded skills flag (**Feature design**, AC-17)."
+    },
+    {
+      "id": "0021#consequences:9",
+      "line": "0021#consequences:9  Consequence  accepted  specs/0021-seeded-demo-account/index.md:747  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The page is only ever as fresh as the last successful manual refresh; a failed or skipped refresh leaves `/demo` showing older real data indefinitely, which AC-14's visible timestamp is what keeps honest rather than silent."
+    },
+    {
+      "id": "0021#feature-design:44",
+      "line": "0021#feature-design:44  TestScenario  held  specs/0021-seeded-demo-account/index.md:542  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a visitor opens `/demo` with no session, sees the first profile's real results ordered by band, each card naming the other persona's band, both search queries and the refresh time visible, and both attributions where they apply. Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**."
+    },
+    {
+      "id": "0021#feature-design:46",
+      "line": "0021#feature-design:46  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:549  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The kept walk (new 2026-09-15), a unit test of `keepListings()`: a backend list of 2 and a frontend list of 6 whose first entry repeats backend's first `sourceJobId`. The walk keeps backend 1, frontend 2 (frontend 1 is the repeat, skipped), backend 2, frontend 3, then frontend 4 and 5 alone, stopping at 4 kept for frontend and never topping backend up; `sort_order` is 1 to 6 in that order, and each kept listing's `search_title` names the search that kept it. Verifies **AC-7**, **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:47",
+      "line": "0021#feature-design:47  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:555  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The kept walk, zero (new 2026-09-15), a unit test of `keepListings()`: two empty lists return an empty result. `refreshDemoResults()` then returns a `Failure` of kind `record_not_found` and never calls `replace_demo_results()`. Verifies **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:48",
+      "line": "0021#feature-design:48  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:558  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The refresh, a failed second search (new 2026-09-15): the backend search succeeds and the frontend search returns a `Failure`; the refresh aborts with nothing written and the failure's context names `\"frontend engineer\"`. Verifies **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:50",
+      "line": "0021#feature-design:50  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:564  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The refresh, a search refusal (new 2026-09-15): the backend search is gate refused; the frontend search never runs, the result is `completed: false`, the route answers `503`, and the span is not failed. Verifies **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:51",
+      "line": "0021#feature-design:51  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:567  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The refresh, a scoring refusal: one of the sixteen `ai_scoring` calls comes back gate refused (the shared global cap); nothing is written and the previous data still renders unchanged, and the refusal is reported at a lower severity than a failure. Verifies **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:52",
+      "line": "0021#feature-design:52  TestScenario  accepted  specs/0021-seeded-demo-account/index.md:570  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The refresh, a check failure: an `ai_check` call for one listing fails outright after every score already succeeded; the refresh aborts and writes nothing, and the previous run's data still renders unchanged. Verifies **AC-17**."
+    },
+    {
+      "id": "0021#feature-design:53",
+      "line": "0021#feature-design:53  TestScenario  held  specs/0021-seeded-demo-account/index.md:573  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Not yet refreshed: a fresh database with the migration applied but no refresh ever run shows AC-15's distinct visible state, not AC-12's failure wording and not a blank page. Verifies **AC-15**."
+    },
+    {
+      "id": "0021#feature-design:54",
+      "line": "0021#feature-design:54  TestScenario  held  specs/0021-seeded-demo-account/index.md:576  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Auth: `POST /api/demo/refresh` with a wrong or missing secret is refused before any Adzuna or scoring call happens. Verifies **AC-18**."
+    },
+    {
+      "id": "0021#feature-design:56",
+      "line": "0021#feature-design:56  TestScenario  held  specs/0021-seeded-demo-account/index.md:581  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Ungrounded skill: a listing whose check flags a claimed skill renders that skill removed from the matched list, with the same two sentences the real card shows. Verifies **AC-8**."
+    },
+    {
+      "id": "0021#requirements:4",
+      "line": "0021#requirements:4  AcceptanceCriterion  held  STRUCK  specs/0021-seeded-demo-account/index.md:47  hop 2",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0021/AC-3"
+      ],
+      "hop": 2,
+      "text": "Every seeded value (company name, title, description, location) reads as obviously fictional, not as a real employer or a real posting."
+    },
+    {
+      "id": "0021#requirements:7",
+      "line": "0021#requirements:7  AcceptanceCriterion  held  STRUCK  specs/0021-seeded-demo-account/index.md:92  hop 2",
+      "held": true,
+      "history": true,
+      "replaced_by": [
+        "0021/AC-9"
+      ],
+      "hop": 2,
+      "text": "The page shows no Adzuna attribution and no salary prediction attribution,"
+    },
+    {
+      "id": "0021/AC-4",
+      "line": "0021/AC-4  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:53  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "No visitor facing control writes to the database, and a visitor's own visit still cannot change what the next visitor sees. What is no longer true is the absolute second sentence: the refresh (AC-17) is a code path that deliberately changes what every visitor sees, on a schedule the visitor never controls. It runs behind a secret only the engineer holds (AC-18), never behind anything a visitor's browser can reach."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:15",
+      "line": "feature-31#31-seeded-demo-account-done:15  BuildStep  accepted  scope/scope.md:400  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Persona content: the two `ScoringProfile` shaped fictional candidates (a backend engineer and a frontend engineer, contrasting stacks) in `personas.ts`, satisfies AC-3, AC-5, AC-14"
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:16",
+      "line": "feature-31#31-seeded-demo-account-done:16  BuildStep  held  scope/scope.md:401  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The refresh and its route: the dedicated refresh identity, the admin session mint, two real searches (revised 2026-09-15, see the milestone below) plus real scoring (including the grounding check) against both personas with an all or nothing abort, the atomic write, and the protected route that triggers it, satisfies AC-2, AC-17, AC-18"
+    },
+    {
+      "id": "0010#feature-design:30",
+      "line": "0010#feature-design:30  TestScenario  accepted  specs/0010-profile-entry/index.md:174  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case, skills partial write: the delete half of a skills save fails after the insert half already succeeded; the caller's prior skills are all still present, verifies **AC-5**, invariant 9."
+    },
+    {
+      "id": "0010#build-plan:5",
+      "line": "0010#build-plan:5  BuildStep  accepted  specs/0010-profile-entry/index.md:190  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: work history. Extend `readProfileSections()` to include `work_experience`, ordered per Value sourcing, add `addWorkExperience` and `updateWorkExperience` (sharing the `profile.save_work_experience` span, distinguished by an `operation` attribute) and `deleteWorkExperience` (its own span), the month and year `Select` controls and their date construction, the entry list, the per entry edit form, the stale entry id fallback, and the named delete confirmation step. Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**."
+    },
+    {
+      "id": "0010#feature-design:31",
+      "line": "0010#feature-design:31  TestScenario  accepted  specs/0010-profile-entry/index.md:175  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Work history, current role: an entry saved with no ended month or year reads as the current role, verifies **AC-7**."
+    },
+    {
+      "id": "0010#feature-design:32",
+      "line": "0010#feature-design:32  TestScenario  accepted  specs/0010-profile-entry/index.md:176  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case, spoofed delete: a delete submitted for a work history entry id that does not belong to the caller changes zero rows and is reported as a named failure, not a silent success, verifies **AC-8**, **AC-11**."
+    },
+    {
+      "id": "0014#build-plan:10",
+      "line": "0014#build-plan:10  BuildStep  accepted  specs/0014-apply-redirect-and-application-record/index.md:227  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Removal: the confirmation route that mutates nothing, and `removeApplication` opening `application.remove`, reporting a zero row match as a failure and revalidating on success, reusing spec 0010 AC-8's shape. Satisfies **AC-11**."
+    },
+    {
+      "id": "0008/AC-17",
+      "line": "0008/AC-17  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:75  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-17**: A door route at `/go` (a GET route handler placed outside `src/app/api/`, the same placement `/auth/callback` uses) sends a signed in visitor to the landing rule and a signed out visitor to `/sign-in`. Its responses carry `Cache-Control: no-store`. They also carry `X-Robots-Tag: noindex`."
+    },
+    {
+      "id": "0008/AC-17a",
+      "line": "0008/AC-17a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:76  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-17a**: A session read that **errors** is a third state, distinct from signed out, and both routes that read the session enumerate it. The read is wrapped in `attempt()` per binding rule 5, so the failure reports. At `/go` an errored read sends the visitor to `/sign-in`, the same as signed out: running the landing rule for a caller whose identity was never confirmed is the one outcome to avoid. At the `/sign-in` bounce an errored read means **do not bounce**, and the page renders normally. Both routes fail toward showing the sign in surface, never toward assuming a session."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-17",
+      "target": "0008/AC-17a",
+      "phrase": "AC-17a enumerating an errored session read at both routes that read one",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "unresolved:0008:spec-0007-security-model",
+      "target": "0008/AC-20",
+      "phrase": "AC-20 makes `/sign-in` read the session",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0015",
+      "target": "0020#follow-up:3",
+      "phrase": "Corrected in the same pass",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:11",
+      "target": "0008/AC-17a",
+      "phrase": "satisfies **AC-20**, **AC-17a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:11",
+      "target": "0008/AC-20",
+      "phrase": "satisfies **AC-20**, **AC-17a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:4",
+      "target": "0010/AC-5",
+      "phrase": "Satisfies **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:4",
+      "target": "0010/AC-6",
+      "phrase": "Satisfies **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:5",
+      "target": "0010/AC-7",
+      "phrase": "Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:5",
+      "target": "0010/AC-7a",
+      "phrase": "Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:5",
+      "target": "0010/AC-8",
+      "phrase": "Satisfies **AC-7**, **AC-7a**, **AC-8**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-10",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-11",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:10",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies **AC-1**, **AC-10**, **AC-11**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-17",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-2",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-6",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:12",
+      "target": "0021/AC-7",
+      "phrase": "Satisfies **AC-2**, **AC-6**, **AC-7**, **AC-14**, **AC-17**",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-17",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-18",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-3",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-6",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-8",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:3",
+      "target": "0021/AC-9",
+      "phrase": "Satisfies the schema behind **AC-3**, **AC-6**, **AC-8**, **AC-9**, **AC-14**, **AC-15**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:4",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:4",
+      "target": "0021/AC-3",
+      "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:4",
+      "target": "0021/AC-5",
+      "phrase": "Satisfies **AC-3**, **AC-5**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:6",
+      "target": "0021/AC-17",
+      "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:6",
+      "target": "0021/AC-18",
+      "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:6",
+      "target": "0021/AC-2",
+      "phrase": "Satisfies **AC-2**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:7",
+      "target": "0021/AC-17",
+      "phrase": "Satisfies **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:7",
+      "target": "0021/AC-18",
+      "phrase": "Satisfies **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-12",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-14",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-15",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-16",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:8",
+      "target": "0021/AC-7",
+      "phrase": "Satisfies **AC-7**, **AC-12**, **AC-14**, **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-16",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-19",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-8",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0021#build-plan:9",
+      "target": "0021/AC-9",
+      "phrase": "Satisfies **AC-8**, **AC-9**, **AC-16**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-17",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-18",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-3",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-6",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-8",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:14",
+      "target": "0021/AC-9",
+      "phrase": "satisfies AC-3, AC-6, AC-8, AC-9, AC-14, AC-15, AC-17, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:15",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-3, AC-5, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:15",
+      "target": "0021/AC-3",
+      "phrase": "satisfies AC-3, AC-5, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:15",
+      "target": "0021/AC-5",
+      "phrase": "satisfies AC-3, AC-5, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:16",
+      "target": "0021/AC-17",
+      "phrase": "satisfies AC-2, AC-17, AC-18",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:16",
+      "target": "0021/AC-18",
+      "phrase": "satisfies AC-2, AC-17, AC-18",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:16",
+      "target": "0021/AC-2",
+      "phrase": "satisfies AC-2, AC-17, AC-18",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-1",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-10",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-11",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-12",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-13",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-15",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-16",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-19",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:17",
+      "target": "0021/AC-7",
+      "phrase": "satisfies AC-1, AC-7, AC-10 through AC-16, AC-19",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-14",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-17",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-2",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-6",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-31#31-seeded-demo-account-done:18",
+      "target": "0021/AC-7",
+      "phrase": "satisfies AC-2, AC-6, AC-7, AC-14, AC-17",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:16",
+      "target": "0008/AC-17",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:16",
+      "target": "0008/AC-17a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:16",
+      "target": "0008/AC-20",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:13",
+      "target": "0010/AC-5",
+      "phrase": "AC-5 to AC-8, AC-7a",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:13",
+      "target": "0010/AC-6",
+      "phrase": "AC-5 to AC-8, AC-7a",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:13",
+      "target": "0010/AC-7",
+      "phrase": "AC-5 to AC-8, AC-7a",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:13",
+      "target": "0010/AC-7a",
+      "phrase": "AC-5 to AC-8, AC-7a",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:13",
+      "target": "0010/AC-8",
+      "phrase": "AC-5 to AC-8, AC-7a",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#requirements:4",
+      "target": "0021/AC-3",
+      "phrase": "**SUPERSEDED 2026-09-14.**",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#requirements:6",
+      "target": "0021/AC-6",
+      "phrase": "**SUPERSEDED 2026-09-14.**",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#requirements:7",
+      "target": "0021/AC-9",
+      "phrase": "**SUPERSEDED 2026-09-14.**",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#requirements:8",
+      "target": "0021/AC-10",
+      "phrase": "**SUPERSEDED 2026-09-14.**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#build-plan:10",
+      "target": "0010/AC-8",
+      "phrase": "reusing spec 0010 AC-8's shape",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015#follow-up:10",
+      "target": "0015#follow-up:11",
+      "phrase": "**Resolved 2026-09-07 by feature 15, and it took two passes to cover all four dimensions.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021#consequences:11",
+      "target": "0021/AC-17",
+      "phrase": "(**Feature design**, AC-17)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021#consequences:9",
+      "target": "0021/AC-14",
+      "phrase": "which AC-14's visible timestamp is what keeps honest rather than silent",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-12",
+      "target": "0021/AC-15",
+      "phrase": "This is a different case from AC-15",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-16",
+      "target": "0021/AC-17",
+      "phrase": "AC-17's transaction writes both personas' rows",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-17",
+      "target": "0021/AC-18",
+      "phrase": "triggered as described in AC-18",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-2",
+      "target": "0021/AC-17",
+      "phrase": "the refresh described in AC-17",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-3",
+      "target": "0021/AC-14",
+      "phrase": "shown on the page in full (AC-14)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-3",
+      "target": "0021/AC-19",
+      "phrase": "(AC-19)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-4",
+      "target": "0021/AC-18",
+      "phrase": "behind a secret only the engineer holds (AC-18)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-8",
+      "target": "0021/AC-16",
+      "phrase": "(AC-16) a compact line naming the other persona's band",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-9",
+      "target": "0013",
+      "phrase": "reusing `AdzunaAttribution` from spec 0013 unchanged",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:1",
+      "target": "0021",
+      "phrase": "`from spec 0021`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:13",
+      "target": "0015",
+      "phrase": "`from spec 0015`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "0021",
+      "phrase": "That result fired spec 0021's own pre-registered stopping rule",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:13",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:17",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-6",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-7",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0016",
+      "phrase": "spec 0016's Consequences already names the switching cost",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "scope#deferred:13",
+      "phrase": "as an alternative to the approach above, not an addition to it",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:9",
+      "target": "0008/AC-20",
+      "phrase": "verifies **AC-20**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:29",
+      "target": "0010/AC-5",
+      "phrase": "verifies **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:29",
+      "target": "0010/AC-6",
+      "phrase": "verifies **AC-5**, **AC-6**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:30",
+      "target": "0010/AC-5",
+      "phrase": "verifies **AC-5**, invariant 9",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:31",
+      "target": "0010/AC-7",
+      "phrase": "verifies **AC-7**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:32",
+      "target": "0010/AC-8",
+      "phrase": "verifies **AC-8**, **AC-11**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-1",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-14",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-16",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-7",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-8",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:44",
+      "target": "0021/AC-9",
+      "phrase": "Verifies **AC-1**, **AC-7**, **AC-8**, **AC-9**, **AC-14**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:45",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:45",
+      "target": "0021/AC-18",
+      "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:45",
+      "target": "0021/AC-2",
+      "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:45",
+      "target": "0021/AC-6",
+      "phrase": "Verifies **AC-2**, **AC-6**, **AC-17**, **AC-18**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:46",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-7**, **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:46",
+      "target": "0021/AC-7",
+      "phrase": "Verifies **AC-7**, **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:47",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:48",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:50",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:51",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:52",
+      "target": "0021/AC-17",
+      "phrase": "Verifies **AC-17**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:53",
+      "target": "0021/AC-15",
+      "phrase": "Verifies **AC-15**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:54",
+      "target": "0021/AC-18",
+      "phrase": "Verifies **AC-18**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:55",
+      "target": "0021/AC-16",
+      "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:55",
+      "target": "0021/AC-5",
+      "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:55",
+      "target": "0021/AC-6",
+      "phrase": "Verifies **AC-5**, **AC-6**, **AC-16**",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0021#feature-design:56",
+      "target": "0021/AC-8",
+      "phrase": "Verifies **AC-8**",
+      "held": true
+    }
+  ],
+  "cut": 2,
+  "counted_input_tokens": 24874,
+  "bound_usd": 0.209748,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"partly\",\"claims\":[{\"text\":\"The requirement is explicit: saving compares the submitted list to the caller's current profile_skill rows case-insensitively, deletes only removed names and inserts only new ones, and never does a blanket delete followed by a blanket insert.\",\"cites\":[\"0010/AC-5\"],\"basis\":\"text\"},{\"text\":\"The diff is also what makes a capitalisation-only change a no-op: submitting `react` for stored `React` leaves the stored casing alone, because comparison follows the unique index that is the authority on skill identity.\",\"cites\":[\"0010/AC-5\"],\"basis\":\"text\"},{\"text\":\"The expected behavior is shown by a test scenario: with stored skills a, b, c and a submission of a, c, d, only b is deleted and d inserted, while a and c are untouched.\",\"cites\":[\"0010#feature-design:29\",\"0010/AC-5\"],\"basis\":\"link\"},{\"text\":\"The diff has a cost: a read before the write, a specific statement order, and zero-row checks, all of which a naive implementation would skip. The records accept this cost.\",\"cites\":[\"0010#consequences:7\"],\"basis\":\"text\"},{\"text\":\"The write order is insert-then-delete, and a failure test covers the case where the delete half fails after the insert half succeeded: the caller's prior skills are all still present. This suggests the ordering protects existing data from partial writes, though the records do not state this as the reason for choosing a diff.\",\"cites\":[\"0010#build-plan:4\",\"0010#feature-design:30\"],\"basis\":\"inferred\"}],\"missing\":[\"An explicit rationale statement for why a wipe-and-reinsert was rejected, beyond the requirement that it never be used\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "partly",
+  "missing": [
+    "An explicit rationale statement for why a wipe-and-reinsert was rejected, beyond the requirement that it never be used"
+  ],
+  "claims": [
+    {
+      "text": "The requirement is explicit: saving compares the submitted list to the caller's current profile_skill rows case-insensitively, deletes only removed names and inserts only new ones, and never does a blanket delete followed by a blanket insert.",
+      "cites": [
+        "0010/AC-5"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The diff is also what makes a capitalisation-only change a no-op: submitting `react` for stored `React` leaves the stored casing alone, because comparison follows the unique index that is the authority on skill identity.",
+      "cites": [
+        "0010/AC-5"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The expected behavior is shown by a test scenario: with stored skills a, b, c and a submission of a, c, d, only b is deleted and d inserted, while a and c are untouched.",
+      "cites": [
+        "0010#feature-design:29",
+        "0010/AC-5"
+      ],
+      "basis": "link",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The diff has a cost: a read before the write, a specific statement order, and zero-row checks, all of which a naive implementation would skip. The records accept this cost.",
+      "cites": [
+        "0010#consequences:7"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The write order is insert-then-delete, and a failure test covers the case where the delete half fails after the insert half succeeded: the caller's prior skills are all still present. This suggests the ordering protects existing data from partial writes, though the records do not state this as the reason for choosing a diff.",
+      "cites": [
+        "0010#build-plan:4",
+        "0010#feature-design:30"
+      ],
+      "basis": "inferred",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": true,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 24874,
+    "output_tokens": 560,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.055348,
+  "recorded_usd": 0.055348
+}

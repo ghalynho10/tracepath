@@ -1,0 +1,1212 @@
+{
+  "asked_at": "2026-10-22T20:24:59+00:00",
+  "question": "Why did we decide to use an event sourcing pattern for updating application status instead of normal CRUD updates?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "decide",
+    "use",
+    "event",
+    "sourcing",
+    "pattern",
+    "updating",
+    "application",
+    "status",
+    "instead",
+    "normal",
+    "crud",
+    "updates"
+  ],
+  "items": [
+    {
+      "id": "0010#consequences:10",
+      "line": "0010#consequences:10  Consequence  accepted  specs/0010-profile-entry/index.md:213  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**`addWorkExperience` is not idempotent, and identity and preferences are.** Those two are always an upsert, and the Value sourcing table above gives the reason in terms: a repeated submission (a double click, or a back button resubmission) updates the same row instead of failing a second insert. Work history has no equivalent guard. A double click faster than React's own re-render, or a resubmission with JavaScript switched off, creates two identical `work_experience` rows, and that table carries no uniqueness rule to catch one. **Accepted rather than fixed on 2026 09 02**"
+    },
+    {
+      "id": "0015#follow-up:14",
+      "line": "0015#follow-up:14  FollowUp  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:211  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-9 names a pairing mechanism the code does not use, and the difference is load bearing rather than cosmetic.** AC-9 and the Value sourcing table (line 100) both say outcomes are matched back to their card \"by `sourceJobId`, never the array index\". `ScoredResults` in `src/app/(app)/search/page.tsx:442` pairs by array index, at the one point where `scoreListings()` guarantees one outcome per listing in order, and then carries that pair through the reorder so nothing later matches on a position that has since changed. **The guarantee AC-9 exists to protect does hold**, and as of 2026-09-07 it is proven rather than assumed by `src/app/(app)/search/page.test.ts`'s pairing test, which was shown to fail when a row takes its listing from the sorted array and its outcome from the unsorted one, a break both neighbouring ordering tests pass. The difference that matters: index pairing is safe only while `scoreListings()` keeps returning one outcome per listing in order, where a `sourceJobId` keyed pairing would not depend on that guarantee at all. So this is a real choice, not just wording: correct the spec to describe index pairing before the sort, or decide the `sourceJobId` keyed pairing is genuinely wanted and change the code to match. **That choice belongs to `/architect`**, and this entry deliberately does not make it."
+    },
+    {
+      "id": "0003#follow-up:3",
+      "line": "0003#follow-up:3  FollowUp  accepted  specs/0003-data-model/index.md:275  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**`application` has no column for whether a snapshotted salary was predicted.** Recorded from spec 0013 on 2026-09-04: feature 11's `Listing` shape carries `salaryIsPredicted` (driving its \"(estimated)\" label), and feature 12 is named as the importer of that same shape for its own field mapping (this spec's Value sourcing table above, the `salary_min`/`salary_max` row). As `application` stands today (`salary_min`, `salary_max`, `salary_currency`, no predicted flag), snapshotting a predicted salary into it loses the distinction, and any later screen reading the row (an applications dashboard, feature 23) would show it as stated fact. Feature 12's own spec must decide: add a column (an additive migration) or make dropping the flag an explicit, documented choice."
+    },
+    {
+      "id": "feature-3#3-deployment-environments-done:15",
+      "line": "feature-3#3-deployment-environments-done:15  FollowUp  accepted  scope/scope.md:84  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "a handful of Value sourcing checks that need a caller that does not exist until feature 7 or feature 10 (the Sentry environment tag and release on a real event, the failed read default, and the development DB URL secret's failure mode)"
+    },
+    {
+      "id": "0008/AC-24",
+      "line": "0008/AC-24  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:86  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-24**: The door route, the `/sign-in` bounce and the landing rule each open a named span as their **first statement**, before any guard clause or early return, per binding rule 4. The names are `door.decide`, `sign_in.bounce` and `landing_rule.decide`, following the `<domain>.<verb>` convention the existing rows in `docs/observability/spans.md` use, and all three are registered there. The bounce's span wraps the session read as well as the decision that follows it, so the operation whose failure rate is measured is \"decide whether to bounce\" rather than \"render `/sign-in`\", and a signed out render is outside it entirely."
+    },
+    {
+      "id": "0016#consequences:2",
+      "line": "0016#consequences:2  Consequence  accepted  specs/0016-eval-ground-truth-set/index.md:161  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "No expected band in this set encodes a rule the rubric never wrote. Where the rubric's wording genuinely cannot decide alone, the data says so plainly (`acceptableBands`, the `boundary` tag) instead of quietly asserting an answer."
+    },
+    {
+      "id": "0006/AC-4",
+      "line": "0006/AC-4  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:26  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: The route renders zero client JavaScript. No file it reaches carries `\"use client\"`, there is no scroll reveal, and there is no mobile menu holding state. The three in page anchors are hidden below `md`, and The header control becomes a link to the door route instead, present at every width exactly as before."
+    },
+    {
+      "id": "scope#deferred:1",
+      "line": "scope#deferred:1  FollowUp  accepted  scope/scope.md:493  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Richer seeded demo account**: a fuller version of feature 31 with applications across every status, discard history and a populated dashboard, instead of the no sign in read only demo. Needs feature 23 (applications dashboard) and likely feature 22 (discard with reason) to exist first,"
+    },
+    {
+      "id": "0002#follow-up:10",
+      "line": "0002#follow-up:10  FollowUp  accepted  specs/0002-deployment-and-environments/index.md:309  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A custom domain is deferred, not declined.** Moving from the `vercel.app` subdomain later means updating three redirect lists (Google, GitHub, Supabase) plus one Vercel setting. Cheapest to do before feature 7 wires OAuth, not after."
+    },
+    {
+      "id": "0003#consequences:6",
+      "line": "0003#consequences:6  Consequence  accepted  specs/0003-data-model/index.md:260  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "With no status column, feature 23 will alter a table that already holds real application rows. The change is a nullable column plus a check, which is cheap, but it is a migration against live user data rather than an empty table."
+    },
+    {
+      "id": "0003#feature-design:2",
+      "line": "0003#feature-design:2  Constraint  held  specs/0003-data-model/index.md:159  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**State transitions**: None. `application` deliberately carries no status column in v1, so there is no state machine to define."
+    },
+    {
+      "id": "0003#follow-up:6",
+      "line": "0003#follow-up:6  FollowUp  accepted  specs/0003-data-model/index.md:277  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 23 adds the application status column and its check, as an alter against a table holding real rows."
+    },
+    {
+      "id": "0014#feature-design:4",
+      "line": "0014#feature-design:4  Constraint  accepted  specs/0014-apply-redirect-and-application-record/index.md:99  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**State transitions**: none. `application` deliberately carries no status column in v1 and feature 23 introduces one when the dashboard needs it (spec 0003, `## State transitions`). A row exists or it does not."
+    },
+    {
+      "id": "scope#deferred:17",
+      "line": "scope#deferred:17  FollowUp  held  scope/scope.md:509  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**A v2 consideration, not v1 or v1.5: JobsPipe (https://jobspipe.dev) as an alternative to the approach above, not an addition to it.** It would remove the need for a second request and any HTML parsing, Verified 2026-09-08 against their OpenAPI spec (jobspipe.dev/openapi.json) and terms page, the `Job` schema's `description` field reads \"Full text of the posting as published by the source\", against Adzuna's 500 character excerpt; it also returns `seniority`, `work_arrangement` (remote/hybrid/onsite), `status` (active/closed), `keyword_slugs`, `min/max_annual_salary_usd`, and `discovered_at` for incremental polling; credits are 1 per job returned, `blur_company_data=true` returns rows for zero credits, the free tier is 1,000 jobs a month with `limit` capped at 25 (about 50 searches a month at 20 listings each, against the current cap of roughly 108), and the first paid tier is $49 a month for 25,000; their terms state no attribution requirement, which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable; their terms do **not** address caching or storage, a gap rather than a permission, and this app stores listing fields on `application` rows, so that has to be resolved with the vendor in writing before anyone relies on it. Two other places already point at this same decision, so treat it as one rather than three: `docs/feature-14-v2-architecture.md`'s extract-then-score pipeline names full posting text as its own unmet precondition and is not referenced anywhere else in this scope; and spec 0016's Consequences already names the switching cost, that feature 15's sixteen ground truth pairs stop matching what the model sees the moment full postings arrive and need a deliberate re-authoring pass."
+    },
+    {
+      "id": "0003#feature-design:31",
+      "line": "0003#feature-design:31  TestScenario  accepted  specs/0003-data-model/index.md:230  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Dashboard edit: changing a row by hand in Supabase updates `updated_at`, verifies **AC-12**."
+    },
+    {
+      "id": "0004/AC-8",
+      "line": "0004/AC-8  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:26  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-8**: Record and replay are toggled by an explicit mode; normal runs replay from files and never touch the network, and record mode is an opt in that warns."
+    },
+    {
+      "id": "unresolved:0010:feature-14-owns-revisiting-it",
+      "line": "unresolved:0010:feature-14-owns-revisiting-it  unresolved  held  specs/0010-profile-entry/index.md:198  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Feature 14 owns revisiting it"
+    },
+    {
+      "id": "0003#follow-up:4",
+      "line": "0003#follow-up:4  FollowUp  accepted  specs/0003-data-model/index.md:275  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column: `salary_is_predicted boolean`, nullable, with `application_predicted_pairing` making it present exactly when a pay figure is. The deliberation added the nullability, which the lean did not consider. Migration `20260905120000_application_salary_is_predicted.sql`."
+    },
+    {
+      "id": "unresolved:feature-3:feature-7-or-feature-10",
+      "line": "unresolved:feature-3:feature-7-or-feature-10  unresolved  accepted  scope/scope.md:74  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 7 or feature 10"
+    },
+    {
+      "id": "0008#build-plan:15",
+      "line": "0008#build-plan:15  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:212  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The three span names registered in `docs/observability/spans.md`, the calls themselves having landed in steps 5, 9 and 10, satisfies **AC-24**"
+    },
+    {
+      "id": "0008#decision:3",
+      "line": "0008#decision:3  Constraint  accepted  specs/0008-app-shell-and-navigation/index.md:93  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Implementation skills**: `supabase` (`supabase/agent-skills`, `.agents/skills/supabase/`) · `sentry-nextjs-sdk` (`getsentry/sentry-for-ai`, span conventions behind AC-24) · `vercel-react-best-practices` (`vercel-labs/agent-skills`, App Router layout and navigation patterns)"
+    },
+    {
+      "id": "0008/AC-24a",
+      "line": "0008/AC-24a  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:87  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-24a**: Every `redirect()` in this feature sits **outside** its span and outside `attempt()`. `redirect()` works by throwing, so a call inside either records the operation as having failed when it succeeded. `src/features/auth/actions.ts` already does this and says why at its lines 45 to 48; this criterion exists so `/go` and the landing rule, which are new, are not written the other way by someone reading only this spec."
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:18",
+      "line": "feature-32#32-app-shell-navigation-done:18  BuildStep  accepted  scope/scope.md:172  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The three span names registered in `docs/observability/spans.md` · **AC-24**"
+    },
+    {
+      "id": "0006#build-plan:12",
+      "line": "0006#build-plan:12  BuildStep  accepted  specs/0006-entry-page-and-link-metadata/index.md:176  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Run the keyboard, focus, responsive and reduced motion pass at 320 and 1440 pixels, and grep the rendered tree for `\"use client\"`, satisfies **AC-4**, **AC-14**."
+    },
+    {
+      "id": "0006#feature-design:35",
+      "line": "0006#feature-design:35  TestScenario  accepted  specs/0006-entry-page-and-link-metadata/index.md:147  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`automated` Regression: nothing the route renders carries `\"use client\"`, verifies **AC-4**."
+    },
+    {
+      "id": "0007#consequences:15",
+      "line": "0007#consequences:15  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:320  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The entry page at `/` still shows a sign in invitation to a signed in visitor. That defers to the app shell feature,"
+    },
+    {
+      "id": "0007#decision:2",
+      "line": "0007#decision:2  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:49  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Build sign in as two thin Server Actions that call `signInWithOAuth` on the request scoped server client and redirect to the URL it returns"
+    },
+    {
+      "id": "0008/AC-18",
+      "line": "0008/AC-18  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:77  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-18**: `/` renders **zero** `<form>` elements and shows no sign in invitation anywhere on the page. `SignInControls` is rendered twice today, in `src/features/entry-page/hero-section.tsx:216` and `src/features/entry-page/sign-in-band.tsx:56`, and both are replaced by the door CTA (`COPY-4`), a plain anchor that does not prefetch. The signed out header's control changes from a `#start` jump to the door (`COPY-5`), because the band it jumped to no longer signs anyone in."
+    },
+    {
+      "id": "0008/AC-19",
+      "line": "0008/AC-19  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:78  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-19**: `/` remains a static page that reads no session, mounts no Supabase client, and reads no user data, holding spec 0006's accepted security model and its AC-4 intact."
+    },
+    {
+      "id": "0010#consequences:6",
+      "line": "0010#consequences:6  Consequence  accepted  specs/0010-profile-entry/index.md:210  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "`/profile` ships client JavaScript, unlike `/` under spec 0006's AC-4. This is a deliberate difference between the two trees, not an oversight: the marketing entry page's zero JavaScript contract never extended to the signed in app."
+    },
+    {
+      "id": "feature-6#6-entry-page-link-metadata-done:14",
+      "line": "feature-6#6-entry-page-link-metadata-done:14  BuildStep  accepted  scope/scope.md:128  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Compose and pass: replace the scaffold placeholder, then run the keyboard, focus, responsive and reduced motion pass at 320 and 1440 pixels and prove no client JavaScript ships, satisfies AC-1, AC-2, AC-4, AC-14"
+    },
+    {
+      "id": "0021",
+      "line": "0021  record  accepted  specs/0021-seeded-demo-account/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Seeded demo account"
+    },
+    {
+      "id": "unresolved:scope:feature-22-discard-with-reason",
+      "line": "unresolved:scope:feature-22-discard-with-reason  unresolved  accepted  scope/scope.md:489  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 22 (discard with reason)"
+    },
+    {
+      "id": "unresolved:scope:feature-23-applications-dashboard",
+      "line": "unresolved:scope:feature-23-applications-dashboard  unresolved  accepted  scope/scope.md:489  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 23 (applications dashboard)"
+    },
+    {
+      "id": "0013/AC-6",
+      "line": "0013/AC-6  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:28  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-6**: Every rendered result carries its own \"Jobs by Adzuna\" attribution, at least 116 by 23 pixels, through `Card.Footer`'s `attribution` slot (spec 0005, AC-10): the word \"Jobs\" links to `https://www.adzuna.com`, and the word \"Adzuna\" is the Adzuna logo image, also linked to `https://www.adzuna.com`."
+    },
+    {
+      "id": "0013/AC-7",
+      "line": "0013/AC-7  AcceptanceCriterion  accepted  specs/0013-job-search-and-results-list/index.md:29  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-7**: A result whose salary is predicted (Adzuna's `salary_is_predicted: true`) shows \"(estimated)\" beside the figure and carries the separate Jobsworth attribution: a 20 by 20 pixel icon plus the words \"Adzuna Jobsworth\", both linked to `http://www.adzuna.co.uk/jobs/salary-predictor.html`, with the mouseover text \"Salary estimate powered by Adzuna Jobsworth\". A stated, non predicted salary shows neither the label nor the Jobsworth attribution."
+    },
+    {
+      "id": "0016",
+      "line": "0016  record  accepted  specs/0016-eval-ground-truth-set/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Eval ground truth set"
+    },
+    {
+      "id": "scope#deferred:13",
+      "line": "scope#deferred:13  FollowUp  held  scope/scope.md:505  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Fetch the full job posting for scoring and tailoring**: fetch `job_url`'s full text instead of working from Adzuna's 500 character snippet. Two consumers now, not one: scoring (feature 14) and, the stronger case, generating a tailored resume in feature 25,"
+    },
+    {
+      "id": "scope#deferred:16",
+      "line": "scope#deferred:16  unclassified  held  scope/scope.md:507  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**First hard measurement, 2026-09-15.** A real refresh scored 8 real Adzuna listings against two candidate profiles, and **6 of the 8 own role rows came back with zero matched skills at all**, on postings whose titles match the candidate's own first desired title. The cause is the 500 character excerpt Adzuna returns, which usually carries company boilerplate rather than requirements. That result fired spec 0021's own pre-registered stopping rule, which concluded the snippet is the cause and froze the two demo queries rather than re-tuning them, so the measurement closes a question instead of opening one."
+    },
+    {
+      "id": "0003/AC-12",
+      "line": "0003/AC-12  AcceptanceCriterion  accepted  specs/0003-data-model/index.md:32  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: `updated_at` is maintained by a database trigger on every table that has one,"
+    },
+    {
+      "id": "0004#build-plan:7",
+      "line": "0004#build-plan:7  BuildStep  accepted  specs/0004-test-foundation/index.md:136  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Build the bespoke record and replay recorder with an explicit record mode, replay from `test/fixtures/<service>/`, redaction at write time, and record the GitHub stand in response. Add `test/fixtures/` to `.prettierignore` in the same step, satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**"
+    },
+    {
+      "id": "0004#feature-design:36",
+      "line": "0004#feature-design:36  TestScenario  accepted  specs/0004-test-foundation/index.md:122  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Record and replay: record a real response from GitHub's public REST API once, commit it, replay it, verifies **AC-2**, **AC-8**"
+    },
+    {
+      "id": "0014/AC-6",
+      "line": "0014/AC-6  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: `application.salary_is_predicted` exists as a nullable boolean, and a check constraint makes it present exactly when `salary_min` or `salary_max` is present. When Adzuna stated no pay at all, the column is written `null` and never `false`,"
+    },
+    {
+      "id": "0008#build-plan:10",
+      "line": "0008#build-plan:10  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:207  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The door at `/go`, **opening `door.decide` first and keeping `redirect()` outside it**, with its `no-store` and `noindex` headers and its errored read falling to `/sign-in`, plus the `/` swap replacing both `SignInControls` renders and the header control with the door CTA, satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**"
+    },
+    {
+      "id": "0008#build-plan:6",
+      "line": "0008#build-plan:6  BuildStep  accepted  specs/0008-app-shell-and-navigation/index.md:203  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`src/lib/landing-rule.ts` and the existence read added beside `readOwnProfile()`, opening `landing_rule.decide` first and keeping `redirect()` outside it, with the absent row returning `false` and a genuine error going through `attempt()` to `/search`, satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**"
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:15",
+      "line": "feature-32#32-app-shell-navigation-done:15  BuildStep  accepted  scope/scope.md:169  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The return path thread, end to end: the two shared modules and the validator, the proxy echoing the requested path as a header, the layout appending `?next=`, `/sign-in` carrying it, the Server Actions writing the cookie, the callback consuming and clearing it · **AC-5b**, **AC-6**, **AC-7**, **AC-7a**, **AC-8**, **AC-9**, **AC-10**, **AC-10a**, **AC-11** to **AC-16**, **AC-24a**. Starts by proving the one mechanic the spec marks inferred rather than verified."
+    },
+    {
+      "id": "0006#requirements:5",
+      "line": "0006#requirements:5  AcceptanceCriterion  accepted  STRUCK  specs/0006-entry-page-and-link-metadata/index.md:26  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0008/AC-18"
+      ],
+      "hop": 2,
+      "text": "the header's sign in jump link is present at every width"
+    },
+    {
+      "id": "0006/AC-1",
+      "line": "0006/AC-1  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: Every part of the page renders through spec 0005's base components. The page's own code contains no hand composed rounded and bordered container, no hand written match bar, and no `.eyebrow` or `.mono-label` class. `pnpm lint` passes, including the `no-restricted-syntax` rule from spec 0005."
+    },
+    {
+      "id": "0006/AC-14",
+      "line": "0006/AC-14  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:36  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14**: The page holds up from 320 pixels to 1440 pixels with no horizontal overflow, every control is reachable by keyboard with a visible focus ring, and every decorative icon is `aria-hidden` (WCAG 2.2 AA)."
+    },
+    {
+      "id": "0006/AC-2",
+      "line": "0006/AC-2  AcceptanceCriterion  accepted  specs/0006-entry-page-and-link-metadata/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: The five body sections carry exactly the rhythm tiers spec 0005's `rationale.md` assigned: hero `generous`, how it works `compact`, the reasoning `generous`, about `standard`, sign in `standard`."
+    },
+    {
+      "id": "0007/AC-16",
+      "line": "0007/AC-16  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-16**: The entry page's two provider controls are real submits. `COPY-1` and both `Chip state=\"status\"` labels are gone. Spec 0006 **AC-17**, the inert apply control, is untouched and its half of the \"no dead controls\" test still runs."
+    },
+    {
+      "id": "0008#consequences:16",
+      "line": "0008#consequences:16  Consequence  accepted  specs/0008-app-shell-and-navigation/index.md:233  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Existing entry page tests covering the sign in band's provider forms change with AC-18, including the four form assertion at `page.test.ts:245-254`, which becomes zero."
+    },
+    {
+      "id": "0008#copy:10",
+      "line": "0008#copy:10  TestScenario  accepted  specs/0008-app-shell-and-navigation/index.md:193  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Static contract: `/` still prerenders with zero client JavaScript, no session read, and zero `<form>` elements, verifies **AC-18**, **AC-19**"
+    },
+    {
+      "id": "0008#copy:2",
+      "line": "0008#copy:2  Constraint  accepted  specs/0008-app-shell-and-navigation/index.md:182  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`COPY-4` and `COPY-5` must not read as a sign in invitation"
+    },
+    {
+      "id": "feature-32#32-app-shell-navigation-done:16",
+      "line": "feature-32#32-app-shell-navigation-done:16  BuildStep  accepted  scope/scope.md:170  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The door, the entry page swap and the sign in bounce: `/go` with `no-store`, `/` losing every provider form, and a signed in visitor at `/sign-in` bounced · **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-20**. `/` still builds as a static prerender, so its accepted contract holds. The band's opening clause \"Sign in with Google or GitHub\" was **deleted at the engineer's direction**"
+    },
+    {
+      "id": "0005#follow-up:3",
+      "line": "0005#follow-up:3  FollowUp  accepted  specs/0005-design-system-and-ui-foundation/index.md:180  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The asset is `src/features/search/adzuna-logo.svg`, rendered inline from `adzuna-logo-geometry.ts`. Both the word and the mark link to `https://www.adzuna.com`, verified against Adzuna's own terms of service and recorded in spec 0013 AC-6. The row at line 86 below guessed those targets and guessed wrong; it has been corrected in the same pass."
+    },
+    {
+      "id": "0005/AC-10",
+      "line": "0005/AC-10  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-10**: The `Card` component's footer slot accepts an optional `attribution` node beside the primary action link, laid out `justify-between` and wrapping to a stacked layout before a 116 by 23 pixel block would otherwise compress. This feature builds and tests the slot mechanism only; the real Adzuna attribution content is built in feature 11 (see `## Follow-up`)."
+    },
+    {
+      "id": "0013#build-plan:7",
+      "line": "0013#build-plan:7  BuildStep  accepted  specs/0013-job-search-and-results-list/index.md:188  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: the `AdzunaAttribution` component (the real logo asset once sourced, both link targets) placed in `Card.Footer`'s `attribution` slot, and the Jobsworth badge (icon, text, link, mouseover) shown beside a predicted salary, plus the \"(estimated)\" label. Satisfies **AC-6**, **AC-7**, **AC-8**."
+    },
+    {
+      "id": "0013#feature-design:22",
+      "line": "0013#feature-design:22  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:167  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Happy path: a signed in user with a `job_preference` row searches with a real title, sees real Adzuna listings with working attribution and outbound links, verifies **AC-1**, **AC-6**, **AC-8**."
+    },
+    {
+      "id": "0013#feature-design:30",
+      "line": "0013#feature-design:30  TestScenario  accepted  specs/0013-job-search-and-results-list/index.md:175  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Predicted salary: a listing carrying `salary_is_predicted: true` renders the estimate label and the Jobsworth attribution; one carrying `false` (or no salary) renders neither, verifies **AC-7**."
+    },
+    {
+      "id": "0014/AC-7",
+      "line": "0014/AC-7  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: An application row whose stored salary was predicted renders `(estimated)` beside the figure and carries the Jobsworth attribution, matching spec 0013's AC-7 exactly: a 20 by 20 pixel icon plus the words `Adzuna Jobsworth`, both linked to `ADZUNA_JOBSWORTH_URL`, with the mouseover text `Salary estimate powered by Adzuna Jobsworth`. A stored non predicted salary renders neither."
+    },
+    {
+      "id": "0014/AC-8",
+      "line": "0014/AC-8  AcceptanceCriterion  accepted  specs/0014-apply-redirect-and-application-record/index.md:38  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: Every application row displayed on `/applications` carries its own `Jobs by Adzuna` attribution through `Card.Footer`'s attribution slot, on the same terms spec 0013 AC-6 sets for a search result, with the link target read from `ADZUNA_ATTRIBUTION_URL`. Attribution renders once per displayed row and never once per screen (spec 0013, invariant 4). A page with no rows shows no attribution block."
+    },
+    {
+      "id": "0015",
+      "line": "0015  record  accepted  HISTORY  specs/0015-fit-scoring-with-shown-reasoning/index.md  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0020#follow-up:3"
+      ],
+      "hop": 2,
+      "text": "Fit scoring with shown reasoning"
+    },
+    {
+      "id": "0020#follow-up:3",
+      "line": "0020#follow-up:3  FollowUp  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:218  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**Done 2026-09-13**: a sweep of all of `docs/` for numeric references into that file found exactly four, all re read against the file on 2026-09-13: this spec's `index.md:110`, the `hasQuery` conditional, 94 to **129**; this spec's `rationale.md:111`, the `Promise.all` over the applied and scoring reads inside `SearchOutcome`, 243 to **291**; and spec 0015's `index.md:211` and `verify.md:78`, both citing the `ScoredResults` index pairing (`const paired = listings.map(...)`), 383 to **442** in each. Corrected in the same pass rather than one at a time."
+    },
+    {
+      "id": "0018#follow-up:1",
+      "line": "0018#follow-up:1  FollowUp  accepted  specs/0018-band-anchor-review/index.md:103  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The `weak_match` and `not_a_match` boundary is still undefined and is still recorded as a gap in spec [0016](../0016-eval-ground-truth-set/index.md)'s Follow up. **Three pairs sit on it, not two**, across thirty reruns: `key-domain-mismatch` (3 to 2, then 0 to 5), `weak-match-shallow-overlap` (4 to 1, then 3 to 2) and `boundary-seniority-gap` (`weak_match` 4 of 5 both runs, passing only through its widened tolerance). The one to watch is `weak-match-shallow-overlap`: it carries no tolerance and at 3 to 2 is a single rerun away from having no majority at all, so it is the pair most likely to fail next and the failure would be the boundary, not the pair. What would justify acting is repeated flipping, not one split."
+    },
+    {
+      "id": "0018#follow-up:4",
+      "line": "0018#follow-up:4  FollowUp  accepted  specs/0018-band-anchor-review/index.md:106  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Should `control-one-gap` keep its `control` tag?** This pair no longer behaves that way: `possible_match` won it 4 to 1, then 5 to 0, then 3 to 2 on the confirming run, so it now passes on the narrowest majority the harness accepts. Spec [0016](../0016-eval-ground-truth-set/index.md) draws this exact distinction when it explains why `mild-stretch-possible-match` carries \"no `acceptableBands` and the plain `control` tag rather than `boundary`\": the tag tracks whether the anchor text settles the pair, not how the model happens to answer. **Recorded here, not answered.** Whoever takes it up should know the two obvious moves are both constrained: retagging it `boundary` would concede that the anchors do not settle it, which contradicts this spec's own finding that they do, and widening it with `acceptableBands` is refused outright by the Key invariants above. `ground-truth.test.ts` now asserts that no `control` tagged pair carries `acceptableBands`, so the retag and the tolerance are not independent choices."
+    },
+    {
+      "id": "0018/AC-4b",
+      "line": "0018/AC-4b  AcceptanceCriterion  accepted  specs/0018-band-anchor-review/index.md:25  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4b**: Spec 0016's two now stale references to `control-one-gap` are corrected: its table row at line 141 lists the pair as `good_match`, and its Follow up at line 182 quotes that pair's rationale saying \"That is good_match's wording\" as present tense evidence of how the set was authored. The row is updated and the Follow up quote is marked as historical, true of the set as authored and superseded here. Both are recording edits, not changes to what spec 0016 decides."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:16",
+      "line": "feature-11#11-job-search-results-list:16  BuildStep  accepted  scope/scope.md:237  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Full attribution and states: the real \"Jobs by Adzuna\" and Jobsworth attribution, the estimated salary label, the `job_preference` prefill, and the three distinct visible states (AC-4, AC-6, AC-7, AC-9) · done 2026-09-04."
+    },
+    {
+      "id": "0003#build-plan:3",
+      "line": "0003#build-plan:3  BuildStep  accepted  specs/0003-data-model/index.md:238  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the migration creating the shared `public.set_updated_at()` trigger function (`security invoker`, empty `search_path`, fully qualified names, matching the `app_settings` precedent), then the six tables with their checks, unique constraints, foreign key indexes, the explicit `grant` per table to `authenticated` and to nothing else, `enable` plus `force row level security`, and the twenty three policies (four per table, three on `profile_skill`), each carrying the clause its action actually permits. Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**."
+    },
+    {
+      "id": "feature-4#4-data-model-done-ga:8",
+      "line": "feature-4#4-data-model-done-ga:8  BuildStep  accepted  scope/scope.md:94  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The schema migration: the shared timestamp trigger, six tables with their checks and unique constraints, an explicit grant per table, and the twenty three policies (AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12)"
+    },
+    {
+      "id": "0004/AC-13",
+      "line": "0004/AC-13  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:31  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: A recording committed to git never carries a credential. Record mode redacts at write time, keeping only the headers named on an allow list and replacing every other header value with a fixed placeholder, and scrubbing the credential carrying query parameters and body fields the service declares. A test proves a recording captured from a request carrying an API key, a bearer token and a `set-cookie` header comes out holding none of the three."
+    },
+    {
+      "id": "0004/AC-2",
+      "line": "0004/AC-2  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:20  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: An external service call can be exercised against a real recorded response (captured once from the real service) rather than a hand written mock."
+    },
+    {
+      "id": "0004/AC-9",
+      "line": "0004/AC-9  AcceptanceCriterion  accepted  specs/0004-test-foundation/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: Replay of a missing fixture fails loudly, naming the missing file and the command that records it, and never silently hits the live network."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0006/AC-4",
+      "target": "0008/AC-18",
+      "phrase": "AC-18 replaces the jump with the door CTA.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-16",
+      "target": "0008/AC-18",
+      "phrase": "After AC-18 there are no provider controls on `/`.",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0008/AC-24",
+      "target": "0008/AC-24a",
+      "phrase": "AC-24a keeping `redirect()` outside every span",
+      "held": false
+    },
+    {
+      "type": "AMENDED_BY",
+      "source": "0016",
+      "target": "0018/AC-4b",
+      "phrase": "Both are recording edits, not changes to what spec 0016 decides.",
+      "held": true
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0010#consequences:10",
+      "target": "unresolved:0010:feature-14-owns-revisiting-it",
+      "phrase": "Feature 14 owns revisiting it",
+      "held": true
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "feature-3#3-deployment-environments-done:15",
+      "target": "unresolved:feature-3:feature-7-or-feature-10",
+      "phrase": "need a caller that does not exist until feature 7 or feature 10",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "scope#deferred:1",
+      "target": "unresolved:scope:feature-22-discard-with-reason",
+      "phrase": "likely feature 22 (discard with reason) to exist first",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "scope#deferred:1",
+      "target": "unresolved:scope:feature-23-applications-dashboard",
+      "phrase": "Needs feature 23 (applications dashboard)",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0015",
+      "target": "0020#follow-up:3",
+      "phrase": "Corrected in the same pass",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0003#build-plan:3",
+      "target": "0003/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-10**, **AC-11**, **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0004#build-plan:7",
+      "target": "0004/AC-13",
+      "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0004#build-plan:7",
+      "target": "0004/AC-2",
+      "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0004#build-plan:7",
+      "target": "0004/AC-8",
+      "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0004#build-plan:7",
+      "target": "0004/AC-9",
+      "phrase": "satisfies **AC-2**, **AC-8**, **AC-9**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:12",
+      "target": "0006/AC-14",
+      "phrase": "satisfies **AC-4**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0006#build-plan:12",
+      "target": "0006/AC-4",
+      "phrase": "satisfies **AC-4**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:10",
+      "target": "0008/AC-18",
+      "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:10",
+      "target": "0008/AC-19",
+      "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:10",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-17**, **AC-17a**, **AC-18**, **AC-19**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:15",
+      "target": "0008/AC-24",
+      "phrase": "satisfies **AC-24**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0008#build-plan:6",
+      "target": "0008/AC-24a",
+      "phrase": "satisfies **AC-6**, **AC-7**, **AC-7a**, **AC-5b**, **AC-24a**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-6",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0013#build-plan:7",
+      "target": "0013/AC-7",
+      "phrase": "Satisfies **AC-6**, **AC-7**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-6",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-11#11-job-search-results-list:16",
+      "target": "0013/AC-7",
+      "phrase": "(AC-4, AC-6, AC-7, AC-9)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:15",
+      "target": "0008/AC-24a",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:16",
+      "target": "0008/AC-18",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:16",
+      "target": "0008/AC-19",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-32#32-app-shell-navigation-done:18",
+      "target": "0008/AC-24",
+      "phrase": null,
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-4#4-data-model-done-ga:8",
+      "target": "0003/AC-12",
+      "phrase": "AC-1, AC-2, AC-4, AC-5, AC-6, AC-9 to AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:14",
+      "target": "0006/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-4, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:14",
+      "target": "0006/AC-14",
+      "phrase": "satisfies AC-1, AC-2, AC-4, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:14",
+      "target": "0006/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-4, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-6#6-entry-page-link-metadata-done:14",
+      "target": "0006/AC-4",
+      "phrase": "satisfies AC-1, AC-2, AC-4, AC-14",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0006#requirements:5",
+      "target": "0008/AC-18",
+      "phrase": "**that last clause is SUPERSEDED, 2026-08-31, by spec 0008 AC-18**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:3",
+      "target": "0003#follow-up:4",
+      "phrase": "**Decided and built 2026-09-05.**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0003#follow-up:4",
+      "target": "0014/AC-6",
+      "phrase": "Spec 0014 AC-6 weighed spec 0013's lean rather than inheriting it, and landed on the column",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0005#follow-up:3",
+      "target": "0013/AC-6",
+      "phrase": "recorded in spec 0013 AC-6",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0006/AC-4",
+      "target": "0008/AC-19",
+      "phrase": "spec 0008 AC-19 restates it",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#consequences:15",
+      "target": "0006/AC-4",
+      "phrase": "which contradicts spec 0006's accepted security model (\"no session check, no Supabase client, no Server Action, no user data of any kind\") and its **AC-4**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#decision:2",
+      "target": "0006/AC-4",
+      "phrase": "basis: spec 0006 **AC-4**",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008#consequences:16",
+      "target": "0008/AC-18",
+      "phrase": "change with AC-18",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008#copy:2",
+      "target": "0008/AC-18",
+      "phrase": "which is the whole point of AC-18",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0008#decision:3",
+      "target": "0008/AC-24",
+      "phrase": "span conventions behind AC-24",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0010#consequences:6",
+      "target": "0006/AC-4",
+      "phrase": "unlike `/` under spec 0006's AC-4",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0013/AC-6",
+      "target": "0005/AC-10",
+      "phrase": "(spec 0005, AC-10)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-7",
+      "target": "0013/AC-7",
+      "phrase": "matching spec 0013's AC-7 exactly",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014/AC-8",
+      "target": "0013/AC-6",
+      "phrase": "on the same terms spec 0013 AC-6 sets for a search result",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:1",
+      "target": "0016",
+      "phrase": "still recorded as a gap in spec 0016's Follow up",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0018#follow-up:4",
+      "target": "0016",
+      "phrase": "Spec 0016 draws this exact distinction",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:1",
+      "target": "0021",
+      "phrase": "`from spec 0021`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:13",
+      "target": "0015",
+      "phrase": "`from spec 0015`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "0021",
+      "phrase": "That result fired spec 0021's own pre-registered stopping rule",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:13",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:16",
+      "target": "scope#deferred:17",
+      "phrase": "This is the information gap both items are about, now measured on real postings and a real scorer.",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-6",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0013/AC-7",
+      "phrase": "which would make spec 0013's AC-6 and AC-7 apparatus (the attribution component, the logo geometry, the mandated link targets) deletable rather than portable",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "0016",
+      "phrase": "spec 0016's Consequences already names the switching cost",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:17",
+      "target": "scope#deferred:13",
+      "phrase": "as an alternative to the approach above, not an addition to it",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0003#feature-design:31",
+      "target": "0003/AC-12",
+      "phrase": "verifies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0004#feature-design:36",
+      "target": "0004/AC-2",
+      "phrase": "verifies **AC-2**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0004#feature-design:36",
+      "target": "0004/AC-8",
+      "phrase": "verifies **AC-2**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0006#feature-design:35",
+      "target": "0006/AC-4",
+      "phrase": "verifies **AC-4**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:10",
+      "target": "0008/AC-18",
+      "phrase": "verifies **AC-18**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0008#copy:10",
+      "target": "0008/AC-19",
+      "phrase": "verifies **AC-18**, **AC-19**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:22",
+      "target": "0013/AC-6",
+      "phrase": "verifies **AC-1**, **AC-6**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0013#feature-design:30",
+      "target": "0013/AC-7",
+      "phrase": "verifies **AC-7**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 15794,
+  "bound_usd": 0.191588,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[{\"text\":\"The records do not state any decision to use event sourcing for application status. The only status-related items say the opposite of a decided design: `application` deliberately carries no status column in v1, so there is no state machine to define.\",\"cites\":[\"0003#feature-design:2\",\"0014#feature-design:4\"],\"basis\":\"text\"},{\"text\":\"Feature 23 is recorded as the point where a status column and its check are added, as an alter against a table that already holds real rows. That is a plain column change, not an event log.\",\"cites\":[\"0003#follow-up:6\",\"0003#consequences:6\"],\"basis\":\"text\"}],\"missing\":[\"Any decision record choosing event sourcing for application status\",\"Any comparison of event sourcing with CRUD updates\",\"The feature 23 (applications dashboard) spec, which the records name but do not contain\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "Any decision record choosing event sourcing for application status",
+    "Any comparison of event sourcing with CRUD updates",
+    "The feature 23 (applications dashboard) spec, which the records name but do not contain"
+  ],
+  "claims": [
+    {
+      "text": "The records do not state any decision to use event sourcing for application status. The only status-related items say the opposite of a decided design: `application` deliberately carries no status column in v1, so there is no state machine to define.",
+      "cites": [
+        "0003#feature-design:2",
+        "0014#feature-design:4"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0003#feature-design:2"
+      ]
+    },
+    {
+      "text": "Feature 23 is recorded as the point where a status column and its check are added, as an alter against a table that already holds real rows. That is a plain column change, not an event log.",
+      "cites": [
+        "0003#follow-up:6",
+        "0003#consequences:6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 15794,
+    "output_tokens": 279,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.034378,
+  "recorded_usd": 0.034378
+}

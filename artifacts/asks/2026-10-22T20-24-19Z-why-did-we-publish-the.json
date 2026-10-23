@@ -1,0 +1,939 @@
+{
+  "asked_at": "2026-10-22T20:24:19+00:00",
+  "question": "why did we publish the privacy and terms pages before most of the product was even built?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "publish",
+    "privacy",
+    "terms",
+    "pages",
+    "before",
+    "most",
+    "product",
+    "even",
+    "built"
+  ],
+  "items": [
+    {
+      "id": "0007#consequences:11",
+      "line": "0007#consequences:11  Consequence  accepted  specs/0007-auth-and-per-user-isolation/index.md:313  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Leaving Google's Testing mode is gated on feature 21, and the meter only runs one way.** Publish app is greyed because the privacy policy and terms of service links are empty, and feature 21 (Terms and privacy notices) is what produces them. Until then the app is capped at 100 users, and Google counts that cap \"over the entire lifetime of the app\", so it never goes back down. Confirmed not to block feature 7: Branding flags no field, Verification status says verification is not required in Testing, and a real sign in completed. **Updated 2026-08-31**: when this was written feature 21 sat in Slice 5 and neither scope row recorded the dependency. Both changed on the strength of this paragraph. The dependency is now on feature 21's row, and the feature moved to Foundation, to be built after feature 32."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:15  BuildStep  accepted  scope/scope.md:188  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The terms content and effective dates, then the mail delivery check and the Google console work: authorized domain, both URLs, publish out of Testing, submit brand verification · **AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**."
+    },
+    {
+      "id": "0021#feature-design:13",
+      "line": "0021#feature-design:13  Constraint  accepted  specs/0021-seeded-demo-account/index.md:325  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**The fixed search queries** (revised 2026-09-15): two searches per refresh, both nationwide within the already configured `ADZUNA_COUNTRY`, each matching one persona's own first desired title (**Seed content**): title `\"backend engineer\"`, then title `\"frontend engineer\"`. The backend search runs first; a refusal or failure of the backend search ends the refresh before the frontend search runs (**Refresh outcomes**). A refused or failed frontend search aborts the refresh too, even though the backend search succeeded: only a search that *succeeds and returns nothing* is the \"publish the other search's listings\" case below, never a search that did not complete. Each query is paired with the persona whose own role it names (`\"backend engineer\"` with `backend-engineer`, `\"frontend engineer\"` with `frontend-engineer`). These two queries are fixed from here on and are not re-tuned per run; the one condition under which they are revisited is the stopping rule in `## Follow-up`, and that rule's answer is to leave them unchanged."
+    },
+    {
+      "id": "0009#summary:1",
+      "line": "0009#summary:1  Feature  accepted  specs/0009-terms-and-privacy-notices/index.md:18  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Two public pages, `/terms` and `/privacy`, written against what this codebase actually stores and actually sends to other companies, rather than from a template. They exist to be true, and they exist to unblock Google."
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:2",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:2  AcceptanceCriterion  accepted  scope/scope.md:178  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Done when:** both pages exist and are linked from the entry page and from sign in,"
+    },
+    {
+      "id": "feature-21#21-terms-privacy-notices-done-alpha:6",
+      "line": "feature-21#21-terms-privacy-notices-done-alpha:6  Constraint  accepted  scope/scope.md:179  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "The pages must be served from `usejobhunt.dev`"
+    },
+    {
+      "id": "0007#consequences:10",
+      "line": "0007#consequences:10  Consequence  held  specs/0007-auth-and-per-user-isolation/index.md:312  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Google's consent screen does not name this product, and that is a user visible misrepresentation on the front door.** Verified 2026-08-30 by running the real handshake: the screen reads \"Sign in to `serbucmdtvbspkbmxewl.supabase.co`\", tells the person Google will let *that host* access their information, and points them at that host's Privacy Policy and Terms of Service, which do not exist. The word \"JobHunt\" appears nowhere. GitHub's screen, run minutes earlier against the same project, reads \"Authorize JobHunt\" correctly, so this is Google specific rather than a misconfiguration. **Cause is inferred, not confirmed**: Google appears to derive the displayed name from an Authorized domain, and the only authorized domains are the two `supabase.co` hosts, which this project does not own and cannot verify. Both remedies need a domain we own, so see the Follow-up. **Not a v1 blocker**: sign in works and both providers were exercised live."
+    },
+    {
+      "id": "0015/AC-13",
+      "line": "0015/AC-13  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:35  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-13**: The prompt built from the caller's profile is bounded regardless of how much the user wrote: the full `summary` (already capped at 4000 characters, spec 0010 AC-3), at most 50 skills (in `readProfileSections()`'s own `lower(name)` ascending order, the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9), the full `job_preference` row when present (already bounded by spec 0010 AC-9's own limits, no new cap needed), and at most the 5 most recent `work_experience` entries in the order `readProfileSections()` already returns them, each entry's own `description` truncated to 300 characters before it enters the prompt. When a listing's own `descriptionSnippet` is absent (an optional field, spec 0013), the prompt states plainly that no description was returned for this posting and the model reasons from the title alone."
+    },
+    {
+      "id": "0007#follow-up:10",
+      "line": "0007#follow-up:10  FollowUp  accepted  specs/0007-auth-and-per-user-isolation/index.md:335  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Publishing and verifying the Google app is the remaining fix for the consent screen**, and it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`. That is now possible where it was not before: Google would not accept a `vercel.app` address as an Authorized domain, and it will accept this one."
+    },
+    {
+      "id": "0012#follow-up:8",
+      "line": "0012#follow-up:8  FollowUp  accepted  specs/0012-model-client-router/index.md:118  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 14's own scope note about the privacy notice's \"not used to train models\" claim is unchanged by this feature; this spec's own test calls carry no real user data. Verifying each vendor's training and retention terms before real profile data flows through `ai_scoring` in production remains feature 14's responsibility."
+    },
+    {
+      "id": "0015#feature-design:17",
+      "line": "0015#feature-design:17  Constraint  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:122  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Privacy: this is the first feature that actually sends a real user's own summary, skills, and work history to `ai_scoring` in production. The `DATA_RECIPIENTS` entry for `openai` already exists (spec 0012, AC-9), so no registry change is needed here, but the diligence scope.md already owes this feature, reading OpenAI's terms on training and retention before this ships against real data, is carried forward in Follow-up."
+    },
+    {
+      "id": "scope#deferred:11",
+      "line": "scope#deferred:11  FollowUp  accepted  scope/scope.md:503  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Model provider retention and training terms**: before features 13 and 14 send profile content to a model, read that provider's terms on whether it retains or trains on what it is sent, and update the privacy notice's claim to match."
+    },
+    {
+      "id": "0006#summary:2",
+      "line": "0006#summary:2  Constraint  accepted  specs/0006-entry-page-and-link-metadata/index.md:10  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Three things on the prototype turned out to be wrong rather than merely generic, and this spec corrects all of them: the \"What's real today\" card claims four working features that do not exist, it also promises one that is not even planned, and every one of the page's three most important controls points at `#`. The page now says only what is true"
+    },
+    {
+      "id": "0009#build-plan:6",
+      "line": "0009#build-plan:6  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:476  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Write the terms content and the effective date treatment on both pages, satisfies **AC-15**, **AC-16**."
+    },
+    {
+      "id": "0007#follow-up:12",
+      "line": "0007#follow-up:12  FollowUp  held  specs/0007-auth-and-per-user-isolation/index.md:336  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Feature 21's row now carries the dependency in both directions, including the domain constraint (Google will not accept a `vercel.app` address, so the pages must be served from `usejobhunt.dev`) and what feature 7 puts into `auth.users` that the notice must describe. It also went further than this item asked: the feature moved out of Slice 5 into Foundation, to be built after feature 32"
+    },
+    {
+      "id": "0014#follow-up:13",
+      "line": "0014#follow-up:13  FollowUp  accepted  specs/0014-apply-redirect-and-application-record/index.md:271  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-10 is not proven end to end, and the gap is specific.** The build stood up a production build, confirmed a search moves the `job_search` counters, and confirmed the wiring with two unit guards whose regressions were both driven on purpose (removing the read only adapter, and adding a re-render trigger to `recordApplication`). What it could NOT do is dispatch a real apply: Next refuses a hand built action `POST` with `Failed to find Server Action`, so `curl` and `fetch` cannot drive it. **A successful apply's cost has therefore never been measured, only argued from the wiring.** It needs a real browser, and it is the single most load bearing unverified claim in this spec. `verify.md` carries the corrected method."
+    },
+    {
+      "id": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "line": "unresolved:0007:feature-21-terms-and-privacy-notices  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:296  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 21 (Terms and privacy notices)"
+    },
+    {
+      "id": "0009/AC-15",
+      "line": "0009/AC-15  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:109  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-15**: The terms page states what the service is, that it is free with no guarantee of availability, and that it may change or stop. Four clauses are settled here rather than left to the build: - **Acceptable use**: no automated scraping of the service, no using it to apply on another person's behalf, and no attempt to reach another user's data. Breaking these is what \"removed for abuse\" means. - **Content ownership and licence**: the person keeps ownership of their profile and resume content. The licence granted is non exclusive, limited to operating the service for them, revoked when their data is deleted, and explicitly not sublicensable and not for training models. - **Warranty and liability**: the service is provided as is with no warranty, and liability is limited to the fullest extent the law allows. No cap figure is stated, because the service is free and there is no payment to anchor one against. - **How the terms change**: the published version is updated in place and the effective date bumped. There is no advance notice, which matches AC-16 and is the only mechanism this project can actually perform, having no email capability. It also states the governing law and venue: the laws of the State of Georgia, United States of America, with venue in the state and federal courts located in Georgia. The clause writes \"State of Georgia, United States of America\" in full rather than \"Georgia\", because Georgia is also a country and the readers this notice is written for are explicitly worldwide."
+    },
+    {
+      "id": "0009/AC-16",
+      "line": "0009/AC-16  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:130  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-16**: Both pages carry an effective date, and state that continued use means accepting the version currently published."
+    },
+    {
+      "id": "0009/AC-21",
+      "line": "0009/AC-21  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:140  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-21**: In the Google Cloud console, `usejobhunt.dev` is added as an authorized domain, the privacy policy and terms fields hold the two live URLs, and the app is moved out of Testing."
+    },
+    {
+      "id": "0009/AC-22",
+      "line": "0009/AC-22  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:142  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-22**: Brand verification is submitted, so the consent screen names JobHunt rather than the Supabase host."
+    },
+    {
+      "id": "0009/AC-9",
+      "line": "0009/AC-9  AcceptanceCriterion  accepted  specs/0009-terms-and-privacy-notices/index.md:68  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: The published address receives mail. Configured and verified by the engineer on 2026-09-01, before this spec was written, and re confirmed at verify time"
+    },
+    {
+      "id": "0021#feature-design:12",
+      "line": "0021#feature-design:12  Constraint  accepted  STRUCK  specs/0021-seeded-demo-account/index.md:314  hop 1",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0021#feature-design:13"
+      ],
+      "hop": 1,
+      "text": "**The fixed search query**: title `\"software engineer\"`, no location (nationwide within the already configured `ADZUNA_COUNTRY`)."
+    },
+    {
+      "id": "0010/AC-3",
+      "line": "0010/AC-3  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:29  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-3**: `full_name` is required and at most 200 characters. `summary` is optional and at most 4000 characters. `location` is optional. A submission that fails a rule writes nothing and returns a visible error next to the field, with the values the user typed kept in place."
+    },
+    {
+      "id": "0010/AC-9",
+      "line": "0010/AC-9  AcceptanceCriterion  accepted  specs/0010-profile-entry/index.md:36  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: Search preferences (`desired_titles`, `desired_locations`, `remote_preference`, `minimum_pay`, `minimum_pay_currency`) are edited together as one section. `desired_titles` and `desired_locations` are each entered as one field, one value per line, never comma separated (a location value can itself contain a comma); each line is trimmed, empty lines are dropped, values are deduplicated ignoring case the same way skills are, each value is at most 100 characters, and each list holds at most 50 values. `remote_preference` is a closed choice among `on_site`, `hybrid`, `remote`, `no_preference`. `minimum_pay` and `minimum_pay_currency` are both present or both absent; an empty `minimum_pay` field is treated as absent before that pairing check runs, never as zero. When present, `minimum_pay` is at least 0, at most 9,999,999,999.99, and at most two decimal places, rejected rather than rounded; `minimum_pay_currency` is a free text field, trimmed and uppercased before checking, then exactly three uppercase letters, with no fixed currency list (the schema has none, and one here would be a second source of truth)."
+    },
+    {
+      "id": "0013",
+      "line": "0013  record  accepted  specs/0013-job-search-and-results-list/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Job search and results list"
+    },
+    {
+      "id": "0015#build-plan:2",
+      "line": "0015#build-plan:2  BuildStep  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:156  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write `src/features/scoring/rubric.ts`: the five band anchors (their exact wording), the Zod `fitScoreSchema` (`band` enum, `matchedSkills`, `notMentionedSkills`, `reasoning` capped at 600 characters, the three value `sponsorshipSignal` enum), the post-parse skill name filter, and the prompt builder taking a bounded profile and one listing, including the truncation caveat, the missing-description case, and the untrusted input instructions. Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**, and is the anchor wording **AC-2** is later measured against."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15  BuildStep  accepted  scope/scope.md:288  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Rubric, schema and prompt: the five band anchors, `fitScoreSchema`, the post-parse skill name filter, and the prompt builder handling the 500 character truncation caveat and a missing description (AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)"
+    },
+    {
+      "id": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "line": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms  unresolved  accepted  specs/0007-auth-and-per-user-isolation/index.md:324  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "feature 21 supplying a privacy policy and terms"
+    },
+    {
+      "id": "0009",
+      "line": "0009  record  accepted  specs/0009-terms-and-privacy-notices/index.md  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Terms and privacy notices"
+    },
+    {
+      "id": "0007#follow-up:11",
+      "line": "0007#follow-up:11  FollowUp  held  specs/0007-auth-and-per-user-isolation/index.md:336  hop 1",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**Feature 21 and feature 7 depend on each other and neither scope row says so.** Feature 21 unblocks Google's Publish app, which lifts the lifetime 100 user cap; feature 7 is what makes those notices load bearing rather than paperwork. Recording it on feature 21's row is a `/scope` edit."
+    },
+    {
+      "id": "0009#build-plan:7",
+      "line": "0009#build-plan:7  BuildStep  accepted  specs/0009-terms-and-privacy-notices/index.md:478  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Re confirm delivery to the published address, then do the console work: authorized domain, the two URLs, publish out of Testing, and submit brand verification, satisfies **AC-9**, **AC-21**, **AC-22**. The address is already configured and verified, so this step is a check, not setup."
+    },
+    {
+      "id": "0009#feature-design:31",
+      "line": "0009#feature-design:31  TestScenario  accepted  specs/0009-terms-and-privacy-notices/index.md:451  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Delivery: a real message to the published address arrives, re confirmed at verify time rather than assumed from the setup date, verifies **AC-9**."
+    },
+    {
+      "id": "0010#build-plan:3",
+      "line": "0010#build-plan:3  BuildStep  accepted  specs/0010-profile-entry/index.md:188  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thin slice: `src/features/profile/actions.ts` with `saveIdentity` (named span, caller check, Zod parse mirroring `public.profile`'s own checks, the upsert on `id`, `useActionState` shaped return), and `src/app/(app)/profile/page.tsx` reading and Zod parsing the `edit` search parameter, rendering the identity edit form (no profile row, or `?edit=identity`) or the identity view plus the \"what comes next\" line (a first time visitor with no other section built yet) or the full view (once other sections exist). Before building the other four forms, spike the `useActionState` hidden field shape spec 0004's Follow up recipe assumes: render the identity form, fetch the page, confirm `$ACTION_REF_1` / `$ACTION_1:0` / `$ACTION_1:1` / `$ACTION_KEY` are present in the HTML. If they are not, the identity form falls back to rendering its errors from a search parameter instead of `useActionState`, and that fallback is recorded here rather than discovered at step 8. Prove create, reload, and edit against the real local stack. Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13** (the entry id half arrives at step 4, the first step with an entry to resolve)."
+    },
+    {
+      "id": "0010#build-plan:6",
+      "line": "0010#build-plan:6  BuildStep  accepted  specs/0010-profile-entry/index.md:191  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: search preferences. Extend `readProfileSections()` to include `job_preference` (absent is a real, distinct state, not defaulted), add `savePreferences` (named span, the upsert on `profile_id`, the pay coercion and bounds, the currency check), and the preferences view and edit card, with the \"not set yet\" view state. Satisfies **AC-9**, **AC-10**."
+    },
+    {
+      "id": "0010#feature-design:34",
+      "line": "0010#feature-design:34  TestScenario  accepted  specs/0010-profile-entry/index.md:178  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case, validation: an identity submission with a blank name writes nothing, returns a per field error, and keeps the location and summary the user had typed, verifies **AC-3**, **AC-12**."
+    },
+    {
+      "id": "0014#consequences:6",
+      "line": "0014#consequences:6  Consequence  accepted  specs/0014-apply-redirect-and-application-record/index.md:246  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "`/search` ships client JavaScript for the first time. Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search; the first half stays true and the second does not, once the apply control exists. The control is deliberately the smallest possible boundary, but the property is gone rather than reduced."
+    },
+    {
+      "id": "0015/AC-1",
+      "line": "0015/AC-1  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-1**: `src/features/scoring/rubric.ts` defines five ordered, named bands (`strong_match`, `good_match`, `possible_match`, `weak_match`, `not_a_match`), each carrying a written anchor description sent verbatim in the prompt,"
+    },
+    {
+      "id": "0015/AC-12",
+      "line": "0015/AC-12  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: The prompt's system instructions state that the listing's title and description are untrusted external text, that the model must not follow any instruction contained within them, and must not fetch, describe, or act on any URL or address that appears in them."
+    },
+    {
+      "id": "0015/AC-2",
+      "line": "0015/AC-2  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: Across the genuinely varied listings feature 15's ground truth set will author, scored results spread across at least three of the five bands rather than clustering on one. This is exercised by feature 16's eval harness once feature 15 exists, not by this feature's own unit tests,"
+    },
+    {
+      "id": "0015/AC-4",
+      "line": "0015/AC-4  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:26  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: The prompt built for every listing states plainly that Adzuna truncates `descriptionSnippet` at 500 characters and marks a truncated description with a trailing \"…\"; the model is instructed never to assert that a skill is required by a specific posting unless the visible text actually says so, and never to treat an unconfirmed skill as absent from the posting either."
+    },
+    {
+      "id": "0015/AC-5",
+      "line": "0015/AC-5  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: The score schema exposes `matchedSkills` (the caller's own skills whose name, or a clear synonym, appears in the listing's visible title or description) and `notMentionedSkills` (skills from the caller's own list that a role like this one would typically value, that do not appear anywhere in the listing's visible text). Both arrays are filtered after parsing to names that case insensitively match one of the caller's own `profile_skill` names; any other name the model returns is dropped before it reaches the UI, never displayed and never a reason to fail the whole call. Neither the schema field name nor any displayed label ever reads \"missing skills\"; the UI's label for `notMentionedSkills` states plainly that this is not a confirmed absence (`COPY-2`)."
+    },
+    {
+      "id": "0015/AC-6",
+      "line": "0015/AC-6  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: A `sponsorshipSignal` field is a required enum of `sponsors`, `does_not_sponsor`, or `not_stated`, resolved from whether the listing's visible text states a sponsorship stance explicitly. `not_stated` renders nothing on the card, the same visible outcome an absent field would have had, The signal is never used to compute or adjust the band, and when present (`sponsors` or `does_not_sponsor`) it renders as its own separate badge, distinct from the band badge (`COPY-6`)."
+    },
+    {
+      "id": "0021/AC-9",
+      "line": "0021/AC-9  AcceptanceCriterion  accepted  specs/0021-seeded-demo-account/index.md:92  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "The opposite is now required: every card carries the \"Jobs by Adzuna\" attribution (reusing `AdzunaAttribution` from spec 0013 unchanged), and a card whose salary was predicted rather than stated additionally carries both the `(estimated)` label and the Jobsworth attribution (`JobsworthAttribution`), reusing the same pairing `src/features/search/result-card.tsx` already renders."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:5",
+      "line": "feature-11#11-job-search-results-list:5  AcceptanceCriterion  held  scope/scope.md:226  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "and every result carries the required attribution label at no less than 116 by 23 pixels with both the word and the logo linked as the source's terms require. **Corrected by spec 0013**: the requirement is per displayed result, not per screen"
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:12",
+      "line": "feature-9#9-profile-entry-done:12  BuildStep  accepted  scope/scope.md:202  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thin slice: the identity section end to end (create, reload, edit) via `saveIdentity` and the URL driven `/profile` page · AC-1 to AC-4, AC-11 to AC-14"
+    },
+    {
+      "id": "feature-9#9-profile-entry-done:14",
+      "line": "feature-9#9-profile-entry-done:14  BuildStep  accepted  scope/scope.md:204  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Thicken: search preferences, the new spans registered, and the entry page's `profile` claim moved to working · AC-9, AC-10, AC-16"
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:10",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:10  Constraint  held  scope/scope.md:283  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**the notice currently states plainly that data is not used to train models, and this is the first feature that sends a person's own profile and written summary to somebody else's model.** Before it ships, read that provider's terms on whether it retains or trains on what it is sent, and change the claim if it no longer holds."
+    },
+    {
+      "id": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:9",
+      "line": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:9  Constraint  held  scope/scope.md:283  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "First, its own recipient entry if it reaches a vendor feature 13 has not already registered."
+    },
+    {
+      "id": "scope#deferred:10",
+      "line": "scope#deferred:10  FollowUp  held  scope/scope.md:502  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**Recording which version of the terms a person accepted**: blocked twice over today, by the marketing tree's no client JavaScript rule and by a `profile` row that feature 9 creates. Worth revisiting only if the terms change materially before feature 9 ships,"
+    },
+    {
+      "id": "scope#deferred:9",
+      "line": "scope#deferred:9  FollowUp  accepted  scope/scope.md:501  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**A lawyer's review of the terms and privacy notices**: the only thing that manages legal risk rather than reducing factual error. Deferred as a reasonable call for a free portfolio project,"
+    },
+    {
+      "id": "unresolved:0007:feature-21",
+      "line": "unresolved:0007:feature-21  unresolved  held  specs/0007-auth-and-per-user-isolation/index.md:57  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "feature 21"
+    },
+    {
+      "id": "unresolved:0007:feature-7",
+      "line": "unresolved:0007:feature-7  unresolved  held  specs/0007-auth-and-per-user-isolation/index.md:324  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "feature 7"
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "feature-11#11-job-search-results-list:5",
+      "target": "0013",
+      "phrase": "**Corrected by spec 0013**",
+      "held": true
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#consequences:11",
+      "target": "unresolved:0007:feature-21-terms-and-privacy-notices",
+      "phrase": "Leaving Google's Testing mode is gated on feature 21",
+      "held": false
+    },
+    {
+      "type": "BLOCKED_BY",
+      "source": "0007#follow-up:10",
+      "target": "unresolved:0007:feature-21-supplying-a-privacy-policy-and-terms",
+      "phrase": "it is gated on feature 21 supplying a privacy policy and terms served from `usejobhunt.dev`",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:6",
+      "target": "0009/AC-15",
+      "phrase": "satisfies **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:6",
+      "target": "0009/AC-16",
+      "phrase": "satisfies **AC-15**, **AC-16**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-21",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-22",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0009#build-plan:7",
+      "target": "0009/AC-9",
+      "phrase": "satisfies **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:3",
+      "target": "0010/AC-3",
+      "phrase": "Satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-11**, **AC-12**, **AC-14**'s premise, and the closed set of section names half of **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0010#build-plan:6",
+      "target": "0010/AC-9",
+      "phrase": "Satisfies **AC-9**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-1",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-12",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-13",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-4",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-5",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-6",
+      "phrase": "Satisfies **AC-1**, **AC-4**, **AC-5**, **AC-6**, **AC-12**, **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-1",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-12",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-13",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-2",
+      "phrase": "the anchor wording AC-2 is later measured against",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-4",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-5",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:15",
+      "target": "0015/AC-6",
+      "phrase": "(AC-1, AC-4, AC-5, AC-6, AC-12, AC-13, the anchor wording AC-2 is later measured against)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-15",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-16",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-21",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-22",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-21#21-terms-privacy-notices-done-alpha:15",
+      "target": "0009/AC-9",
+      "phrase": "**AC-15**, **AC-16**, **AC-9**, **AC-21**, **AC-22**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:12",
+      "target": "0010/AC-3",
+      "phrase": "AC-1 to AC-4, AC-11 to AC-14",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-9#9-profile-entry-done:14",
+      "target": "0010/AC-9",
+      "phrase": "AC-9, AC-10, AC-16",
+      "held": true
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0021#feature-design:12",
+      "target": "0021#feature-design:13",
+      "phrase": "**SUPERSEDED 2026-09-15**, by the two queries below.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "0007#follow-up:12",
+      "phrase": "**Done 2026-08-31.**",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "unresolved:0007:feature-21",
+      "phrase": "depend on each other",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#follow-up:11",
+      "target": "unresolved:0007:feature-7",
+      "phrase": "depend on each other",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0009/AC-15",
+      "target": "0009/AC-16",
+      "phrase": "which matches AC-16",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0014#consequences:6",
+      "target": "0013",
+      "phrase": "Spec 0013's Decision says the page never uses a client side fetch and that no client JavaScript ships for search",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015#build-plan:2",
+      "target": "0015/AC-2",
+      "phrase": "is the anchor wording **AC-2** is later measured against",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0010/AC-3",
+      "phrase": "already capped at 4000 characters, spec 0010 AC-3",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0010/AC-9",
+      "phrase": "the same 50 value ceiling this project already uses for `job_preference`'s own list fields, spec 0010 AC-9",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0015/AC-13",
+      "target": "0013",
+      "phrase": "an optional field, spec 0013",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0021/AC-9",
+      "target": "0013",
+      "phrase": "reusing `AdzunaAttribution` from spec 0013 unchanged",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:10",
+      "target": "0009",
+      "phrase": "Owes the privacy notice two things, recorded from spec 0009",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:9",
+      "target": "0009",
+      "phrase": "Owes the privacy notice two things, recorded from spec 0009",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:10",
+      "target": "0009",
+      "phrase": "`from spec 0009`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:11",
+      "target": "0009",
+      "phrase": "`from spec 0009`",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#deferred:9",
+      "target": "0009",
+      "phrase": "`from spec 0009`",
+      "held": true
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0009#feature-design:31",
+      "target": "0009/AC-9",
+      "phrase": "verifies **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0010#feature-design:34",
+      "target": "0010/AC-3",
+      "phrase": "verifies **AC-3**, **AC-12**",
+      "held": false
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 12863,
+  "bound_usd": 0.185726,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"answered\",\"claims\":[{\"text\":\"The pages were built early because Google's Publish app was blocked until a privacy policy and terms of service URL existed. Those links were empty, and feature 21 (Terms and privacy notices) is what produces them.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"While the app stays in Testing mode it is capped at 100 users. Google counts that cap over the app's entire lifetime, so it never goes back down. That is why delaying the pages carried a cost.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"},{\"text\":\"The spec describes the pages as existing to be true and to unblock Google.\",\"cites\":[\"0009#summary:1\"],\"basis\":\"text\"},{\"text\":\"The pages must be served from usejobhunt.dev, because Google would not accept a vercel.app address as an Authorized domain but will accept this one.\",\"cites\":[\"0007#follow-up:10\",\"feature-21#21-terms-privacy-notices-done-alpha:6\"],\"basis\":\"text\"},{\"text\":\"Publishing and verifying the Google app is also the remaining fix for the consent screen. The screen currently shows the Supabase host instead of naming JobHunt, and brand verification is meant to correct that.\",\"cites\":[\"0007#follow-up:10\",\"0009/AC-22\",\"0007#consequences:10\"],\"basis\":\"text\"},{\"text\":\"The dependency was recorded and feature 21 was moved out of Slice 5 into Foundation, to be built after feature 32. Both changes were made on the strength of the consequence paragraph.\",\"cites\":[\"0007#consequences:11\"],\"basis\":\"text\"}],\"missing\":[]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "answered",
+  "missing": [],
+  "claims": [
+    {
+      "text": "The pages were built early because Google's Publish app was blocked until a privacy policy and terms of service URL existed. Those links were empty, and feature 21 (Terms and privacy notices) is what produces them.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "While the app stays in Testing mode it is capped at 100 users. Google counts that cap over the app's entire lifetime, so it never goes back down. That is why delaying the pages carried a cost.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The spec describes the pages as existing to be true and to unblock Google.",
+      "cites": [
+        "0009#summary:1"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "The pages must be served from usejobhunt.dev, because Google would not accept a vercel.app address as an Authorized domain but will accept this one.",
+      "cites": [
+        "0007#follow-up:10",
+        "feature-21#21-terms-privacy-notices-done-alpha:6"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    },
+    {
+      "text": "Publishing and verifying the Google app is also the remaining fix for the consent screen. The screen currently shows the Supabase host instead of naming JobHunt, and brand verification is meant to correct that.",
+      "cites": [
+        "0007#follow-up:10",
+        "0009/AC-22",
+        "0007#consequences:10"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": [
+        "0007#consequences:10"
+      ]
+    },
+    {
+      "text": "The dependency was recorded and feature 21 was moved out of Slice 5 into Foundation, to be built after feature 32. Both changes were made on the strength of the consequence paragraph.",
+      "cites": [
+        "0007#consequences:11"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 12863,
+    "output_tokens": 554,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.031266,
+  "recorded_usd": 0.031266
+}

@@ -1,0 +1,1329 @@
+{
+  "asked_at": "2026-10-22T20:25:13+00:00",
+  "question": "What's our monthly AWS bill running at right now since we started getting more active job seekers?",
+  "eval_file": null,
+  "eval_question": null,
+  "called": true,
+  "hops": 2,
+  "search_words": [
+    "what's",
+    "our",
+    "monthly",
+    "aws",
+    "bill",
+    "running",
+    "right",
+    "now",
+    "since",
+    "started",
+    "getting",
+    "more",
+    "active",
+    "job",
+    "seekers"
+  ],
+  "items": [
+    {
+      "id": "0002#consequences:5",
+      "line": "0002#consequences:5  Consequence  accepted  specs/0002-deployment-and-environments/index.md:277  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Both hosted environments are free. Nothing here introduces a monthly bill."
+    },
+    {
+      "id": "feature-16#16-eval-harness-runner:13",
+      "line": "feature-16#16-eval-harness-runner:13  unclassified  held  scope/scope.md:325  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Corrected 2026-09-08 after review**: this line first claimed both recorded gaps were closed. Only the `report.ts` one was. The second, `harness.test.ts`'s own inline orchestration, stayed untested, and the Fable review found a real defect living in exactly it: Vitest runs `afterAll` even when `beforeAll` threw, so a run that never started wrote a report reading `status: \"completed\"` with all sixteen pairs `skipped`, a refused run described as a full run that scored nothing. That orchestration is now **partly** covered: the report assembly moved out of the `afterAll` into `buildEvalReport()` in `test/eval/report.ts`, with nine more free tests over it including the not started branch, taking `eval-report.test.ts` to 30 and these three files to 36. What is still inline in the `afterAll`, the hook ordering and the fixture user cleanup, remains provable only by a paid run"
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:11",
+      "line": "feature-5#5-design-system-ui-foundation-done:11  BuildStep  accepted  scope/scope.md:114  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Keyboard, focus, and responsive verification pass across every component, satisfies AC-13, AC-14 · run 2026-08-27 in a real browser at 1440px and 320px: all 8 controls keyboard reachable with a 2px teal `:focus-visible` ring and a real name, zero horizontal overflow at 320px, `prefers-contrast: more` / `forced-colors: active` / `prefers-reduced-motion` each confirmed by measured computed style. **The reduced motion half of that was wrong**, corrected 2026-08-28: the step read the animation duration only, which collapsed as designed, while the delay survived and left match cells invisible for up to 350ms. Found by feature 6's browser pass, fixed in `globals.css` and locked by [globals.test.ts](../../src/app/globals.test.ts); the step now reads the cells' opacity instead of the property"
+    },
+    {
+      "id": "0009#follow-up:4",
+      "line": "0009#follow-up:4  FollowUp  accepted  specs/0009-terms-and-privacy-notices/index.md:569  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Two recipient registry entries were wrong. Found by the cross check on this revision and fixed the same day, 2026-09-01.** `NEXT_PUBLIC_VERCEL_ENV` sat in `ENV_KEYS_WITH_NO_RECIPIENT` saying it \"carries nothing outward\", which was false: both Sentry configs pass it as `environment`, so Sentry stamps it on every event, and it now sits in Sentry's `envKeys`. `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA`'s reason claimed it tags a Sentry event, but the SDK infers the release from the separate unprefixed `VERCEL_GIT_COMMIT_SHA` and the declared key is read nowhere under `src/`; the classification was right and only the reason was wrong. Neither was ever visible on the page, since that list is not rendered, so both were a weakened guard rather than a false public claim."
+    },
+    {
+      "id": "feature-15#15-eval-ground-truth-set-done:15",
+      "line": "feature-15#15-eval-ground-truth-set-done:15  unclassified  held  scope/scope.md:312  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "_This tier carries no `Review it` box, so two fresh model rounds ran on Sonnet without one and are recorded here instead. Round one, [findings](../reviews/2026-09-07-feat-eval-ground-truth-set.md), covered the nine file build and returned Approve with nits; its four findings are all closed. Round two, [findings](../reviews/2026-09-07-feat-eval-ground-truth-set-prompt-tests.md), reviewed the prompt rendering tests alone and found a real Major: a salary leak rendered as `191,919` defeated the substring guard and shipped green past all 1107 tests. The guard now compares two whole renders instead of searching for digits, and the same regression fails 16 tests. Round two's second Major did not survive checking, since it rested on running one folder rather than the full suite._"
+    },
+    {
+      "id": "0019#feature-design:7",
+      "line": "0019#feature-design:7  Constraint  held  specs/0019-cross-vendor-self-check/index.md:73  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-9's stated assumption, made explicit and falsifiable**: because `checkFitScore()` for a listing is only ever called after that listing's own `scoreListing()` succeeds (AC-5), and `usage_cap`'s seeded ceilings are identical for `ai_scoring` and `ai_check` at every cadence (spec 0012 AC-8), the check tier's budget cannot be exhausted while the scoring tier's own budget still has room, PROVIDED every `ai_check` call in production is one this feature dispatches. Four named ways this can break, any one of which is reason to revisit AC-9: (1) this feature's sample rate is ever lowered below 1.0; (2) `usage_cap`'s two tiers are ever set to different ceilings; (3) a batch straddles a `usage_cap` window boundary (the daily and monthly caps reset on a UTC clock), since a listing scored just before the boundary can be checked just after it, spending against the new window's `ai_check` cap while the matching `ai_scoring` spend landed in the window that just closed, breaking the same window assumption even though the per listing ordering (score, then check) never does; (4) any future caller dispatches an `ai_check` call outside this feature's own scored-then-checked chain (a live test, a future eval of the check itself), which would consume budget this invariant does not account for."
+    },
+    {
+      "id": "0011#follow-up:3",
+      "line": "0011#follow-up:3  FollowUp  accepted  specs/0011-usage-gating-and-kill-switch/index.md:205  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Also the natural owner of a retention rule** (fresh model review, 2026-09-03): rows accumulate one per account per week plus two per day plus two per month, indefinitely, with no pruning and the only removal path an unbuilt feature 31's account deletion cascade. This is now a privacy question, not just a storage one, since `usage_gate_counter` is listed under \"Your job search usage\" in the privacy notice (`src/features/legal/stored-fields.ts`) with no stated retention period for what it keeps forever."
+    },
+    {
+      "id": "0016#follow-up:8",
+      "line": "0016#follow-up:8  FollowUp  accepted  specs/0016-eval-ground-truth-set/index.md:182  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "This set was authored by reading `BAND_ANCHORS` directly, never independently of it, which narrows what feature 16's harness can be said to prove. The anchors were never bent to fit these pairs, since their text never changed, but these pairs were written from the anchors. The consequence is that feature 16's harness proves the scorer reads `BAND_ANCHORS` the way a careful human reader of that same text would, not that `BAND_ANCHORS` reflects valid real world judgment about job fit. This is a scope limitation rather than a defect and nothing needs fixing now. What would actually close it is a genuinely blind second opinion, a person or a model scoring the same raw postings and profiles with `BAND_ANCHORS` withheld entirely, and the two sets of answers then compared; rewriting the existing set would not close it, since any rewrite inherits the same anchors."
+    },
+    {
+      "id": "0005#component-design:13",
+      "line": "0005#component-design:13  TestScenario  accepted  specs/0005-design-system-and-ui-foundation/index.md:110  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`forced-colors: active` and `prefers-contrast: more` emulation confirms borders and text remain visible without relying on shadow or fill alone, verifies **AC-12**."
+    },
+    {
+      "id": "0020#decision:12",
+      "line": "0020#decision:12  Consequence  accepted  specs/0020-spend-visibility-and-gating-polish/index.md:60  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "`searchListings()` returns a `Result` and does not reject for an expected failure, so a rejection here is a programmer bug (a throw from `cookies()` or the span wrapper) and belongs at the error boundary, exactly as before. What changes is that two components await the same rejected promise rather than one, so a single programmer bug reaches **three** reporting channels rather than two. Next logs it where `SearchResults` awaits and again where `UsageNotice` does, since awaiting an already rejected promise throws the same value again rather than a copy. Sentry then captures it a third time, independently of the render pipeline, through `onUnhandledRejectionIntegration()`, which is active because `src/sentry.server.config.ts` calls `Sentry.init({ dsn })` and passes no `integrations` key, so the Node defaults stand."
+    },
+    {
+      "id": "feature-11#11-job-search-results-list:8",
+      "line": "feature-11#11-job-search-results-list:8  Constraint  held  scope/scope.md:230  hit",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "This feature owns the real attribution asset. Getting the real mark and meeting the source's terms is part of this feature, not a detail inherited from the shell."
+    },
+    {
+      "id": "feature-31#31-seeded-demo-account-done:32",
+      "line": "feature-31#31-seeded-demo-account-done:32  Constraint  accepted  scope/scope.md:413  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**Resolved by spec 0021's revision, 2026-09-14** (was left to `/architect`, not decided in this pass): the refresh shares the existing `job_search`/`ai_scoring`/`ai_check` caps rather than getting its own call type, but authenticates as a dedicated internal identity so its account scope budget is separate from any real user's regardless;"
+    },
+    {
+      "id": "0007/AC-4",
+      "line": "0007/AC-4  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:25  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-4**: `redirectTo` is built from `currentOrigin()` and never from `canonicalSiteUrl`. The PKCE code verifier is a **host only** cookie written on whichever host served the action, so sign in only completes when it is started on the host `currentOrigin()` will return to. Two hostnames can break that, and they are handled differently on purpose:\n  - **Preview**: `currentOrigin()` returns the **branch** URL, so sign in must be started there. Starting it on a per commit preview URL fails at the exchange with `exchange_failed`. Documented expected behaviour, not a misconfiguration.\n  - **Production**: `currentOrigin()` returns `canonicalSiteUrl`, now `https://usejobhunt.dev`, so a sign in started on the old `usejobhunt.vercel.app` would write the verifier there and be returned to a host that never receives it. **Mitigated at the platform rather than documented**: Vercel 308 redirects the old host, so it cannot serve the application at all and the verifier can never be written on it. Deliberately **not** done in `proxy.ts`"
+    },
+    {
+      "id": "scope#resolved:2",
+      "line": "scope#resolved:2  Consequence  accepted  scope/scope.md:522  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**What it fixed**: the product now serves from a domain it owns, and that redirect is what spec 0007 **AC-4** leans on to stop a sign in being started on a hostname the callback never returns to."
+    },
+    {
+      "id": "0011#summary:2",
+      "line": "0011#summary:2  Constraint  accepted  specs/0011-usage-gating-and-kill-switch/index.md:8  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "Every outbound Adzuna (the job listing source) search call passes through one atomic database check first: does the caller's own weekly count, the app's daily count, and the app's monthly count all still have room."
+    },
+    {
+      "id": "0011/AC-1",
+      "line": "0011/AC-1  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:26  hit",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 0,
+      "text": "**AC-1**: A `job_search` call attempt is decided by one atomic database function that checks three windows together in the same call: the caller's own weekly count, the app wide daily count, and the app wide monthly count. Proven atomic under concurrent calls against a real database connection, not a mock."
+    },
+    {
+      "id": "0005/AC-13",
+      "line": "0005/AC-13  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:30  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-13**: Every base component is reachable by keyboard, shows a visible focus indicator, and carries a real accessible label (WCAG 2.2 AA)."
+    },
+    {
+      "id": "0005/AC-14",
+      "line": "0005/AC-14  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:31  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-14**: Every base component holds up responsively from phone width to desktop, designed desktop first per the project's standing rule."
+    },
+    {
+      "id": "0012/AC-8",
+      "line": "0012/AC-8  AcceptanceCriterion  accepted  specs/0012-model-client-router/index.md:27  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-8**: `usage_cap` holds six seed rows from this feature's migration: `(ai_scoring, account, week, 500)`, `(ai_scoring, global, day, 1320)`, `(ai_scoring, global, month, 40000)`, `(ai_check, account, week, 500)`, `(ai_check, global, day, 1320)`, `(ai_check, global, month, 40000)`. These are `job_search`'s own cadence numbers (25 / 66 / 2000 searches) multiplied by `RESULTS_PER_PAGE` (`src/features/search/adzuna.ts:36`, `= 20`); `ai_check` mirrors `ai_scoring` at its own sample rate of 1.0. Neither tier is `usage_gate_misconfigured` from the moment this feature ships."
+    },
+    {
+      "id": "0019/AC-5",
+      "line": "0019/AC-5  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:22  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-5**: A listing's check runs only after that listing's own `scoreListing()` call resolves with `{ allowed: true }`. A refused or failed score never triggers a check call."
+    },
+    {
+      "id": "0019/AC-9",
+      "line": "0019/AC-9  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:26  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-9**: An `ai_check` gate refusal adds no page level notice of its own (unlike spec 0015 AC-11's scoring refusal notice); it renders only through AC-7's unverifiable state. This rests on an explicit, falsifiable assumption, stated in this spec's Key invariants: because a check only ever follows a successful score, and both tiers share identical `usage_cap` ceilings (spec 0012 AC-8), `ai_check`'s budget cannot exhaust before `ai_scoring`'s already has, by which point spec 0015 AC-11's own notice is already showing."
+    },
+    {
+      "id": "0005/AC-12",
+      "line": "0005/AC-12  AcceptanceCriterion  accepted  specs/0005-design-system-and-ui-foundation/index.md:29  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**AC-12**: `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` are handled with native Tailwind v4 CSS, with no bespoke JavaScript media query handling."
+    },
+    {
+      "id": "0007#copy:5",
+      "line": "0007#copy:5  Constraint  accepted  specs/0007-auth-and-per-user-isolation/index.md:254  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "**`COPY-4`'s \"Start again from here. An older tab or link won't work.\" is the AC-4 fix in plain words, not politeness.** The clause is load bearing and must not be trimmed for brevity."
+    },
+    {
+      "id": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "line": "feature-7#7-auth-per-user-isolation-done-ga:12  BuildStep  accepted  scope/scope.md:139  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The thin thread, Google only, proved on a preview: both provider stanzas in `config.toml` with the local redirect URLs corrected, `src/features/auth/` with `signInWithGoogle()` and the `/auth/callback` route handler, `/sign-in` rebuilt as a real page with the five member error enum, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18 · **done 2026-08-30**"
+    },
+    {
+      "id": "0011#build-plan:1",
+      "line": "0011#build-plan:1  BuildStep  accepted  specs/0011-usage-gating-and-kill-switch/index.md:174  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Write the migration: `usage_cap` and `usage_gate_counter` with their checks, partial unique indexes, `enable` plus `force row level security`, the explicit grants, the three seed rows for `job_search`, and the `check_usage_gate` function with its fixed lock order, UTC computed windows (including the month formula), the `configured` output column, and `SECURITY DEFINER` hardening comment explaining why, satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**."
+    },
+    {
+      "id": "0011#build-plan:5",
+      "line": "0011#build-plan:5  BuildStep  accepted  specs/0011-usage-gating-and-kill-switch/index.md:178  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Prove the thin end to end thread with the integration tests from Critical test scenarios, all driven through the Data API with a real minted session: allow under cap, refuse over cap with no budget consumed and the attempt still counted, refuse an unknown or partially configured `call_type`, refuse under each of the two kill switch reasons, and the sized concurrent call scenario, satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**."
+    },
+    {
+      "id": "0011#feature-design:40",
+      "line": "0011#feature-design:40  TestScenario  accepted  specs/0011-usage-gating-and-kill-switch/index.md:166  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Happy path: a `job_search` call under all three caps is allowed, and `consumed_count` and `attempt_count` both increment on all three window rows, verifies **AC-1**, **AC-9**."
+    },
+    {
+      "id": "0011#feature-design:41",
+      "line": "0011#feature-design:41  TestScenario  accepted  specs/0011-usage-gating-and-kill-switch/index.md:167  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Failure case: a burst of concurrent calls for the same minted account (sized to what the Data API's own statement timeout allows, not an arbitrary large number), land exactly the account weekly cap's worth of allowed calls and refuse the rest, with every refused call still counted in `attempt_count` and none of them touching `consumed_count`, verifies **AC-1**, **AC-2**."
+    },
+    {
+      "id": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "line": "feature-10#10-usage-gating-kill-switch-done-ga:11  BuildStep  accepted  scope/scope.md:215  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "Schema and the atomic gate function: `usage_cap` and `usage_gate_counter` with their checks, partial unique indexes, row level security enabled and forced, the fixed lock order, UTC computed windows, and the `configured` output column, satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15"
+    },
+    {
+      "id": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "line": "feature-10#10-usage-gating-kill-switch-done-ga:13  BuildStep  accepted  scope/scope.md:217  hop 1",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 1,
+      "text": "The thin end to end proof: the `usage_gate.check` span registered and opened first, and the integration test suite proving atomicity, every refusal reason, and the fail closed database error path, satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14"
+    },
+    {
+      "id": "0005#build-plan:12",
+      "line": "0005#build-plan:12  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:157  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Build the gated preview route at `src/app/(marketing)/ui-preview/page.tsx`, rendering every component above at every variant behind `UI_PREVIEW_ENABLED` (see `## Configuration required`), then run the keyboard, focus, `prefers-reduced-motion`, and responsive pass against it, satisfies **AC-13**, **AC-14**. The same surface is what step 3's `forced-colors` and `prefers-contrast` checks are exercised against too; those remain **AC-12**'s and are not re-tagged here"
+    },
+    {
+      "id": "0005#component-design:11",
+      "line": "0005#component-design:11  TestScenario  accepted  specs/0005-design-system-and-ui-foundation/index.md:108  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Keyboard only pass over every base component (`Button`, `Card`'s interactive regions, `Chip`, `Section` anchors) confirms focus order and visible focus, verifies **AC-13**."
+    },
+    {
+      "id": "0012#build-plan:2",
+      "line": "0012#build-plan:2  BuildStep  accepted  specs/0012-model-client-router/index.md:83  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the migration seeding the six `usage_cap` rows for `ai_scoring` and `ai_check` at the corrected values (`500` / `1320` / `40000`, see Rationale). Blocked until feature 10's `usage_cap` table exists on `main` (see Consequences), satisfies **AC-8**."
+    },
+    {
+      "id": "0012#build-plan:9",
+      "line": "0012#build-plan:9  BuildStep  accepted  specs/0012-model-client-router/index.md:90  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Write the critical test scenarios above: the `classify()` unit tests (no vendor call needed), a zeroed cap refusing without reaching a vendor, and, gated behind `TEST_LIVE_MODEL_CALLS_ENABLED`, both tiers reaching two real, different vendors, satisfies **AC-1** through **AC-8**."
+    },
+    {
+      "id": "0012#feature-design:15",
+      "line": "0012#feature-design:15  TestScenario  accepted  specs/0012-model-client-router/index.md:77  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case: a `usage_cap` row set to `0` for a tier in a test refuses every call to that tier with `success({ allowed: false, reason: \"account_week_cap_reached\" })` (or the matching reason), and the vendor is never called, verifies **AC-4**, **AC-8**."
+    },
+    {
+      "id": "0015/AC-11",
+      "line": "0015/AC-11  AcceptanceCriterion  accepted  specs/0015-fit-scoring-with-shown-reasoning/index.md:33  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-11**: When any of the concurrent calls is refused by the usage gate (`{ allowed: false }`), the affected cards show no band and no per card failure note. Instead, one page level notice appears once, naming the limit reached (reusing the existing `SENTENCES` table keyed by `UsageGateReason`, spec 0011). When refusals in the same batch carry more than one distinct reason, the notice uses whichever reason the first refused call, in the listing's original order, carried. Kept visibly distinct from the per card failure state in AC-10."
+    },
+    {
+      "id": "0019#build-plan:4",
+      "line": "0019#build-plan:4  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:102  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Extend `score-listings.ts`: change `scoreListings()`'s per listing dispatch to, after `scoreListing()` resolves, call `checkFitScore()` (threading the same `cookieAdapter` seam) when the score succeeded and `matchedSkills` is non-empty (AC-4, AC-5), otherwise record the matching skip variant; change the return type to `readonly ListingOutcome[]`; extend the existing `scoring.score_listings` span with the four new attributes once every outcome resolves, satisfies **AC-4**, **AC-5**, **AC-10**."
+    },
+    {
+      "id": "0019#build-plan:7",
+      "line": "0019#build-plan:7  BuildStep  accepted  specs/0019-cross-vendor-self-check/index.md:105  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Update `score-listings.test.ts` and `src/app/(app)/search/page.test.ts` for the new `ListingOutcome` return shape (spec 0015's own scoring assertions are unaffected; `scoreListing()` itself is untouched), and write this feature's own critical test scenarios above, satisfies **AC-1** through **AC-13**."
+    },
+    {
+      "id": "0019#feature-design:18",
+      "line": "0019#feature-design:18  TestScenario  accepted  specs/0019-cross-vendor-self-check/index.md:93  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Failure case, unverifiable: a constructed `ai_check` vendor error and a zeroed `ai_check` `usage_cap` row both resolve to the AC-7 unverifiable state on the affected card, with the displayed matched skills unchanged, verifies **AC-7**, **AC-9**."
+    },
+    {
+      "id": "0019#follow-up:6",
+      "line": "0019#follow-up:6  FollowUp  accepted  specs/0019-cross-vendor-self-check/index.md:128  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "If a future change ever lowers the check tier's sample rate below 1.0, gives `ai_scoring` and `ai_check` different `usage_cap` ceilings, or adds any `ai_check` caller outside this feature's own scored-then-checked chain, AC-9's decision to skip a page level notice for a check refusal must be revisited; the four named ways this can break are stated in Key invariants specifically so they can be checked again, including the UTC window boundary case."
+    },
+    {
+      "id": "0019/AC-7",
+      "line": "0019/AC-7  AcceptanceCriterion  accepted  specs/0019-cross-vendor-self-check/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: Once a listing's score and, when applicable, its check have both resolved, the card renders exactly one of three states: clean (nothing to note), flagged (each ungrounded skill removed from the displayed matched list, with one note naming the removed skill or skills, stating they could not be verified against the excerpt shown), or unverifiable (a note that skill matches could not be checked for this listing, with the displayed matched list left exactly as scored). Unverifiable covers a check timeout, a vendor error, and a gate refusal alike, rendered identically at the card level, even though a refusal and a failure remain two structurally distinct results (spec 0012's own invariant, unchanged)."
+    },
+    {
+      "id": "feature-13#13-model-client-router-done:11",
+      "line": "feature-13#13-model-client-router-done:11  BuildStep  accepted  scope/scope.md:270  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Configuration: `@ai-sdk/openai`, `@ai-sdk/google` and `ai` added, the two vendor keys validated in `src/env.ts`, and the six `usage_cap` seed rows migrated for `ai_scoring` and `ai_check` (AC-8, AC-10)"
+    },
+    {
+      "id": "feature-13#13-model-client-router-done:15",
+      "line": "feature-13#13-model-client-router-done:15  BuildStep  accepted  scope/scope.md:274  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Tests: the source guard, the `classify()` unit tests, and the gated real vendor integration tests (AC-1 through AC-8)"
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:10  BuildStep  accepted  scope/scope.md:339  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Wire the check into `scoreListings()`'s dispatch and into `page.tsx` / `score-card.tsx`'s rendering (the three card states, the reasoning caveat, the unchanged band), covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13."
+    },
+    {
+      "id": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "line": "feature-17#17-cross-vendor-self-check-done-ga:11  BuildStep  accepted  scope/scope.md:340  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Observability and tests: extend the `scoring.score_listings` span, update the existing test suites for the new `ListingOutcome` shape, and write this feature's own critical test scenarios, covers AC-1 through AC-13."
+    },
+    {
+      "id": "unresolved:0012:see-rationale",
+      "line": "unresolved:0012:see-rationale  unresolved  held  specs/0012-model-client-router/index.md:11  hop 2",
+      "held": true,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "(see Rationale)"
+    },
+    {
+      "id": "0005#build-plan:3",
+      "line": "0005#build-plan:3  BuildStep  accepted  specs/0005-design-system-and-ui-foundation/index.md:148  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Add native `:focus-visible`, `forced-colors`, `prefers-contrast`, and `prefers-reduced-motion` CSS, porting the existing focus outline and adding explicit borders and heavier contrast under those media features, satisfies **AC-12**"
+    },
+    {
+      "id": "feature-5#5-design-system-ui-foundation-done:7",
+      "line": "feature-5#5-design-system-ui-foundation-done:7  BuildStep  accepted  scope/scope.md:110  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "Token layer: the seven token palette plus the new `--surface-sunken` token, font loading, the type scale, and the native accessibility CSS (`:focus-visible`, `forced-colors`, `prefers-contrast`, `prefers-reduced-motion`), satisfies AC-1, AC-2, AC-12"
+    },
+    {
+      "id": "0007/AC-1",
+      "line": "0007/AC-1  AcceptanceCriterion  accepted  HISTORY  specs/0007-auth-and-per-user-isolation/index.md:22  hop 2",
+      "held": false,
+      "history": true,
+      "replaced_by": [
+        "0008/AC-6"
+      ],
+      "hop": 2,
+      "text": "**AC-1**: A person signs in with Google, and separately with GitHub, on a deployed URL, and arrives signed in at `/health`. Signing out returns them to `/` with no session."
+    },
+    {
+      "id": "0008/AC-6",
+      "line": "0008/AC-6  AcceptanceCriterion  accepted  specs/0008-app-shell-and-navigation/index.md:53  hop 3",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 3,
+      "text": "**AC-6**: A user with no profile row lands on `/profile` after sign in, and a user with a profile row lands on `/search`. The callback no longer redirects to the literal `/health`. Observably: two accounts, one with a profile row and one without, signing in from the same starting point, arrive at different routes."
+    },
+    {
+      "id": "0007/AC-12",
+      "line": "0007/AC-12  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:35  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: `src/features/dev-session/` no longer exists, `signInWithDevPassword` no longer exists, `src/lib/supabase/browser.ts` no longer exists, and `/sign-in` renders the real page in every environment rather than a 404 outside development."
+    },
+    {
+      "id": "0007/AC-18",
+      "line": "0007/AC-18  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:41  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-18**: `supabase/config.toml` declares both providers with environment variable substitution, its local site and redirect URLs match what `currentOrigin()` actually returns locally, and both `pnpm db:start` and CI's `supabase start` still succeed."
+    },
+    {
+      "id": "0007/AC-2",
+      "line": "0007/AC-2  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:23  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: The whole handshake is server side. No file reachable from `/` or from `/sign-in` carries `\"use client\"`, so spec 0006 **AC-4** still holds after this feature ships, and both provider controls are `<form action={...}>` submits."
+    },
+    {
+      "id": "0007/AC-3",
+      "line": "0007/AC-3  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:24  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: The return leg lives at `src/app/auth/callback/route.ts`. No route handler under `src/app/api/` reads or writes user data, so binding rule 6 is untouched."
+    },
+    {
+      "id": "0007/AC-5",
+      "line": "0007/AC-5  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: Every failure path redirects to `/sign-in?error=<code>` and the page renders this product's own sentence for that code, verbatim from `## Copy`, **above the two provider forms**. The position is part of the criterion because five of the six sentences say \"below\" or \"from here\" and are wrong anywhere else. There are **five** codes, four raised by the callback and one by the sign in actions, listed in `## Feature design` under **Failure codes**. The provider's `error_description` reaches Sentry and never reaches the page."
+    },
+    {
+      "id": "0007/AC-6",
+      "line": "0007/AC-6  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: Each of the five codes carries the kind and severity given in the **Failure codes** table. A cancelled consent and a refused signup are `expected` and raise no alert; a failed exchange and an unreachable provider are `unexpected`. Every one is built by `failure()`, with no log line written beside it."
+    },
+    {
+      "id": "0007/AC-7",
+      "line": "0007/AC-7  AcceptanceCriterion  accepted  specs/0007-auth-and-per-user-isolation/index.md:30  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The `error` query value is parsed with Zod as a closed enum of exactly those five codes. An unrecognised value renders the one generic sentence (`COPY-6`) and is never echoed back to the page."
+    },
+    {
+      "id": "0011/AC-12",
+      "line": "0011/AC-12  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:37  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-12**: The three cap values (25 per account per week, 66 app wide per day, 2000 app wide per month, for `job_search`) live in a database configuration table editable with no deploy, not as a literal in code,"
+    },
+    {
+      "id": "0011/AC-13",
+      "line": "0011/AC-13  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:38  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-13**: The account scope is keyed on a session verified with `getClaims()`, matching the pattern already used everywhere else in this codebase (`proxy.ts`, `(app)/layout.tsx`, `profile/queries.ts`, `profile/actions.ts`), never `getSession()`, which reads the cookie's contents without verifying them against the auth server, and never a raw, unverified cookie read of any other kind."
+    },
+    {
+      "id": "0011/AC-14",
+      "line": "0011/AC-14  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:39  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-14**: A database failure while reading the cap configuration or writing the counters fails closed: the call is refused, matching the project's named risk rule and the kill switch's own existing fail closed default. `checkUsageGate()` inspects the `.rpc()` response's own `error` field before reading `configured`, `allowed`, or `reason`: a non null `error` maps to `database_unavailable`, and `data: null` with no `error` is itself also treated as `database_unavailable` rather than as an absent decision."
+    },
+    {
+      "id": "0011/AC-15",
+      "line": "0011/AC-15  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:40  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-15**: Both new tables (`usage_cap`, `usage_gate_counter`) have row level security enabled and forced, matching every existing table in the schema, even though neither carries a policy yet."
+    },
+    {
+      "id": "0011/AC-2",
+      "line": "0011/AC-2  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:27  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-2**: An attempt that would put any one of the three windows over its cap is refused, and refusing consumes no budget in any of the three windows. The attempt is still counted (see AC-9) in every window it was checked against, whether it was allowed or refused."
+    },
+    {
+      "id": "0011/AC-3",
+      "line": "0011/AC-3  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:28  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-3**: A refusal names one reason from a closed set (`account_week_cap_reached`, `global_day_cap_reached`, `global_month_cap_reached`). When more than one window is over at once, the reason names the caller's own window before either app wide window,"
+    },
+    {
+      "id": "0011/AC-4",
+      "line": "0011/AC-4  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:29  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-4**: An engaged kill switch refuses the call before the atomic window check ever runs, reading `readKillSwitch()` (feature 3) directly rather than a second reader of `app_settings`. It reports one of two reasons, never collapsed into one: `kill_switch_engaged` when the read succeeded and the switch reads on, `kill_switch_unavailable` when the read itself failed. Both fail the call closed; only the reason differs,"
+    },
+    {
+      "id": "0011/AC-5",
+      "line": "0011/AC-5  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:30  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-5**: A refusal, for any of the five reasons (AC-3's three plus AC-4's two), is never reported through `failure()`. It is a successful decision whose answer is no: `success({ allowed: false, reason })`."
+    },
+    {
+      "id": "0011/AC-6",
+      "line": "0011/AC-6  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:31  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-6**: An unrecognised `call_type`, or a `call_type` missing any one of its three required `usage_cap` rows (account/week, global/day, global/month; partial configuration is treated the same as none), is reported through `failure()` with a new `FailureKind` member, `usage_gate_misconfigured`, severity `unexpected`. The atomic function never raises to signal this: it returns `configured: boolean` as an ordinary output column, `configured: false` is what `checkUsageGate()` maps to this failure; the `allowed`/`reason` columns carry no meaning when `configured` is false."
+    },
+    {
+      "id": "0011/AC-7",
+      "line": "0011/AC-7  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:32  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-7**: The named span for the whole gate operation, `usage_gate.check`, opens as the first statement, before the kill switch pre-check and before anything else, including the `getClaims()` identity check in AC-13."
+    },
+    {
+      "id": "0011/AC-8",
+      "line": "0011/AC-8  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:33  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-8**: Trace sampling is 1.0 on `usage_gate.check` in production (already provided by the existing `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE` configuration from spec 0002)."
+    },
+    {
+      "id": "0011/AC-9",
+      "line": "0011/AC-9  AcceptanceCriterion  accepted  specs/0011-usage-gating-and-kill-switch/index.md:34  hop 2",
+      "held": false,
+      "history": false,
+      "replaced_by": [],
+      "hop": 2,
+      "text": "**AC-9**: Every call for a **configured** `call_type` that reaches the atomic gate function increments an attempt counter inside that same function, unconditionally, regardless of the decision, so a hammered and blocked window is distinguishable from a quiet one purely from the stored counters, independent of Sentry. An unconfigured `call_type` increments no counter at all (AC-6): corrected 2026-09-03, an earlier version of this criterion read \"every call,\" full stop, which let any authenticated caller create and grow `usage_gate_counter` rows without bound simply by varying `call_type`, since the counter write ran before the configuration check. Visibility into a misconfiguration does not depend on the write: `usage_gate_misconfigured` reaches Sentry as its own `unexpected` severity failure regardless of whether a counter row exists."
+    }
+  ],
+  "links": [
+    {
+      "type": "AMENDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "**The destination is SUPERSEDED, 2026-08-31, by spec 0008 AC-6**",
+      "held": false
+    },
+    {
+      "type": "CORRECTED_BY",
+      "source": "0011/AC-9",
+      "target": "0011/AC-9",
+      "phrase": "corrected 2026-09-03",
+      "held": true
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:12",
+      "target": "0005/AC-13",
+      "phrase": "satisfies **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:12",
+      "target": "0005/AC-14",
+      "phrase": "satisfies **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0005#build-plan:3",
+      "target": "0005/AC-12",
+      "phrase": "satisfies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-1",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-12",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-14",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-15",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-2",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-6",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:1",
+      "target": "0011/AC-9",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-6**, **AC-9**, **AC-12**, **AC-14**, **AC-15**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-1",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-13",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-14",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-2",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-3",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-4",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-5",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-6",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0011#build-plan:5",
+      "target": "0011/AC-9",
+      "phrase": "satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-5**, **AC-6**, **AC-9**, **AC-13**, **AC-14**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0012#build-plan:2",
+      "target": "0012/AC-8",
+      "phrase": "satisfies **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0012#build-plan:9",
+      "target": "0012/AC-8",
+      "phrase": "satisfies **AC-1** through **AC-8**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:4",
+      "target": "0019/AC-5",
+      "phrase": "satisfies **AC-4**, **AC-5**, **AC-10**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-5",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-7",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "0019#build-plan:7",
+      "target": "0019/AC-9",
+      "phrase": "satisfies **AC-1** through **AC-13**",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-12",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-14",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-15",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-6",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:11",
+      "target": "0011/AC-9",
+      "phrase": "satisfies AC-1, AC-2, AC-6, AC-9, AC-12, AC-14, AC-15",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-13",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-14",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-3",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-4",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-5",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-6",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-7",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-8",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-10#10-usage-gating-kill-switch-done-ga:13",
+      "target": "0011/AC-9",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-8, AC-9, AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-13#13-model-client-router-done:11",
+      "target": "0012/AC-8",
+      "phrase": "(AC-8, AC-10)",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-5",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-7",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:10",
+      "target": "0019/AC-9",
+      "phrase": "covers AC-4, AC-5, AC-7, AC-8, AC-9, AC-12, AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-5",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-7",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-17#17-cross-vendor-self-check-done-ga:11",
+      "target": "0019/AC-9",
+      "phrase": "covers AC-1 through AC-13",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:11",
+      "target": "0005/AC-13",
+      "phrase": "satisfies AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:11",
+      "target": "0005/AC-14",
+      "phrase": "satisfies AC-13, AC-14",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-5#5-design-system-ui-foundation-done:7",
+      "target": "0005/AC-12",
+      "phrase": "satisfies AC-1, AC-2, AC-12",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-1",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-12",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-18",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-2",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-3",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-4",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-5",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-6",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SATISFIES",
+      "source": "feature-7#7-auth-per-user-isolation-done-ga:12",
+      "target": "0007/AC-7",
+      "phrase": "satisfies AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-12, AC-18",
+      "held": false
+    },
+    {
+      "type": "SUPERSEDED_BY",
+      "source": "0007/AC-1",
+      "target": "0008/AC-6",
+      "phrase": "AC-6 replaces it.",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0007#copy:5",
+      "target": "0007/AC-4",
+      "phrase": "is the AC-4 fix in plain words",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-14",
+      "target": "0011/AC-6",
+      "phrase": "This matters beyond AC-6's misconfigured case",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-2",
+      "target": "0011/AC-9",
+      "phrase": "The attempt is still counted (see AC-9)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-5",
+      "target": "0011/AC-3",
+      "phrase": "AC-3's three plus AC-4's two",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-5",
+      "target": "0011/AC-4",
+      "phrase": "AC-3's three plus AC-4's two",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-7",
+      "target": "0011/AC-13",
+      "phrase": "including the `getClaims()` identity check in AC-13",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0011/AC-9",
+      "target": "0011/AC-6",
+      "phrase": "An unconfigured `call_type` increments no counter at all (AC-6)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0012/AC-8",
+      "target": "unresolved:0012:see-rationale",
+      "phrase": "(see Rationale)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0012/AC-8",
+      "phrase": "(spec 0012 AC-8)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0019/AC-5",
+      "phrase": "(AC-5)",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#feature-design:7",
+      "target": "0019/AC-9",
+      "phrase": "any one of which is reason to revisit AC-9",
+      "held": true
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019#follow-up:6",
+      "target": "0019/AC-9",
+      "phrase": "AC-9's decision to skip a page level notice for a check refusal must be revisited",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0012/AC-8",
+      "phrase": "both tiers share identical `usage_cap` ceilings (spec 0012 AC-8)",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0015/AC-11",
+      "phrase": "unlike spec 0015 AC-11's scoring refusal notice",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "0019/AC-9",
+      "target": "0019/AC-7",
+      "phrase": "it renders only through AC-7's unverifiable state",
+      "held": false
+    },
+    {
+      "type": "UNCLASSIFIED",
+      "source": "scope#resolved:2",
+      "target": "0007/AC-4",
+      "phrase": "that redirect is what spec 0007 **AC-4** leans on",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0005#component-design:11",
+      "target": "0005/AC-13",
+      "phrase": "verifies **AC-13**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0005#component-design:13",
+      "target": "0005/AC-12",
+      "phrase": "verifies **AC-12**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0011#feature-design:40",
+      "target": "0011/AC-1",
+      "phrase": "verifies **AC-1**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0011#feature-design:40",
+      "target": "0011/AC-9",
+      "phrase": "verifies **AC-1**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0011#feature-design:41",
+      "target": "0011/AC-1",
+      "phrase": "verifies **AC-1**, **AC-2**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0011#feature-design:41",
+      "target": "0011/AC-2",
+      "phrase": "verifies **AC-1**, **AC-2**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0012#feature-design:15",
+      "target": "0012/AC-8",
+      "phrase": "verifies **AC-4**, **AC-8**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:18",
+      "target": "0019/AC-7",
+      "phrase": "verifies **AC-7**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "0019#feature-design:18",
+      "target": "0019/AC-9",
+      "phrase": "verifies **AC-7**, **AC-9**",
+      "held": false
+    },
+    {
+      "type": "VERIFIES",
+      "source": "feature-13#13-model-client-router-done:15",
+      "target": "0012/AC-8",
+      "phrase": "(AC-1 through AC-8)",
+      "held": true
+    }
+  ],
+  "cut": 0,
+  "counted_input_tokens": 19630,
+  "bound_usd": 0.19926,
+  "ceiling_usd": 0.22,
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "prompt_version": "ask-2",
+  "corpus_commit": "2e40bcf",
+  "settled": true,
+  "raw_response": "{\"verdict\":\"not_supported\",\"claims\":[{\"text\":\"The only item that speaks to cost says both hosted environments are free and that nothing in the deployment spec introduces a monthly bill; it gives no AWS figure and says nothing about job seeker activity.\",\"cites\":[\"0002#consequences:5\"],\"basis\":\"text\"}],\"missing\":[\"Any current monthly AWS bill figure\",\"Any item on AWS as a provider or its costs\",\"Any item on active job seeker counts or usage growth\"]}",
+  "stop_reason": "end_turn",
+  "error": null,
+  "verdict": "not_supported",
+  "missing": [
+    "Any current monthly AWS bill figure",
+    "Any item on AWS as a provider or its costs",
+    "Any item on active job seeker counts or usage growth"
+  ],
+  "claims": [
+    {
+      "text": "The only item that speaks to cost says both hosted environments are free and that nothing in the deployment spec introduces a monthly bill; it gives no AWS figure and says nothing about job seeker activity.",
+      "cites": [
+        "0002#consequences:5"
+      ],
+      "basis": "text",
+      "rejected_ids": [],
+      "uncited": false,
+      "inferred": false,
+      "history": false,
+      "held_ids": []
+    }
+  ],
+  "usage": {
+    "input_tokens": 19630,
+    "output_tokens": 164,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost_usd": 0.0409,
+  "recorded_usd": 0.0409
+}
