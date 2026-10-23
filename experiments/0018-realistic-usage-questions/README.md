@@ -25,6 +25,35 @@
 - Total recorded cost: $1.022538 (sum of each record's `cost_usd`; not yet matched to the Console).
 - Dry run bound for Q2 to Q22 was $4.2547; the per call ceiling was $0.22.
 
+## Marks
+
+| Q | Mark | Note |
+|---|---|---|
+| Q1 | wrong | none |
+| Q2 | wrong | Feature 3 ("Deployment & environments", scope row 3) and spec 0002 are the same thing. The tool cited spec 0011's item naming "the emergency kill switch built in feature 3", but that name stayed unresolved: it was not linked to feature 3 or to spec 0002. So it said the decision was missing. |
+| Q3 | right | none |
+| Q4 | partly right | The rationale for the decision is not included. The items cited were correct and related to the question; they lacked the direct explanation for the choice. |
+| Q5 | right | none |
+| Q6 | right | The second claim arguably answers the question. It may not give all the answers, but it is a valid answer. |
+| Q7 | right | Right. Partly would also be a fair judgment, but explaining the difference between a failure and a refusal (a usage limit being a refusal) can be considered an answer. The cited items were not from spec 0011, and the alert ratio wording is in the source but not in the answer. |
+| Q8 | right | none |
+| Q9 | right | none |
+| Q10 | right | none |
+| Q11 | declined | The tool has no set verdict for a false premise. Its verdicts are answered, partly, not_supported and no_documented_link, so not_supported is the closest it can give. |
+| Q12 | declined | I don't see the model inventing anything. |
+| Q13 | declined | It did not stretch any of the related items (apply, search) into an answer about a Chrome extension. |
+| Q14 | declined | none |
+| Q15 | declined | none |
+| Q16 | declined | none |
+| Q17 | declined | none |
+| Q18 | declined | none |
+| Q19 | right | Marked against the question, not the committed line. "Not built" is the answer to the question; adding "a deferred idea" to the expected line was my mistake. It shows a needed improvement: when a related item exists (here, the deferred "Scheduled push digest" idea), the answer should give that context. Claim 3 says the scope document does not mention a digest, but scope.md:497 does; the tool checked only the preamble item it cited. |
+| Q20 | declined | none |
+| Q21 | declined | none |
+| Q22 | right | The answers are correct except for claim 3, which misreads "the author family" (the Opus model family that wrote the code) as the human author's family. |
+
+Answer questions (12): 9 right, 1 partly right, 2 wrong. Decline questions (10): 10 declined, 0 invented. Marked by the engineer on 2026-10-23.
+
 ## Results
 
 ### Q1
@@ -43,6 +72,7 @@
 - **Cited items**: 0014#consequences:10, 0002#build-plan:11, 0013#build-plan:4
 - **Cost**: $0.056654
 - **Record**: `artifacts/asks/2026-10-22T19-39-13Z-why-does-error-handling-pass.json`
+- **Mark**: wrong
 
 ### Q2
 
@@ -57,6 +87,8 @@
 - **Cited items**: 0011#summary:3, unresolved:0011:the-emergency-kill-switch-built-in-feature-3
 - **Cost**: $0.047404
 - **Record**: `artifacts/asks/2026-10-22T20-24-02Z-which-spec-decided-to-put.json`
+- **Mark**: wrong
+- **Note**: Feature 3 ("Deployment & environments", scope row 3) and spec 0002 are the same thing. The tool cited spec 0011's item naming "the emergency kill switch built in feature 3", but that name stayed unresolved: it was not linked to feature 3 or to spec 0002. So it said the decision was missing.
 
 ### Q3
 
@@ -74,6 +106,7 @@
 - **Cited items**: 0004#decision:3, 0004#follow-up:4, 0004/AC-12, 0015#follow-up:8, 0009/AC-24
 - **Cost**: $0.054986
 - **Record**: `artifacts/asks/2026-10-22T20-24-07Z-what-did-we-decide-about.json`
+- **Mark**: right
 
 ### Q4
 
@@ -89,6 +122,8 @@
 - **Cited items**: 0005/AC-6, 0005#build-plan:6, feature-5#5-design-system-ui-foundation-done:8, 0005/AC-2
 - **Cost**: $0.052592
 - **Record**: `artifacts/asks/2026-10-22T20-24-13Z-why-does-the-design-system.json`
+- **Mark**: partly right
+- **Note**: The rationale for the decision is not included. The items cited were correct and related to the question; they lacked the direct explanation for the choice.
 
 ### Q5
 
@@ -105,6 +140,7 @@
 - **Cited items**: 0007#consequences:11, 0009#summary:1, 0007#follow-up:10, feature-21#21-terms-privacy-notices-done-alpha:6, 0009/AC-22, 0007#consequences:10
 - **Cost**: $0.031266
 - **Record**: `artifacts/asks/2026-10-22T20-24-19Z-why-did-we-publish-the.json`
+- **Mark**: right
 
 ### Q6
 
@@ -122,6 +158,8 @@
 - **Cited items**: 0010/AC-5, 0010#feature-design:29, 0010#consequences:7, 0010#build-plan:4, 0010#feature-design:30
 - **Cost**: $0.055348
 - **Record**: `artifacts/asks/2026-10-22T20-24-25Z-why-does-updating-candidate-skills.json`
+- **Mark**: right
+- **Note**: The second claim arguably answers the question. It may not give all the answers, but it is a valid answer.
 
 ### Q7
 
@@ -137,6 +175,8 @@
 - **Cited items**: 0019/AC-7, 0015/AC-11, 0015/AC-10, 0019#consequences:9
 - **Cost**: $0.049512
 - **Record**: `artifacts/asks/2026-10-22T20-24-31Z-why-does-hitting-a-usage.json`
+- **Mark**: right
+- **Note**: Right. Partly would also be a fair judgment, but explaining the difference between a failure and a refusal (a usage limit being a refusal) can be considered an answer. The cited items were not from spec 0011, and the alert ratio wording is in the source but not in the answer.
 
 ### Q8
 
@@ -150,6 +190,7 @@
 - **Cited items**: 0007/AC-1, 0008/AC-6, 0008/AC-22
 - **Cost**: $0.048990
 - **Record**: `artifacts/asks/2026-10-22T20-24-38Z-what-replaced-sending-users-to.json`
+- **Mark**: right
 
 ### Q9
 
@@ -164,6 +205,7 @@
 - **Cited items**: 0014#consequences:6, 0013#decision:5, 0013#decision:1, 0013#decision:4, 0014#follow-up:6, 0014#follow-up:7
 - **Cost**: $0.056056
 - **Record**: `artifacts/asks/2026-10-22T20-24-44Z-is-it-still-true-that.json`
+- **Mark**: right
 
 ### Q10
 
@@ -179,6 +221,7 @@
 - **Cited items**: 0019/AC-6, 0019#build-plan:3, 0019#build-plan:2
 - **Cost**: $0.054060
 - **Record**: `artifacts/asks/2026-10-22T20-24-50Z-what-did-we-decide-about.json`
+- **Mark**: right
 
 ### Q11
 
@@ -195,6 +238,8 @@
 - **Cited items**: none
 - **Cost**: $0.045598
 - **Record**: `artifacts/asks/2026-10-22T20-24-55Z-hey-why-did-we-end.json`
+- **Mark**: declined
+- **Note**: The tool has no set verdict for a false premise. Its verdicts are answered, partly, not_supported and no_documented_link, so not_supported is the closest it can give.
 
 ### Q12
 
@@ -212,6 +257,8 @@
 - **Cited items**: 0003#feature-design:2, 0014#feature-design:4, 0003#follow-up:6, 0003#consequences:6
 - **Cost**: $0.034378
 - **Record**: `artifacts/asks/2026-10-22T20-24-59Z-why-did-we-decide-to.json`
+- **Mark**: declined
+- **Note**: I don't see the model inventing anything.
 
 ### Q13
 
@@ -227,6 +274,8 @@
 - **Cited items**: feature-31#31-seeded-demo-account-done:2, feature-12#12-apply-redirect-application-record-done:1, 0014#summary:2
 - **Cost**: $0.043340
 - **Record**: `artifacts/asks/2026-10-22T20-25-04Z-did-we-ever-decide-on.json`
+- **Mark**: declined
+- **Note**: It did not stretch any of the related items (apply, search) into an answer about a Chrome extension.
 
 ### Q14
 
@@ -243,6 +292,7 @@
 - **Cited items**: 0014/AC-6, 0014/AC-7
 - **Cost**: $0.052312
 - **Record**: `artifacts/asks/2026-10-22T20-25-08Z-did-we-add-a-salary.json`
+- **Mark**: declined
 
 ### Q15
 
@@ -259,6 +309,7 @@
 - **Cited items**: 0002#consequences:5
 - **Cost**: $0.040900
 - **Record**: `artifacts/asks/2026-10-22T20-25-13Z-what-s-our-monthly-aws.json`
+- **Mark**: declined
 
 ### Q16
 
@@ -275,6 +326,7 @@
 - **Cited items**: none
 - **Cost**: $0.052584
 - **Record**: `artifacts/asks/2026-10-22T20-25-17Z-how-are-we-handling-competition.json`
+- **Mark**: declined
 
 ### Q17
 
@@ -292,6 +344,7 @@
 - **Cited items**: 0001#decision:2, feature-11#11-job-search-results-list:1, 0013#requirements:1, scope#deferred:17
 - **Cost**: $0.025128
 - **Record**: `artifacts/asks/2026-10-22T20-25-28Z-why-did-we-put-the.json`
+- **Mark**: declined
 
 ### Q18
 
@@ -308,6 +361,7 @@
 - **Cited items**: 0015/AC-5, 0015/AC-9, 0019#build-plan:4, feature-13#13-model-client-router-done:11, feature-11#11-job-search-results-list:1, scope#deferred:13
 - **Cost**: $0.050934
 - **Record**: `artifacts/asks/2026-10-22T20-25-33Z-is-the-ranking-pipeline-hitting.json`
+- **Mark**: declined
 
 ### Q19
 
@@ -325,6 +379,8 @@
 - **Cited items**: 0006/AC-8, 0015/AC-11, 0015/AC-15, scope#preamble:1
 - **Cost**: $0.047938
 - **Record**: `artifacts/asks/2026-10-22T20-25-38Z-did-we-ever-add-a.json`
+- **Mark**: right
+- **Note**: Marked against the question, not the committed line. "Not built" is the answer to the question; adding "a deferred idea" to the expected line was my mistake. It shows a needed improvement: when a related item exists (here, the deferred "Scheduled push digest" idea), the answer should give that context. Claim 3 says the scope document does not mention a digest, but scope.md:497 does; the tool checked only the preamble item it cited.
 
 ### Q20
 
@@ -341,6 +397,7 @@
 - **Cited items**: feature-12#12-apply-redirect-application-record-done:1, 0014/AC-2, 0014/AC-18, 0014/AC-9
 - **Cost**: $0.030464
 - **Record**: `artifacts/asks/2026-10-22T20-25-44Z-is-there-an-interview-calendar.json`
+- **Mark**: declined
 
 ### Q21
 
@@ -361,6 +418,7 @@
 - **Cited items**: 0002#consequences:5, scope#preamble:1, 0012#follow-up:11, 0012/AC-8
 - **Cost**: $0.046140
 - **Record**: `artifacts/asks/2026-10-22T20-25-48Z-what-s-the-typical-monthly.json`
+- **Mark**: declined
 
 ### Q22
 
@@ -378,4 +436,6 @@
 - **Cited items**: feature-21#21-terms-privacy-notices-done-alpha:1, 0006#consequences:2, feature-28#28-spend-visibility-gating-polish-done:15
 - **Cost**: $0.045954
 - **Record**: `artifacts/asks/2026-10-22T20-25-54Z-was-anyone-else-on-the.json`
+- **Mark**: right
+- **Note**: The answers are correct except for claim 3, which misreads "the author family" (the Opus model family that wrote the code) as the human author's family.
 
