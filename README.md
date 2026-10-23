@@ -112,7 +112,7 @@ Each run file records the model, the prompt version, the corpus commit and the t
 
 ### An experiment log
 
-[`experiments/`](experiments/) holds 17 records. Several of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
+[`experiments/`](experiments/) holds 18 records. Several of them committed a prediction, a decision rule or a blinded ruling sheet before the results existed. Each is scored as written, and the misses stay in.
 
 ## Specs and experiments
 
@@ -133,6 +133,7 @@ Each run file records the model, the prompt version, the corpus commit and the t
 | [Experiment 0011](experiments/0011-eval-runner/README.md): first full eval | No question passed. |
 | [Experiment 0014](experiments/0014-review-volume-and-routing-policy/README.md): routing policy | Both defaults flipped under the rule committed before the run. |
 | [Experiment 0015](experiments/0015-whole-corpus-run/README.md): whole corpus run | The walk passed 1 of 5, the absence question. This led to the redesign. |
+| [Experiment 0018](experiments/0018-realistic-usage-questions/README.md): realistic questions | 22 questions in everyday words: 9 of 12 answerable ones right and 1 partly right; all 10 it should decline declined, nothing invented. |
 
 ## License
 
