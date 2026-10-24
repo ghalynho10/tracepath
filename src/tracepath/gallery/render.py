@@ -143,7 +143,7 @@ article { padding: 28px 0 32px; border-bottom: 1px solid var(--rule); }
 article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight: 700;
   letter-spacing: -.035em; margin: 0 0 18px; }
 .question { font-size: 20px; line-height: 1.4; margin: 0 0 10px; max-width: 36rem; }
-.details { font: 500 11px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase;
+.details { font: 500 11px/1.4 var(--mono); letter-spacing: .06em;
   color: var(--ink-46); margin: 0 0 22px; }
 .verdict, .mark { display: inline-flex; gap: .4em; align-items: baseline; margin: 0 8px 8px 0;
   padding: 4px 13px; border-radius: 999px; font-size: 13px; line-height: 1.5; }
@@ -165,7 +165,7 @@ article ol > li::before { content: counter(claim, decimal-leading-zero); positio
 .cites { margin: 8px 0 0; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
 .labels { margin: 8px 0 0; font-size: 10px; line-height: 1.4; font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64); }
+  letter-spacing: .16em; color: var(--ink-64); }
 .eyebrow, details > summary { margin: 22px 0 6px; font-size: 10px; line-height: 1;
   font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64); }
 article > ul { margin: 0; padding-left: 1.1em; color: var(--ink-82); }
