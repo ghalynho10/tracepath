@@ -4,9 +4,11 @@ Every stored text is escaped, so markup in a record shows as text (AC-24). The p
 has inline styles only and refers to no other file of the site (AC-58).
 """
 
+from collections.abc import Mapping
 from html import escape
 from urllib.parse import quote
 
+from tracepath.gallery.citations import ItemLine, item_link
 from tracepath.gallery.records import Entry, Section
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
@@ -29,8 +31,29 @@ def _text(value: str) -> str:
     return f'<span class="stored">{escape(value)}</span>'
 
 
+def _citation(cited: str, rejected: tuple[str, ...], items: Mapping[str, ItemLine]) -> str:
+    """One cited id, linked to its line in JobHunt; a rejected id gets no link (AC-41)."""
+    link = None if cited in rejected else item_link(items[cited])
+    if link is None:
+        return escape(cited)
+    whole = ", whole file" if items[cited].line is None else ""
+    return f'<a href="{escape(link)}">{escape(cited)}{whole}</a>'
+
+
 def _claims(entry: Entry) -> str:
-    rows = "".join(f"<li>{_text(claim.text)}</li>" for claim in entry.record.claims)
+    items = {item.id: item for item in entry.items}
+    rows = "".join(
+        f"<li>{_text(claim.text)}"
+        + (
+            '<p class="cites">Cites: '
+            + ", ".join(_citation(c, claim.rejected_ids, items) for c in claim.cites)
+            + "</p>"
+            if claim.cites
+            else ""
+        )
+        + "</li>"
+        for claim in entry.record.claims
+    )
     return f"<ol>{rows}</ol>" if rows else "<p>No claims.</p>"
 
 

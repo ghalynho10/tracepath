@@ -16,9 +16,18 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from tracepath.ask.record import ASKS_DIR
+from tracepath.gallery.citations import (
+    JOBHUNT_COMMIT,
+    ItemLine,
+    is_pinned_commit,
+    parse_item_line,
+)
 
 #: The marks file, relative to the repository root: the only list of what is shown.
 MARKS_FILE = Path("gallery") / "marks.json"
+
+#: The pinned JobHunt snapshot every linked item is checked against (AC-38, AC-39).
+SNAPSHOT_DOCS = Path("corpus") / "jobhunt" / "docs"
 
 #: The marks the engineer gives an answer (AC-11).
 Mark = Literal["right", "partly right", "wrong", "declined"]
@@ -109,11 +118,12 @@ SECTION_BY_EVAL_FILE: Mapping[str | None, Section] = MappingProxyType(
 
 @dataclass(frozen=True)
 class Entry:
-    """One shown answer: its marks entry, the record it names, and its section."""
+    """One shown answer: its marks entry, the record, its section, and its items' lines."""
 
     marks: MarksEntry
     record: AskRecord
     section: Section
+    items: tuple[ItemLine, ...]
 
 
 def _read_json(path: Path) -> object:
@@ -184,8 +194,66 @@ def load_entries(root: Path) -> tuple[Entry, ...]:
                 f"{entry.record}, which is not in {ASKS_DIR.as_posix()}/"
             )
         record = read_record(root, entry.record)
-        entries.append(Entry(entry, record, section_of(entry.record, record)))
+        section = section_of(entry.record, record)
+        entries.append(Entry(entry, record, section, checked_items(root, entry.record, record)))
     return tuple(entries)
+
+
+def _line_count(docs: Path, file: str) -> int | None:
+    """How many lines a snapshot file has, first line 1; None when it is not in the snapshot."""
+    path = (docs / file).resolve()
+    if not path.is_relative_to(docs.resolve()) or not path.is_file():
+        return None
+    return len(path.read_text(encoding="utf-8").splitlines())
+
+
+def checked_items(root: Path, name: str, record: AskRecord) -> tuple[ItemLine, ...]:
+    """Each item's parsed line, once the record's commit, items and citations check out.
+
+    Every item that gets a link is checked against the snapshot, cited or not
+    (AC-7, AC-37 to AC-40, AC-42).
+    """
+    if not is_pinned_commit(record.corpus_commit):
+        raise GalleryError(
+            f"{name}: corpus_commit {record.corpus_commit!r} is not the pinned commit "
+            f"{JOBHUNT_COMMIT}"
+        )
+    docs = root / SNAPSHOT_DOCS
+    counts: dict[str, int | None] = {}
+    parsed: list[ItemLine] = []
+    for item in record.items:
+        line = parse_item_line(item.line)
+        if line is None or line.id != item.id:
+            raise GalleryError(
+                f"{name}: item {item.id}: stored line {item.line!r} has no known shape"
+            )
+        if line.file is not None:
+            if line.file not in counts:
+                counts[line.file] = _line_count(docs, line.file)
+            count = counts[line.file]
+            if count is None:
+                raise GalleryError(
+                    f"{name}: item {item.id}: {line.file} is not in {SNAPSHOT_DOCS.as_posix()}/"
+                )
+            if line.line is not None and not 1 <= line.line <= count:
+                raise GalleryError(
+                    f"{name}: item {item.id}: line {line.line} is outside {line.file} "
+                    f"(lines 1 to {count})"
+                )
+        parsed.append(line)
+    by_id = {line.id: line for line in parsed}
+    for claim in record.claims:
+        for cited in claim.cites:
+            if cited in claim.rejected_ids:
+                continue
+            if cited not in by_id:
+                raise GalleryError(
+                    f"{name}: a claim cites {cited}, which is neither among the record's "
+                    "items nor in the claim's rejected_ids"
+                )
+            if by_id[cited].file is None:
+                raise GalleryError(f"{name}: item {cited} is cited but has no stored file or path")
+    return tuple(parsed)
 
 
 def refuse_read_only_out(root: Path, out: Path) -> None:

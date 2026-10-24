@@ -4,15 +4,18 @@ import json
 import re
 import shutil
 import socket
+from collections.abc import Callable
 from html import escape
 from pathlib import Path
+from typing import Any
 
 import pytest
 from typer.testing import CliRunner
 
 from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
-from tracepath.gallery.records import MARKS_FILE
+from tracepath.gallery.citations import JOBHUNT_COMMIT, parse_item_line
+from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,7 +57,7 @@ MARKS: tuple[dict[str, object], ...] = (
 runner = CliRunner()
 
 
-def _stored(name: str) -> dict[str, object]:
+def _stored(name: str) -> dict[str, Any]:
     data = json.loads((PROJECT_ROOT / ASKS_DIR / name).read_text(encoding="utf-8"))
     assert isinstance(data, dict)
     return data
@@ -64,16 +67,38 @@ def _write_marks(root: Path, marks: object) -> None:
     (root / MARKS_FILE).write_text(json.dumps(marks), encoding="utf-8")
 
 
+def _edit_record(root: Path, name: str, change: Callable[[dict[str, Any]], None]) -> None:
+    """Rewrite one fixture record after `change` edits its JSON."""
+    path = root / ASKS_DIR / name
+    record = json.loads(path.read_text(encoding="utf-8"))
+    change(record)
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+def _cited_item(record: dict[str, Any]) -> dict[str, Any]:
+    """The item the record's first claim cites first."""
+    cited = record["claims"][0]["cites"][0]
+    item: dict[str, Any] = next(i for i in record["items"] if i["id"] == cited)
+    return item
+
+
 @pytest.fixture
 def root(tmp_path: Path) -> Path:
-    """A repository root with four records and a marks file naming three of them."""
+    """A repository root with four records, a marks file naming three of them, and the
+    snapshot files those records' items sit in."""
     asks = tmp_path / ASKS_DIR
     asks.mkdir(parents=True)
     for name in (DEV, HELD, REAL, UNNAMED):
         shutil.copy(PROJECT_ROOT / ASKS_DIR / name, asks / name)
+        for item in _stored(name)["items"]:
+            line = parse_item_line(item["line"])
+            assert line is not None
+            if line.file is not None:
+                target = tmp_path / SNAPSHOT_DOCS / line.file
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(PROJECT_ROOT / SNAPSHOT_DOCS / line.file, target)
     (tmp_path / MARKS_FILE).parent.mkdir()
     _write_marks(tmp_path, list(MARKS))
-    (tmp_path / "corpus").mkdir()
     return tmp_path
 
 
@@ -311,3 +336,133 @@ def test_build_from_the_committed_marks_file(tmp_path: Path) -> None:
     page = _build(PROJECT_ROOT, tmp_path / "site")
 
     assert page.count("<article>") == len(marks) > 0
+
+
+def test_cited_item_links_to_its_line_in_jobhunt(root: Path, tmp_path: Path) -> None:
+    """AC-34: the first claim of eval question 1 cites 0008/AC-7, stored at line 54."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        f'<a href="https://github.com/ghalynho10/JobHunt/blob/{JOBHUNT_COMMIT}/docs/'
+        'specs/0008-app-shell-and-navigation/index.md?plain=1#L54">0008/AC-7</a>'
+    ) in entry
+
+
+def test_cited_item_with_a_file_and_no_line_links_to_the_whole_file(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-35: no line anchor, and the link text says "whole file"."""
+
+    def drop_line(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        item["line"] = item["line"].replace("index.md:54", "index.md")
+
+    _edit_record(root, DEV, drop_line)
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        f'<a href="https://github.com/ghalynho10/JobHunt/blob/{JOBHUNT_COMMIT}/docs/'
+        'specs/0008-app-shell-and-navigation/index.md">0008/AC-7, whole file</a>'
+    ) in entry
+
+
+def test_rejected_id_is_shown_with_no_link(root: Path, tmp_path: Path) -> None:
+    """AC-41: an id code rejected at ask time is named, never linked."""
+
+    def reject(record: dict[str, Any]) -> None:
+        record["claims"][0]["cites"].append("0099/AC-1")
+        record["claims"][0]["rejected_ids"].append("0099/AC-1")
+
+    _edit_record(root, DEV, reject)
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert "</a>, 0099/AC-1</p>" in entry
+    assert ">0099/AC-1</a>" not in entry
+
+
+def _refused(root: Path, tmp_path: Path) -> str:
+    code, output = _run(root, tmp_path / "site")
+    assert code == 1, output
+    assert not (tmp_path / "site" / "index.html").exists()
+    return output
+
+
+def test_build_fails_on_a_record_cut_on_another_commit(root: Path, tmp_path: Path) -> None:
+    """AC-7."""
+    _edit_record(root, HELD, lambda r: r.update(corpus_commit="abcdef1"))
+
+    assert f"{HELD}: corpus_commit 'abcdef1' is not the pinned commit" in _refused(root, tmp_path)
+
+
+def test_build_accepts_the_pinned_commit_in_full(root: Path, tmp_path: Path) -> None:
+    """AC-7: the full form of the pinned commit is the same commit as the short one."""
+    _edit_record(root, HELD, lambda r: r.update(corpus_commit=JOBHUNT_COMMIT))
+
+    _build(root, tmp_path / "site")
+
+
+def test_build_fails_on_an_item_line_of_unknown_shape(root: Path, tmp_path: Path) -> None:
+    """AC-37: three spaces where the grammar has two."""
+
+    def widen(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        item["line"] = item["line"].replace("  accepted  ", "   accepted  ")
+
+    _edit_record(root, DEV, widen)
+
+    assert f"{DEV}: item 0008/AC-7: stored line" in _refused(root, tmp_path)
+
+
+def test_build_fails_on_a_file_not_in_the_snapshot(root: Path, tmp_path: Path) -> None:
+    """AC-38: checked for every item that gets a link, cited or not."""
+
+    def move(record: dict[str, Any]) -> None:
+        item = record["items"][-1]
+        location = item["line"].split("  ")[-2]
+        item["line"] = item["line"].replace(location, "specs/no-such-spec/index.md:3")
+
+    _edit_record(root, DEV, move)
+
+    assert "specs/no-such-spec/index.md is not in corpus/jobhunt/docs/" in _refused(root, tmp_path)
+
+
+@pytest.mark.parametrize("line", [0, 100_000])
+def test_build_fails_on_a_line_outside_its_file(root: Path, tmp_path: Path, line: int) -> None:
+    """AC-39."""
+
+    def shift(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        item["line"] = item["line"].replace("index.md:54", f"index.md:{line}")
+
+    _edit_record(root, DEV, shift)
+
+    assert f"{DEV}: item 0008/AC-7: line {line} is outside" in _refused(root, tmp_path)
+
+
+def test_build_fails_on_a_cited_id_not_among_the_items(root: Path, tmp_path: Path) -> None:
+    """AC-40."""
+    _edit_record(root, DEV, lambda r: r["claims"][0]["cites"].append("0099/AC-1"))
+
+    assert f"{DEV}: a claim cites 0099/AC-1, which is neither" in _refused(root, tmp_path)
+
+
+def test_build_fails_on_a_cited_item_with_no_file(root: Path, tmp_path: Path) -> None:
+    """AC-42."""
+
+    def unplace(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        location = item["line"].split("  ")[-2]
+        item["line"] = item["line"].replace(location, "no file stored")
+
+    _edit_record(root, DEV, unplace)
+
+    assert f"{DEV}: item 0008/AC-7 is cited but has no stored file" in _refused(root, tmp_path)
+
+
+def test_pinned_commit_matches_the_snapshot_record() -> None:
+    """AC-43."""
+    snapshot = (PROJECT_ROOT / "corpus" / "jobhunt" / "SNAPSHOT.md").read_text(encoding="utf-8")
+
+    assert re.findall(r"\*\*Commit\*\*: `([0-9a-f]{40})`", snapshot) == [JOBHUNT_COMMIT]
