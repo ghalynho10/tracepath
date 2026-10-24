@@ -15,6 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from tracepath.ask.answer import Basis, CheckedClaim, Claim
 from tracepath.ask.record import ASKS_DIR
 from tracepath.gallery.citations import (
     JOBHUNT_COMMIT,
@@ -47,12 +48,23 @@ class StoredClaim(BaseModel):
 
     text: str
     cites: tuple[str, ...]
-    basis: str
+    basis: Basis
     rejected_ids: tuple[str, ...]
     uncited: bool
     inferred: bool
     history: bool
     held_ids: tuple[str, ...]
+
+    def checked(self) -> CheckedClaim:
+        """The claim as `ask` checked it, so the page reads `ask`'s own rules (AC-31 to AC-33)."""
+        return CheckedClaim(
+            claim=Claim(text=self.text, cites=self.cites, basis=self.basis),
+            rejected_ids=self.rejected_ids,
+            uncited=self.uncited,
+            inferred=self.inferred,
+            history=self.history,
+            held_ids=self.held_ids,
+        )
 
 
 class StoredItem(BaseModel):

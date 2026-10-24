@@ -14,8 +14,9 @@ from typer.testing import CliRunner
 
 from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
-from tracepath.gallery.citations import JOBHUNT_COMMIT, parse_item_line
+from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
+from tracepath.gallery.render import MARK_KEY
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -466,3 +467,194 @@ def test_pinned_commit_matches_the_snapshot_record() -> None:
     snapshot = (PROJECT_ROOT / "corpus" / "jobhunt" / "SNAPSHOT.md").read_text(encoding="utf-8")
 
     assert re.findall(r"\*\*Commit\*\*: `([0-9a-f]{40})`", snapshot) == [JOBHUNT_COMMIT]
+
+
+def _first_claim(page: str, label: str = "Eval 1") -> str:
+    entry = _article(page, label)
+    return entry.split("<ol><li>", 1)[1].split("</li>", 1)[0]
+
+
+def _labels(page: str) -> str:
+    return _first_claim(page).split('<p class="labels">', 1)[1].split("</p>", 1)[0]
+
+
+def _items_sent(page: str, label: str = "Eval 1") -> str:
+    return _article(page, label).split("<details>", 1)[1].split("</details>", 1)[0]
+
+
+def test_missing_notes_shown_when_the_record_has_any(root: Path, tmp_path: Path) -> None:
+    """AC-20: shown when the record lists some, absent when it lists none."""
+    assert _stored(DEV)["missing"] == []
+    assert "Missing, as the answer says" not in _article(_build(root, tmp_path / "a"), "Eval 1")
+
+    _edit_record(root, DEV, lambda r: r.update(missing=["A first gap", "A second gap"]))
+
+    assert (
+        "<p>Missing, as the answer says:</p><ul>"
+        '<li><span class="stored">A first gap</span></li>'
+        '<li><span class="stored">A second gap</span></li></ul>'
+    ) in _article(_build(root, tmp_path / "b"), "Eval 1")
+
+
+def test_details_show_date_prompt_and_hops(root: Path, tmp_path: Path) -> None:
+    """AC-21, AC-22, AC-23: hops shown when stored."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert '<p class="details">Asked 2026-10-20 · prompt ask-2 · 2 hops</p>' in entry
+
+
+def test_details_show_no_hops_when_the_record_stores_none(root: Path, tmp_path: Path) -> None:
+    """AC-23: an `ask-1` record without `hops` or `eval_file`'s later keys."""
+    assert "hops" not in _stored(HELD)
+
+    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+
+    assert '<p class="details">Asked 2026-10-19 · prompt ask-1</p>' in entry
+
+
+def test_stored_markup_shows_as_text(root: Path, tmp_path: Path) -> None:
+    """AC-24."""
+    _edit_record(root, DEV, lambda r: r.update(question='Why <figure class="x">?'))
+
+    page = _build(root, tmp_path / "site")
+
+    assert "Why &lt;figure class=&quot;x&quot;&gt;?" in page
+    assert "<figure" not in page
+
+
+def test_line_breaks_kept_and_markdown_not_rendered(root: Path, tmp_path: Path) -> None:
+    """AC-25."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(text="First line\n**not bold**"))
+
+    claim = _first_claim(_build(root, tmp_path / "site"))
+
+    assert '<span class="stored">First line\n**not bold**</span>' in claim
+    assert "<strong>" not in claim
+    assert ".stored { white-space: pre-wrap; }" in _build(root, tmp_path / "site2")
+
+
+def test_held_cited_id_shows_held_after_it(root: Path, tmp_path: Path) -> None:
+    """AC-26."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(held_ids=["0008/AC-7"]))
+
+    assert ">0008/AC-7</a> held</p>" in _first_claim(_build(root, tmp_path / "site"))
+
+
+@pytest.mark.parametrize(
+    ("change", "labels"),
+    [
+        ({"history": True}, "HISTORY read from text"),
+        ({"basis": "inferred", "inferred": True}, "INFERRED"),
+        (
+            {"cites": ["0008/AC-7", "0099/AC-1"], "rejected_ids": ["0099/AC-1"]},
+            "CITATION REJECTED: 0099/AC-1 read from text",
+        ),
+        ({"cites": [], "uncited": True}, "UNCITED read from text"),
+        (
+            {"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]},
+            "CITATION REJECTED: 0099/AC-1 unsupported",
+        ),
+        ({"basis": "link"}, "link"),
+        ({"basis": "link", "inferred": True}, "INFERRED"),
+        ({}, "read from text"),
+    ],
+)
+def test_claim_labels_follow_the_stored_fields(
+    root: Path, tmp_path: Path, change: dict[str, Any], labels: str
+) -> None:
+    """AC-27 to AC-32."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(change))
+
+    assert _labels(_build(root, tmp_path / "site")) == labels
+
+
+@pytest.mark.parametrize(
+    ("change", "tally"),
+    [
+        ({}, ""),
+        ({"cites": [], "uncited": True}, "; 1 of 4 claims failed a check"),
+        ({"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]}, "; 1 of 4 claims failed a check"),
+        ({"basis": "link", "inferred": True}, "; 1 of 4 claims failed a check"),
+        ({"basis": "inferred", "inferred": True}, ""),
+    ],
+)
+def test_verdict_line_counts_claims_that_failed_a_check(
+    root: Path, tmp_path: Path, change: dict[str, Any], tally: str
+) -> None:
+    """AC-33: a claim inferred by its own basis has not failed a check."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(change))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'verdict: <span class="stored">answered</span>{tally}</p>' in entry
+
+
+def test_items_sent_is_closed_until_opened(root: Path, tmp_path: Path) -> None:
+    """AC-44."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert entry.count("<details>") == 1
+    assert "<details open" not in entry
+    assert "<summary>Items sent (" in entry
+
+
+def test_cited_items_are_shown_in_full(root: Path, tmp_path: Path) -> None:
+    """AC-45."""
+    record = _stored(DEV)
+    cited = {c for claim in record["claims"] for c in claim["cites"]}
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[0]
+
+    for item in record["items"]:
+        if item["id"] in cited:
+            assert f'<span class="stored">{escape(item["text"])}</span>' in sent
+    assert sent.count('<div class="item">') == len(cited) > 0
+
+
+def test_other_items_are_one_row_each(root: Path, tmp_path: Path) -> None:
+    """AC-46, AC-48: id, type, held or accepted, and the location's link."""
+    record = _stored(DEV)
+    cited = {c for claim in record["claims"] for c in claim["cites"]}
+    rows = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[1]
+
+    assert rows.count("<li>") == len(record["items"]) - len(cited)
+    for stored in record["items"]:
+        item = parse_item_line(stored["line"])
+        assert item is not None
+        if item.id in cited or item.marker is not None:
+            continue
+        status = "held" if item.held else "accepted"
+        assert (
+            f"<li>{escape(item.id)} · {item.type} · {status} · "
+            f'<a href="{escape(item_link(item) or "")}">{item.file}:{item.line}</a></li>'
+        ) in rows
+
+
+def test_row_shows_struck_or_history_marker(root: Path, tmp_path: Path) -> None:
+    """AC-47."""
+    rows = _items_sent(_build(root, tmp_path / "site"))
+
+    assert "<li>0021#feature-design:12 · Constraint · accepted · STRUCK · <a " in rows
+    assert "<li>0007/AC-1 · AcceptanceCriterion · accepted · HISTORY · <a " in rows
+
+
+def test_row_with_no_location_has_no_link(root: Path, tmp_path: Path) -> None:
+    """AC-48 by AC-36."""
+
+    def unplace(record: dict[str, Any]) -> None:
+        item = record["items"][-1]
+        location = item["line"].split("  ")[-2]
+        item["line"] = item["line"].replace(location, "no path stored")
+
+    _edit_record(root, DEV, unplace)
+    last = _stored(DEV)["items"][-1]["id"]
+
+    assert f"<li>{escape(last)} · " in _items_sent(_build(root, tmp_path / "site"))
+    assert " · no file stored</li>" in _items_sent(_build(root, tmp_path / "site2"))
+
+
+def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path) -> None:
+    """The key, task 6: the marks' wording is the engineer's, word for word."""
+    page = _build(root, tmp_path / "site")
+
+    for mark, meaning in MARK_KEY:
+        assert f"<dt>{escape(mark)}</dt><dd>{escape(meaning)}</dd>" in page
