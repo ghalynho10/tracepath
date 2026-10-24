@@ -34,7 +34,7 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 - **AC-11**: The build fails, exit 1, naming the entry, when `mark` is not one of `right`, `partly right`, `wrong`, `declined`.
 - **AC-12**: Each entry shows the mark exactly as in `gallery/marks.json`.
 - **AC-13**: Each entry shows the note exactly as in `gallery/marks.json`, and shows no note when the note is null.
-- **AC-14**: The mark is labelled as the engineer's mark.
+- **AC-14**: The mark is labelled as the author's own mark, in first person (My mark).
 - **AC-15**: The model's verdict is labelled as the model's own verdict.
 - **AC-16**: Each entry shows `source_row` as text and links `source_path` to `https://github.com/ghalynho10/tracepath/blob/main/<source_path>`.
 
@@ -82,7 +82,7 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 - **AC-49**: The page states how many records `artifacts/asks/` holds, counted by the build.
 - **AC-50**: The page links to the `artifacts/asks/` directory on GitHub.
 - **AC-51**: The page states which questions it shows: eval questions 1 to 5, held out questions 1 to 4, and experiment 0018's 22.
-- **AC-52**: The development section states that earlier `ask-1` runs of eval questions 1 to 5, from 2026-10-19, were also marked right by the engineer.
+- **AC-52**: The development section states, in first person, that the earlier `ask-1` runs of eval questions 1 to 5, from 2026-10-19, "I also marked right".
 - **AC-53**: The realistic section links to experiment 0018's README as the place that records how those questions were set and run.
 - **AC-54**: The page names JobHunt at the pinned commit as the source every citation points into, with a link to the repository.
 
@@ -201,7 +201,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
    - 22 realistic records: experiment 0018's Q1 to Q22, which are `2026-10-22T19-39-13Z` (Q1) and the 21 records from `2026-10-22T20-24-02Z` to `2026-10-22T20-25-54Z` in committed order.
 5. [x] Slice 3, citations. Parse each item's location by the grammar, build the links, check every linked item against `corpus/jobhunt/docs/`, check `corpus_commit`, handle the no line, rejected and no file cases, add the `SNAPSHOT.md` test, satisfies **AC-7, AC-34, AC-35, AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43**
 6. [x] Slice 4, labels, evidence and escaping. Render the claim labels and the verdict tally by the rules in AC-26 to AC-33, the key for labels and marks, the closed "Items sent" section with cited items in full and other items as rows, the record details, and escape all stored text, satisfies **AC-20, AC-21, AC-22, AC-23, AC-24, AC-25, AC-26, AC-27, AC-28, AC-29, AC-30, AC-31, AC-32, AC-33, AC-44, AC-45, AC-46, AC-47, AC-48**
-7. [ ] Slice 5, page statements. Add the record count and directory link, the shown set, the `ask-1` line, the 0018 link and the source line, satisfies **AC-49, AC-50, AC-51, AC-52, AC-53, AC-54**
+7. [x] Slice 5, page statements. Add the record count and directory link, the shown set, the `ask-1` line, the 0018 link and the source line, satisfies **AC-49, AC-50, AC-51, AC-52, AC-53, AC-54**
 8. [ ] Visual design pass, settled before this task starts (see Follow-up), then applied so the engineer's mark reads clearly apart from the model's verdict, satisfies **AC-14**
 
 ## Consequences

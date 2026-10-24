@@ -200,11 +200,15 @@ def test_entry_shows_mark_and_note_exactly(
 
 
 def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: Path) -> None:
-    """AC-15 (and the text of AC-14, whose look is task 8)."""
-    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+    """AC-14 (its text; its look is task 8), AC-15."""
+    page = _build(root, tmp_path / "site")
+    entry = _article(page, "Held out 3")
 
     assert "Model's own verdict: " in entry
-    assert "Engineer's mark: " in entry
+    assert '<p class="mark">My mark: ' in entry
+    assert "<h3>My marks</h3>" in page
+    assert "each with my own mark." in page
+    assert "engineer" not in re.sub(r"<[^>]+>", "", page).lower()
 
 
 def test_entry_links_to_the_source_of_its_mark(root: Path, tmp_path: Path) -> None:
@@ -658,3 +662,65 @@ def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path)
 
     for mark, meaning in MARK_KEY:
         assert f"<dt>{escape(mark)}</dt><dd>{escape(meaning)}</dd>" in page
+
+
+def _section_html(page: str, title: str) -> str:
+    return page.split(f"<section><h2>{title}</h2>", 1)[1].split("<article>", 1)[0]
+
+
+def test_page_counts_the_records_asks_holds(root: Path, tmp_path: Path) -> None:
+    """AC-49: four records in the fixture, three of them shown."""
+    page = _build(root, tmp_path / "site")
+
+    assert "</a> holds 4 records. This page shows 3 of them: " in page
+
+
+def test_page_links_to_the_records_directory(root: Path, tmp_path: Path) -> None:
+    """AC-50."""
+    page = _build(root, tmp_path / "site")
+
+    assert (
+        '<a href="https://github.com/ghalynho10/tracepath/tree/main/artifacts/asks">'
+        "artifacts/asks/</a>"
+    ) in page
+
+
+def test_page_states_which_questions_it_shows(root: Path, tmp_path: Path) -> None:
+    """AC-51."""
+    page = _build(root, tmp_path / "site")
+
+    assert (
+        "eval questions 1 to 5, held out questions 1 to 4, and experiment 0018&#x27;s 22."
+    ) in page
+
+
+def test_development_section_states_the_ask_1_marks(root: Path, tmp_path: Path) -> None:
+    """AC-52."""
+    line = _section_html(_build(root, tmp_path / "site"), "Development questions")
+
+    assert (
+        "Earlier runs of eval questions 1 to 5 on prompt ask-1, from 2026-10-19: "
+        "I also marked them right"
+    ) in line
+
+
+def test_realistic_section_links_to_experiment_0018(root: Path, tmp_path: Path) -> None:
+    """AC-53."""
+    line = _section_html(_build(root, tmp_path / "site"), "Realistic questions")
+
+    assert (
+        '<a href="https://github.com/ghalynho10/tracepath/blob/main/experiments/'
+        "0018-realistic-usage-questions/README.md\">experiment 0018's README</a>"
+    ) in line
+    assert "How these questions were set and run" in line
+
+
+def test_page_names_jobhunt_at_the_pinned_commit(root: Path, tmp_path: Path) -> None:
+    """AC-54."""
+    page = _build(root, tmp_path / "site")
+
+    assert (
+        'Every citation points into <a href="https://github.com/ghalynho10/JobHunt">JobHunt</a> '
+        f'at commit <a href="https://github.com/ghalynho10/JobHunt/tree/{JOBHUNT_COMMIT}">'
+        "2e40bcf</a>"
+    ) in page

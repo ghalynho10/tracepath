@@ -211,6 +211,11 @@ def load_entries(root: Path) -> tuple[Entry, ...]:
     return tuple(entries)
 
 
+def count_records(root: Path) -> int:
+    """How many records `artifacts/asks/` holds, shown or not (AC-49)."""
+    return sum(1 for _ in (root / ASKS_DIR).glob("*.json"))
+
+
 def _line_count(docs: Path, file: str) -> int | None:
     """How many lines a snapshot file has, first line 1; None when it is not in the snapshot."""
     path = (docs / file).resolve()

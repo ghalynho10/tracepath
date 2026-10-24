@@ -83,7 +83,12 @@ from tracepath.extract.metered import (
     summary_lines,
 )
 from tracepath.extract.records import RecordError
-from tracepath.gallery.records import GalleryError, load_entries, refuse_read_only_out
+from tracepath.gallery.records import (
+    GalleryError,
+    count_records,
+    load_entries,
+    refuse_read_only_out,
+)
 from tracepath.gallery.render import render_page
 from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
@@ -1255,7 +1260,7 @@ def gallery_build(
     page = out / "index.html"
     try:
         out.mkdir(parents=True, exist_ok=True)
-        page.write_text(render_page(entries), encoding="utf-8")
+        page.write_text(render_page(entries, count_records(base)), encoding="utf-8")
     except OSError as exc:
         _fail(f"{page}: could not be written ({exc}).")
     _say(f"✓ {len(entries)} entries → {page}")

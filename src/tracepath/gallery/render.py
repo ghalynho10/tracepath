@@ -10,11 +10,41 @@ from html import escape
 from urllib.parse import quote
 
 from tracepath.ask.answer import claim_marks
-from tracepath.gallery.citations import ItemLine, item_link
+from tracepath.gallery.citations import (
+    JOBHUNT_COMMIT,
+    JOBHUNT_REPO_URL,
+    SHORT_COMMIT,
+    ItemLine,
+    item_link,
+)
 from tracepath.gallery.records import Entry, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
 TRACEPATH_REPO_URL = "https://github.com/ghalynho10/tracepath"
+
+#: The records folder on GitHub (AC-50).
+ASKS_URL = f"{TRACEPATH_REPO_URL}/tree/main/artifacts/asks"
+
+#: JobHunt's tree at the pinned commit (AC-54).
+JOBHUNT_TREE_URL = f"{JOBHUNT_REPO_URL}/tree/{JOBHUNT_COMMIT}"
+
+#: Where the `ask-1` marks of eval questions 1 to 5 are recorded (AC-52).
+SCOPE_URL = f"{TRACEPATH_REPO_URL}/blob/main/docs/scope/scope.md"
+
+#: Where experiment 0018 records how its questions were set and run (AC-53).
+EXPERIMENT_0018_URL = (
+    f"{TRACEPATH_REPO_URL}/blob/main/experiments/0018-realistic-usage-questions/README.md"
+)
+
+#: Which questions the page shows (AC-51). The marks file is the list; this says it in words.
+SHOWN_SET = "eval questions 1 to 5, held out questions 1 to 4, and experiment 0018's 22."
+
+#: The line the development section carries (AC-52), checked against `docs/scope/scope.md`
+#: line 238 and the v1 finish line on 2026-10-24.
+ASK_1_LINE = (
+    "Shown here are the prompt ask-2 runs at 2 hops. Earlier runs of eval questions 1 to 5 "
+    "on prompt ask-1, from 2026-10-19: I also marked them right"
+)
 
 #: The line the held out section carries (AC-8).
 HELD_OUT_LINE = "Asked once at the end of v1, never used to tune the tool."
@@ -180,7 +210,7 @@ def _mark(entry: Entry) -> str:
     note = "" if marks.note is None else f'<p class="note">{_text(marks.note)}</p>'
     source = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
     return (
-        f'<p class="mark">Engineer\'s mark: {_text(marks.mark)}</p>'
+        f'<p class="mark">My mark: {_text(marks.mark)}</p>'
         f"{note}"
         f'<p class="source">From <a href="{escape(source)}">{escape(marks.source_path)}</a>, '
         f"{_text(marks.source_row)}</p>"
@@ -202,12 +232,42 @@ def _entry(entry: Entry) -> str:
     )
 
 
+def _section_line(section: Section) -> str:
+    """The statement under a section's heading (AC-8, AC-52, AC-53)."""
+    match section:
+        case Section.DEVELOPMENT:
+            return (
+                f'<p>{escape(ASK_1_LINE)} (<a href="{escape(SCOPE_URL)}">v1 finish line</a>).</p>'
+            )
+        case Section.HELD_OUT:
+            return f"<p>{escape(HELD_OUT_LINE)}</p>"
+        case Section.REALISTIC:
+            return (
+                "<p>How these questions were set and run, and what was noted about them, is "
+                f'recorded in <a href="{escape(EXPERIMENT_0018_URL)}">experiment 0018\'s '
+                "README</a>.</p>"
+            )
+
+
 def _section(section: Section, entries: tuple[Entry, ...]) -> str:
     shown = "".join(_entry(entry) for entry in entries if entry.section is section)
     if not shown:
         return ""
-    line = f"<p>{escape(HELD_OUT_LINE)}</p>" if section is Section.HELD_OUT else ""
-    return f"<section><h2>{escape(section.value)}</h2>{line}{shown}</section>"
+    return f"<section><h2>{escape(section.value)}</h2>{_section_line(section)}{shown}</section>"
+
+
+def _intro(shown: int, records: int) -> str:
+    """What the page is, what it shows of the records, and where citations point (AC-49 to 54)."""
+    return (
+        "<p>Answers recorded by <code>tracepath ask</code>, a terminal tool that answers "
+        "&quot;why was this built this way?&quot; from a project's decision records, each "
+        "with my own mark.</p>"
+        f'<p>Every citation points into <a href="{escape(JOBHUNT_REPO_URL)}">JobHunt</a> '
+        f'at commit <a href="{escape(JOBHUNT_TREE_URL)}">{JOBHUNT_COMMIT[:SHORT_COMMIT]}</a> '
+        "and opens the line it cites.</p>"
+        f'<p><a href="{escape(ASKS_URL)}">artifacts/asks/</a> holds {records} records. '
+        f"This page shows {shown} of them: {escape(SHOWN_SET)}</p>"
+    )
 
 
 def _key_list(rows: tuple[tuple[str, str], ...]) -> str:
@@ -218,14 +278,17 @@ def _key() -> str:
     """What the engineer's marks and the claim labels mean."""
     return (
         '<section class="key"><h2>Key</h2>'
-        f"<h3>The engineer's marks</h3>{_key_list(MARK_KEY)}"
+        f"<h3>My marks</h3>{_key_list(MARK_KEY)}"
         f"<h3>Labels on a claim</h3>{_key_list(LABEL_KEY)}"
         "</section>"
     )
 
 
-def render_page(entries: tuple[Entry, ...]) -> str:
-    """The whole page: each section in turn, its entries in marks file order (AC-1 to AC-4)."""
+def render_page(entries: tuple[Entry, ...], records: int) -> str:
+    """The whole page: each section in turn, its entries in marks file order (AC-1 to AC-4).
+
+    `records` is how many records `artifacts/asks/` holds, counted by the build (AC-49).
+    """
     body = "".join(_section(section, entries) for section in Section)
     return (
         "<!doctype html>\n"
@@ -233,5 +296,6 @@ def render_page(entries: tuple[Entry, ...]) -> str:
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
         f"<style>{STYLE}</style></head>"
-        f"<body><h1>tracepath answer gallery</h1>{_key()}{body}</body></html>\n"
+        f"<body><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}{_key()}"
+        f"{body}</body></html>\n"
     )
