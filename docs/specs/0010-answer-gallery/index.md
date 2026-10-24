@@ -1,7 +1,7 @@
 # 0010. Answer gallery
 
 **Date**: 2026-10-23
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
@@ -192,7 +192,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 
 Approach: Tracer Bullet (the project default). The first slice is one real record, built and published end to end, so the whole route (command, page, workflow, Pages setting, public URL) is proven before the page is thickened.
 
-1. [ ] Slice 1, the thin thread. Add `src/tracepath/gallery/` with a loader for one record and one marks entry and a renderer that writes a self contained `index.html` with the question, verdict and claims; wire `tracepath gallery build --out DIR` in `cli.py`, satisfies **AC-1, AC-17, AC-18, AC-19, AC-55, AC-56, AC-57, AC-58**
+1. [x] Slice 1, the thin thread. Add `src/tracepath/gallery/` with a loader for one record and one marks entry and a renderer that writes a self contained `index.html` with the question, verdict and claims; wire `tracepath gallery build --out DIR` in `cli.py`, satisfies **AC-1, AC-17, AC-18, AC-19, AC-55, AC-56, AC-57, AC-58**
 2. [ ] Slice 1, publish it. Add the Pages workflow (build job, then deploy job) with the path filter; check its action names against GitHub's docs; the engineer sets the Pages source once; confirm the one entry page opens at its public URL, satisfies **AC-59, AC-60, AC-61, AC-62**
 3. [ ] Slice 2, the marks file. Add the marks model and loader with its failure cases; render the mark, note, source, the three sections and the held out line, satisfies **AC-2, AC-3, AC-4, AC-5, AC-6, AC-8, AC-9, AC-10, AC-11, AC-12, AC-13, AC-15, AC-16**
 4. [ ] Slice 2, the real marks. Fill `gallery/marks.json` with its starting content, 31 entries, each copied word for word from its source (the 0016 and 0018 READMEs for the development and realistic records, the v1 finish line for the held out ones); the engineer checks it before commit, satisfies **AC-1**

@@ -83,6 +83,8 @@ from tracepath.extract.metered import (
     summary_lines,
 )
 from tracepath.extract.records import RecordError
+from tracepath.gallery.records import GalleryError, load_entries, refuse_read_only_out
+from tracepath.gallery.render import render_page
 from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
 from tracepath.graph.read import read_graph
@@ -143,6 +145,8 @@ from tracepath.traverse.render import render_chain
 from tracepath.traverse.walk import Chain, StartNotInGraph, walk
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
+gallery_app = typer.Typer(no_args_is_help=True, help="The answer gallery page (spec 0010).")
+app.add_typer(gallery_app, name="gallery")
 console = Console()
 err_console = Console(stderr=True)
 
@@ -1231,3 +1235,27 @@ def _write_no_call_record(
 def _shown_path(path: Path, base: Path) -> str:
     """A path relative to the root it was written under, when it is under it."""
     return path.relative_to(base).as_posix() if path.is_relative_to(base) else str(path)
+
+
+@gallery_app.command(name="build")
+def gallery_build(
+    out: Annotated[Path, typer.Option("--out", help="The folder index.html is written to.")],
+    root: str = typer.Option(".", "--root", help="The repository root to read."),
+) -> None:
+    """Write the answer gallery page from the ask records and gallery/marks.json (spec 0010).
+
+    No API call, no graph, no settings: the page is built from committed files only.
+    """
+    base = Path(root)
+    try:
+        refuse_read_only_out(base, out)
+        entries = load_entries(base)
+    except GalleryError as exc:
+        _fail(str(exc))
+    page = out / "index.html"
+    try:
+        out.mkdir(parents=True, exist_ok=True)
+        page.write_text(render_page(entries), encoding="utf-8")
+    except OSError as exc:
+        _fail(f"{page}: could not be written ({exc}).")
+    _say(f"✓ {len(entries)} entries → {page}")

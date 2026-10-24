@@ -1,0 +1,52 @@
+name: Pages
+
+# Builds the answer gallery (spec 0010) and publishes it on GitHub Pages. Runs only when
+# something the page is built from changes, or by hand for the first deploy.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "artifacts/asks/**"
+      - "gallery/**"
+      - "src/tracepath/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "corpus/jobhunt/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a run in progress finishes rather than being cancelled.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked
+      # No key, no database: the build reads committed files only.
+      - name: Build the gallery
+        run: uv run tracepath gallery build --out site
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    # A failed build skips this job, so nothing is deployed and the last page stays up.
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
