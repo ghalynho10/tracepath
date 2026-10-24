@@ -31,7 +31,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 14 | Held item view | Slice 1, before Slice 2 | done |
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
-| 17 | Answer gallery | after v1, presentation | planned |
+| 17 | Answer gallery | after v1, presentation | in-progress |
 
 ## v1 finish line
 
@@ -418,23 +418,27 @@ It is the single largest cost in the pipeline: 340 of the 403 queue rows were `r
 
 ## Presentation (after v1)
 
-### 17. Answer gallery · needs a decision · added 2026-10-23
+### 17. Answer gallery · added 2026-10-23
 A static web page of the answers `tracepath ask` has already recorded, for a reader who will never run the tool. It shows each question, the answer's claims, the engineer's marks and notes, and links each citation to its exact line in JobHunt on GitHub at the pinned commit `2e40bcf` (JobHunt is public). It makes no API call and costs nothing to host. Context: `docs/session-notes.md`, Open threads, "Answer gallery".
-**Done when:** a reader can open the page, see each shown question with its answer's claims, and follow every citation to the line it cites in JobHunt at `2e40bcf`; anything the page leaves out or qualifies is stated on the page.
+**Done when:** a reader can open the page, see each shown question with its answer's claims, and follow every citation to the line it cites in JobHunt at `2e40bcf`; anything the page leaves out is stated on the page, or in a record the page links to.
 **What the records hold today, checked 2026-10-23** (so the questions below start from fact):
 - `artifacts/asks/` holds 44 records: 5 eval questions (question 1's record being feature 16's gate run) and 4 held out questions on prompt `ask-1`, 11 eval runs on `ask-2` (10 of them experiment 0016's questions 1 to 5 at 2 and 0 hops), 2 from experiment 0017, and 22 from experiment 0018. Several questions therefore have more than one record.
 - Each record stores the pack it sent: every item (id, held or not, its file and line, its text) and every link (type, source, target, held or not). Experiment 0018's Q2 to Q22 packs hold 46 to 90 items and 44 to 138 links.
 - The marks and notes are not in the records. They sit in the experiment READMEs (0016, 0018) and in the v1 finish line above.
 
-**Open questions for `/architect`, recorded as candidates, not decisions:**
-1. **Where it lives.** Candidates: inside this repository (for example GitHub Pages); on the portfolio site (`ghalynho10/portfolio`, plain HTML and JS on Netlify); or a separate new repository. The last two would copy records out of `artifacts/asks/`.
-2. **Whether the four held out records are shown** (`eval-held-out-q1` to `q4` in `artifacts/asks/`).
-3. **Whether marks and notes are shown.**
-4. **Experiment 0018's disclosures travel with its answers.** Its README notes that the expected lines for Q19 and Q22 were written after the engineer read the advisor's summary, and that Q1 was run before the questions were committed. How that travels is for `/architect`.
-5. **The UI and UX.** Candidates: a plain list of answers; a list of questions with one interactive graph per answer, drawn from the pack its record stores, cited items highlighted, and a click opening the item's text and source line; or the whole graph as the interface (2,766 nodes at spec 0009's verify run). The interaction idea comes from an engineer's note: pan and zoom, a click that highlights an item's connections and opens a side drawer, and a search that highlights matches. Any graph must mark held items and unresolved names, as `ask` does.
-
-**How it relates to the Deferred "Visual UI" entry:** the two overlap but are not the same thing. Visual UI is a graphical view of chains, with no record or host named. The gallery is a page of answers already recorded, and only some of its UI candidates (the graph per answer, or the whole graph) would draw a graph at all. If `/architect` picks one of those, it would cover part of what Visual UI names; the plain list would leave Visual UI untouched. Both stay as they are; neither is merged into the other here.
-- [ ] Design it (spec): `/architect answer gallery`
+spec [0010](../specs/0010-answer-gallery/index.md) · code will live in `src/tracepath/gallery/`, marks in `gallery/marks.json`
+_Design decided 2026-10-23: a `tracepath gallery build` command writes one plain HTML page from the ask records plus a marks file, published on GitHub Pages by an Actions workflow. It shows 31 records: eval questions 1 to 5 (the `ask-2` runs at 2 hops), the four held out questions in their own labelled section, and experiment 0018's 22. Marks and notes are shown; experiment 0018's disclosures travel by a link to its README only. A plain list, with a graph per answer kept as the next slice below._
+**Next slice (not yet designed):** a list plus one interactive graph per answer, drawn from each record's stored pack, with cited items highlighted, a click opening the item's text and source line, and held items and unresolved names marked. It would cover part of the Deferred "Visual UI" entry, which stays as it is until then. Needs its own `/architect`.
+- [x] Design it (spec): `/architect answer gallery` · decided the host, the shown set, marks, disclosures, the plain list UI and the build
+- [ ] Build it: `/develop answer gallery`
+  - [ ] The thin thread: one record built and published on GitHub Pages (spec 0010 tasks 1 and 2; AC-1, AC-17 to AC-19, AC-55 to AC-62)
+  - [ ] The marks file with its 31 real entries (tasks 3 and 4; AC-1 to AC-6, AC-8 to AC-13, AC-15, AC-16)
+  - [ ] Citations that fail the build when wrong (task 5; AC-7, AC-34 to AC-43)
+  - [ ] Labels, evidence, escaping and the page statements (tasks 6 and 7; AC-20 to AC-33, AC-44 to AC-54)
+  - [ ] Visual design pass, settled first (task 8; AC-14)
+- [ ] Verify it: `/check verify answer gallery`
+- [ ] Test it: `/test answer gallery`
+- [ ] Sync it: `/sync answer gallery`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
