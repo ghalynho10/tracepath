@@ -426,16 +426,16 @@ A static web page of the answers `tracepath ask` has already recorded, for a rea
 - Each record stores the pack it sent: every item (id, held or not, its file and line, its text) and every link (type, source, target, held or not). Experiment 0018's Q2 to Q22 packs hold 46 to 90 items and 44 to 138 links.
 - The marks and notes are not in the records. They sit in the experiment READMEs (0016, 0018) and in the v1 finish line above.
 
-spec [0010](../specs/0010-answer-gallery/index.md) · code will live in `src/tracepath/gallery/`, marks in `gallery/marks.json`
+spec [0010](../specs/0010-answer-gallery/index.md) · code in `src/tracepath/gallery/`, marks in `gallery/marks.json`, workflow `.github/workflows/pages.yml`
 _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain HTML page from the ask records plus a marks file, published on GitHub Pages by an Actions workflow. It shows 31 records: eval questions 1 to 5 (the `ask-2` runs at 2 hops), the four held out questions in their own labelled section, and experiment 0018's 22. Marks and notes are shown; experiment 0018's disclosures travel by a link to its README only. A plain list, with a graph per answer kept as the next slice below._
 **Next slice (not yet designed):** a list plus one interactive graph per answer, drawn from each record's stored pack, with cited items highlighted, a click opening the item's text and source line, and held items and unresolved names marked. It would cover part of the Deferred "Visual UI" entry, which stays as it is until then. Needs its own `/architect`.
 - [x] Design it (spec): `/architect answer gallery` · decided the host, the shown set, marks, disclosures, the plain list UI and the build
 - [ ] Build it: `/develop answer gallery`
   - [ ] The thin thread: one record built and published on GitHub Pages (spec 0010 tasks 1 and 2; AC-1, AC-17 to AC-19, AC-55 to AC-62)
-  - [ ] The marks file with its 31 real entries (tasks 3 and 4; AC-1 to AC-6, AC-8 to AC-13, AC-15, AC-16)
-  - [ ] Citations that fail the build when wrong (task 5; AC-7, AC-34 to AC-43)
-  - [ ] Labels, evidence, escaping and the page statements (tasks 6 and 7; AC-20 to AC-33, AC-44 to AC-54)
-  - [ ] Visual design pass, settled first (task 8; AC-14)
+  - [x] The marks file with its 31 real entries (tasks 3 and 4; AC-1 to AC-6, AC-8 to AC-13, AC-15, AC-16)
+  - [x] Citations that fail the build when wrong (task 5; AC-7, AC-34 to AC-43)
+  - [x] Labels, evidence, escaping and the page statements (tasks 6 and 7; AC-20 to AC-33, AC-44 to AC-54)
+  - [x] Visual design pass, settled first (task 8; AC-14)
 - [ ] Verify it: `/check verify answer gallery`
 - [ ] Test it: `/test answer gallery`
 - [ ] Sync it: `/sync answer gallery`

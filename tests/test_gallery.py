@@ -16,7 +16,7 @@ from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
-from tracepath.gallery.render import MARK_KEY
+from tracepath.gallery.render import MARK_KEY, STYLE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -200,15 +200,25 @@ def test_entry_shows_mark_and_note_exactly(
 
 
 def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: Path) -> None:
-    """AC-14 (its text; its look is task 8), AC-15."""
+    """AC-14, AC-15: the author's mark in first person, the model's verdict as its own."""
     page = _build(root, tmp_path / "site")
     entry = _article(page, "Held out 3")
 
-    assert "Model's own verdict: " in entry
-    assert '<p class="mark">My mark: ' in entry
+    assert '<p class="verdict">Model\'s own verdict: ' in entry
+    assert '<p class="mark" data-mark="partly right">My mark: ' in entry
     assert "<h3>My marks</h3>" in page
     assert "each with my own mark." in page
     assert "engineer" not in re.sub(r"<[^>]+>", "", page).lower()
+
+
+@pytest.mark.parametrize("mark", ["right", "partly right", "wrong", "declined"])
+def test_mark_is_a_filled_pill_and_the_verdict_an_outlined_one(mark: str) -> None:
+    """AC-14, task 8: each mark has its own fill; the verdict has a border and no fill."""
+    verdict = re.search(r"\.verdict \{([^}]*)\}", STYLE)
+    assert verdict is not None
+    assert "border:" in verdict.group(1)
+    assert "background" not in verdict.group(1)
+    assert re.search(rf'\.mark\[data-mark="{mark}"\] \{{ background: [^;]+; \}}', STYLE)
 
 
 def test_entry_links_to_the_source_of_its_mark(root: Path, tmp_path: Path) -> None:
@@ -494,7 +504,7 @@ def test_missing_notes_shown_when_the_record_has_any(root: Path, tmp_path: Path)
     _edit_record(root, DEV, lambda r: r.update(missing=["A first gap", "A second gap"]))
 
     assert (
-        "<p>Missing, as the answer says:</p><ul>"
+        '<p class="eyebrow">Missing, as the answer says</p><ul>'
         '<li><span class="stored">A first gap</span></li>'
         '<li><span class="stored">A second gap</span></li></ul>'
     ) in _article(_build(root, tmp_path / "b"), "Eval 1")
@@ -661,7 +671,10 @@ def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path)
     page = _build(root, tmp_path / "site")
 
     for mark, meaning in MARK_KEY:
-        assert f"<dt>{escape(mark)}</dt><dd>{escape(meaning)}</dd>" in page
+        assert (
+            f'<dt class="mark" data-mark="{escape(mark)}">{escape(mark)}</dt>'
+            f"<dd>{escape(meaning)}</dd>"
+        ) in page
 
 
 def _section_html(page: str, title: str) -> str:

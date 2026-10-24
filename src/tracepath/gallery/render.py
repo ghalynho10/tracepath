@@ -98,12 +98,91 @@ LABEL_KEY = (
     ),
 )
 
-#: The page's styles, inline. The visual pass (task 8) replaces these.
+#: The page's styles, inline (AC-58), chosen in task 8 on 2026-10-24: flat paper and
+#: hairlines, a large label over quiet body text, the portfolio's navy ink, and its
+#: colours only as small accents. The mark is a filled pill and the note a solid bubble,
+#: so the author's voice reads apart from the model's outlined verdict (AC-14).
 STYLE = """\
-body { font-family: system-ui, sans-serif; max-width: 46rem; margin: 2rem auto;
-  padding: 0 1rem; line-height: 1.5; color: #111; background: #fff; }
-article { border-top: 1px solid #ccc; padding: 1rem 0; }
+:root { --paper: #FFFFFF; --ink: #011936; --ink-82: rgba(1, 25, 54, .82);
+  --ink-64: #3F5877; --ink-46: rgba(63, 88, 119, .78);
+  --rule: rgba(1, 25, 54, .14); --rule-strong: rgba(1, 25, 54, .30);
+  --cyan: #07A0C3; --yellow: #F6E27F; --pink: #FFC8C2;
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink);
+  font: 16px/1.55 var(--sans); }
+main { max-width: 44rem; margin: 0 auto; padding: 48px 16px 72px; }
 .stored { white-space: pre-wrap; }
+a { color: inherit; text-decoration-color: var(--cyan); text-underline-offset: 3px;
+  text-decoration-thickness: 1px; }
+a:hover { color: var(--cyan); }
+code { font-family: var(--mono); font-size: .9em; }
+h1 { font-size: clamp(36px, 8vw, 48px); line-height: 1; font-weight: 700;
+  letter-spacing: -.03em; margin: 0 0 20px; }
+.intro { max-width: 36rem; color: var(--ink-82); }
+.intro p { margin: 0 0 10px; }
+section { margin-top: 48px; }
+section > h2 { font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--ink-64); margin: 0; padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule); }
+section > h2 + p { margin: 14px 0 0; max-width: 36rem; font-size: 14px; color: var(--ink-64); }
+.key h3 { font-size: 10px; line-height: 1; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); margin: 24px 0 10px; }
+.key dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px;
+  align-items: baseline; font-size: 14px; }
+.key dt { font: 12px/1.5 var(--mono); max-width: 10rem; }
+.key dt.mark { font: 500 13px/1.5 var(--sans); margin: 0; justify-self: start; }
+.key dd { margin: 0; color: var(--ink-82); }
+@media (max-width: 480px) {
+  .key dl { grid-template-columns: 1fr; gap: 4px; }
+  .key dt { max-width: none; }
+  .key dd { margin-bottom: 12px; }
+}
+article { padding: 28px 0 32px; border-bottom: 1px solid var(--rule); }
+article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight: 700;
+  letter-spacing: -.035em; margin: 0 0 18px; }
+.question { font-size: 20px; line-height: 1.4; margin: 0 0 10px; max-width: 36rem; }
+.details { font: 500 11px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-46); margin: 0 0 22px; }
+.verdict, .mark { display: inline-flex; gap: .4em; align-items: baseline; margin: 0 8px 8px 0;
+  padding: 4px 13px; border-radius: 999px; font-size: 13px; line-height: 1.5; }
+.verdict { border: 1px solid var(--rule-strong); color: var(--ink-82); }
+.mark { border: 1px solid var(--ink); color: var(--ink); font-weight: 500; }
+.mark[data-mark="right"] { background: rgba(7, 160, 195, .18); }
+.mark[data-mark="partly right"] { background: var(--yellow); }
+.mark[data-mark="wrong"] { background: var(--pink); }
+.mark[data-mark="declined"] { background: rgba(1, 25, 54, .06); }
+.note { margin: 6px 0; max-width: 30rem; padding: 10px 14px; font-size: 14.7px; line-height: 1.5;
+  border-radius: 13.6px 13.6px 13.6px 1.6px; background: var(--ink); color: var(--paper); }
+.source { margin: 4px 0 0; font-size: 12px; color: var(--ink-46); }
+article ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
+  border-top: 1px solid var(--rule); }
+article ol > li { position: relative; counter-increment: claim; padding: 16px 0 16px 2.4em;
+  border-bottom: 1px solid var(--rule); }
+article ol > li::before { content: counter(claim, decimal-leading-zero); position: absolute;
+  left: 0; top: 20px; font: 11px/1 var(--mono); color: var(--ink-46); }
+.cites { margin: 8px 0 0; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
+  overflow-wrap: anywhere; }
+.labels { margin: 8px 0 0; font-size: 10px; line-height: 1.4; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64); }
+.eyebrow, details > summary { margin: 22px 0 6px; font-size: 10px; line-height: 1;
+  font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64); }
+article > ul { margin: 0; padding-left: 1.1em; color: var(--ink-82); }
+details { margin-top: 22px; border-top: 1px solid var(--rule); padding-top: 4px; }
+details > summary { cursor: pointer; list-style: none; padding: 14px 0 4px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: " +"; color: var(--cyan); }
+details[open] > summary::after { content: " \\2212"; }
+details h4 { margin: 18px 0 8px; font-size: 10px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-46); }
+details .item p, details li { font: 12px/1.6 var(--mono); color: var(--ink-64);
+  overflow-wrap: anywhere; }
+details ul { list-style: none; padding: 0; margin: 0; }
+details li { padding: 4px 0; border-bottom: 1px solid var(--rule); }
+details .item { padding: 6px 0 12px; border-bottom: 1px solid var(--rule); }
+details .item p { margin: 0 0 4px; }
+details .item > .stored { font-size: 14px; color: var(--ink-82); }
 """
 
 
@@ -154,7 +233,7 @@ def _verdict(entry: Entry) -> str:
     claims = entry.record.claims
     failed = sum(1 for claim in claims if claim.checked().failed)
     tally = f"; {failed} of {len(claims)} claims failed a check" if failed else ""
-    return f"<p>Model's own verdict: {_text(entry.record.verdict)}{tally}</p>"
+    return f'<p class="verdict">Model\'s own verdict: {_text(entry.record.verdict)}{tally}</p>'
 
 
 def _details(entry: Entry) -> str:
@@ -175,7 +254,7 @@ def _missing(entry: Entry) -> str:
     if not missing:
         return ""
     rows = "".join(f"<li>{_text(m)}</li>" for m in missing)
-    return f"<p>Missing, as the answer says:</p><ul>{rows}</ul>"
+    return f'<p class="eyebrow">Missing, as the answer says</p><ul>{rows}</ul>'
 
 
 def _item_head(item: ItemLine) -> str:
@@ -210,7 +289,7 @@ def _mark(entry: Entry) -> str:
     note = "" if marks.note is None else f'<p class="note">{_text(marks.note)}</p>'
     source = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
     return (
-        f'<p class="mark">My mark: {_text(marks.mark)}</p>'
+        f'<p class="mark" data-mark="{escape(marks.mark)}">My mark: {_text(marks.mark)}</p>'
         f"{note}"
         f'<p class="source">From <a href="{escape(source)}">{escape(marks.source_path)}</a>, '
         f"{_text(marks.source_row)}</p>"
@@ -259,6 +338,7 @@ def _section(section: Section, entries: tuple[Entry, ...]) -> str:
 def _intro(shown: int, records: int) -> str:
     """What the page is, what it shows of the records, and where citations point (AC-49 to 54)."""
     return (
+        '<div class="intro">'
         "<p>Answers recorded by <code>tracepath ask</code>, a terminal tool that answers "
         "&quot;why was this built this way?&quot; from a project's decision records, each "
         "with my own mark.</p>"
@@ -267,19 +347,29 @@ def _intro(shown: int, records: int) -> str:
         "and opens the line it cites.</p>"
         f'<p><a href="{escape(ASKS_URL)}">artifacts/asks/</a> holds {records} records. '
         f"This page shows {shown} of them: {escape(SHOWN_SET)}</p>"
+        "</div>"
     )
 
 
-def _key_list(rows: tuple[tuple[str, str], ...]) -> str:
-    return "<dl>" + "".join(f"<dt>{escape(t)}</dt><dd>{escape(d)}</dd>" for t, d in rows) + "</dl>"
+def _key_list(rows: tuple[tuple[str, str], ...], marks: bool) -> str:
+    """One key list; a mark's term is drawn as the same pill an entry shows."""
+    pill = ' class="mark" data-mark="{}"'
+    return (
+        "<dl>"
+        + "".join(
+            f"<dt{pill.format(escape(t)) if marks else ''}>{escape(t)}</dt><dd>{escape(d)}</dd>"
+            for t, d in rows
+        )
+        + "</dl>"
+    )
 
 
 def _key() -> str:
     """What the engineer's marks and the claim labels mean."""
     return (
         '<section class="key"><h2>Key</h2>'
-        f"<h3>My marks</h3>{_key_list(MARK_KEY)}"
-        f"<h3>Labels on a claim</h3>{_key_list(LABEL_KEY)}"
+        f"<h3>My marks</h3>{_key_list(MARK_KEY, marks=True)}"
+        f"<h3>Labels on a claim</h3>{_key_list(LABEL_KEY, marks=False)}"
         "</section>"
     )
 
@@ -296,6 +386,6 @@ def render_page(entries: tuple[Entry, ...], records: int) -> str:
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
         f"<style>{STYLE}</style></head>"
-        f"<body><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}{_key()}"
-        f"{body}</body></html>\n"
+        f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
+        f"{_key()}{body}</main></body></html>\n"
     )

@@ -202,7 +202,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 5. [x] Slice 3, citations. Parse each item's location by the grammar, build the links, check every linked item against `corpus/jobhunt/docs/`, check `corpus_commit`, handle the no line, rejected and no file cases, add the `SNAPSHOT.md` test, satisfies **AC-7, AC-34, AC-35, AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43**
 6. [x] Slice 4, labels, evidence and escaping. Render the claim labels and the verdict tally by the rules in AC-26 to AC-33, the key for labels and marks, the closed "Items sent" section with cited items in full and other items as rows, the record details, and escape all stored text, satisfies **AC-20, AC-21, AC-22, AC-23, AC-24, AC-25, AC-26, AC-27, AC-28, AC-29, AC-30, AC-31, AC-32, AC-33, AC-44, AC-45, AC-46, AC-47, AC-48**
 7. [x] Slice 5, page statements. Add the record count and directory link, the shown set, the `ask-1` line, the 0018 link and the source line, satisfies **AC-49, AC-50, AC-51, AC-52, AC-53, AC-54**
-8. [ ] Visual design pass, settled before this task starts (see Follow-up), then applied so the engineer's mark reads clearly apart from the model's verdict, satisfies **AC-14**
+8. [x] Visual design pass, settled before this task starts (see Follow-up), then applied so the engineer's mark reads clearly apart from the model's verdict, satisfies **AC-14**
 
 ## Consequences
 
@@ -237,3 +237,4 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - [ ] Confirm the wording of AC-52 against `docs/scope/scope.md` line 238 when slice 5 is built. Experiment 0016's README marks only the `ask-2` runs.
 - [ ] Check the `?plain=1` link form on one real link during slice 3, and the Pages action versions during slice 1.
 - [ ] Decide whether Netlify or the portfolio site is worth a second look later; the unchecked Netlify facts are in `rationale.md`.
+- [ ] Dark mode that follows the visitor's system setting, CSS only, with each mark pill readable in both modes; later, after launch.
