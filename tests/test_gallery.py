@@ -16,7 +16,7 @@ from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
-from tracepath.gallery.render import MARK_KEY, STYLE
+from tracepath.gallery.render import LABEL_KEY, MARK_KEY, STYLE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -295,6 +295,55 @@ def test_build_fails_on_a_repeated_record_or_label(root: Path, tmp_path: Path, f
     assert f"`{field}` repeated: {marks[0][field]}" in output
 
 
+def _break_marks(root: Path, contents: str | None) -> None:
+    if contents is None:
+        (root / MARKS_FILE).unlink()
+    else:
+        (root / MARKS_FILE).write_text(contents, encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("contents", "message"),
+    [
+        (None, "marks.json: not found"),
+        ("[{", "marks.json: not valid JSON"),
+        ('{"record": "x.json"}', "gallery/marks.json: expected a JSON list of entries"),
+    ],
+)
+def test_build_fails_cleanly_on_a_marks_file_it_cannot_read(
+    root: Path, tmp_path: Path, contents: str | None, message: str
+) -> None:
+    """A clear message and exit 1, never a traceback (AGENTS.md rules)."""
+    _break_marks(root, contents)
+
+    result = runner.invoke(
+        app, ["gallery", "build", "--out", str(tmp_path / "site"), "--root", str(root)]
+    )
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert message in " ".join(result.output.split())
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_build_fails_cleanly_on_a_record_it_cannot_read(root: Path, tmp_path: Path) -> None:
+    """A record with no verdict is refused by name, not shown with a gap."""
+    _edit_record(root, DEV, lambda r: r.pop("verdict"))
+
+    assert f"{DEV}: not an ask record the gallery can read" in _refused(root, tmp_path)
+
+
+def test_build_fails_cleanly_when_the_page_cannot_be_written(root: Path, tmp_path: Path) -> None:
+    """An --out that is a file: exit 1 naming the page, never a traceback."""
+    out = tmp_path / "site"
+    out.write_text("a file, not a folder", encoding="utf-8")
+
+    code, output = _run(root, out)
+
+    assert code == 1
+    assert f"{out / 'index.html'}: could not be written" in output
+
+
 def test_build_makes_no_network_call(
     root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -456,6 +505,38 @@ def test_build_fails_on_a_line_outside_its_file(root: Path, tmp_path: Path, line
     assert f"{DEV}: item 0008/AC-7: line {line} is outside" in _refused(root, tmp_path)
 
 
+def _move_to_line(line: int) -> Callable[[dict[str, Any]], None]:
+    def move(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        item["line"] = item["line"].replace("index.md:54", f"index.md:{line}")
+
+    return move
+
+
+def _last_line() -> int:
+    """The last line of the file eval question 1's first citation sits in."""
+    path = PROJECT_ROOT / SNAPSHOT_DOCS / "specs/0008-app-shell-and-navigation/index.md"
+    return len(path.read_text(encoding="utf-8").splitlines())
+
+
+def test_build_accepts_the_last_line_of_a_file(root: Path, tmp_path: Path) -> None:
+    """AC-39, Value sourcing row 10: lines are counted from 1, so the last one is in range."""
+    last = _last_line()
+    _edit_record(root, DEV, _move_to_line(last))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'index.md?plain=1#L{last}">0008/AC-7</a>' in entry
+
+
+def test_build_refuses_the_line_one_past_the_end(root: Path, tmp_path: Path) -> None:
+    """AC-39, Value sourcing row 10."""
+    last = _last_line()
+    _edit_record(root, DEV, _move_to_line(last + 1))
+
+    assert f"line {last + 1} is outside" in _refused(root, tmp_path)
+
+
 def test_build_fails_on_a_cited_id_not_among_the_items(root: Path, tmp_path: Path) -> None:
     """AC-40."""
     _edit_record(root, DEV, lambda r: r["claims"][0]["cites"].append("0099/AC-1"))
@@ -582,6 +663,16 @@ def test_claim_labels_follow_the_stored_fields(
     assert _labels(_build(root, tmp_path / "site")) == labels
 
 
+@pytest.mark.parametrize("rule", ["labels", "details"])
+def test_labels_and_details_keep_their_stored_case(rule: str) -> None:
+    """AC-21, AC-27 to AC-32, verify finding 1 of 2026-10-24: no CSS recasing, so a claim
+    reads `HISTORY link` as the key teaches it, not `HISTORY LINK`."""
+    found = re.search(rf"\.{rule} \{{([^}}]*)\}}", STYLE)
+
+    assert found is not None
+    assert "text-transform" not in found.group(1)
+
+
 @pytest.mark.parametrize(
     ("change", "tally"),
     [
@@ -675,6 +766,31 @@ def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path)
             f'<dt class="mark" data-mark="{escape(mark)}">{escape(mark)}</dt>'
             f"<dd>{escape(meaning)}</dd>"
         ) in page
+
+
+def test_key_gives_each_label_its_meaning(root: Path, tmp_path: Path) -> None:
+    """Value sourcing row 17: the label key as `LABEL_KEY` gives it, terms in stored case."""
+    page = _build(root, tmp_path / "site")
+
+    for label, meaning in LABEL_KEY:
+        assert f"<dt>{escape(label)}</dt><dd>{escape(meaning)}</dd>" in page
+
+
+def test_entries_in_a_section_follow_the_marks_file_order(root: Path, tmp_path: Path) -> None:
+    """AC-1 to AC-4: marks file order, not label order or record name order."""
+    later = {
+        "record": UNNAMED,
+        "label": "Q9",
+        "mark": "right",
+        "note": None,
+        "source_path": "experiments/0018-realistic-usage-questions/README.md",
+        "source_row": "Q9",
+    }
+    _write_marks(root, [later, *MARKS])
+
+    page = _build(root, tmp_path / "site")
+
+    assert page.index('<h3><span class="stored">Q9<') < page.index('<h3><span class="stored">Q2<')
 
 
 def _section_html(page: str, title: str) -> str:
