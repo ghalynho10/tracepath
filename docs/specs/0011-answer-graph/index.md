@@ -295,6 +295,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 - [ ] Check in a real browser that the four UMD files load from plain script tags in the order given. This spec checked it in Node's `vm` sandbox only (task 2 does it).
 - [ ] Decide later whether the other data (the 13 records the page does not show) deserves a graph, and whether a link between two entries' shared items is worth drawing. Neither is in this spec.
 - [ ] Pinch to zoom, if a reader asks for it.
+- [ ] Goal: one shared graph of every shown answer's items, where picking a question zooms to its items. Deferred until link resolution improves (scope features 7 and 8): today the 947 items of the 31 packs form 224 separate pieces, 173 with no link, so answers have no section to zoom to. Revisit then; the drawing, flags, panel and d3 setup carry over. _Recorded 2026-10-25 by the engineer, who kept one graph per answer for now._
+- [ ] Visual pass (task 8): show item ids in their stored case, never in capitals. This replaces "mono uppercase" for the dot labels in Drawings and Style. _Engineer's ruling, 2026-10-25._
 
 ## References
 
