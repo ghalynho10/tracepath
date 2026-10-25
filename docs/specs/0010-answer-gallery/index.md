@@ -1,7 +1,7 @@
 # 0010. Answer gallery
 
 **Date**: 2026-10-23
-**Status**: In Progress
+**Status**: Done
 
 ## Summary
 
@@ -195,7 +195,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 Approach: Tracer Bullet (the project default). The first slice is one real record, built and published end to end, so the whole route (command, page, workflow, Pages setting, public URL) is proven before the page is thickened.
 
 1. [x] Slice 1, the thin thread. Add `src/tracepath/gallery/` with a loader for one record and one marks entry and a renderer that writes a self contained `index.html` with the question, verdict and claims; wire `tracepath gallery build --out DIR` in `cli.py`, satisfies **AC-1, AC-17, AC-18, AC-19, AC-55, AC-56, AC-57, AC-58**
-2. [ ] Slice 1, publish it. Add the Pages workflow (build job, then deploy job) with the path filter; check its action names against GitHub's docs; the engineer sets the Pages source once; confirm the one entry page opens at its public URL, satisfies **AC-59, AC-60, AC-61, AC-62**
+2. [x] Slice 1, publish it. Add the Pages workflow (build job, then deploy job) with the path filter; check its action names against GitHub's docs; the engineer sets the Pages source once; confirm the one entry page opens at its public URL, satisfies **AC-59, AC-60, AC-61, AC-62** · done 2026-10-24: the Pages run on `befdcaa` succeeded and the page is live at https://ghalynho10.github.io/tracepath/ with 31 entries
 3. [x] Slice 2, the marks file. Add the marks model and loader with its failure cases; render the mark, note, source, the three sections and the held out line, satisfies **AC-2, AC-3, AC-4, AC-5, AC-6, AC-8, AC-9, AC-10, AC-11, AC-12, AC-13, AC-15, AC-16**
 4. [x] Slice 2, the real marks. Fill `gallery/marks.json` with its starting content, 31 entries, each copied word for word from its source (the 0016 and 0018 READMEs for the development and realistic records, the v1 finish line for the held out ones); the engineer checks it before commit, satisfies **AC-1**
    - 5 development records: eval questions 1 to 5, the `ask-2` runs at 2 hops of 2026-10-20 (experiment 0016's hops 2 column).
@@ -219,7 +219,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - The marks exist only as README tables and the v1 finish line today, so `gallery/marks.json` is a second copy that can drift if a source changes. AC-16 links each entry back to its source to make that visible.
 - The page shows 31 of 44 records; the other 13 are named only as a count.
 - Parsing an item's location out of its stored display text depends on that text's format. The build fails on a shape it does not know rather than guessing.
-- GitHub renders `.md` files, so a plain `#L<line>` link may not open the line. The `?plain=1` form is the fix, but it was inferred from how GitHub behaves and not checked on GitHub's docs. The builder checks one real link before slice 3 is done.
+- GitHub renders `.md` files, so a plain `#L<line>` link may not open the line. The `?plain=1` form is the fix. It was first inferred from how GitHub behaves, then confirmed on a real link by `/check verify` (step E12 in `docs/reviews/2026-10-24-check-verify-answer-gallery.md`): the link opened GitHub's plain text Code view with the cited line highlighted.
 - Pages deploys on a push to `main` even if the `check` job fails on that push. Pull requests must pass `check` first, so this is accepted.
 - When the build job of the workflow fails, nothing is deployed and the previously published page stays up (AC-62).
 - The page has no search, filter or graph. It is a list.
