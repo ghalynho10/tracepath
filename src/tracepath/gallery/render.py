@@ -198,7 +198,8 @@ details .item > .stored { font-size: 14px; color: var(--ink-82); }
 """
 
 #: The graph window's styles (spec 0011): a split window, the graph about two thirds and
-#: the panel one third, with a hairline between them. Cyan only rings the selection, and
+#: the panel one third, with a hairline between them; at 720 pixels or less the graph
+#: sits above the panel (AC-54, AC-55). Cyan only rings the selection, and
 #: the marks' yellow and pink are never used here (AC-22).
 GRAPH_STYLE = """\
 .graph-open { display: inline-flex; margin: 18px 0 0; padding: 4px 15px; border-radius: 999px;
@@ -242,7 +243,7 @@ dialog.gw::backdrop { background: var(--paper); }
   pointer-events: none; }
 .gw-node.is-other > .gw-label { display: none; }
 .gw-node.is-other:is(.is-hover, .is-selected, .is-near) > .gw-label { display: inline; }
-.gw-node { cursor: pointer; }
+.gw-canvas.is-reach { cursor: pointer; }
 .gw-node, .gw-link { transition: opacity .2s; }
 .gw-canvas .is-dim { opacity: .2; }
 .gw-canvas .is-out { display: none; }
@@ -263,6 +264,16 @@ dialog.gw::backdrop { background: var(--paper); }
   text-transform: uppercase; color: var(--ink-64); }
 .gw-title { margin: 0 0 18px; font-size: clamp(30px, 4vw, 44px); line-height: 1;
   font-weight: 700; letter-spacing: -.03em; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  dialog.gw[open] { grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr); }
+  .gw-stage { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .gw-head { padding: 10px 16px; }
+  .gw-view { flex: none; height: 55vh; height: 55dvh; }
+  .gw-zoom { right: 16px; bottom: 12px; }
+  .gw-foot { gap: 6px 14px; padding: 8px 16px 10px; font-size: 11px; }
+  .gw-panel { padding: 20px 16px 32px; }
+}
 """
 
 #: The reading panel's styles (spec 0011): quiet body text under the poster title, and

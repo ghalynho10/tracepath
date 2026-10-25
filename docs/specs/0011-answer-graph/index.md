@@ -114,6 +114,11 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-82**: After a dot is dragged, closing and reopening the window puts every dot back at the place of AC-76.
 - **AC-83**: After a dot is dragged, going to another answer by previous or next and coming back puts every dot back at the place of AC-76.
 
+*Pressing a dot* (added 2026-10-25 at the engineer's request; the drawings are unchanged)
+- **AC-84**: A mouse press whose nearest dot centre is within 12 pixels selects or drags that dot.
+- **AC-85**: A touch press whose nearest dot centre is within 20 pixels selects or drags that dot.
+- **AC-86**: A drag that starts with no dot centre within that reach pans the graph.
+
 ## Decision
 
 **Chosen option**: Option 1: d3-force for layout only, vendored and inlined, with a hand written SVG drawing and a full window `<dialog>`.
@@ -267,7 +272,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 4. [x] Slice 3, the panel. The `data-item` attribute on the list's citation links, the cloned answer view, the item view with its link, claim numbers, links in and out, and the all items list. Satisfies **AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43, AC-44, AC-45, AC-46, AC-47, AC-48, AC-49, AC-50, AC-51, AC-52, AC-53**
 5. [x] Slice 4, moving around. Pan, wheel, zoom buttons, reset, previous and next with the counter, a repeatable layout. Satisfies **AC-7, AC-8, AC-9, AC-10, AC-11, AC-26, AC-27, AC-28, AC-29, AC-75, AC-76**
    - [x] Added 2026-10-25: dragging a dot, with d3-force running live so its neighbours follow, on a fresh copy of the layout each open; reset restores that layout too. Satisfies **AC-29, AC-29a, AC-77, AC-78, AC-79, AC-80, AC-81, AC-82, AC-83**
-6. [ ] Slice 5, the phone layout. Stacked window, touch pan, the 40 pixel buttons. Satisfies **AC-54, AC-55, AC-56**
+6. [x] Slice 5, the phone layout. Stacked window, touch pan, the 40 pixel buttons. Satisfies **AC-54, AC-55, AC-56**
+   - [x] Added 2026-10-25: a press acts on the nearest dot centre within 12 pixels (20 for a touch), found with d3-quadtree's `find`; the dot within reach also shows as hovered. Satisfies **AC-84, AC-85, AC-86**
 7. [ ] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
 8. [ ] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
 9. [ ] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC

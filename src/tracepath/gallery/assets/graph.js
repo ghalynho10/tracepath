@@ -12,6 +12,8 @@
   const TICKS = 300; // d3's own cooling schedule
   const PAD = 28; // pixels kept clear around the fitted graph
   const CLICK = 4; // pointer travel under this many pixels is a click
+  const REACH = 12; // a press acts on the nearest dot centre this close, in pixels
+  const TOUCH_REACH = 20; // the same, for a finger
   const STEP = 1.25; // one press of a zoom button
   const ZOOM_OUT = 0.5; // the view zooms from half the fitted scale
   const ZOOM_IN = 6; // to six times it
@@ -141,6 +143,7 @@
   }
 
   function place() {
+    state.tree = null; // the dots moved, so the nearest dot search is rebuilt
     for (const [id, node] of state.nodes) {
       const at = screen(id);
       node.setAttribute("transform", "translate(" + at.x + " " + at.y + ")");
@@ -162,10 +165,10 @@
   }
 
   function draw() {
+    hover(null);
     linkLayer.replaceChildren();
     nodeLayer.replaceChildren();
     state.nodes = new Map();
-    state.items = new Map();
     state.lines = new Map();
     state.byId = new Map(state.graph.items.map((item) => [item.id, item]));
     state.graph.links.forEach((link, number) => {
@@ -185,20 +188,29 @@
       node.append(outline(item, RING_GAP, "gw-ring"));
       node.append(element("text", { class: "gw-label", x: item.radius + 5, y: 3 }, item.id));
       node.append(element("title", {}, item.id + " · " + item.type));
-      node.addEventListener("pointerenter", () => node.classList.add("is-hover"));
-      node.addEventListener("pointerleave", () => node.classList.remove("is-hover"));
       nodeLayer.append(node);
       state.nodes.set(item.id, node);
-      state.items.set(node, item);
     }
     place();
   }
 
-  function itemAt(target) {
-    for (let node = target; node && node !== canvas; node = node.parentNode) {
-      if (state.items.has(node)) return state.items.get(node);
+  // The item whose dot centre is nearest the pointer and within reach, among the dots the
+  // switch shows, or null; the drawings stay small, the reach does not (AC-84 to AC-86).
+  function nearest(event) {
+    if (!state.tree) {
+      const shown = state.graph.items.filter(
+        (item) => !state.nodes.get(item.id).classList.contains("is-out")
+      );
+      state.tree = d3
+        .quadtree()
+        .x((item) => screen(item.id).x)
+        .y((item) => screen(item.id).y)
+        .addAll(shown);
     }
-    return null;
+    const box = canvas.getBoundingClientRect();
+    const reach = event.pointerType === "touch" ? TOUCH_REACH : REACH;
+    const found = state.tree.find(event.clientX - box.left, event.clientY - box.top, reach);
+    return found === undefined ? null : found;
   }
 
   // Ring the selection and dim all but it, its neighbours and its own links (AC-34).
@@ -226,6 +238,7 @@
   // Hide every item neither cited nor next to a cited one, and their lines (AC-30, AC-31).
   function filter(on) {
     toggle.checked = on;
+    state.tree = null;
     for (const [id, node] of state.nodes) {
       node.classList.toggle("is-out", on && !state.byId.get(id).near_cited);
     }
@@ -438,7 +451,7 @@
   let drag = null;
   canvas.addEventListener("pointerdown", (event) => {
     if (!event.isPrimary || event.button !== 0) return;
-    const item = itemAt(event.target);
+    const item = nearest(event);
     drag = {
       pointer: event.pointerId,
       x: event.clientX,
@@ -449,7 +462,22 @@
       moving: false,
     };
   });
+  // The dot a press would act on shows as hovered: its label and a pointer cursor.
+  let hovered = null;
+  function hover(item) {
+    const node = item === null ? null : state.nodes.get(item.id);
+    if (node === hovered) return;
+    if (hovered) hovered.classList.remove("is-hover");
+    if (node) node.classList.add("is-hover");
+    hovered = node;
+    canvas.classList.toggle("is-reach", node !== null);
+  }
+  canvas.addEventListener("pointerleave", () => {
+    if (drag === null) hover(null);
+  });
+
   canvas.addEventListener("pointermove", (event) => {
+    if (drag === null && event.pointerType !== "touch") hover(nearest(event));
     if (drag === null || event.pointerId !== drag.pointer) return;
     const dx = event.clientX - drag.x;
     const dy = event.clientY - drag.y;
@@ -483,9 +511,10 @@
   canvas.addEventListener("pointerup", (event) => {
     if (drag === null || event.pointerId !== drag.pointer) return;
     const moved = drag.moving;
+    const item = drag.item;
     endDrag();
     drag = null;
-    if (!moved) select(itemAt(event.target));
+    if (!moved) select(item);
   });
   canvas.addEventListener("pointercancel", () => {
     endDrag();

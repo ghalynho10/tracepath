@@ -460,7 +460,7 @@ _Design decided 2026-10-25: a Graph button on each of the 31 entries opens a ful
 - [ ] Build it: `/develop answer graph`
   - [x] The thread: stored links and hop read, flags in Python, the four library files vendored and inlined, a graph opens and closes for every entry (spec 0011 tasks 1 and 2; AC-1 to AC-6, AC-12, AC-13, AC-25, AC-57, AC-58, AC-71 to AC-74)
   - [x] The states and the panel (tasks 3 and 4; AC-14 to AC-24, AC-30 to AC-53, AC-59 to AC-64)
-  - [ ] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
+  - [x] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
   - [ ] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
 - [ ] Verify it: `/check verify answer graph`
 - [ ] Test it: `/test answer graph`
