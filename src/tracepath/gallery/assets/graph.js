@@ -381,8 +381,13 @@
     zoom(factor, box.width / 2, box.height / 2);
   }
 
-  // The view of AC-25 again (AC-29).
+  // The standard layout and the view of AC-25 again (AC-29, AC-29a); a later drag starts
+  // a new live simulation from that layout.
   function reset() {
+    stopLive();
+    state.live = null;
+    state.liveNodes = null;
+    state.positions = standard(laid.get(state.slug).positions);
     state.fit = fitted();
     state.view = Object.assign({}, state.fit);
     state.size = canvas.getBoundingClientRect();
