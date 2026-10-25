@@ -390,3 +390,33 @@ def test_script_never_turns_text_into_markup() -> None:
 
     for parser in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "DOMParser"):
         assert parser not in script
+
+
+def test_graphs_follow_page_order(page: str, blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-7 to AC-11 on the data: `n / N`, and previous and next along the page's order."""
+    marks = json.loads((PROJECT_ROOT / MARKS_FILE).read_text(encoding="utf-8"))
+    sections = ("development", "held out", "realistic")
+    order = [m["label"] for s in sections for m in marks if m["section"] == s]
+    on_page = [unescape(h) for h in re.findall(r'<h3><span class="stored">(.*?)</span></h3>', page)]
+    graphs = [blocks[label] for label in order]
+
+    assert on_page == order
+    assert [g["position"] for g in graphs] == list(range(1, len(order) + 1))
+    assert {g["total"] for g in graphs} == {len(order)}
+    assert [g["previous"] for g in graphs] == [None] + [g["slug"] for g in graphs[:-1]]
+    assert [g["next"] for g in graphs] == [g["slug"] for g in graphs[1:]] + [None]
+
+
+def test_items_come_in_a_fixed_order(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-76's input: cited items first, then by hop, then by id, so the layout repeats."""
+    for graph in blocks.values():
+        keys = [(not item["cited"], item["hop"], item["id"]) for item in graph["items"]]
+        assert keys == sorted(keys), graph["label"]
+
+
+def test_script_makes_no_request() -> None:
+    """AC-75: the script fetches nothing; everything it reads is in the page."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+
+    for request in ("fetch(", "XMLHttpRequest", "import(", "new Image", "sendBeacon", "src"):
+        assert request not in script

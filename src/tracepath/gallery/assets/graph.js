@@ -12,6 +12,9 @@
   const TICKS = 300; // d3's own cooling schedule
   const PAD = 28; // pixels kept clear around the fitted graph
   const CLICK = 4; // pointer travel under this many pixels is a click
+  const STEP = 1.25; // one press of a zoom button
+  const ZOOM_OUT = 0.5; // the view zooms from half the fitted scale
+  const ZOOM_IN = 6; // to six times it
   const ROOT_PI = Math.sqrt(Math.PI); // a square of side r * ROOT_PI has a dot's area
   const HELD_GAP = Number(dialog.dataset.heldGap);
   const RING_GAP = Number(dialog.dataset.ringGap);
@@ -19,7 +22,10 @@
   const canvas = dialog.querySelector(".gw-canvas");
   const linkLayer = canvas.querySelector(".gw-links");
   const nodeLayer = canvas.querySelector(".gw-nodes");
-  const heading = dialog.querySelector(".gw-heading");
+  const heading = dialog.querySelector("#gw-heading");
+  const counter = dialog.querySelector(".gw-count");
+  const previousButton = dialog.querySelector("[data-gw=previous]");
+  const nextButton = dialog.querySelector("[data-gw=next]");
   const panel = dialog.querySelector(".gw-panel");
   const closeButton = dialog.querySelector("[data-gw=close]");
   const toggle = dialog.querySelector("[data-gw=switch]");
@@ -192,7 +198,8 @@
     }
     state.lines.forEach((line, number) => {
       const link = state.graph.links[number];
-      const out = !state.byId.get(link.source).near_cited || !state.byId.get(link.target).near_cited;
+      const out =
+        !state.byId.get(link.source).near_cited || !state.byId.get(link.target).near_cited;
       line.classList.toggle("is-out", on && out);
     });
     if (on && state.selected !== null && !state.selected.near_cited) select(null);
@@ -321,6 +328,35 @@
     panel.scrollTop = 0;
   }
 
+  // Zoom by `factor` about the canvas point (x, y), within the allowed range.
+  function zoom(factor, x, y) {
+    const scale = Math.min(
+      state.fit.k * ZOOM_IN,
+      Math.max(state.fit.k * ZOOM_OUT, state.view.k * factor)
+    );
+    const change = scale / state.view.k;
+    state.view = {
+      k: scale,
+      x: x - (x - state.view.x) * change,
+      y: y - (y - state.view.y) * change,
+    };
+    place();
+  }
+
+  function zoomAtCentre(factor) {
+    const box = canvas.getBoundingClientRect();
+    zoom(factor, box.width / 2, box.height / 2);
+  }
+
+  // The view of AC-25 again (AC-29).
+  function reset() {
+    state.fit = fitted();
+    state.view = Object.assign({}, state.fit);
+    state.size = canvas.getBoundingClientRect();
+    place();
+  }
+
+  // Open the graph `slug`, or swap the open one for it; switch and selection start clear.
   function open(slug) {
     let found = laid.get(slug);
     if (!found) {
@@ -336,25 +372,83 @@
       selected: null,
     };
     heading.textContent = found.graph.label;
-    if (!dialog.open) dialog.showModal();
-    state.view = fitted();
+    counter.textContent = found.graph.position + " / " + found.graph.total;
+    previousButton.disabled = found.graph.previous === null;
+    nextButton.disabled = found.graph.next === null;
+    const swapped = dialog.open;
+    if (!swapped) dialog.showModal();
+    state.fit = fitted();
+    state.view = Object.assign({}, state.fit);
+    state.size = canvas.getBoundingClientRect();
     draw();
     toggle.disabled = found.graph.cited_count === 0;
     filter(false);
     select(null);
-    closeButton.focus();
+    if (!swapped) closeButton.focus();
+    // A focused previous or next button that is now disabled hands focus to the other.
+    else if (document.activeElement === previousButton && previousButton.disabled) {
+      nextButton.focus();
+    } else if (document.activeElement === nextButton && nextButton.disabled) {
+      previousButton.focus();
+    }
   }
 
-  let down = null;
+  // Under CLICK pixels of travel is a click that selects or clears; more is a pan, which
+  // never selects (AC-27, AC-35).
+  let drag = null;
   canvas.addEventListener("pointerdown", (event) => {
-    down = { x: event.clientX, y: event.clientY };
+    if (!event.isPrimary || event.button !== 0) return;
+    drag = {
+      pointer: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      from: Object.assign({}, state.view),
+      panning: false,
+    };
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    if (drag === null || event.pointerId !== drag.pointer) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.panning) {
+      if (Math.hypot(dx, dy) < CLICK) return;
+      drag.panning = true;
+      canvas.setPointerCapture(event.pointerId);
+      canvas.classList.add("is-panning");
+    }
+    state.view = { k: drag.from.k, x: drag.from.x + dx, y: drag.from.y + dy };
+    place();
   });
   canvas.addEventListener("pointerup", (event) => {
-    if (down === null) return;
-    const moved = Math.hypot(event.clientX - down.x, event.clientY - down.y);
-    down = null;
-    if (moved < CLICK) select(itemAt(event.target));
+    if (drag === null || event.pointerId !== drag.pointer) return;
+    const panned = drag.panning;
+    drag = null;
+    canvas.classList.remove("is-panning");
+    if (!panned) select(itemAt(event.target));
   });
+  canvas.addEventListener("pointercancel", () => {
+    drag = null;
+    canvas.classList.remove("is-panning");
+  });
+  // Not passive, so neither the dialog scrolls nor a trackpad pinch zooms the page (AC-26).
+  canvas.addEventListener(
+    "wheel",
+    (event) => {
+      event.preventDefault();
+      const box = canvas.getBoundingClientRect();
+      const lines = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? box.height : 1;
+      const factor = Math.exp(-event.deltaY * lines * 0.002);
+      zoom(factor, event.clientX - box.left, event.clientY - box.top);
+    },
+    { passive: false }
+  );
+  dialog.querySelector("[data-gw=zoom-in]").addEventListener("click", () => zoomAtCentre(STEP));
+  dialog
+    .querySelector("[data-gw=zoom-out]")
+    .addEventListener("click", () => zoomAtCentre(1 / STEP));
+  dialog.querySelector("[data-gw=reset]").addEventListener("click", reset);
+  previousButton.addEventListener("click", () => open(state.graph.previous));
+  nextButton.addEventListener("click", () => open(state.graph.next));
 
   // A cited id in a cloned claim, a link's other end, or a row of the item list: select
   // it, and keep a citation from leaving for JobHunt (AC-39, AC-51, AC-52).
@@ -372,9 +466,14 @@
     const button = state && buttons.get(state.slug);
     if (button) button.focus();
   });
+  // A resize keeps the reader's scale and the point at the canvas centre.
   window.addEventListener("resize", () => {
     if (!dialog.open || state === null) return;
-    state.view = fitted();
+    const box = canvas.getBoundingClientRect();
+    state.view.x += (box.width - state.size.width) / 2;
+    state.view.y += (box.height - state.size.height) / 2;
+    state.size = box;
+    state.fit = fitted();
     place();
   });
 

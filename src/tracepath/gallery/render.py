@@ -215,14 +215,19 @@ dialog.gw::backdrop { background: var(--paper); }
 .gw-head { display: flex; align-items: center; gap: 8px; padding: 16px 20px; }
 .gw-heading { flex: 1; margin: 0; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
   text-transform: uppercase; color: var(--ink-64); }
+.gw-count { margin-left: 10px; font-family: var(--mono); color: var(--ink-46); }
 .gw-button { width: 40px; height: 40px; flex: none; border-radius: 50%;
   border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
   font: 18px/1 var(--sans); cursor: pointer; }
 .gw-button:hover { border-color: var(--ink); }
+.gw-button:disabled { border-color: var(--rule); color: var(--ink-46); cursor: default; }
 .gw-button:focus-visible, .graph-open:focus-visible { outline: 2px solid var(--ink);
   outline-offset: 2px; }
-.gw-canvas { display: block; flex: 1; width: 100%; min-height: 0; touch-action: none;
-  user-select: none; }
+.gw-view { position: relative; flex: 1; min-height: 0; }
+.gw-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  touch-action: none; user-select: none; cursor: grab; }
+.gw-canvas.is-panning { cursor: grabbing; }
+.gw-zoom { position: absolute; right: 20px; bottom: 16px; display: flex; gap: 8px; }
 .gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
 .gw-link.is-held { stroke-opacity: .5; stroke-dasharray: 4 3; }
 .gw-link.is-active { stroke-opacity: 1; }
@@ -324,13 +329,24 @@ DIALOG = (
     f'<dialog class="gw" aria-labelledby="gw-heading" data-held-gap="{HELD_GAP}" '
     f'data-ring-gap="{RING_GAP}">'
     '<div class="gw-stage"><div class="gw-head">'
-    '<p class="gw-heading" id="gw-heading"></p>'
+    '<p class="gw-heading"><span id="gw-heading"></span> <span class="gw-count"></span></p>'
+    '<button type="button" class="gw-button" data-gw="previous" aria-label="Previous graph">'
+    "&larr;</button>"
+    '<button type="button" class="gw-button" data-gw="next" aria-label="Next graph">'
+    "&rarr;</button>"
     '<button type="button" class="gw-button" data-gw="close" aria-label="Close graph">'
     "&times;</button></div>"
+    '<div class="gw-view">'
     '<svg class="gw-canvas" role="img" aria-label="The items sent and their links">'
     '<defs><marker id="gw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" '
     'markerHeight="7" orient="auto"><path class="gw-arrow" d="M0 0L10 5L0 10z"/></marker></defs>'
     '<g class="gw-links"></g><g class="gw-nodes"></g></svg>'
+    '<div class="gw-zoom">'
+    '<button type="button" class="gw-button" data-gw="zoom-in" aria-label="Zoom in">+</button>'
+    '<button type="button" class="gw-button" data-gw="zoom-out" aria-label="Zoom out">'
+    "&minus;</button>"
+    '<button type="button" class="gw-button" data-gw="reset" aria-label="Reset the view">'
+    "&#x21BA;</button></div></div>"
     '<div class="gw-foot"><label class="gw-switch"><input type="checkbox" role="switch" '
     'data-gw="switch"> Cited and neighbours only</label>'
     '<ul class="gw-key" aria-label="Key">'
