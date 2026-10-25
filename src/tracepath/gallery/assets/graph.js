@@ -15,6 +15,8 @@
   const STEP = 1.25; // one press of a zoom button
   const ZOOM_OUT = 0.5; // the view zooms from half the fitted scale
   const ZOOM_IN = 6; // to six times it
+  const WARM = 0.3; // how lively the graph stays while a dot is dragged
+  const STILL = window.matchMedia("(prefers-reduced-motion: reduce)");
   const ROOT_PI = Math.sqrt(Math.PI); // a square of side r * ROOT_PI has a dot's area
   const HELD_GAP = Number(dialog.dataset.heldGap);
   const RING_GAP = Number(dialog.dataset.ringGap);
@@ -59,13 +61,12 @@
     return element("circle", { class: className, r: item.radius + gap });
   }
 
-  // Run d3-force to the end before anything is drawn, around (0, 0).
-  function layout(graph) {
-    const nodes = graph.items.map((item) => ({ id: item.id, radius: item.radius }));
+  // The one set of forces, for the layout and for dragging a dot.
+  function simulate(graph, nodes) {
     const links = graph.links
       .filter((link) => link.drawn)
       .map((link) => ({ source: link.source, target: link.target }));
-    const simulation = d3
+    return d3
       .forceSimulation(nodes)
       .force("link", d3.forceLink(links).id((node) => node.id).distance(40))
       .force("charge", d3.forceManyBody().strength(-60))
@@ -73,8 +74,40 @@
       .force("x", d3.forceX(0).strength(0.06))
       .force("y", d3.forceY(0).strength(0.06))
       .stop();
+  }
+
+  // Run d3-force to the end before anything is drawn, around (0, 0).
+  function layout(graph) {
+    const nodes = graph.items.map((item) => ({ id: item.id, radius: item.radius }));
+    const simulation = simulate(graph, nodes);
     for (let tick = 0; tick < TICKS; tick += 1) simulation.tick();
     return new Map(nodes.map((node) => [node.id, { x: node.x, y: node.y }]));
+  }
+
+  // A copy of the standard layout, so a dragged dot never moves the cached one and every
+  // open starts from the same places (AC-76).
+  function standard(positions) {
+    return new Map([...positions].map(([id, point]) => [id, { x: point.x, y: point.y }]));
+  }
+
+  // The live simulation a dragged dot runs, made on the first drag of this open.
+  function live() {
+    if (!state.live) {
+      const nodes = state.graph.items.map((item) => {
+        const point = state.positions.get(item.id);
+        return { id: item.id, radius: item.radius, x: point.x, y: point.y };
+      });
+      state.live = simulate(state.graph, nodes).on("tick", () => {
+        for (const node of nodes) state.positions.set(node.id, { x: node.x, y: node.y });
+        place();
+      });
+      state.liveNodes = new Map(nodes.map((node) => [node.id, node]));
+    }
+    return state.live;
+  }
+
+  function stopLive() {
+    if (state && state.live) state.live.stop();
   }
 
   // The view that puts every dot inside the canvas (AC-25).
@@ -364,10 +397,11 @@
       found = { graph: graph, positions: layout(graph) };
       laid.set(slug, found);
     }
+    stopLive();
     state = {
       slug: slug,
       graph: found.graph,
-      positions: found.positions,
+      positions: standard(found.positions),
       article: buttons.get(slug).closest("article"),
       selected: null,
     };
@@ -393,42 +427,64 @@
     }
   }
 
-  // Under CLICK pixels of travel is a click that selects or clears; more is a pan, which
-  // never selects (AC-27, AC-35).
+  // Under CLICK pixels of travel is a click that selects or clears. More, from a dot,
+  // drags that dot and its neighbours follow; from empty canvas, it pans. Neither
+  // selects (AC-27, AC-35).
   let drag = null;
   canvas.addEventListener("pointerdown", (event) => {
     if (!event.isPrimary || event.button !== 0) return;
+    const item = itemAt(event.target);
     drag = {
       pointer: event.pointerId,
       x: event.clientX,
       y: event.clientY,
+      item: item,
       from: Object.assign({}, state.view),
-      panning: false,
+      at: item === null ? null : Object.assign({}, state.positions.get(item.id)),
+      moving: false,
     };
   });
   canvas.addEventListener("pointermove", (event) => {
     if (drag === null || event.pointerId !== drag.pointer) return;
     const dx = event.clientX - drag.x;
     const dy = event.clientY - drag.y;
-    if (!drag.panning) {
+    if (!drag.moving) {
       if (Math.hypot(dx, dy) < CLICK) return;
-      drag.panning = true;
+      drag.moving = true;
       canvas.setPointerCapture(event.pointerId);
-      canvas.classList.add("is-panning");
+      canvas.classList.add("is-dragging");
+      if (drag.item !== null) live().alphaTarget(WARM).restart();
     }
-    state.view = { k: drag.from.k, x: drag.from.x + dx, y: drag.from.y + dy };
-    place();
+    if (drag.item === null) {
+      state.view = { k: drag.from.k, x: drag.from.x + dx, y: drag.from.y + dy };
+      place();
+      return;
+    }
+    const node = state.liveNodes.get(drag.item.id);
+    node.fx = drag.at.x + dx / state.view.k;
+    node.fy = drag.at.y + dy / state.view.k;
   });
+  function endDrag() {
+    if (drag !== null && drag.moving && drag.item !== null) {
+      const node = state.liveNodes.get(drag.item.id);
+      node.fx = null;
+      node.fy = null;
+      // Let go, the graph settles; with reduced motion nothing moves on its own.
+      if (STILL.matches) state.live.stop();
+      else state.live.alphaTarget(0);
+    }
+    canvas.classList.remove("is-dragging");
+  }
   canvas.addEventListener("pointerup", (event) => {
     if (drag === null || event.pointerId !== drag.pointer) return;
-    const panned = drag.panning;
+    const moved = drag.moving;
+    endDrag();
     drag = null;
-    canvas.classList.remove("is-panning");
-    if (!panned) select(itemAt(event.target));
+    if (!moved) select(itemAt(event.target));
   });
   canvas.addEventListener("pointercancel", () => {
+    endDrag();
     drag = null;
-    canvas.classList.remove("is-panning");
   });
   // Not passive, so neither the dialog scrolls nor a trackpad pinch zooms the page (AC-26).
   canvas.addEventListener(
@@ -463,6 +519,8 @@
   closeButton.addEventListener("click", () => dialog.close());
   // Esc, the close button and a back gesture all end here (AC-6).
   dialog.addEventListener("close", () => {
+    stopLive();
+    drag = null;
     const button = state && buttons.get(state.slug);
     if (button) button.focus();
   });

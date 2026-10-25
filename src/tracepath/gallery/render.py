@@ -226,7 +226,7 @@ dialog.gw::backdrop { background: var(--paper); }
 .gw-view { position: relative; flex: 1; min-height: 0; }
 .gw-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   touch-action: none; user-select: none; cursor: grab; }
-.gw-canvas.is-panning { cursor: grabbing; }
+.gw-canvas.is-dragging, .gw-canvas.is-dragging .gw-node { cursor: grabbing; }
 .gw-zoom { position: absolute; right: 20px; bottom: 16px; display: flex; gap: 8px; }
 .gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
 .gw-link.is-held { stroke-opacity: .5; stroke-dasharray: 4 3; }

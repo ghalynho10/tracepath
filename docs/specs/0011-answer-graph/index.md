@@ -104,6 +104,15 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-75**: Opening a graph makes no network request.
 - **AC-76**: Two loads of the same graph in the same browser put every dot at the same place.
 
+*Dragging a dot* (added 2026-10-25 at the engineer's request)
+- **AC-77**: Dragging a dot moves that dot with the pointer.
+- **AC-78**: While a dot is dragged, its neighbours move after it.
+- **AC-79**: A press on a dot released after moving less than 4 pixels selects that dot.
+- **AC-80**: Dragging a dot 4 pixels or more neither selects an item nor clears the selection.
+- **AC-81**: Dragging empty canvas moves every dot by the same distance in the same direction.
+- **AC-82**: After a dot is dragged, closing and reopening the window puts every dot back at the place of AC-76.
+- **AC-83**: After a dot is dragged, going to another answer by previous or next and coming back puts every dot back at the place of AC-76.
+
 ## Decision
 
 **Chosen option**: Option 1: d3-force for layout only, vendored and inlined, with a hand written SVG drawing and a full window `<dialog>`.
@@ -256,6 +265,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 3. [x] Slice 2, the states. Cited, not cited, held, held link, unresolved and selected drawings, the dim on select, the key, the switch, and the no cited item case. Satisfies **AC-14, AC-15, AC-16, AC-17, AC-18, AC-19, AC-20, AC-21, AC-22, AC-23, AC-24, AC-30, AC-31, AC-32, AC-33, AC-34, AC-35, AC-59, AC-60, AC-61, AC-62, AC-63, AC-64**
 4. [x] Slice 3, the panel. The `data-item` attribute on the list's citation links, the cloned answer view, the item view with its link, claim numbers, links in and out, and the all items list. Satisfies **AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43, AC-44, AC-45, AC-46, AC-47, AC-48, AC-49, AC-50, AC-51, AC-52, AC-53**
 5. [x] Slice 4, moving around. Pan, wheel, zoom buttons, reset, previous and next with the counter, a repeatable layout. Satisfies **AC-7, AC-8, AC-9, AC-10, AC-11, AC-26, AC-27, AC-28, AC-29, AC-75, AC-76**
+   - [x] Added 2026-10-25: dragging a dot, with d3-force running live so its neighbours follow, on a fresh copy of the layout each open. Satisfies **AC-77, AC-78, AC-79, AC-80, AC-81, AC-82, AC-83**
 6. [ ] Slice 5, the phone layout. Stacked window, touch pan, the 40 pixel buttons. Satisfies **AC-54, AC-55, AC-56**
 7. [ ] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
 8. [ ] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
