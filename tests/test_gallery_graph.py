@@ -2,6 +2,7 @@
 
 import json
 import re
+from html import unescape
 from pathlib import Path
 from typing import Any
 
@@ -366,3 +367,26 @@ def test_key_shows_the_six_drawings_outside_the_canvas() -> None:
     assert 'class="gw-ring"' in drawings["Selected"]
     assert all(f"{words}</li>" in key for words in drawings)
     assert DIALOG.index('<ul class="gw-key"') > DIALOG.index("</svg>", DIALOG.index("gw-canvas"))
+
+
+def test_only_cited_unrejected_ids_carry_data_item(page: str) -> None:
+    """AC-39, AC-41: each such id in a claim's citation link names its item; no other does."""
+    records = _records()
+    for article in _articles(page):
+        label = unescape(re.findall(r'<h3><span class="stored">(.*?)</span></h3>', article)[0])
+        listed = article.split("<ol>")[1].split("</ol>")[0] if "<ol>" in article else ""
+        claims = re.findall(r"<li>.*?</li>", listed)
+        stored = records[label]["claims"]
+        assert len(claims) == len(stored), label
+        for shown, claim in zip(claims, stored, strict=True):
+            named = [unescape(found) for found in re.findall(r'data-item="([^"]*)"', shown)]
+            cited = [c for c in dict.fromkeys(claim["cites"]) if c not in claim["rejected_ids"]]
+            assert named == cited, label
+
+
+def test_script_never_turns_text_into_markup() -> None:
+    """AC-53: the panel is filled with textContent; no call parses a string as markup."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+
+    for parser in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "DOMParser"):
+        assert parser not in script

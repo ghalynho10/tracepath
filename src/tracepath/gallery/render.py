@@ -166,12 +166,13 @@ article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight
 .note { margin: 6px 0; max-width: 30rem; padding: 10px 14px; font-size: 14.7px; line-height: 1.5;
   border-radius: 13.6px 13.6px 13.6px 1.6px; background: var(--ink); color: var(--paper); }
 .source { margin: 4px 0 0; font-size: 12px; color: var(--ink-46); }
-article ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
+article ol, .gw-answer ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
   border-top: 1px solid var(--rule); }
-article ol > li { position: relative; counter-increment: claim; padding: 16px 0 16px 2.4em;
-  border-bottom: 1px solid var(--rule); }
-article ol > li::before { content: counter(claim, decimal-leading-zero); position: absolute;
-  left: 0; top: 20px; font: 11px/1 var(--mono); color: var(--ink-46); }
+article ol > li, .gw-answer ol > li { position: relative; counter-increment: claim;
+  padding: 16px 0 16px 2.4em; border-bottom: 1px solid var(--rule); }
+article ol > li::before, .gw-answer ol > li::before {
+  content: counter(claim, decimal-leading-zero); position: absolute; left: 0; top: 20px;
+  font: 11px/1 var(--mono); color: var(--ink-46); }
 .cites { margin: 8px 0 0; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
 .labels { margin: 8px 0 0; font-size: 10px; line-height: 1.4; font-weight: 700;
@@ -259,6 +260,35 @@ dialog.gw::backdrop { background: var(--paper); }
   font-weight: 700; letter-spacing: -.03em; overflow-wrap: anywhere; }
 """
 
+#: The reading panel's styles (spec 0011): quiet body text under the poster title, and
+#: ids drawn as links that select their item.
+PANEL_STYLE = """\
+.gw-back { display: inline-flex; margin: 0 0 18px; padding: 3px 12px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 500 12px/1.5 var(--sans); cursor: pointer; }
+.gw-back:hover { border-color: var(--ink); }
+.gw-answer .question { font-size: 17px; }
+.gw-answer ol { margin-top: 18px; }
+.gw-text { margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: var(--ink-82); }
+.gw-meta { margin: 0 0 6px; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
+  overflow-wrap: anywhere; }
+.gw-sub { margin: 26px 0 8px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-list { margin: 0; padding: 0; list-style: none; }
+.gw-list li { padding: 7px 0; border-bottom: 1px solid var(--rule); font: 12px/1.6 var(--mono);
+  color: var(--ink-64); overflow-wrap: anywhere; }
+.gw-phrase { display: block; margin-top: 2px; font: 13px/1.5 var(--sans); color: var(--ink-82); }
+.gw-dir { display: inline-block; min-width: 2.6em; color: var(--ink-46); }
+.gw-id { padding: 0; border: 0; background: none; color: var(--ink); font: inherit;
+  text-align: left; text-decoration: underline; text-decoration-color: var(--cyan);
+  text-underline-offset: 3px; text-decoration-thickness: 1px; cursor: pointer;
+  overflow-wrap: anywhere; }
+.gw-id:hover { color: var(--cyan); }
+.gw-id:focus-visible, .gw-back:focus-visible { outline: 2px solid var(--ink);
+  outline-offset: 2px; }
+.gw-title:focus { outline: none; }
+"""
+
 #: Half the side of an unresolved name's square, which has a cited dot's area (AC-20).
 _HALF = round(CITED_RADIUS * math.sqrt(math.pi) / 2, 2)
 
@@ -327,13 +357,18 @@ def _link(item: ItemLine) -> str:
 
 
 def _citation(claim: StoredClaim, cited: str, items: Mapping[str, ItemLine]) -> str:
-    """One cited id: linked, `held` after it when held, never linked when rejected."""
+    """One cited id: linked, `held` after it when held, never linked when rejected.
+
+    The link's `data-item` names the item for the graph's panel (spec 0011 AC-39); it
+    does nothing in the list.
+    """
     if cited in claim.rejected_ids:
         return escape(cited)
     item = items[cited]
     whole = ", whole file" if item.line is None else ""
     held = " held" if cited in claim.held_ids else ""
-    return f'<a href="{escape(item_link(item) or "")}">{escape(cited)}{whole}</a>{held}'
+    link = escape(item_link(item) or "")
+    return f'<a href="{link}" data-item="{escape(cited)}">{escape(cited)}{whole}</a>{held}'
 
 
 def _claim(claim: StoredClaim, items: Mapping[str, ItemLine]) -> str:
@@ -542,7 +577,7 @@ def render_page(
         '<html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
-        f"<style>{STYLE}{GRAPH_STYLE}</style></head>"
+        f"<style>{STYLE}{GRAPH_STYLE}{PANEL_STYLE}</style></head>"
         f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
         f"{_key()}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
     )

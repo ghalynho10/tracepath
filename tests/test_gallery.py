@@ -473,7 +473,8 @@ def test_cited_item_links_to_its_line_in_jobhunt(root: Path, tmp_path: Path) -> 
 
     assert (
         f'<a href="https://github.com/ghalynho10/JobHunt/blob/{JOBHUNT_COMMIT}/docs/'
-        'specs/0008-app-shell-and-navigation/index.md?plain=1#L54">0008/AC-7</a>'
+        'specs/0008-app-shell-and-navigation/index.md?plain=1#L54" data-item="0008/AC-7">'
+        "0008/AC-7</a>"
     ) in entry
 
 
@@ -492,7 +493,8 @@ def test_cited_item_with_a_file_and_no_line_links_to_the_whole_file(
 
     assert (
         f'<a href="https://github.com/ghalynho10/JobHunt/blob/{JOBHUNT_COMMIT}/docs/'
-        'specs/0008-app-shell-and-navigation/index.md">0008/AC-7, whole file</a>'
+        'specs/0008-app-shell-and-navigation/index.md" data-item="0008/AC-7">'
+        "0008/AC-7, whole file</a>"
     ) in entry
 
 
@@ -618,7 +620,7 @@ def test_build_accepts_the_last_line_of_a_file(root: Path, tmp_path: Path) -> No
 
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
 
-    assert f'index.md?plain=1#L{last}">0008/AC-7</a>' in entry
+    assert f'index.md?plain=1#L{last}" data-item="0008/AC-7">0008/AC-7</a>' in entry
 
 
 def test_build_refuses_the_line_one_past_the_end(root: Path, tmp_path: Path) -> None:

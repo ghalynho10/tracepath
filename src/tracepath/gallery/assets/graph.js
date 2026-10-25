@@ -198,16 +198,127 @@
     if (on && state.selected !== null && !state.selected.near_cited) select(null);
   }
 
-  function showAnswer() {
-    const parts = [html("p", "gw-eyebrow", state.graph.label), html("h2", "gw-title", "Answer")];
-    if (state.graph.cited_count === 0) {
-      parts.push(html("p", "gw-empty", "This answer cites no item."));
-    }
-    panel.replaceChildren(...parts);
+  // A selection made in the panel: shown even if the switch hid it, and centred
+  // without changing the scale (AC-40).
+  function choose(item) {
+    if (toggle.checked && !item.near_cited) filter(false);
+    select(item);
+    const box = canvas.getBoundingClientRect();
+    const point = state.positions.get(item.id);
+    state.view.x = box.width / 2 - state.view.k * point.x;
+    state.view.y = box.height / 2 - state.view.k * point.y;
+    place();
+    focusTitle();
   }
 
+  function focusTitle() {
+    panel.querySelector(".gw-title").focus({ preventScroll: true });
+  }
+
+  // An id that selects its item when clicked; the id goes in a data attribute only.
+  function idButton(id) {
+    const button = html("button", "gw-id", id);
+    button.type = "button";
+    button.dataset.item = id;
+    return button;
+  }
+
+  function title(text) {
+    const node = html("h2", "gw-title", text);
+    node.tabIndex = -1;
+    return node;
+  }
+
+  function itemList(heading, items) {
+    if (items.length === 0) return [];
+    const list = html("ul", "gw-list");
+    for (const item of items) {
+      const row = html("li");
+      row.append(idButton(item.id), " " + item.type);
+      list.append(row);
+    }
+    return [html("h3", "gw-sub", heading + " (" + items.length + ")"), list];
+  }
+
+  // The answer view: the entry's own question, verdict and claims from the list on the
+  // page, so their labels cannot differ (AC-36 to AC-38), then every item (AC-52).
+  function showAnswer() {
+    const view = html("div", "gw-answer");
+    view.append(html("p", "gw-eyebrow", state.graph.label), title("Answer"));
+    if (state.graph.cited_count === 0) {
+      view.append(html("p", "gw-empty", "This answer cites no item."));
+    }
+    for (const part of [".question", ".verdict", "ol"]) {
+      const found = state.article.querySelector(":scope > " + part);
+      if (found) view.append(found.cloneNode(true));
+    }
+    if (!state.article.querySelector(":scope > ol")) view.append(html("p", "", "No claims."));
+    view.append(
+      ...itemList("Cited", state.graph.items.filter((item) => item.cited)),
+      ...itemList("Not cited", state.graph.items.filter((item) => !item.cited))
+    );
+    panel.replaceChildren(view);
+    panel.scrollTop = 0;
+  }
+
+  function twoDigits(number) {
+    return String(number).padStart(2, "0");
+  }
+
+  // The item view, filled with textContent only, so stored text stays text (AC-42 to AC-53).
   function showItem(item) {
-    panel.replaceChildren(html("p", "gw-eyebrow", item.type), html("h2", "gw-title", item.id));
+    const back = html("button", "gw-back", "Back to the answer");
+    back.type = "button";
+    back.addEventListener("click", () => {
+      select(null);
+      focusTitle();
+    });
+    const words = [item.type];
+    if (item.held) words.push("HELD");
+    if (item.marker) words.push(item.marker);
+    if (item.unresolved) words.push("UNRESOLVED NAME");
+    const where = html("p", "gw-meta");
+    if (item.source) {
+      const link = html("a", "", item.location);
+      link.href = item.source;
+      where.append(link);
+    } else {
+      where.textContent = item.location;
+    }
+    const claims = item.cited_by.length
+      ? (item.cited_by.length === 1 ? "Cited by claim " : "Cited by claims ") +
+        item.cited_by.map(twoDigits).join(", ")
+      : "Not cited by any claim";
+    const view = html("div", "gw-item");
+    view.append(
+      back,
+      html("p", "gw-eyebrow", words.join(" · ")),
+      title(item.id),
+      html("p", "gw-text stored", item.text),
+      where,
+      html("p", "gw-meta", claims),
+      html("h3", "gw-sub", "Links (" + item.link_ids.length + ")")
+    );
+    const list = html("ul", "gw-list");
+    for (const number of item.link_ids) {
+      const link = state.graph.links[number];
+      const direction =
+        link.source === link.target ? "self" : link.source === item.id ? "out" : "in";
+      const row = html("li");
+      row.append(
+        html("span", "gw-dir", direction),
+        link.type + " ",
+        idButton(direction === "in" ? link.source : link.target)
+      );
+      if (link.held) row.append(" HELD");
+      const phrase = link.phrase === null ? "no phrase stored" : link.phrase;
+      row.append(html("span", "gw-phrase stored", phrase));
+      list.append(row);
+    }
+    if (item.link_ids.length === 0) view.append(html("p", "gw-meta", "No links."));
+    else view.append(list);
+    panel.replaceChildren(view);
+    panel.scrollTop = 0;
   }
 
   function open(slug) {
@@ -217,7 +328,13 @@
       found = { graph: graph, positions: layout(graph) };
       laid.set(slug, found);
     }
-    state = { slug: slug, graph: found.graph, positions: found.positions, selected: null };
+    state = {
+      slug: slug,
+      graph: found.graph,
+      positions: found.positions,
+      article: buttons.get(slug).closest("article"),
+      selected: null,
+    };
     heading.textContent = found.graph.label;
     if (!dialog.open) dialog.showModal();
     state.view = fitted();
@@ -239,6 +356,15 @@
     if (moved < CLICK) select(itemAt(event.target));
   });
 
+  // A cited id in a cloned claim, a link's other end, or a row of the item list: select
+  // it, and keep a citation from leaving for JobHunt (AC-39, AC-51, AC-52).
+  panel.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-item]");
+    if (!link || !panel.contains(link)) return;
+    event.preventDefault();
+    const item = state.byId.get(link.dataset.item);
+    if (item) choose(item);
+  });
   toggle.addEventListener("change", () => filter(toggle.checked));
   closeButton.addEventListener("click", () => dialog.close());
   // Esc, the close button and a back gesture all end here (AC-6).
