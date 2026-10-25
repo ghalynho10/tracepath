@@ -20,16 +20,16 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 
 *What is shown*
 - **AC-1**: The page has one entry for each record named in `gallery/marks.json`, and no entry for any other record.
-- **AC-2**: A record whose `eval_file` is `eval/linked-records-research.json` appears in the section "Development questions".
-- **AC-3**: A record whose `eval_file` is `eval/held-out.json` appears in the section "Held out questions".
+- **AC-2** (amended 2026-10-24): An entry whose `section` is `development` appears in the section "Development questions"; its record's `eval_file` equals the development eval file, `EVAL_FILE` in `src/tracepath/report.py`.
+- **AC-3** (amended 2026-10-24): An entry whose `section` is `held out` appears in the section "Held out questions"; its record's `eval_file` is present and is not the development eval file.
 - **AC-4**: A record with no `eval_file` appears in the section "Realistic questions".
 - **AC-5**: The build fails, exit 1, naming the entry, when `gallery/marks.json` names a record that is not in `artifacts/asks/`.
-- **AC-6**: The build fails, exit 1, naming the record, when a shown record's `eval_file` is neither absent, `eval/linked-records-research.json` nor `eval/held-out.json`.
+- **AC-6** (amended 2026-10-24): The build fails, exit 1, naming the entry, when an entry's `section` disagrees with its record: `development` needs an `eval_file` equal to the development eval file, `realistic` needs no `eval_file`, and `held out` needs an `eval_file` that is present and not the development one, so any record with such an `eval_file` must be marked `held out`.
 - **AC-7**: The build fails, exit 1, naming the record, when a shown record's `corpus_commit` differs from the pinned commit.
 - **AC-8**: The held out section carries the line: asked once at the end of v1, never used to tune the tool.
 
 *Marks*
-- **AC-9**: Each `gallery/marks.json` entry has the fields `record`, `label`, `mark`, `note`, `source_path` and `source_row`.
+- **AC-9** (amended 2026-10-24): Each `gallery/marks.json` entry has the fields `record`, `label`, `section` (`development`, `held out` or `realistic`), `mark`, `note`, `source_path` and `source_row`.
 - **AC-10**: The build fails, exit 1, naming the entry, when an entry lacks one of those fields.
 - **AC-11**: The build fails, exit 1, naming the entry, when `mark` is not one of `right`, `partly right`, `wrong`, `declined`.
 - **AC-12**: Each entry shows the mark exactly as in `gallery/marks.json`.
@@ -37,6 +37,8 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 - **AC-14**: The mark is labelled as the author's own mark, in first person (My mark).
 - **AC-15**: The model's verdict is labelled as the model's own verdict.
 - **AC-16**: Each entry shows `source_row` as text and links `source_path` to `https://github.com/ghalynho10/tracepath/blob/main/<source_path>`.
+
+_Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections come from the record and the marks file, never from an eval file name in source, to keep AC-27 and the report guard intact._
 
 *Each answer*
 - **AC-17**: Each entry shows the question text as stored in the record.
@@ -146,7 +148,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 | Render an entry | question, verdict, claims, missing notes | the record named by `gallery/marks.json` (`question`, `verdict`, `claims`, `missing`) |
 | Render an entry | date asked, prompt version, hops | the record's `asked_at`, `prompt_version`, `hops` (hops omitted when null) |
 | Render an entry | mark, note, source link and row | `gallery/marks.json` (`mark`, `note`, `source_path`, `source_row`) |
-| Render an entry | section | the record's `eval_file`: linked records research file means development, held out file means held out, null means realistic |
+| Render an entry | section | the marks entry's `section`, checked against the record's `eval_file`: the development eval file means development, null means realistic, any other means held out (amended 2026-10-24, AC-6) |
 | Render an entry | heading | `label` in `gallery/marks.json` |
 | Render a claim | `held`, `HISTORY`, `INFERRED`, `CITATION REJECTED`, `UNCITED` | the claim's stored `held_ids`, `history`, `inferred`, `rejected_ids`, `uncited` |
 | Render a claim | `unsupported`, `link` or `read from text`, the failed tally | derived from the claim's stored `cites`, `rejected_ids`, `uncited`, `inferred` and `basis`, by the rules in AC-31 to AC-33 (the same rules as `src/tracepath/ask/answer.py`) |
@@ -178,7 +180,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 **Critical test scenarios** (each maps to an acceptance criterion in ## Requirements):
 - Happy path: build a page from a fixture of two records and a marks file; the page shows both with marks, claims, labels, evidence and links, verifies **AC-1, AC-12, AC-19, AC-34, AC-45**.
 - Happy path on the real data: build from `artifacts/asks/` and the committed `gallery/marks.json` succeeds and writes one entry per marks entry, verifies **AC-1, AC-55**.
-- Failure: a marks entry naming a missing record, a missing field, a bad mark, an unlisted `eval_file` or a different `corpus_commit` each exit 1 with the entry named, verifies **AC-5, AC-6, AC-7, AC-10, AC-11**.
+- Failure: a marks entry naming a missing record, a missing field, a bad mark, a `section` its record disagrees with or a different `corpus_commit` each exit 1 with the entry named, verifies **AC-5, AC-6, AC-7, AC-10, AC-11**.
 - Failure: a line past the end of its file, a missing file, an unexpected item line shape, or a claim citing an unknown id each exit 1, verifies **AC-37, AC-38, AC-39, AC-40**.
 - Edge: an item with a file and no line links to the file and says "whole file", checked with a fixture because no record cites such an item among the 31, verifies **AC-35**.
 - Edge: a six field item line with `STRUCK` parses and its row shows the marker, verifies **AC-37, AC-47**.

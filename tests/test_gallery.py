@@ -33,6 +33,7 @@ MARKS: tuple[dict[str, object], ...] = (
     {
         "record": REAL,
         "label": "Q2",
+        "section": "realistic",
         "mark": "wrong",
         "note": "A fixture note,\nover two lines.",
         "source_path": "experiments/0018-realistic-usage-questions/README.md",
@@ -41,6 +42,7 @@ MARKS: tuple[dict[str, object], ...] = (
     {
         "record": DEV,
         "label": "Eval 1",
+        "section": "development",
         "mark": "right",
         "note": None,
         "source_path": "experiments/0016-hops/README.md",
@@ -49,6 +51,7 @@ MARKS: tuple[dict[str, object], ...] = (
     {
         "record": HELD,
         "label": "Held out 3",
+        "section": "held out",
         "mark": "partly right",
         "note": "Retrieval missed one item.",
         "source_path": "docs/scope/scope.md",
@@ -163,7 +166,7 @@ def test_entry_shows_question_verdict_and_claims_in_order(root: Path, tmp_path: 
         ("Q2", "Realistic questions"),
     ],
 )
-def test_entry_appears_in_the_section_its_eval_file_names(
+def test_entry_appears_in_the_section_its_marks_entry_names(
     root: Path, tmp_path: Path, label: str, section: str
 ) -> None:
     """AC-2, AC-3, AC-4."""
@@ -258,20 +261,65 @@ def test_build_fails_on_a_record_that_is_not_a_plain_name(
     ) in output
 
 
-def test_build_fails_on_an_eval_file_it_does_not_show(root: Path, tmp_path: Path) -> None:
-    """AC-6."""
-    path = root / ASKS_DIR / DEV
-    record = json.loads(path.read_text(encoding="utf-8"))
-    record["eval_file"] = "eval/some-other.json"
-    path.write_text(json.dumps(record), encoding="utf-8")
-
-    code, output = _run(root, tmp_path / "site")
-
-    assert code == 1
-    assert f"{DEV}: eval_file 'eval/some-other.json' is not one the gallery shows" in output
+#: Each marks entry of the fixture by position, with the section its record fits.
+FITS = (
+    (1, "Q2", REAL, "realistic"),
+    (2, "Eval 1", DEV, "development"),
+    (3, "Held out 3", HELD, "held out"),
+)
 
 
-@pytest.mark.parametrize("field", ["record", "label", "mark", "note", "source_path", "source_row"])
+@pytest.mark.parametrize(
+    ("position", "section"),
+    [
+        (2, "held out"),
+        (2, "realistic"),
+        (3, "development"),
+        (3, "realistic"),
+        (1, "development"),
+        (1, "held out"),
+    ],
+)
+def test_build_fails_on_a_section_its_record_disagrees_with(
+    root: Path, tmp_path: Path, position: int, section: str
+) -> None:
+    """AC-6: development needs the development eval file, realistic needs none, held out needs
+    another one."""
+    number, label, record, fits = FITS[position - 1]
+    marks = [dict(m) for m in MARKS]
+    marks[position - 1]["section"] = section
+    _write_marks(root, marks)
+
+    assert (
+        f"entry {number} ({label}) is in section {section!r}, but {record} has eval_file "
+        f"{_stored(record).get('eval_file')!r}, which belongs in {fits!r}"
+    ) in _refused(root, tmp_path)
+
+
+def test_build_fails_on_a_development_entry_whose_record_names_another_eval_file(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-6: any eval file other than the development one must be marked held out."""
+    _edit_record(root, DEV, lambda r: r.update(eval_file="eval/some-other.json"))
+
+    assert (
+        f"entry 2 (Eval 1) is in section 'development', but {DEV} has eval_file "
+        "'eval/some-other.json', which belongs in 'held out'"
+    ) in _refused(root, tmp_path)
+
+
+def test_build_fails_on_a_section_it_does_not_know(root: Path, tmp_path: Path) -> None:
+    """AC-9."""
+    marks = [dict(m) for m in MARKS]
+    marks[0]["section"] = "held-out"
+    _write_marks(root, marks)
+
+    assert f"entry 1 ({REAL}): section:" in _refused(root, tmp_path)
+
+
+@pytest.mark.parametrize(
+    "field", ["record", "label", "section", "mark", "note", "source_path", "source_row"]
+)
 def test_build_fails_on_an_entry_missing_a_field(root: Path, tmp_path: Path, field: str) -> None:
     """AC-9, AC-10: every field is required, a null note included."""
     marks = [dict(m) for m in MARKS]
@@ -823,6 +871,7 @@ def test_entries_in_a_section_follow_the_marks_file_order(root: Path, tmp_path: 
     later = {
         "record": UNNAMED,
         "label": "Q9",
+        "section": "realistic",
         "mark": "right",
         "note": None,
         "source_path": "experiments/0018-realistic-usage-questions/README.md",

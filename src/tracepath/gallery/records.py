@@ -23,6 +23,7 @@ from tracepath.gallery.citations import (
     is_pinned_commit,
     parse_item_line,
 )
+from tracepath.report import EVAL_FILE
 
 #: The marks file, relative to the repository root: the only list of what is shown.
 MARKS_FILE = Path("gallery") / "marks.json"
@@ -32,6 +33,9 @@ SNAPSHOT_DOCS = Path("corpus") / "jobhunt" / "docs"
 
 #: The marks the engineer gives an answer (AC-11).
 Mark = Literal["right", "partly right", "wrong", "declined"]
+
+#: The section the engineer puts an answer in (AC-2 to AC-4, AC-9).
+SectionName = Literal["development", "held out", "realistic"]
 
 #: Folders the build reads and must never write into (AC-57).
 READ_ONLY_DIRS = (Path("artifacts"), Path("corpus"))
@@ -104,6 +108,7 @@ class MarksEntry(BaseModel):
 
     record: str
     label: str
+    section: SectionName
     mark: Mark
     note: str | None
     source_path: str
@@ -111,19 +116,19 @@ class MarksEntry(BaseModel):
 
 
 class Section(StrEnum):
-    """The page section an entry appears in, by its record's `eval_file` (AC-2 to AC-4)."""
+    """The page section an entry appears in, as its marks entry names it (AC-2 to AC-4)."""
 
     DEVELOPMENT = "Development questions"
     HELD_OUT = "Held out questions"
     REALISTIC = "Realistic questions"
 
 
-#: Which section each eval file's records appear in; no eval file means realistic.
-SECTION_BY_EVAL_FILE: Mapping[str | None, Section] = MappingProxyType(
+#: The page section each marks file `section` value names.
+SECTION_BY_NAME: Mapping[SectionName, Section] = MappingProxyType(
     {
-        "eval/linked-records-research.json": Section.DEVELOPMENT,
-        "eval/held-out.json": Section.HELD_OUT,
-        None: Section.REALISTIC,
+        "development": Section.DEVELOPMENT,
+        "held out": Section.HELD_OUT,
+        "realistic": Section.REALISTIC,
     }
 )
 
@@ -175,14 +180,29 @@ def parse_marks(data: object, source: str) -> tuple[MarksEntry, ...]:
     return tuple(entries)
 
 
-def section_of(name: str, record: AskRecord) -> Section:
-    """The section a record appears in; an unknown `eval_file` is refused (AC-6)."""
-    try:
-        return SECTION_BY_EVAL_FILE[record.eval_file]
-    except KeyError:
+def _section_fits(record: AskRecord) -> SectionName:
+    """The one section a record may be marked in, by its `eval_file` (AC-6).
+
+    No eval file is realistic, the development eval file is development, and any other is
+    held out.
+    """
+    if record.eval_file is None:
+        return "realistic"
+    if record.eval_file == EVAL_FILE.as_posix():
+        return "development"
+    return "held out"
+
+
+def section_of(number: int, entry: MarksEntry, record: AskRecord) -> Section:
+    """The entry's section, once its record agrees with it (AC-2 to AC-4, AC-6)."""
+    fits = _section_fits(record)
+    if entry.section != fits:
         raise GalleryError(
-            f"{name}: eval_file {record.eval_file!r} is not one the gallery shows"
-        ) from None
+            f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) is in section "
+            f"{entry.section!r}, but {entry.record} has eval_file {record.eval_file!r}, "
+            f"which belongs in {fits!r}"
+        )
+    return SECTION_BY_NAME[entry.section]
 
 
 def read_record(root: Path, name: str) -> AskRecord:
@@ -216,7 +236,7 @@ def load_entries(root: Path) -> tuple[Entry, ...]:
                 f"{entry.record}, which is not in {ASKS_DIR.as_posix()}/"
             )
         record = read_record(root, entry.record)
-        section = section_of(entry.record, record)
+        section = section_of(number, entry, record)
         entries.append(Entry(entry, record, section, checked_items(root, entry.record, record)))
     return tuple(entries)
 
