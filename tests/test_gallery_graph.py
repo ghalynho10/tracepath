@@ -2,6 +2,8 @@
 
 import json
 import re
+import shutil
+from collections.abc import Callable
 from html import unescape
 from pathlib import Path
 from typing import Any
@@ -11,8 +13,24 @@ from typer.testing import CliRunner
 
 from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
-from tracepath.gallery.graph import CITED_RADIUS, OTHER_RADIUS, slug_of
-from tracepath.gallery.records import GRAPH_SCRIPT, MARKS_FILE, VENDOR_DIR, VENDOR_PACKAGES
+from tracepath.gallery.citations import parse_item_line
+from tracepath.gallery.graph import (
+    CITED_RADIUS,
+    OTHER_RADIUS,
+    EntryGraph,
+    GraphItem,
+    data_block,
+    slug_of,
+)
+from tracepath.gallery.records import (
+    GRAPH_SCRIPT,
+    MARKS_FILE,
+    SNAPSHOT_DOCS,
+    VENDOR_DIR,
+    VENDOR_PACKAGES,
+    GalleryError,
+    read_scripts,
+)
 from tracepath.gallery.render import DIALOG, GRAPH_STYLE, KEY, STYLE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -420,3 +438,207 @@ def test_script_makes_no_request() -> None:
 
     for request in ("fetch(", "XMLHttpRequest", "import(", "new Image", "sendBeacon", "src"):
         assert request not in script
+
+
+#: Two real records for the guard fixtures: eval question 1, and held out question 3.
+DEV = "2026-10-20T17-36-09Z-eval-linked-records-research-q1.json"
+HELD = "2026-10-19T22-17-49Z-eval-held-out-q3.json"
+
+#: Stored text that would break a page that did not escape it (AC-53, AC-69, AC-70).
+HOSTILE = "a </script><script>alert(1)</script> <figure> & \u2028 \u2029 <!-- b </SCRIPT"
+
+
+def _fixture(tmp_path: Path, entries: tuple[tuple[str, str, str], ...]) -> Path:
+    """A repository root holding `entries` (record, label, section) and their snapshot files."""
+    root = tmp_path / "repo"
+    (root / ASKS_DIR).mkdir(parents=True)
+    (root / MARKS_FILE).parent.mkdir(parents=True)
+    marks = []
+    for record, label, section in entries:
+        shutil.copy(PROJECT_ROOT / ASKS_DIR / record, root / ASKS_DIR / record)
+        for item in json.loads((root / ASKS_DIR / record).read_text(encoding="utf-8"))["items"]:
+            line = parse_item_line(item["line"])
+            assert line is not None
+            if line.file is not None:
+                target = root / SNAPSHOT_DOCS / line.file
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(PROJECT_ROOT / SNAPSHOT_DOCS / line.file, target)
+        marks.append(
+            {
+                "record": record,
+                "label": label,
+                "section": section,
+                "mark": "right",
+                "note": None,
+                "source_path": "docs/scope/scope.md",
+                "source_row": "fixture",
+            }
+        )
+    (root / MARKS_FILE).write_text(json.dumps(marks), encoding="utf-8")
+    return root
+
+
+def _edit(root: Path, record: str, change: Callable[[dict[str, Any]], None]) -> None:
+    path = root / ASKS_DIR / record
+    data = json.loads(path.read_text(encoding="utf-8"))
+    change(data)
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+
+def _build_at(root: Path, out: Path) -> tuple[int, str]:
+    result = CliRunner().invoke(app, ["gallery", "build", "--out", str(out), "--root", str(root)])
+    return result.exit_code, " ".join(result.output.split())
+
+
+def test_build_fails_on_a_link_whose_end_is_not_an_item(tmp_path: Path) -> None:
+    """AC-65: exit 1, naming the record and the link."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+
+    def retarget(record: dict[str, Any]) -> None:
+        record["links"][2]["target"] = "9999/AC-1"
+
+    _edit(root, DEV, retarget)
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 1
+    assert f"{DEV}: link 3 (" in output
+    assert "names 9999/AC-1, which is not among the record's items" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_build_fails_on_two_items_with_one_id(tmp_path: Path) -> None:
+    """AC-66: exit 1, naming the record and the id."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+    repeated = json.loads((root / ASKS_DIR / DEV).read_text(encoding="utf-8"))["items"][1]
+
+    def repeat(record: dict[str, Any]) -> None:
+        record["items"].append(dict(record["items"][1]))
+
+    _edit(root, DEV, repeat)
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 1
+    assert f"{DEV}: item id repeated: {repeated['id']}" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_build_fails_on_two_labels_with_one_slug(tmp_path: Path) -> None:
+    """AC-67: exit 1, naming both entries."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"), (HELD, "eval-1", "held out")))
+
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 1
+    assert "'Eval 1' and 'eval-1' both make the slug 'eval-1'" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def _scripts_copy(tmp_path: Path) -> tuple[Path, Path]:
+    vendor = tmp_path / "vendor"
+    shutil.copytree(VENDOR_DIR, vendor)
+    graph = tmp_path / "graph.js"
+    shutil.copy(GRAPH_SCRIPT, graph)
+    return vendor, graph
+
+
+@pytest.mark.parametrize("breaker", ["</script>", "</SCRIPT", "</sCrIpT ", "<!--"])
+@pytest.mark.parametrize("name", ["d3-timer.min.js", "d3-force.LICENSE", "graph.js"])
+def test_an_inlined_script_that_could_break_out_is_refused(
+    tmp_path: Path, breaker: str, name: str
+) -> None:
+    """AC-68: in any letter case, in a library, its licence, or the page's own script."""
+    vendor, graph = _scripts_copy(tmp_path)
+    path = graph if name == "graph.js" else vendor / name
+    path.write_text(path.read_text(encoding="utf-8") + f"\n// {breaker}\n", encoding="utf-8")
+
+    with pytest.raises(GalleryError, match=re.escape(str(path))):
+        read_scripts(vendor, graph)
+
+
+def test_the_build_exits_1_naming_the_script(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC-68 through the command: exit 1, the script named, no page written."""
+    vendor, graph = _scripts_copy(tmp_path)
+    graph.write_text("const x = '<!-- y';\n", encoding="utf-8")
+    monkeypatch.setattr("tracepath.cli.read_scripts", lambda: read_scripts(vendor, graph))
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 1
+    assert f"{graph}: holds '<!--'" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_the_committed_scripts_are_accepted() -> None:
+    """AC-68's other side: the vendored files and the script as committed pass the check."""
+    scripts = read_scripts()
+
+    assert len(scripts.libraries) == len(VENDOR_PACKAGES)
+
+
+def _hostile_graph() -> EntryGraph:
+    item = GraphItem(
+        id="0001/AC-1",
+        type="AcceptanceCriterion",
+        text=HOSTILE,
+        hop=0,
+        cited=False,
+        held=False,
+        unresolved=False,
+        radius=OTHER_RADIUS,
+        marker=None,
+        cited_by=(),
+        neighbours=(),
+        near_cited=False,
+        link_ids=(),
+        source=None,
+        location="no file stored",
+    )
+    return EntryGraph(
+        slug="q1",
+        label="Q1 <b>&",
+        position=1,
+        total=1,
+        previous=None,
+        next=None,
+        cited_count=0,
+        items=(item,),
+        links=(),
+    )
+
+
+def test_a_data_block_writes_markup_characters_as_escapes() -> None:
+    """AC-69: `<`, `>`, `&`, U+2028 and U+2029 never appear raw in a data block."""
+    block = data_block(_hostile_graph())
+
+    for raw in ("<", ">", "&", "\u2028", "\u2029"):
+        assert raw not in block
+    for escaped in ("\\u003c", "\\u003e", "\\u0026", "\\u2028", "\\u2029"):
+        assert escaped in block
+
+
+def test_a_data_block_parses_back_to_the_stored_text() -> None:
+    """AC-70: parsing the block gives each stored text back exactly."""
+    parsed = json.loads(data_block(_hostile_graph()))
+
+    assert parsed["items"][0]["text"] == HOSTILE
+    assert parsed["label"] == "Q1 <b>&"
+
+
+def test_hostile_stored_text_survives_the_page(tmp_path: Path) -> None:
+    """AC-53, AC-70 through a build: the text comes back whole from the page's data block."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+
+    def hostile(record: dict[str, Any]) -> None:
+        record["items"][4]["text"] = HOSTILE
+
+    _edit(root, DEV, hostile)
+    code, output = _build_at(root, tmp_path / "site")
+    page = (tmp_path / "site" / "index.html").read_text(encoding="utf-8")
+    graph = json.loads(_BLOCK.findall(page)[0][1])
+
+    assert code == 0, output
+    assert HOSTILE in [item["text"] for item in graph["items"]]
+    assert page.count("<script") == page.count("</script>")

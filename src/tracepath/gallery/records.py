@@ -190,13 +190,26 @@ def _read_text(path: Path) -> str:
         raise GalleryError(f"{path}: cannot be read ({exc})") from None
 
 
+#: Text that would end an inline script element or change how the browser reads it (AC-68).
+SCRIPT_BREAKERS = ("</script", "<!--")
+
+
+def _inline_text(path: Path) -> str:
+    """A file the page pastes into a script element, refused if it could break out of it."""
+    text = _read_text(path)
+    for breaker in SCRIPT_BREAKERS:
+        if breaker in text.lower():
+            raise GalleryError(f"{path}: holds {breaker!r}, which an inline script cannot carry")
+    return text
+
+
 def read_scripts(vendor: Path = VENDOR_DIR, graph: Path = GRAPH_SCRIPT) -> PageScripts:
     """The vendored libraries in inline order, each with its package's licence, and the script."""
     libraries = tuple(
-        (_read_text(vendor / f"{name}.min.js"), _read_text(vendor / f"{name}.LICENSE"))
+        (_inline_text(vendor / f"{name}.min.js"), _inline_text(vendor / f"{name}.LICENSE"))
         for name in VENDOR_PACKAGES
     )
-    return PageScripts(libraries, _read_text(graph))
+    return PageScripts(libraries, _inline_text(graph))
 
 
 def _entry_name(number: int, entry: object) -> str:

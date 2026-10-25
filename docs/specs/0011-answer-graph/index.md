@@ -274,7 +274,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
    - [x] Added 2026-10-25: dragging a dot, with d3-force running live so its neighbours follow, on a fresh copy of the layout each open; reset restores that layout too. Satisfies **AC-29, AC-29a, AC-77, AC-78, AC-79, AC-80, AC-81, AC-82, AC-83**
 6. [x] Slice 5, the phone layout. Stacked window, touch pan, the 40 pixel buttons. Satisfies **AC-54, AC-55, AC-56**
    - [x] Added 2026-10-25: a press acts on the nearest dot centre within 12 pixels (20 for a touch), found with d3-quadtree's `find`; the dot within reach also shows as hovered. Satisfies **AC-84, AC-85, AC-86**
-7. [ ] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
+7. [x] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
 8. [ ] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
 9. [ ] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
 
