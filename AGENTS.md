@@ -38,6 +38,7 @@ uv run tracepath ask "QUESTION" --ceiling USD   # spec 0009: answers a why quest
 uv run tracepath ask "QUESTION" --dry-run   # finds the items and prices the call only: no call, no record (free), so no --ceiling needed
 uv run tracepath ask --eval N --ceiling USD   # asks eval question N; --eval-file F --release-held-out runs a held out file, refusing a question already answered once
 uv run tracepath ask "QUESTION" --hops N --ceiling USD   # link hops added around the search hits: 0, 1 or 2, default 2; printed on the Items sent line and stored as hops in the record (spec 0009 AC-10 note, experiment 0016)
+uv run tracepath gallery build --out DIR   # spec 0010: writes DIR/index.html from artifacts/asks/ and gallery/marks.json; no API call, no key, no Neo4j; refuses an --out inside artifacts/ or corpus/
 uv run ruff check . && uv run ruff format --check .   # lint + format
 uv run mypy                      # typecheck, strict
 uv run pytest                    # tests, needs Neo4j up for integration; about 15 minutes locally (tests that do not need the whole corpus run on a fixed subset)
@@ -53,6 +54,7 @@ tracepath runs from this repository with `uv run`, not as an installed tool: the
 - `corpus/`: the pinned JobHunt snapshot, tracked in git.
 - `eval/`: the eval set, tracked in git.
 - `reference/`: private inputs from prior work, evidence and candidates, not settled decisions. Gitignored, local only, never edited. Specs may cite it, but code and tests must never read or import from it, so CI works without it.
+- `gallery/`: `marks.json`, the engineer's mark and note for each ask record the gallery page shows, and the only list of what it shows (spec 0010). Tracked in git; a record it names must sit directly in `artifacts/asks/`.
 - `examples/`: worked extraction examples, one per unit kind, tracked in git. Inputs to `system_prompt()` (`src/tracepath/extract/client.py`), each with its input, JSON output, reasoning notes, and a rules list. A worked example's JSON must validate against `extraction_json_schema()`. Only the `text` fence under `## Input` and the `json` fence under `## Output` reach the model, read in filename order by `src/tracepath/extract/examples.py`; a file missing either fence fails the prompt build.
 - `artifacts/`: the JSON run artifacts and review queue, tracked in git, the source of truth the graph is rebuilt from. Append only: `write_run()` raises `ArtifactCollisionError` rather than replace an existing file. Runs replaced by a newer prompt move to `artifacts/superseded/<date>-prompt-<version>/` with a `NOTE.md`, never deleted (`experiments/README.md`). `artifacts/graph-build.json` is derived, not a run artifact: every `load` rewrites it (spec 0004 AC-17).
 
@@ -88,6 +90,7 @@ Chosen here, installed by `/develop tooling`.
 - **Lint + format**: Ruff. **Typecheck**: mypy `--strict`. **Before commit**: pre-commit hook runs all three.
 - **Tests**: pytest, `tests/test_*.py`. Pure functions need no mocks. Integration tests run real Cypher against real Neo4j (docker compose locally, a service container in CI); never mock the driver.
 - **CI**: GitHub Actions on push runs lint, format check, typecheck, and tests.
+- **Pages**: `.github/workflows/pages.yml` builds the gallery and publishes it on GitHub Pages, on a push to `main` that touches its inputs, or by hand (spec 0010).
 - **Config lives in**: `pyproject.toml` (Ruff, mypy, pytest markers), `.pre-commit-config.yaml` (runs the locked versions via `uv run`), `.github/workflows/ci.yml`.
 
 ## Git

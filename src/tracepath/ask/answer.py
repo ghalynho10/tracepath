@@ -189,10 +189,8 @@ def check_claims(answer: Answer, pack: Pack) -> tuple[CheckedClaim, ...]:
     return tuple(checked)
 
 
-def _claim_line(number: int, checked: CheckedClaim) -> str:
-    """One claim as printed: its text, its ids, then its marks in AC-20's order."""
-    held = set(checked.held_ids)
-    cites = [f"[{c} held]" if c in held else f"[{c}]" for c in dict.fromkeys(checked.claim.cites)]
+def claim_marks(checked: CheckedClaim) -> tuple[str, ...]:
+    """A claim's marks in AC-20's order, then how it rests on its ids (AC-17b note)."""
     marks: list[str] = []
     if checked.history:
         marks.append("HISTORY")
@@ -206,6 +204,14 @@ def _claim_line(number: int, checked: CheckedClaim) -> str:
         marks.append("unsupported")
     elif not checked.inferred:
         marks.append("link" if checked.claim.basis == "link" else "read from text")
+    return tuple(marks)
+
+
+def _claim_line(number: int, checked: CheckedClaim) -> str:
+    """One claim as printed: its text, its ids, then its marks in AC-20's order."""
+    held = set(checked.held_ids)
+    cites = [f"[{c} held]" if c in held else f"[{c}]" for c in dict.fromkeys(checked.claim.cites)]
+    marks = claim_marks(checked)
     return "  " + " ".join([f"{number}.", _flat(checked.claim.text), *cites, *marks])
 
 
