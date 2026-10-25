@@ -212,7 +212,8 @@ def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: P
     assert '<p class="mark" data-mark="partly right">My mark: ' in entry
     assert "<h3>My marks</h3>" in page
     assert "each with my own mark." in page
-    assert "engineer" not in re.sub(r"<[^>]+>", "", page).lower()
+    words = re.sub(r"<script[^>]*>.*?</script>", "", page, flags=re.S)
+    assert "engineer" not in re.sub(r"<[^>]+>", "", words).lower()
 
 
 @pytest.mark.parametrize("mark", ["right", "partly right", "wrong", "declined"])
@@ -447,12 +448,13 @@ def test_build_refuses_an_out_folder_inside_artifacts_or_corpus(root: Path, insi
 
 
 def test_page_is_self_contained(root: Path, tmp_path: Path) -> None:
-    """AC-58: inline styles, no stylesheet, script or other file of the site."""
+    """AC-58: inline styles, no stylesheet or other file of the site; scripts are inline
+    since spec 0011 (its AC-74)."""
     page = _build(root, tmp_path / "site")
 
     assert "<style>" in page
     assert "<link" not in page
-    assert "<script" not in page
+    assert not re.search(r"<script(?! type=\"application/json\")[^>]", page)
     assert not re.search(r'\b(src|href)="(?!https://|#)', page)
 
 

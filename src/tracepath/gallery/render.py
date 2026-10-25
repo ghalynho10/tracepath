@@ -1,7 +1,8 @@
-"""The gallery page as one self contained HTML string (spec 0010). Pure.
+"""The gallery page as one self contained HTML string (specs 0010 and 0011). Pure.
 
 Every stored text is escaped, so markup in a record shows as text (AC-24). The page
-has inline styles only and refers to no other file of the site (AC-58).
+has inline styles and scripts only and refers to no other file of the site (AC-58,
+spec 0011 AC-74).
 """
 
 from collections.abc import Mapping
@@ -17,7 +18,8 @@ from tracepath.gallery.citations import (
     ItemLine,
     item_link,
 )
-from tracepath.gallery.records import Entry, Section, StoredClaim
+from tracepath.gallery.graph import EntryGraph, data_block
+from tracepath.gallery.records import Entry, PageScripts, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
 TRACEPATH_REPO_URL = "https://github.com/ghalynho10/tracepath"
@@ -183,7 +185,56 @@ details li { padding: 4px 0; border-bottom: 1px solid var(--rule); }
 details .item { padding: 6px 0 12px; border-bottom: 1px solid var(--rule); }
 details .item p { margin: 0 0 4px; }
 details .item > .stored { font-size: 14px; color: var(--ink-82); }
+[hidden] { display: none !important; }
 """
+
+#: The graph window's styles (spec 0011): a split window, the graph about two thirds and
+#: the panel one third, with a hairline between them. Cyan only rings the selection, and
+#: the marks' yellow and pink are never used here (AC-22).
+GRAPH_STYLE = """\
+.graph-open { display: inline-flex; margin: 18px 0 0; padding: 4px 15px; border-radius: 999px;
+  border: 1px solid var(--ink); background: var(--paper); color: var(--ink);
+  font: 500 13px/1.5 var(--sans); cursor: pointer; }
+.graph-open:hover { background: var(--ink); color: var(--paper); }
+html:has(dialog.gw[open]) { overflow: hidden; }
+dialog.gw { width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: var(--paper); color: var(--ink); }
+dialog.gw[open] { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+dialog.gw::backdrop { background: var(--paper); }
+.gw-stage { position: relative; display: flex; flex-direction: column; min-height: 0;
+  border-right: 1px solid var(--rule); }
+.gw-head { display: flex; align-items: center; gap: 8px; padding: 16px 20px; }
+.gw-heading { flex: 1; margin: 0; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-button { width: 40px; height: 40px; flex: none; border-radius: 50%;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 18px/1 var(--sans); cursor: pointer; }
+.gw-button:hover { border-color: var(--ink); }
+.gw-button:focus-visible, .graph-open:focus-visible { outline: 2px solid var(--ink);
+  outline-offset: 2px; }
+.gw-canvas { display: block; flex: 1; width: 100%; min-height: 0; touch-action: none;
+  user-select: none; }
+.gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
+.gw-dot { fill: var(--ink); }
+.gw-panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; }
+.gw-eyebrow { margin: 0 0 12px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-title { margin: 0 0 18px; font-size: clamp(30px, 4vw, 44px); line-height: 1;
+  font-weight: 700; letter-spacing: -.03em; overflow-wrap: anywhere; }
+"""
+
+#: The one graph window, filled by the script for whichever graph is open (spec 0011).
+DIALOG = (
+    '<dialog class="gw" aria-labelledby="gw-heading">'
+    '<div class="gw-stage"><div class="gw-head">'
+    '<p class="gw-heading" id="gw-heading"></p>'
+    '<button type="button" class="gw-button" data-gw="close" aria-label="Close graph">'
+    "&times;</button></div>"
+    '<svg class="gw-canvas" role="img" aria-label="The items sent and their links">'
+    '<g class="gw-links"></g><g class="gw-nodes"></g></svg></div>'
+    '<div class="gw-panel"></div>'
+    "</dialog>"
+)
 
 
 def _text(value: str) -> str:
@@ -296,7 +347,20 @@ def _mark(entry: Entry) -> str:
     )
 
 
-def _entry(entry: Entry) -> str:
+def _graph_button(graph: EntryGraph) -> str:
+    """The entry's Graph button, hidden until the script runs (AC-1, AC-2)."""
+    return (
+        f'<button type="button" class="graph-open" data-graph="{graph.slug}" '
+        f'aria-label="Graph: {escape(graph.label)}" hidden>Graph</button>'
+    )
+
+
+def _graph_data(graph: EntryGraph) -> str:
+    """The entry's graph data, parsed only when its graph is opened (AC-57)."""
+    return f'<script type="application/json" id="graph-{graph.slug}">{data_block(graph)}</script>'
+
+
+def _entry(entry: Entry, graph: EntryGraph) -> str:
     return (
         "<article>"
         f"<h3>{_text(entry.marks.label)}</h3>"
@@ -304,9 +368,11 @@ def _entry(entry: Entry) -> str:
         f"{_details(entry)}"
         f"{_verdict(entry)}"
         f"{_mark(entry)}"
+        f"{_graph_button(graph)}"
         f"{_claims(entry)}"
         f"{_missing(entry)}"
         f"{_items_sent(entry)}"
+        f"{_graph_data(graph)}"
         "</article>"
     )
 
@@ -328,8 +394,10 @@ def _section_line(section: Section) -> str:
             )
 
 
-def _section(section: Section, entries: tuple[Entry, ...]) -> str:
-    shown = "".join(_entry(entry) for entry in entries if entry.section is section)
+def _section(section: Section, entries: tuple[Entry, ...], graphs: Mapping[str, EntryGraph]) -> str:
+    shown = "".join(
+        _entry(entry, graphs[entry.marks.label]) for entry in entries if entry.section is section
+    )
     if not shown:
         return ""
     return f"<section><h2>{escape(section.value)}</h2>{_section_line(section)}{shown}</section>"
@@ -374,18 +442,33 @@ def _key() -> str:
     )
 
 
-def render_page(entries: tuple[Entry, ...], records: int) -> str:
+def _scripts(scripts: PageScripts) -> str:
+    """The libraries in order, each followed by its licence, then the graph script (AC-71)."""
+    libraries = "".join(
+        f"<script>{code}\n/*\n{licence}*/</script>" for code, licence in scripts.libraries
+    )
+    return f"{libraries}<script>{scripts.graph}</script>"
+
+
+def render_page(
+    entries: tuple[Entry, ...],
+    records: int,
+    graphs: tuple[EntryGraph, ...],
+    scripts: PageScripts,
+) -> str:
     """The whole page: each section in turn, its entries in marks file order (AC-1 to AC-4).
 
-    `records` is how many records `artifacts/asks/` holds, counted by the build (AC-49).
+    `records` is how many records `artifacts/asks/` holds, counted by the build (AC-49);
+    `graphs` holds one graph per entry (spec 0011).
     """
-    body = "".join(_section(section, entries) for section in Section)
+    by_label = {graph.label: graph for graph in graphs}
+    body = "".join(_section(section, entries, by_label) for section in Section)
     return (
         "<!doctype html>\n"
         '<html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
-        f"<style>{STYLE}</style></head>"
+        f"<style>{STYLE}{GRAPH_STYLE}</style></head>"
         f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
-        f"{_key()}{body}</main></body></html>\n"
+        f"{_key()}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
     )

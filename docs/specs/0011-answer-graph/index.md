@@ -1,7 +1,7 @@
 # 0011. Answer graph
 
 **Date**: 2026-10-24
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
@@ -251,8 +251,8 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 
 Approach: Tracer Bullet (the project default). The first slice is one real entry, from record to a graph that opens, so the whole route (stored links read, flags computed, library inlined, dialog, drawing, click) is proven on a small pack before it is thickened and before it reaches the 90 item packs.
 
-1. [ ] Slice 1, the thread. Read `links` into `AskRecord` and `hop` into `StoredItem`; add `graph.py` with the flags for one entry; add `vendor/` (the four files from the npm packages at the versions in the Decision, each `LICENSE`, `SOURCES.md` with the version and source) and `assets/graph.js`; render a Graph button, the dialog, the data block and the inlined script for Eval 3 first, then every entry; the dots and lines are drawn and a click selects a dot. Satisfies **AC-1, AC-2, AC-12, AC-13, AC-57, AC-58, AC-71, AC-72, AC-73, AC-74**
-2. [ ] Slice 1, check it in a browser. Build to a scratch folder and open Eval 3: the dialog opens and closes, the dots are placed, a click selects. The Pages workflow needs no change; the page goes live on merge. Satisfies **AC-3, AC-4, AC-5, AC-6, AC-25**
+1. [x] Slice 1, the thread. Read `links` into `AskRecord` and `hop` into `StoredItem`; add `graph.py` with the flags for one entry; add `vendor/` (the four files from the npm packages at the versions in the Decision, each `LICENSE`, `SOURCES.md` with the version and source) and `assets/graph.js`; render a Graph button, the dialog, the data block and the inlined script for Eval 3 first, then every entry; the dots and lines are drawn and a click selects a dot. Satisfies **AC-1, AC-2, AC-12, AC-13, AC-57, AC-58, AC-71, AC-72, AC-73, AC-74**
+2. [x] Slice 1, check it in a browser. Build to a scratch folder and open Eval 3: the dialog opens and closes, the dots are placed, a click selects. The Pages workflow needs no change; the page goes live on merge. Satisfies **AC-3, AC-4, AC-5, AC-6, AC-25**
 3. [ ] Slice 2, the states. Cited, not cited, held, held link, unresolved and selected drawings, the dim on select, the key, the switch, and the no cited item case. Satisfies **AC-14, AC-15, AC-16, AC-17, AC-18, AC-19, AC-20, AC-21, AC-22, AC-23, AC-24, AC-30, AC-31, AC-32, AC-33, AC-34, AC-35, AC-59, AC-60, AC-61, AC-62, AC-63, AC-64**
 4. [ ] Slice 3, the panel. The `data-item` attribute on the list's citation links, the cloned answer view, the item view with its link, claim numbers, links in and out, and the all items list. Satisfies **AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43, AC-44, AC-45, AC-46, AC-47, AC-48, AC-49, AC-50, AC-51, AC-52, AC-53**
 5. [ ] Slice 4, moving around. Pan, wheel, zoom buttons, reset, previous and next with the counter, a repeatable layout. Satisfies **AC-7, AC-8, AC-9, AC-10, AC-11, AC-26, AC-27, AC-28, AC-29, AC-75, AC-76**
