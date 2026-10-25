@@ -32,7 +32,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
-| 18 | Answer graph | after v1, presentation | planned |
+| 18 | Answer graph | after v1, presentation | in-progress |
 
 ## v1 finish line
 
@@ -441,7 +441,7 @@ _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain
 - [x] Test it: `/test answer gallery`
 - [x] Sync it: `/sync answer gallery`
 
-### 18. Answer graph · needs a decision · added 2026-10-24
+### 18. Answer graph · in-progress · added 2026-10-24
 On the gallery page, one interactive graph per shown answer, drawn from the items and links its ask record already stores, so a reader can see how the cited items connect instead of reading a list. The items the answer cites are highlighted, a click on an item opens its text and its source line, and held items and unresolved names are marked as such. It makes no API call. This is the "Next slice" recorded under feature 17.
 **Done when:** a reader on the gallery page can open the graph for each shown answer, see which items the answer cites, open any item's text and its source line with one click, and tell held items and unresolved names apart from the rest.
 **What the records hold, checked 2026-10-24:** each ask record in `artifacts/asks/` stores `items` (id, held or not, hop, its line, its text; an unresolved name has an id starting `unresolved:`) and `links` (type, source, target, the phrase it was read from, held or not). The graph needs no new extraction or model call.
@@ -452,12 +452,24 @@ On the gallery page, one interactive graph per shown answer, drawn from the item
 - How it works at phone width.
 - How it fits spec 0010's rule of a page with no JavaScript (an interactive graph needs some).
 - The style. Reference: `design-notes/aicodingdictionary.com.md` and its screenshot, a local file kept out of git (`.git/info/exclude`), so a spec may cite it but code, tests and CI must never read it.
-- [ ] Design it (spec): `/architect answer graph`
+
+spec [0011](../specs/0011-answer-graph/index.md) · code in `src/tracepath/gallery/` (`graph.py`, `assets/graph.js`, `vendor/`)
+_Design decided 2026-10-25: a Graph button on each of the 31 entries opens a full window, graph on the left and a reading panel on the right. d3-force 3.0.0 (ISC, with three small helpers) places the dots, copied into the repository and inlined; the drawing is hand written SVG. The build computes every item's state in Python and the script only draws from those flags. 76 criteria. The open questions above are answered in the spec; a shareable link to one graph was cut and is in Deferred._
+- [x] Design it (spec): `/architect answer graph` · decided the library, the placement, the layout, the phone layout, the accents and the test approach
+- [ ] Build it: `/develop answer graph`
+  - [ ] The thread: stored links and hop read, flags in Python, the four library files vendored and inlined, a graph opens and closes for every entry (spec 0011 tasks 1 and 2; AC-1 to AC-6, AC-12, AC-13, AC-25, AC-57, AC-58, AC-71 to AC-74)
+  - [ ] The states and the panel (tasks 3 and 4; AC-14 to AC-24, AC-30 to AC-53, AC-59 to AC-64)
+  - [ ] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
+  - [ ] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
+- [ ] Verify it: `/check verify answer graph`
+- [ ] Test it: `/test answer graph`
+- [ ] Sync it: `/sync answer graph`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Prose answers**: generated prose written over the chain · needs a decision · _2026-10-19: no longer deferred; feature 16 prints a cited answer for v1_
 - **Visual UI**: a graphical view of chains · needs a decision · _2026-10-23: overlaps feature 17 (answer gallery), whose UI candidates include a graph per answer; see that row. Not merged._ _2026-10-24: the graph per answer is now feature 18 (answer graph), which covers part of this entry. Still not merged._
+- **Shareable graph link**: an address fragment that opens one answer's graph and selects an item · needs a decision · _from spec 0011, 2026-10-25: cut from feature 18 as outside its Done when; the spec's Follow up lists what to settle first._
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
 - **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
