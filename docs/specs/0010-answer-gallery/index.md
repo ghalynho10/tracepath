@@ -1,7 +1,7 @@
 # 0010. Answer gallery
 
 **Date**: 2026-10-23
-**Status**: Done
+**Status**: Accepted
 
 ## Summary
 
