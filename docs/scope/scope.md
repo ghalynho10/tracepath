@@ -437,8 +437,8 @@ _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain
   - [x] Labels, evidence, escaping and the page statements (tasks 6 and 7; AC-20 to AC-33, AC-44 to AC-54)
   - [x] Visual design pass, settled first (task 8; AC-14)
 - [ ] Verify it: `/check verify answer gallery`
-- [ ] Test it: `/test answer gallery`
-- [ ] Sync it: `/sync answer gallery`
+- [x] Test it: `/test answer gallery`
+- [x] Sync it: `/sync answer gallery`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
