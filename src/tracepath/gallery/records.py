@@ -195,11 +195,21 @@ def read_record(root: Path, name: str) -> AskRecord:
         raise GalleryError(f"{path}: not an ask record the gallery can read ({exc})") from None
 
 
+def _is_plain_name(record: str) -> bool:
+    """Whether a marks `record` names a file directly inside `artifacts/asks/` (AC-1)."""
+    return bool(record) and "/" not in record and "\\" not in record and ".." not in record
+
+
 def load_entries(root: Path) -> tuple[Entry, ...]:
     """Every entry the marks file names, in its order, each with its record (AC-1, AC-5)."""
     marks = parse_marks(_read_json(root / MARKS_FILE), MARKS_FILE.as_posix())
     entries: list[Entry] = []
     for number, entry in enumerate(marks, start=1):
+        if not _is_plain_name(entry.record):
+            raise GalleryError(
+                f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names "
+                f"{entry.record}, which is not a plain file name in {ASKS_DIR.as_posix()}/"
+            )
         if not (root / ASKS_DIR / entry.record).is_file():
             raise GalleryError(
                 f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names "
@@ -216,12 +226,17 @@ def count_records(root: Path) -> int:
     return sum(1 for _ in (root / ASKS_DIR).glob("*.json"))
 
 
-def _line_count(docs: Path, file: str) -> int | None:
+def _line_count(docs: Path, name: str, file: str) -> int | None:
     """How many lines a snapshot file has, first line 1; None when it is not in the snapshot."""
     path = (docs / file).resolve()
     if not path.is_relative_to(docs.resolve()) or not path.is_file():
         return None
-    return len(path.read_text(encoding="utf-8").splitlines())
+    try:
+        return len(path.read_text(encoding="utf-8").splitlines())
+    except (OSError, UnicodeDecodeError) as exc:
+        raise GalleryError(
+            f"{name}: {SNAPSHOT_DOCS.as_posix()}/{file} cannot be read ({exc})"
+        ) from None
 
 
 def checked_items(root: Path, name: str, record: AskRecord) -> tuple[ItemLine, ...]:
@@ -246,7 +261,7 @@ def checked_items(root: Path, name: str, record: AskRecord) -> tuple[ItemLine, .
             )
         if line.file is not None:
             if line.file not in counts:
-                counts[line.file] = _line_count(docs, line.file)
+                counts[line.file] = _line_count(docs, name, line.file)
             count = counts[line.file]
             if count is None:
                 raise GalleryError(

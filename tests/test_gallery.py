@@ -1,6 +1,7 @@
 """The answer gallery build (spec 0010): what the page shows and what the build touches."""
 
 import json
+import os
 import re
 import shutil
 import socket
@@ -241,6 +242,20 @@ def test_build_fails_on_a_record_not_in_asks(root: Path, tmp_path: Path) -> None
     assert code == 1
     assert f"entry 3 (Held out 3) names {HELD}, which is not in artifacts/asks/" in output
     assert not (tmp_path / "site" / "index.html").exists()
+
+
+@pytest.mark.parametrize("record", [f"../asks/{HELD}", f"./{HELD}", f"..\\asks\\{HELD}", ".."])
+def test_build_fails_on_a_record_that_is_not_a_plain_name(
+    root: Path, tmp_path: Path, record: str
+) -> None:
+    """AC-1: only files directly in artifacts/asks/ are shown, even when the path resolves."""
+    _write_marks(root, [MARKS[0], MARKS[1], {**MARKS[2], "record": record}])
+
+    output = _refused(root, tmp_path)
+
+    assert (
+        f"entry 3 (Held out 3) names {record}, which is not a plain file name in artifacts/asks/"
+    ) in output
 
 
 def test_build_fails_on_an_eval_file_it_does_not_show(root: Path, tmp_path: Path) -> None:
@@ -490,6 +505,33 @@ def test_build_fails_on_a_file_not_in_the_snapshot(root: Path, tmp_path: Path) -
     _edit_record(root, DEV, move)
 
     assert "specs/no-such-spec/index.md is not in corpus/jobhunt/docs/" in _refused(root, tmp_path)
+
+
+@pytest.mark.parametrize("unreadable", ["not utf-8", "no permission"])
+def test_build_fails_cleanly_on_a_snapshot_file_it_cannot_read(
+    root: Path, tmp_path: Path, unreadable: str
+) -> None:
+    """A clear message naming the record and file, never a traceback (AGENTS.md rules)."""
+    target = root / SNAPSHOT_DOCS / "specs/unreadable.md"
+    if unreadable == "not utf-8":
+        target.write_bytes(b"\xff\xfe not utf-8\n")
+    else:
+        target.write_text("line 1\n", encoding="utf-8")
+        target.chmod(0)
+        if os.access(target, os.R_OK):
+            pytest.skip("running as a user that reads any file")
+
+    def move(record: dict[str, Any]) -> None:
+        item = _cited_item(record)
+        item["line"] = item["line"].replace(
+            "specs/0008-app-shell-and-navigation/index.md:54", "specs/unreadable.md:1"
+        )
+
+    _edit_record(root, DEV, move)
+
+    assert f"{DEV}: corpus/jobhunt/docs/specs/unreadable.md cannot be read" in _refused(
+        root, tmp_path
+    )
 
 
 @pytest.mark.parametrize("line", [0, 100_000])

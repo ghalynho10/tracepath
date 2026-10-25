@@ -230,11 +230,11 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 
 ## Follow-up
 
-- [ ] Wording of the key for each mark (`right`, `partly right`, `wrong`, `declined`) is the engineer's to give, especially `declined`, which no README defines in one line. Needed before slice 4.
-- [ ] Visual design (fonts, colours, layout, how the folds look) is left open here. Settle it before task 8, with `/imprint` or by hand.
+- [x] Wording of the key for each mark (`right`, `partly right`, `wrong`, `declined`) is the engineer's to give, especially `declined`, which no README defines in one line. Needed before slice 4.
+- [x] Visual design (fonts, colours, layout, how the folds look) is left open here. Settle it before task 8, with `/imprint` or by hand.
 - [ ] Next slice, recorded in scope feature 17: a list plus one interactive graph per answer, drawn from each record's stored pack, with cited items highlighted and held items and unresolved names marked. It would cover part of the deferred "Visual UI". Needs its own spec.
-- [ ] Reconcile scope feature 17's "Done when" clause with the link only disclosure choice (see Consequences).
-- [ ] Confirm the wording of AC-52 against `docs/scope/scope.md` line 238 when slice 5 is built. Experiment 0016's README marks only the `ask-2` runs.
-- [ ] Check the `?plain=1` link form on one real link during slice 3, and the Pages action versions during slice 1.
+- [x] Reconcile scope feature 17's "Done when" clause with the link only disclosure choice (see Consequences).
+- [x] Confirm the wording of AC-52 against `docs/scope/scope.md` line 238 when slice 5 is built. Experiment 0016's README marks only the `ask-2` runs.
+- [x] Check the `?plain=1` link form on one real link during slice 3, and the Pages action versions during slice 1.
 - [ ] Decide whether Netlify or the portfolio site is worth a second look later; the unchecked Netlify facts are in `rationale.md`.
 - [ ] Dark mode that follows the visitor's system setting, CSS only, with each mark pill readable in both modes; later, after launch.
