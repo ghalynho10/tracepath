@@ -17,6 +17,12 @@ CITED_RADIUS = 9.0
 #: Any other item's radius (AC-16).
 OTHER_RADIUS = 3.5
 
+#: How far outside the dot a held item's dashed ring is drawn, in pixels (AC-18).
+HELD_GAP = 2.5
+
+#: How far outside the dot the selection's cyan ring is drawn, in pixels (AC-21).
+RING_GAP = 6.0
+
 #: The type of an unresolved name's stored line (AC-61).
 UNRESOLVED_TYPE = "unresolved"
 

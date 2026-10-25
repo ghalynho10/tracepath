@@ -5,6 +5,7 @@ has inline styles and scripts only and refers to no other file of the site (AC-5
 spec 0011 AC-74).
 """
 
+import math
 from collections.abc import Mapping
 from datetime import UTC
 from html import escape
@@ -18,7 +19,14 @@ from tracepath.gallery.citations import (
     ItemLine,
     item_link,
 )
-from tracepath.gallery.graph import EntryGraph, data_block
+from tracepath.gallery.graph import (
+    CITED_RADIUS,
+    HELD_GAP,
+    OTHER_RADIUS,
+    RING_GAP,
+    EntryGraph,
+    data_block,
+)
 from tracepath.gallery.records import Entry, PageScripts, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
@@ -215,7 +223,35 @@ dialog.gw::backdrop { background: var(--paper); }
 .gw-canvas { display: block; flex: 1; width: 100%; min-height: 0; touch-action: none;
   user-select: none; }
 .gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
+.gw-link.is-held { stroke-opacity: .5; stroke-dasharray: 4 3; }
+.gw-link.is-active { stroke-opacity: 1; }
+.gw-arrow { fill: var(--ink); }
 .gw-dot { fill: var(--ink); }
+.is-other > .gw-dot { fill-opacity: .5; }
+.gw-held { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 2; }
+.gw-ring { fill: none; stroke: var(--cyan); stroke-width: 2; }
+.gw-node:not(.is-selected) > .gw-ring { display: none; }
+.gw-label { font: 500 9.5px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase;
+  fill: var(--ink); stroke: var(--paper); stroke-width: 3px; paint-order: stroke;
+  pointer-events: none; }
+.gw-node.is-other > .gw-label { display: none; }
+.gw-node.is-other:is(.is-hover, .is-selected, .is-near) > .gw-label { display: inline; }
+.gw-node { cursor: pointer; }
+.gw-node, .gw-link { transition: opacity .2s; }
+.gw-canvas .is-dim { opacity: .2; }
+.gw-canvas .is-out { display: none; }
+@media (prefers-reduced-motion: reduce) { .gw-node, .gw-link { transition: none; } }
+.gw-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px;
+  padding: 12px 20px 16px; border-top: 1px solid var(--rule); font-size: 12px;
+  color: var(--ink-82); }
+.gw-switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.gw-switch input { width: 16px; height: 16px; margin: 0; accent-color: var(--ink); }
+.gw-switch:has(input:disabled) { color: var(--ink-46); cursor: default; }
+.gw-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0;
+  list-style: none; }
+.gw-key li { display: inline-flex; align-items: center; gap: 6px; }
+.gw-sample { width: 30px; height: 30px; overflow: visible; }
+.gw-empty { margin: 0; color: var(--ink-82); }
 .gw-panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; }
 .gw-eyebrow { margin: 0 0 12px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
   text-transform: uppercase; color: var(--ink-64); }
@@ -223,15 +259,53 @@ dialog.gw::backdrop { background: var(--paper); }
   font-weight: 700; letter-spacing: -.03em; overflow-wrap: anywhere; }
 """
 
+#: Half the side of an unresolved name's square, which has a cited dot's area (AC-20).
+_HALF = round(CITED_RADIUS * math.sqrt(math.pi) / 2, 2)
+
+
+def _sample(drawing: str) -> str:
+    return f'<svg class="gw-sample" viewBox="-15 -15 30 30" aria-hidden="true">{drawing}</svg>'
+
+
+#: The key's six drawings, drawn outside the canvas with the canvas's own classes (AC-23).
+KEY = (
+    ("Cited", f'<g class="is-cited"><circle class="gw-dot" r="{CITED_RADIUS}"/></g>'),
+    ("Not cited", f'<g class="is-other"><circle class="gw-dot" r="{OTHER_RADIUS}"/></g>'),
+    (
+        "Held item",
+        f'<g class="is-other"><circle class="gw-dot" r="{OTHER_RADIUS}"/>'
+        f'<circle class="gw-held" r="{OTHER_RADIUS + HELD_GAP}"/></g>',
+    ),
+    ("Held link", '<line class="gw-link is-held" x1="-14" y1="0" x2="14" y2="0"/>'),
+    (
+        "Unresolved name",
+        f'<g class="is-cited"><rect class="gw-dot" x="-{_HALF}" y="-{_HALF}" '
+        f'width="{2 * _HALF}" height="{2 * _HALF}"/></g>',
+    ),
+    (
+        "Selected",
+        f'<g class="is-cited"><circle class="gw-dot" r="{CITED_RADIUS}"/>'
+        f'<circle class="gw-ring" r="{CITED_RADIUS + RING_GAP}"/></g>',
+    ),
+)
+
 #: The one graph window, filled by the script for whichever graph is open (spec 0011).
 DIALOG = (
-    '<dialog class="gw" aria-labelledby="gw-heading">'
+    f'<dialog class="gw" aria-labelledby="gw-heading" data-held-gap="{HELD_GAP}" '
+    f'data-ring-gap="{RING_GAP}">'
     '<div class="gw-stage"><div class="gw-head">'
     '<p class="gw-heading" id="gw-heading"></p>'
     '<button type="button" class="gw-button" data-gw="close" aria-label="Close graph">'
     "&times;</button></div>"
     '<svg class="gw-canvas" role="img" aria-label="The items sent and their links">'
-    '<g class="gw-links"></g><g class="gw-nodes"></g></svg></div>'
+    '<defs><marker id="gw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" '
+    'markerHeight="7" orient="auto"><path class="gw-arrow" d="M0 0L10 5L0 10z"/></marker></defs>'
+    '<g class="gw-links"></g><g class="gw-nodes"></g></svg>'
+    '<div class="gw-foot"><label class="gw-switch"><input type="checkbox" role="switch" '
+    'data-gw="switch"> Cited and neighbours only</label>'
+    '<ul class="gw-key" aria-label="Key">'
+    + "".join(f"<li>{_sample(drawing)}{escape(words)}</li>" for words, drawing in KEY)
+    + "</ul></div></div>"
     '<div class="gw-panel"></div>'
     "</dialog>"
 )
