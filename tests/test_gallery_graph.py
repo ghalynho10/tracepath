@@ -32,7 +32,7 @@ from tracepath.gallery.records import (
     GalleryError,
     read_scripts,
 )
-from tracepath.gallery.render import DIALOG, GRAPH_STYLE, KEY, STYLE
+from tracepath.gallery.render import DIALOG, GRAPH_STYLE, KEY, PANEL_STYLE, STYLE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -377,13 +377,16 @@ def _rules(style: str) -> list[str]:
 @pytest.mark.parametrize(
     "names",
     [
-        pytest.param(("--yellow", "#F6E27F", "yellow"), id="yellow"),
-        pytest.param(("--pink", "#FFC8C2", "pink"), id="pink"),
+        pytest.param(("#B9E3EE",), id="right"),
+        pytest.param(("#F6E27F", "yellow"), id="partly right"),
+        pytest.param(("#FFC8C2", "pink"), id="wrong"),
+        pytest.param(("#CBD3DC",), id="declined"),
     ],
 )
 def test_graph_styles_use_no_mark_colour(names: tuple[str, ...]) -> None:
-    """AC-22 (yellow), AC-95 (pink): the canvas and key use neither colour of the marks."""
-    style = GRAPH_STYLE + DIALOG + GRAPH_SCRIPT.read_text(encoding="utf-8")
+    """AC-22 (yellow), AC-95 (pink), spec 0012 AC-80: the graph window's styles, panel
+    and script use none of the four swipe colours."""
+    style = GRAPH_STYLE + PANEL_STYLE + DIALOG + GRAPH_SCRIPT.read_text(encoding="utf-8")
 
     for colour in names:
         assert colour.lower() not in style.lower()

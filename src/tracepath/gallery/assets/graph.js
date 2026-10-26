@@ -341,29 +341,63 @@
     panel.querySelector(".gw-title").focus({ preventScroll: true });
   }
 
-  // Stored text drawn from the runs the build made (spec 0012): one element per run, by
-  // textContent; flag 1 is code, 2 bold. A code run holds one `w` element per word, the
-  // spaces kept as text between them (AC-96). No runs means plain text (AC-98, AC-101).
+  // A code run: one `w` element per word, the spaces kept as text between them (AC-96).
+  function codeRun(words) {
+    const code = html("code");
+    for (const piece of words.split(/( +)/)) {
+      if (/^ +$/.test(piece)) code.append(piece);
+      else if (piece) code.append(html("span", "w", piece));
+    }
+    return code;
+  }
+
+  // Runs of one boldness into `into`, as the list's `to_html` writes them: a code run and
+  // the text touching it with no space between share one `g` element (AC-12).
+  function glued(into, runs) {
+    let cluster = [];
+    const flush = () => {
+      if (cluster.length > 1 && cluster.some((atom) => atom.code)) {
+        const glue = html("span", "g");
+        glue.append(...cluster.map((atom) => atom.node));
+        into.append(glue);
+      } else {
+        into.append(...cluster.map((atom) => atom.node));
+      }
+      cluster = [];
+    };
+    for (const [words, flags] of runs) {
+      if (flags & 1) {
+        cluster.push({ node: codeRun(words), code: true });
+        continue;
+      }
+      words.split(/(\s+)/).forEach((piece, index) => {
+        if (!piece) return;
+        if (index % 2) {
+          flush();
+          into.append(piece);
+        } else {
+          cluster.push({ node: document.createTextNode(piece), code: false });
+        }
+      });
+    }
+    flush();
+  }
+
+  // Stored text drawn from the runs the build made (spec 0012), by textContent only;
+  // flag 1 is code, 2 bold, and each stretch of one boldness is one element. No runs
+  // means plain text (AC-98, AC-101).
   function formatted(node, text, runs) {
     if (!runs) {
       node.textContent = text;
       return node;
     }
-    for (const [words, flags] of runs) {
-      let part = document.createTextNode(words);
-      if (flags & 1) {
-        part = html("code");
-        for (const piece of words.split(/( +)/)) {
-          if (/^ +$/.test(piece)) part.append(piece);
-          else if (piece) part.append(html("span", "w", piece));
-        }
-      }
-      if (flags & 2) {
-        const strong = html("strong");
-        strong.append(part);
-        part = strong;
-      }
-      node.append(part);
+    let start = 0;
+    while (start < runs.length) {
+      const bold = runs[start][1] & 2;
+      let end = start;
+      while (end < runs.length && (runs[end][1] & 2) === bold) end += 1;
+      glued(bold ? node.appendChild(html("strong")) : node, runs.slice(start, end));
+      start = end;
     }
     return node;
   }

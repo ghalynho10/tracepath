@@ -6,6 +6,7 @@ stored text is never changed; `to_html` escapes every run where it writes it (AC
 """
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from html import escape
 from itertools import groupby
@@ -32,6 +33,9 @@ PRODUCT_NAMES = frozenset({"Next.js", "Node.js"})
 
 #: The spaces between the words of a code run, kept as text between them (AC-96).
 _SPACES = re.compile(r"( +)")
+
+#: Whitespace in plain text: where a line may break beside a code run.
+_GAPS = re.compile(r"(\s+)")
 
 
 @dataclass(frozen=True)
@@ -160,10 +164,39 @@ def _code(text: str) -> str:
     return f"<code>{''.join(words)}</code>"
 
 
+def _glued(group: Iterable[Run]) -> str:
+    """Runs of one boldness as HTML, a code run kept on one line with the text it touches.
+
+    A code run and the text next to it with no space between, such as `(` before it or
+    `),` after it, sit in one `g` element, which may break only between the code's own
+    words, so a line never ends on `(` alone (spec 0012 AC-12).
+    """
+    atoms: list[tuple[str, bool | None]] = []  # code True, text False, a gap None
+    for run in group:
+        if run.code:
+            atoms.append((_code(run.text), True))
+            continue
+        for index, piece in enumerate(_GAPS.split(run.text)):
+            if piece:
+                atoms.append((escape(piece), None if index % 2 else False))
+    out: list[str] = []
+    cluster: list[tuple[str, bool | None]] = []
+    for shown, kind in [*atoms, ("", None)]:
+        if kind is not None:
+            cluster.append((shown, kind))
+            continue
+        joined = "".join(part for part, _ in cluster)
+        glue = len(cluster) > 1 and any(code for _, code in cluster)
+        out.append(f'<span class="g">{joined}</span>' if glue else joined)
+        out.append(shown)
+        cluster = []
+    return "".join(out)
+
+
 def to_html(found: tuple[Run, ...]) -> str:
     """The runs as HTML, every run's text escaped where it is written (AC-10)."""
     parts = []
     for bold, group in groupby(found, key=lambda run: run.bold):
-        inner = "".join(_code(run.text) if run.code else escape(run.text) for run in group)
+        inner = _glued(group)
         parts.append(f"<strong>{inner}</strong>" if bold else inner)
     return "".join(parts)

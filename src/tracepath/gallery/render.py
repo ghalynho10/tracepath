@@ -174,10 +174,10 @@ LABEL_KEY = (
     ),
 )
 
-#: The page's styles, inline (AC-58), chosen in task 8 on 2026-10-24: flat paper and
-#: hairlines, a large label over quiet body text, the portfolio's navy ink, and its
-#: colours only as small accents. The mark is a filled pill and the note a solid bubble,
-#: so the author's voice reads apart from the model's outlined verdict (AC-14).
+#: The page's styles, inline (AC-58): flat paper and hairlines in the portfolio's navy
+#: ink, laid out by the board measures of spec 0012 at two widths, the phone layout at
+#: 560 pixels and narrower. The mark is a bold word on its swipe, beside the model's
+#: verdict in mono type, so the two read apart (spec 0012 AC-41 to AC-56).
 STYLE = """\
 :root { --paper: #FFFFFF; --ink: #011936; --ink-82: rgba(1, 25, 54, .82);
   --ink-64: #3F5877; --ink-46: rgba(63, 88, 119, .78);
@@ -194,7 +194,11 @@ a { color: inherit; text-decoration-color: var(--cyan); text-underline-offset: 3
   text-decoration-thickness: 1px; }
 a:hover { color: var(--cyan); }
 code { font-family: var(--mono); font-size: .9em; }
-code .w { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
+code .w { display: inline-block; max-width: 100%; overflow-wrap: anywhere; white-space: pre-wrap; }
+.g { white-space: nowrap; }
+.g code { white-space: pre-wrap; }
+.g code:has(> .w:only-child) { white-space: nowrap; }
+.g .w { max-width: calc(100% - 2ch); }
 h1 { font-size: clamp(36px, 8vw, 48px); line-height: 1; font-weight: 700;
   letter-spacing: -.03em; margin: 0 0 20px; }
 .intro { max-width: 36rem; color: var(--ink-82); }

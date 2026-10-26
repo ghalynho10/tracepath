@@ -9,6 +9,7 @@ import pytest
 from tracepath.ask.record import ASKS_DIR
 from tracepath.gallery.inline import Run, has_pair, runs, to_html
 from tracepath.gallery.records import MARKS_FILE
+from tracepath.gallery.render import STYLE
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -157,6 +158,42 @@ def test_each_word_of_a_code_span_is_its_own_element() -> None:
     assert to_html(runs("`a b-c`")) == (
         '<code><span class="w">a</span> <span class="w">b-c</span></code>'
     )
+
+
+@pytest.mark.parametrize(
+    ("text", "shown"),
+    [
+        (
+            "over (`a-b`), then",
+            'over <span class="g">(<code><span class="w">a-b</span></code>),</span> then',
+        ),
+        (
+            "see (`a` and `b`)",
+            'see <span class="g">(<code><span class="w">a</span></code></span> and '
+            '<span class="g"><code><span class="w">b</span></code>)</span>',
+        ),
+        (
+            "`a`/`b`",
+            '<span class="g"><code><span class="w">a</span></code>/'
+            '<code><span class="w">b</span></code></span>',
+        ),
+        ("a `b` c", 'a <code><span class="w">b</span></code> c'),
+        ("(`a`)\nb", '<span class="g">(<code><span class="w">a</span></code>)</span>\nb'),
+    ],
+)
+def test_a_code_run_shares_one_element_with_the_text_it_touches(text: str, shown: str) -> None:
+    """AC-12: a line never breaks between a code word and `(` or `),` against it."""
+    assert to_html(runs(text)) == shown
+
+
+def test_the_glue_never_breaks_at_its_edges_but_its_code_may_break_inside() -> None:
+    """AC-12, AC-13: the glue does not wrap; a one word code inside it does not wrap at
+    its end either, while a longer code breaks between its words and a word wider than
+    its line still breaks inside itself."""
+    assert ".g { white-space: nowrap; }" in STYLE
+    assert ".g code { white-space: pre-wrap; }" in STYLE
+    assert ".g code:has(> .w:only-child) { white-space: nowrap; }" in STYLE
+    assert "overflow-wrap: anywhere; white-space: pre-wrap; }" in STYLE
 
 
 def test_the_spaces_of_a_code_span_stay_as_text_between_its_words() -> None:
