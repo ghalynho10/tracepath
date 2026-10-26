@@ -656,3 +656,113 @@ def test_cite_order_is_the_order_of_first_citation(blocks: dict[str, dict[str, A
         for item in blocks[label]["items"]:
             want = first.index(item["id"]) + 1 if item["id"] in first else None
             assert item["cite_order"] == want, (label, item["id"])
+
+
+#: JobHunt's docs at the pinned commit, written out here rather than imported (AC-46).
+PINNED_DOCS = (
+    "https://github.com/ghalynho10/JobHunt/blob/2e40bcfe1078cc93ab2f951e6c7c708e4825aa1b/docs/"
+)
+
+
+def _location(stored_line: str) -> tuple[str, str | None]:
+    """The words and the JobHunt link an item's stored line should give, rebuilt by hand."""
+    place = stored_line.lstrip(" ").split("  ")[-2]
+    if place in ("no file stored", "no path stored"):
+        return "no file stored", None
+    found = re.fullmatch(r"(.+):(\d+)", place)
+    if found is None:
+        return f"{place}, whole file", PINNED_DOCS + place
+    return place, f"{PINNED_DOCS}{found.group(1)}?plain=1#L{found.group(2)}"
+
+
+def test_location_and_source_are_read_from_the_stored_line(
+    blocks: dict[str, dict[str, Any]],
+) -> None:
+    """AC-46, AC-44 on the data: the panel's location, its JobHunt link and the marker."""
+    for _, stored, item in _each_item(blocks):
+        line = parse_item_line(stored["line"])
+        assert line is not None
+        assert (item["location"], item["source"]) == _location(stored["line"]), item["id"]
+        assert item["marker"] == line.marker
+    seven = next(i for i in blocks["Eval 1"]["items"] if i["id"] == "0008/AC-7")
+    assert seven["location"] == "specs/0008-app-shell-and-navigation/index.md:54"
+    assert seven["source"] == (
+        f"{PINNED_DOCS}specs/0008-app-shell-and-navigation/index.md?plain=1#L54"
+    )
+
+
+def _set_place(item: dict[str, Any], place: str) -> None:
+    fields = item["line"].split("  ")
+    item["line"] = "  ".join([*fields[:-2], place, fields[-1]])
+
+
+def _fixture_items(tmp_path: Path, change: Callable[[dict[str, Any]], None]) -> str:
+    """Eval 1 alone, changed by `change`, built; returns the built page."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+    _edit(root, DEV, change)
+    code, output = _build_at(root, tmp_path / "site")
+    assert code == 0, output
+    return (tmp_path / "site" / "index.html").read_text(encoding="utf-8")
+
+
+def _block_items(page: str) -> dict[str, dict[str, Any]]:
+    return {item["id"]: item for item in json.loads(_BLOCK.findall(page)[0][1])["items"]}
+
+
+def test_an_item_with_no_file_shows_no_link_and_a_file_with_no_line_shows_whole_file(
+    tmp_path: Path,
+) -> None:
+    """AC-47, and AC-46's whole file form: the words and link come from the changed line."""
+    nameless = "0008#consequences:24"
+    whole = "0021#feature-design:13"
+
+    def change(record: dict[str, Any]) -> None:
+        by_id = {item["id"]: item for item in record["items"]}
+        _set_place(by_id[nameless], "no file stored")
+        _set_place(by_id[whole], "specs/0021-seeded-demo-account/index.md")
+
+    items = _block_items(_fixture_items(tmp_path, change))
+
+    assert (items[nameless]["location"], items[nameless]["source"]) == ("no file stored", None)
+    assert items[whole]["location"] == "specs/0021-seeded-demo-account/index.md, whole file"
+    assert items[whole]["source"] == f"{PINNED_DOCS}specs/0021-seeded-demo-account/index.md"
+
+
+def test_a_rejected_or_repeated_citation_counts_once_and_only_where_not_rejected(
+    tmp_path: Path,
+) -> None:
+    """AC-59, AC-64, AC-94, AC-41: rejection is per claim, and a repeat counts once."""
+    only_rejected = "feature-14#14-fit-scoring-with-shown-reasoning-done-ga:8"
+    rejected_then_cited = "0001#binding-rules:30"
+
+    def change(record: dict[str, Any]) -> None:
+        first, second, _, fourth = record["claims"]
+        first["cites"] += [only_rejected, rejected_then_cited]
+        first["rejected_ids"] += [only_rejected, rejected_then_cited]
+        second["cites"].append("0008/AC-7")
+        fourth["cites"].append(rejected_then_cited)
+
+    page = _fixture_items(tmp_path, change)
+    items = _block_items(page)
+
+    assert items[only_rejected]["cited"] is False
+    assert items[only_rejected]["cited_by"] == []
+    assert items[only_rejected]["cite_order"] is None
+    assert items[only_rejected]["radius"] == OTHER_RADIUS
+    assert items[rejected_then_cited]["cited"] is True
+    assert items[rejected_then_cited]["cited_by"] == [4]
+    assert items[rejected_then_cited]["cite_order"] == 6
+    assert items["0008/AC-7"]["cited_by"] == [1, 2]
+    assert f'data-item="{only_rejected}"' not in page
+    assert page.count(f'data-item="{rejected_then_cited}"') == 1
+
+
+def test_build_fails_on_a_label_that_makes_no_slug(tmp_path: Path) -> None:
+    """The data model's rule: a slug is never empty, so the build fails, naming the entry."""
+    root = _fixture(tmp_path, ((DEV, "***", "development"),))
+
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 1
+    assert "'***': its label makes an empty slug" in output
+    assert not (tmp_path / "site" / "index.html").exists()
