@@ -35,7 +35,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-12**: The canvas has one dot for each item stored in the record, and no other dot.
 - **AC-13**: The canvas has one line for each stored link between two different items, and no other line.
 - **AC-14**: An item that is cited is drawn as a large dot (radius 9) filled with the ink colour.
-- **AC-15**: An item that is cited is labelled with its id.
+- **AC-15**: An item that is cited is labelled with its id, unless AC-90 hides the label. _Amended 2026-10-25 for the collision rule of the visual pass._
 - **AC-16**: An item that is not cited is drawn as a small, pale dot (radius 3.5, ink at 50 percent).
 - **AC-17**: An item that is not cited has no label unless it is hovered, selected, or a neighbour of the selected item.
 - **AC-18**: A held item has a dashed ring.
@@ -119,6 +119,16 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-85**: A touch press whose nearest dot centre is within 20 pixels selects or drags that dot.
 - **AC-86**: A drag that starts with no dot centre within that reach pans the graph.
 
+*Visual pass* (added 2026-10-25 at the engineer's request)
+- **AC-87**: A dot's label shows the item id in its stored case, shortened with "…" when it fits on neither side of its dot; the full id stays in the dot's tooltip and the panel.
+- **AC-88**: A label that would cross the canvas's right edge is drawn to the left of its dot when the left side has more room.
+- **AC-89**: Where two cited items' labels would overlap, the label of the item cited first in claim order is shown.
+- **AC-90**: The other cited item's label is hidden unless that item is hovered, selected, or a neighbour of the selected item.
+- **AC-91**: At a window width of 720 pixels or less, the key shows only after its Key button is pressed.
+- **AC-92**: At that width the canvas is 45 percent of the window's height.
+- **AC-93**: In the view of AC-25, no dot lies under the zoom buttons.
+- **AC-94**: An item's `cite_order` is its place in the order of first citation (claims in stored order, each claim's cites in stored order, rejected ids left out), and null when it is not cited.
+
 ## Decision
 
 **Chosen option**: Option 1: d3-force for layout only, vendored and inlined, with a hand written SVG drawing and a full window `<dialog>`.
@@ -161,7 +171,7 @@ The files in `assets/` and `vendor/` are read in the command's shell (`cli.py` o
 | `items` | list | One per stored item, cited items first, then by `hop`, then by id in Python string order; the order is fixed so the layout is repeatable (AC-76) |
 | `links` | list | One per stored link, in stored order |
 
-Each item: `id`, `type` (from the stored line), `text`, `hop`, `cited`, `held`, `unresolved`, `radius`, `marker` (`STRUCK`, `HISTORY` or null), `cited_by` (claim numbers), `neighbours` (distinct ids), `near_cited`, `link_ids` (positions in `links`), `source` (the link of spec 0010 AC-34 and AC-35, or null), `location` (the shown words, such as `specs/0008/index.md:54`, `specs/0008/index.md, whole file` when it has a file and no line, or `no file stored`). There is no `shape` field: the script draws a square when `unresolved` is true.
+Each item: `id`, `type` (from the stored line), `text`, `hop`, `cited`, `held`, `unresolved`, `radius`, `marker` (`STRUCK`, `HISTORY` or null), `cited_by` (claim numbers), `cite_order` (its place in the order of first citation, or null; AC-94), `neighbours` (distinct ids), `near_cited`, `link_ids` (positions in `links`), `source` (the link of spec 0010 AC-34 and AC-35, or null), `location` (the shown words, such as `specs/0008/index.md:54`, `specs/0008/index.md, whole file` when it has a file and no line, or `no file stored`). There is no `shape` field: the script draws a square when `unresolved` is true.
 
 Each link: `type`, `source`, `target`, `phrase`, `held`, `drawn` (false for a link from an item to itself).
 
@@ -179,7 +189,7 @@ The data block never holds an item's stored `line` (AC-58); everything the scrip
 
 | State | Drawing |
 |---|---|
-| Cited | Radius 9, filled with the ink colour, mono uppercase label (its id) |
+| Cited | Radius 9, filled with the ink colour, mono label (its id, in its stored case); where cited labels overlap, the one cited first keeps its label (AC-89, AC-90) |
 | Not cited | Radius 3.5, ink at 50 percent, no label until hovered, selected, or next to the selection |
 | Held item | A dashed ring 2.5 pixels outside the dot, in ink |
 | Held link | A dashed line in ink at 50 percent |
@@ -189,7 +199,7 @@ The data block never holds an item's stored `line` (AC-58); everything the scrip
 
 Contrast against the white page, by my calculation: ink at 50 percent is about 3.4 to 1, and cyan about 3.1 to 1, both above the 3 to 1 that graphics need. Links at 30 percent ink are about 2.0 to 1, below it. They are accepted at that strength because they are the quiet background connections and the panel lists every link of a selected item; the held links, which carry a meaning of their own, are drawn at 50 percent. `UNCLASSIFIED` links (640 of 3,114 in the shown records) are drawn like any other of their kind; the type is in the panel. Where two items have more than one link between them (25 pairs in the shown records), the lines lie on top of one another, so a held dashed link can be hidden under a solid one; this is accepted, and the panel lists each link.
 
-**Style**: spec 0010's design B tokens, unchanged (`--paper`, `--ink`, `--cyan`, `--rule`, the Helvetica stack and mono stack). From the local reference `design-notes/aicodingdictionary.com.md` (kept out of git; this spec cites it, code and CI never read it) only layout and type ideas are taken: a split window with the graph about two thirds and the panel one third, a hairline between them and none within the panel, a large poster title (the item id, or "Answer" for the answer view) over quiet body text, small uppercase eyebrow labels with the entry's label and the `n / N` counter in the same row, round 40 pixel buttons with a hairline border (close, previous, next, zoom), and mono uppercase labels on the dots. Its greys, grain and branding are not used. Reduced motion: nothing moves on its own; the only transition is a 0.2 second opacity fade, switched off under `prefers-reduced-motion`.
+**Style**: spec 0010's design B tokens, unchanged (`--paper`, `--ink`, `--cyan`, `--rule`, the Helvetica stack and mono stack). From the local reference `design-notes/aicodingdictionary.com.md` (kept out of git; this spec cites it, code and CI never read it) only layout and type ideas are taken: a split window with the graph about two thirds and the panel one third, a hairline between them and none within the panel, a large poster title (the item id, or "Answer" for the answer view) over quiet body text, small uppercase eyebrow labels with the entry's label and the `n / N` counter in the same row, round 40 pixel buttons with a hairline border (close, previous, next, zoom), and mono labels on the dots, ids in their stored case (the reference's capitals are not used, the engineer's ruling of 2026-10-25). A label that would cross the canvas's right edge sits left of its dot, and the fit keeps the dots clear of the zoom buttons. Its greys, grain and branding are not used. Reduced motion: nothing moves on its own; the only transition is a 0.2 second opacity fade, switched off under `prefers-reduced-motion`.
 
 **The window**: one native `<dialog>`, opened with `showModal()`, so Esc, focus trapping and the backdrop come from the browser. Its content is replaced when another entry is shown. Build notes, settled by the cross check on 2026-10-25:
 - The dialog's own default size, margin, padding and border are reset so it fills the window; body scrolling is locked while it is open, and the panel uses `overscroll-behavior: contain`.
@@ -211,7 +221,7 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 
 **Moving around**: a pointer that moves under 4 pixels between down and up is a click; more is a pan and never selects or clears. The wheel zooms about the pointer, from a listener that is not passive so the page does not scroll or the browser zoom on a trackpad pinch. The zoom buttons zoom by 1.25 times about the canvas centre. A selection made from the panel centres the item without changing the scale (AC-40); a click on the canvas does not move the view.
 
-**On a phone** (720 pixels and under): the dialog fills the screen; a grid of two rows puts the canvas on top (55 percent of the dynamic viewport height) and the panel below it, scrolling on its own. The canvas ignores page scrolling for touches (`touch-action: none`), so a one finger drag pans it.
+**On a phone** (720 pixels and under): the dialog fills the screen; a grid of two rows puts the canvas on top (45 percent of the dynamic viewport height, set in the visual pass of 2026-10-25; it was 55) and the panel below it, scrolling on its own. The key folds behind one Key button, so the panel keeps more of the screen. The canvas ignores page scrolling for touches (`touch-action: none`), so a one finger drag pans it.
 
 **Command surface**: unchanged. `uv run tracepath gallery build --out DIR` writes the same single `DIR/index.html`.
 
@@ -275,7 +285,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 6. [x] Slice 5, the phone layout. Stacked window, touch pan, the 40 pixel buttons. Satisfies **AC-54, AC-55, AC-56**
    - [x] Added 2026-10-25: a press acts on the nearest dot centre within 12 pixels (20 for a touch), found with d3-quadtree's `find`; the dot within reach also shows as hovered. Satisfies **AC-84, AC-85, AC-86**
 7. [x] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
-8. [ ] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
+8. [x] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
 9. [ ] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
 
 ## Consequences
@@ -313,7 +323,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 - [ ] Decide later whether the other data (the 13 records the page does not show) deserves a graph, and whether a link between two entries' shared items is worth drawing. Neither is in this spec.
 - [ ] Pinch to zoom, if a reader asks for it.
 - [ ] Goal: one shared graph of every shown answer's items, where picking a question zooms to its items. Deferred until link resolution improves (scope features 7 and 8): today the 947 items of the 31 packs form 224 separate pieces, 173 with no link, so answers have no section to zoom to. Revisit then; the drawing, flags, panel and d3 setup carry over. _Recorded 2026-10-25 by the engineer, who kept one graph per answer for now._
-- [ ] Visual pass (task 8): show item ids in their stored case, never in capitals. This replaces "mono uppercase" for the dot labels in Drawings and Style. _Engineer's ruling, 2026-10-25._
+- [x] Visual pass (task 8): show item ids in their stored case, never in capitals. This replaces "mono uppercase" for the dot labels in Drawings and Style. _Engineer's ruling, 2026-10-25._
 
 ## References
 

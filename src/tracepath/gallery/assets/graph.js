@@ -11,6 +11,7 @@
   const SVG = "http://www.w3.org/2000/svg";
   const TICKS = 300; // d3's own cooling schedule
   const PAD = 28; // pixels kept clear around the fitted graph
+  const LABEL_GAP = 5; // pixels between a dot's edge and its label
   const CLICK = 4; // pointer travel under this many pixels is a click
   const REACH = 12; // a press acts on the nearest dot centre this close, in pixels
   const TOUCH_REACH = 20; // the same, for a finger
@@ -33,6 +34,9 @@
   const panel = dialog.querySelector(".gw-panel");
   const closeButton = dialog.querySelector("[data-gw=close]");
   const toggle = dialog.querySelector("[data-gw=switch]");
+  const foot = dialog.querySelector(".gw-foot");
+  const keyToggle = dialog.querySelector("[data-gw=key]");
+  const zoomStrip = dialog.querySelector(".gw-zoom");
 
   const buttons = new Map(); // slug to its Graph button
   const laid = new Map(); // slug to its parsed graph and positions
@@ -112,9 +116,11 @@
     if (state && state.live) state.live.stop();
   }
 
-  // The view that puts every dot inside the canvas (AC-25).
+  // The view that puts every dot inside the canvas (AC-25), above the zoom buttons (AC-93).
   function fitted() {
     const box = canvas.getBoundingClientRect();
+    const bottom = Math.max(PAD, box.bottom - zoomStrip.getBoundingClientRect().top + PAD / 2);
+    const height = box.height - PAD - bottom;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const point of state.positions.values()) {
       minX = Math.min(minX, point.x);
@@ -127,13 +133,13 @@
       Math.min(
         4,
         (box.width - 2 * PAD) / Math.max(maxX - minX, 1),
-        (box.height - 2 * PAD) / Math.max(maxY - minY, 1)
+        height / Math.max(maxY - minY, 1)
       )
     );
     return {
       k: scale,
       x: box.width / 2 - (scale * (minX + maxX)) / 2,
-      y: box.height / 2 - (scale * (minY + maxY)) / 2,
+      y: PAD + height / 2 - (scale * (minY + maxY)) / 2,
     };
   }
 
@@ -162,6 +168,68 @@
       line.setAttribute("x2", to.x - (to.x - from.x) * cut);
       line.setAttribute("y2", to.y - (to.y - from.y) * cut);
     });
+    arrangeLabels();
+  }
+
+  // Each label's width, in the label's own font, measured once per open.
+  const measure = document.createElement("canvas").getContext("2d");
+  function measureLabels() {
+    const first = state.labels.values().next().value;
+    if (!first) return;
+    const style = getComputedStyle(first.text);
+    measure.font = style.fontWeight + " " + style.fontSize + " " + style.fontFamily;
+    for (const [id, label] of state.labels) label.width = measure.measureText(id).width;
+  }
+
+  // The longest start of `id` that fits `room` pixels with "…" after it.
+  function shortened(id, room) {
+    let low = 0;
+    let high = id.length;
+    while (low < high) {
+      const mid = Math.ceil((low + high) / 2);
+      if (measure.measureText(id.slice(0, mid) + "…").width <= room) low = mid;
+      else high = mid - 1;
+    }
+    return id.slice(0, low) + "…";
+  }
+
+  // A label that would cross the canvas's right edge sits left of its dot when there is
+  // more room there (AC-88), and one that fits on neither side is shortened with "…"
+  // (AC-87). Where cited labels overlap, the one cited first keeps its label and the
+  // others show theirs only when hovered, selected or next to the selection (AC-89, AC-90).
+  function arrangeLabels() {
+    const width = canvas.getBoundingClientRect().width;
+    const shown = [];
+    const cited = [];
+    for (const item of state.graph.items) {
+      const label = state.labels.get(item.id);
+      const at = screen(item.id);
+      const room = at.x - item.radius - LABEL_GAP - 2; // to the left of the dot
+      const right = width - 2 - (at.x + item.radius + LABEL_GAP);
+      const left = label.width > right && room > right;
+      if (left !== label.left) {
+        label.left = left;
+        const shift = item.radius + LABEL_GAP;
+        label.text.setAttribute("x", left ? -shift : shift);
+        label.text.setAttribute("text-anchor", left ? "end" : "start");
+      }
+      const space = Math.max(room, right);
+      const words = label.width > space ? shortened(item.id, space) : item.id;
+      if (words !== label.text.textContent) label.text.textContent = words;
+      if (!item.cited) continue;
+      const drawn = Math.min(label.width, space);
+      const offset = item.radius + LABEL_GAP;
+      const start = left ? at.x - offset - drawn : at.x + offset;
+      cited.push({ item: item, box: [start, at.y - 7, start + drawn, at.y + 4] });
+    }
+    cited.sort((a, b) => a.item.cite_order - b.item.cite_order);
+    for (const { item, box } of cited) {
+      const crowded = shown.some(
+        (other) => box[0] < other[2] && other[0] < box[2] && box[1] < other[3] && other[1] < box[3]
+      );
+      state.nodes.get(item.id).classList.toggle("is-crowded", crowded);
+      if (!crowded) shown.push(box);
+    }
   }
 
   function draw() {
@@ -169,6 +237,7 @@
     linkLayer.replaceChildren();
     nodeLayer.replaceChildren();
     state.nodes = new Map();
+    state.labels = new Map();
     state.lines = new Map();
     state.byId = new Map(state.graph.items.map((item) => [item.id, item]));
     state.graph.links.forEach((link, number) => {
@@ -186,11 +255,15 @@
       node.append(outline(item, 0, "gw-dot"));
       if (item.held) node.append(outline(item, HELD_GAP, "gw-held"));
       node.append(outline(item, RING_GAP, "gw-ring"));
-      node.append(element("text", { class: "gw-label", x: item.radius + 5, y: 3 }, item.id));
+      const text = element("text", { class: "gw-label", x: item.radius + LABEL_GAP, y: 3 });
+      text.textContent = item.id;
+      node.append(text);
+      state.labels.set(item.id, { text: text, left: false, width: 0 });
       node.append(element("title", {}, item.id + " · " + item.type));
       nodeLayer.append(node);
       state.nodes.set(item.id, node);
     }
+    measureLabels();
     place();
   }
 
@@ -550,6 +623,12 @@
     if (item) choose(item);
   });
   toggle.addEventListener("change", () => filter(toggle.checked));
+  // On a phone the key folds behind one button (AC-91).
+  keyToggle.addEventListener("click", () => {
+    const open = !foot.classList.contains("is-key-open");
+    foot.classList.toggle("is-key-open", open);
+    keyToggle.setAttribute("aria-expanded", String(open));
+  });
   closeButton.addEventListener("click", () => dialog.close());
   // Esc, the close button and a back gesture all end here (AC-6).
   dialog.addEventListener("close", () => {

@@ -590,6 +590,7 @@ def _hostile_graph() -> EntryGraph:
         radius=OTHER_RADIUS,
         marker=None,
         cited_by=(),
+        cite_order=None,
         neighbours=(),
         near_cited=False,
         link_ids=(),
@@ -642,3 +643,16 @@ def test_hostile_stored_text_survives_the_page(tmp_path: Path) -> None:
     assert code == 0, output
     assert HOSTILE in [item["text"] for item in graph["items"]]
     assert page.count("<script") == page.count("</script>")
+
+
+def test_cite_order_is_the_order_of_first_citation(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-94: claims in stored order, each claim's cites in stored order; null when not cited."""
+    for label, record in _records().items():
+        first: list[str] = []
+        for claim in record["claims"]:
+            for cited in claim["cites"]:
+                if cited not in claim["rejected_ids"] and cited not in first:
+                    first.append(cited)
+        for item in blocks[label]["items"]:
+            want = first.index(item["id"]) + 1 if item["id"] in first else None
+            assert item["cite_order"] == want, (label, item["id"])

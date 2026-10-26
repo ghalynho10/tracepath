@@ -199,8 +199,9 @@ details .item > .stored { font-size: 14px; color: var(--ink-82); }
 
 #: The graph window's styles (spec 0011): a split window, the graph about two thirds and
 #: the panel one third, with a hairline between them; at 720 pixels or less the graph
-#: sits above the panel (AC-54, AC-55). Cyan only rings the selection, and
-#: the marks' yellow and pink are never used here (AC-22).
+#: sits above the panel and the key folds behind a Key button (AC-54, AC-55, AC-91).
+#: Cyan only rings the selection, and the marks' yellow and pink are never used here
+#: (AC-22).
 GRAPH_STYLE = """\
 .graph-open { display: inline-flex; margin: 18px 0 0; padding: 4px 15px; border-radius: 999px;
   border: 1px solid var(--ink); background: var(--paper); color: var(--ink);
@@ -238,11 +239,12 @@ dialog.gw::backdrop { background: var(--paper); }
 .gw-held { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 2; }
 .gw-ring { fill: none; stroke: var(--cyan); stroke-width: 2; }
 .gw-node:not(.is-selected) > .gw-ring { display: none; }
-.gw-label { font: 500 9.5px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase;
-  fill: var(--ink); stroke: var(--paper); stroke-width: 3px; paint-order: stroke;
-  pointer-events: none; }
+.gw-label { font: 500 9.5px/1 var(--mono); fill: var(--ink); stroke: var(--paper);
+  stroke-width: 3px; paint-order: stroke; pointer-events: none; }
 .gw-node.is-other > .gw-label { display: none; }
 .gw-node.is-other:is(.is-hover, .is-selected, .is-near) > .gw-label { display: inline; }
+.gw-node.is-cited.is-crowded:not(.is-hover, .is-selected, .is-near) > .gw-label {
+  display: none; }
 .gw-canvas.is-reach { cursor: pointer; }
 .gw-node, .gw-link { transition: opacity .2s; }
 .gw-canvas .is-dim { opacity: .2; }
@@ -258,6 +260,10 @@ dialog.gw::backdrop { background: var(--paper); }
   list-style: none; }
 .gw-key li { display: inline-flex; align-items: center; gap: 6px; }
 .gw-sample { width: 30px; height: 30px; overflow: visible; }
+.gw-keytoggle { display: none; padding: 3px 12px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 500 11px/1.5 var(--sans); cursor: pointer; }
+.gw-keytoggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .gw-empty { margin: 0; color: var(--ink-82); }
 .gw-panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; }
 .gw-eyebrow { margin: 0 0 12px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
@@ -269,9 +275,11 @@ dialog.gw::backdrop { background: var(--paper); }
     grid-template-rows: auto minmax(0, 1fr); }
   .gw-stage { border-right: 0; border-bottom: 1px solid var(--rule); }
   .gw-head { padding: 10px 16px; }
-  .gw-view { flex: none; height: 55vh; height: 55dvh; }
+  .gw-view { flex: none; height: 45vh; height: 45dvh; }
   .gw-zoom { right: 16px; bottom: 12px; }
   .gw-foot { gap: 6px 14px; padding: 8px 16px 10px; font-size: 11px; }
+  .gw-keytoggle { display: inline-flex; margin-left: auto; }
+  .gw-foot:not(.is-key-open) > .gw-key { display: none; }
   .gw-panel { padding: 20px 16px 32px; }
 }
 """
@@ -360,7 +368,9 @@ DIALOG = (
     "&#x21BA;</button></div></div>"
     '<div class="gw-foot"><label class="gw-switch"><input type="checkbox" role="switch" '
     'data-gw="switch"> Cited and neighbours only</label>'
-    '<ul class="gw-key" aria-label="Key">'
+    '<button type="button" class="gw-keytoggle" data-gw="key" aria-expanded="false" '
+    'aria-controls="gw-key">Key</button>'
+    '<ul class="gw-key" id="gw-key" aria-label="Key">'
     + "".join(f"<li>{_sample(drawing)}{escape(words)}</li>" for words, drawing in KEY)
     + "</ul></div></div>"
     '<div class="gw-panel"></div>'

@@ -56,6 +56,7 @@ class GraphItem(BaseModel):
     radius: float
     marker: str | None
     cited_by: tuple[int, ...]
+    cite_order: int | None
     neighbours: tuple[str, ...]
     near_cited: bool
     link_ids: tuple[int, ...]
@@ -110,7 +111,11 @@ def location(item: ItemLine) -> str:
 
 
 def _cited_by(entry: Entry) -> dict[str, tuple[int, ...]]:
-    """Each cited id, with the numbers of the claims that cite it and do not reject it."""
+    """Each cited id, with the numbers of the claims that cite it and do not reject it.
+
+    The ids come in order of first citation: claims in stored order, each claim's cites
+    in stored order.
+    """
     numbers: dict[str, list[int]] = {}
     for number, claim in enumerate(entry.record.claims, start=1):
         for cited in dict.fromkeys(claim.cites):
@@ -146,6 +151,7 @@ def entry_graph(
         for link in record.links
     )
     cited_by = _cited_by(entry)
+    cite_order = {cited: number for number, cited in enumerate(cited_by, start=1)}
     neighbours = {item.id: _neighbours(item.id, links) for item in record.items}
     lines = dict(zip((item.id for item in record.items), entry.items, strict=True))
     items = tuple(
@@ -160,6 +166,7 @@ def entry_graph(
             radius=CITED_RADIUS if item.id in cited_by else OTHER_RADIUS,
             marker=lines[item.id].marker,
             cited_by=cited_by.get(item.id, ()),
+            cite_order=cite_order.get(item.id),
             neighbours=neighbours[item.id],
             near_cited=item.id in cited_by or any(n in cited_by for n in neighbours[item.id]),
             link_ids=tuple(
