@@ -32,7 +32,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
-| 18 | Answer graph | after v1, presentation | in-progress |
+| 18 | Answer graph | after v1, presentation | done |
 
 ## v1 finish line
 
@@ -442,7 +442,7 @@ _2026-10-25: the graph per answer is built on the same page by [spec 0011](../sp
 - [x] Test it: `/test answer gallery`
 - [x] Sync it: `/sync answer gallery`
 
-### 18. Answer graph · in-progress · added 2026-10-24
+### 18. Answer graph · done · added 2026-10-24
 On the gallery page, one interactive graph per shown answer, drawn from the items and links its ask record already stores, so a reader can see how the cited items connect instead of reading a list. The items the answer cites are highlighted, a click on an item opens its text and its source line, and held items and unresolved names are marked as such. It makes no API call. This is the "Next slice" recorded under feature 17.
 **Done when:** a reader on the gallery page can open the graph for each shown answer, see which items the answer cites, open any item's text and its source line with one click, and tell held items and unresolved names apart from the rest.
 **What the records hold, checked 2026-10-24:** each ask record in `artifacts/asks/` stores `items` (id, held or not, hop, its line, its text; an unresolved name has an id starting `unresolved:`) and `links` (type, source, target, the phrase it was read from, held or not). The graph needs no new extraction or model call.
@@ -464,7 +464,7 @@ _2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on i
   - [x] The states and the panel (tasks 3 and 4; AC-14 to AC-24, AC-30 to AC-53, AC-59 to AC-64)
   - [x] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
   - [x] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
-- [ ] Verify it: `/check verify answer graph`
+- [x] Verify it: `/check verify answer graph`
 - [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
 - [x] Sync it: `/sync answer graph`
 

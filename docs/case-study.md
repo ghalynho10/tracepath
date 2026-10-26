@@ -34,6 +34,8 @@ Both parts of the bar were met. I judged every answer myself against expected an
 
 Then I tested it the way someone would actually use it ([experiment 0018](../experiments/0018-realistic-usage-questions/README.md)). I wrote 22 questions in everyday words: 12 the specs answer, and 10 they don't, because the thing never existed or the premise was false. I committed the expected answers before running anything, ran each question once, and marked the answers myself. It answered 9 of the 12 right and 1 partly right, and declined all 10 of the others without inventing anything. The misses had two causes: the search matches exact words, so my phrasing ("emergency stop toggle") didn't find the spec's ("kill switch"), and the reasons behind several decisions live in rationale files the tool doesn't read yet.
 
+Browse the recorded answers, each with my mark and an interactive graph of what the tool was given: https://ghalynho10.github.io/tracepath/
+
 ## Against my earlier tool
 
 I ran decision-memory on the same nine questions, against the same pinned specs. It abstained on all nine: each time it printed "not enough evidence here". Its search found the right specs on most questions; the verifier is what refused. It checks every sentence against its cited text, drops the whole sentence if any piece of it isn't supported, and refuses the whole answer if any part of the question is left uncovered.
