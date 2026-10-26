@@ -83,10 +83,12 @@ from tracepath.extract.metered import (
     summary_lines,
 )
 from tracepath.extract.records import RecordError
+from tracepath.gallery.graph import entry_graphs
 from tracepath.gallery.records import (
     GalleryError,
     count_records,
     load_entries,
+    read_scripts,
     refuse_read_only_out,
 )
 from tracepath.gallery.render import render_page
@@ -1249,18 +1251,22 @@ def gallery_build(
 ) -> None:
     """Write the answer gallery page from the ask records and gallery/marks.json (spec 0010).
 
-    No API call, no graph, no settings: the page is built from committed files only.
+    No API call, no Neo4j, no settings: the page is built from committed files only.
     """
     base = Path(root)
     try:
         refuse_read_only_out(base, out)
         entries = load_entries(base)
+        graphs = entry_graphs(entries)
+        scripts = read_scripts()
     except GalleryError as exc:
         _fail(str(exc))
     page = out / "index.html"
     try:
         out.mkdir(parents=True, exist_ok=True)
-        page.write_text(render_page(entries, count_records(base)), encoding="utf-8")
+        page.write_text(
+            render_page(entries, count_records(base), graphs, scripts), encoding="utf-8"
+        )
     except OSError as exc:
         _fail(f"{page}: could not be written ({exc}).")
     _say(f"✓ {len(entries)} entries → {page}")

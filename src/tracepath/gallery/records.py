@@ -40,6 +40,15 @@ SectionName = Literal["development", "held out", "realistic"]
 #: Folders the build reads and must never write into (AC-57).
 READ_ONLY_DIRS = (Path("artifacts"), Path("corpus"))
 
+#: The vendored libraries, in the order the page inlines them (spec 0011 AC-71).
+VENDOR_PACKAGES = ("d3-dispatch", "d3-quadtree", "d3-timer", "d3-force")
+
+#: The vendored files and their record (AC-73), shipped beside this module.
+VENDOR_DIR = Path(__file__).parent / "vendor"
+
+#: The page's own script (spec 0011).
+GRAPH_SCRIPT = Path(__file__).parent / "assets" / "graph.js"
+
 
 class GalleryError(Exception):
     """The gallery cannot be built as asked; the message names what is wrong."""
@@ -80,11 +89,24 @@ class StoredItem(BaseModel):
     line: str
     held: bool
     history: bool
+    hop: int
     text: str
 
 
+class StoredLink(BaseModel):
+    """One link of the pack the ask call sent, as stored (spec 0011)."""
+
+    model_config = ConfigDict(frozen=True, extra="ignore")
+
+    type: str
+    source: str
+    target: str
+    phrase: str | None
+    held: bool
+
+
 class AskRecord(BaseModel):
-    """The fields of one ask record the gallery reads; its `links` are not read."""
+    """The fields of one ask record the gallery reads."""
 
     model_config = ConfigDict(frozen=True, extra="ignore")
 
@@ -99,6 +121,7 @@ class AskRecord(BaseModel):
     missing: tuple[str, ...]
     claims: tuple[StoredClaim, ...]
     items: tuple[StoredItem, ...]
+    links: tuple[StoredLink, ...]
 
 
 class MarksEntry(BaseModel):
@@ -150,6 +173,43 @@ def _read_json(path: Path) -> object:
         raise GalleryError(f"{path}: not found") from None
     except json.JSONDecodeError as exc:
         raise GalleryError(f"{path}: not valid JSON ({exc})") from None
+
+
+@dataclass(frozen=True)
+class PageScripts:
+    """What the page inlines: each library's code with its licence, then the graph script."""
+
+    libraries: tuple[tuple[str, str], ...]
+    graph: str
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise GalleryError(f"{path}: cannot be read ({exc})") from None
+
+
+#: Text that would end an inline script element or change how the browser reads it (AC-68).
+SCRIPT_BREAKERS = ("</script", "<!--")
+
+
+def _inline_text(path: Path) -> str:
+    """A file the page pastes into a script element, refused if it could break out of it."""
+    text = _read_text(path)
+    for breaker in SCRIPT_BREAKERS:
+        if breaker in text.lower():
+            raise GalleryError(f"{path}: holds {breaker!r}, which an inline script cannot carry")
+    return text
+
+
+def read_scripts(vendor: Path = VENDOR_DIR, graph: Path = GRAPH_SCRIPT) -> PageScripts:
+    """The vendored libraries in inline order, each with its package's licence, and the script."""
+    libraries = tuple(
+        (_inline_text(vendor / f"{name}.min.js"), _inline_text(vendor / f"{name}.LICENSE"))
+        for name in VENDOR_PACKAGES
+    )
+    return PageScripts(libraries, _inline_text(graph))
 
 
 def _entry_name(number: int, entry: object) -> str:
@@ -263,7 +323,8 @@ def checked_items(root: Path, name: str, record: AskRecord) -> tuple[ItemLine, .
     """Each item's parsed line, once the record's commit, items and citations check out.
 
     Every item that gets a link is checked against the snapshot, cited or not
-    (AC-7, AC-37 to AC-40, AC-42).
+    (AC-7, AC-37 to AC-40, AC-42). Item ids are unique and every stored link's ends are
+    among the items (spec 0011 AC-65, AC-66).
     """
     if not is_pinned_commit(record.corpus_commit):
         raise GalleryError(
@@ -293,6 +354,18 @@ def checked_items(root: Path, name: str, record: AskRecord) -> tuple[ItemLine, .
                     f"(lines 1 to {count})"
                 )
         parsed.append(line)
+    ids = [line.id for line in parsed]
+    repeated = sorted({i for i in ids if ids.count(i) > 1})
+    if repeated:
+        raise GalleryError(f"{name}: item id repeated: {', '.join(repeated)}")
+    known = frozenset(ids)
+    for number, link in enumerate(record.links, start=1):
+        for end in (link.source, link.target):
+            if end not in known:
+                raise GalleryError(
+                    f"{name}: link {number} ({link.source} {link.type} {link.target}) "
+                    f"names {end}, which is not among the record's items"
+                )
     by_id = {line.id: line for line in parsed}
     for claim in record.claims:
         for cited in claim.cites:

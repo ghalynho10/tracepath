@@ -1,9 +1,11 @@
-"""The gallery page as one self contained HTML string (spec 0010). Pure.
+"""The gallery page as one self contained HTML string (specs 0010 and 0011). Pure.
 
 Every stored text is escaped, so markup in a record shows as text (AC-24). The page
-has inline styles only and refers to no other file of the site (AC-58).
+has inline styles and scripts only and refers to no other file of the site (AC-58,
+spec 0011 AC-74).
 """
 
+import math
 from collections.abc import Mapping
 from datetime import UTC
 from html import escape
@@ -17,7 +19,15 @@ from tracepath.gallery.citations import (
     ItemLine,
     item_link,
 )
-from tracepath.gallery.records import Entry, Section, StoredClaim
+from tracepath.gallery.graph import (
+    CITED_RADIUS,
+    HELD_GAP,
+    OTHER_RADIUS,
+    RING_GAP,
+    EntryGraph,
+    data_block,
+)
+from tracepath.gallery.records import Entry, PageScripts, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
 TRACEPATH_REPO_URL = "https://github.com/ghalynho10/tracepath"
@@ -156,12 +166,13 @@ article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight
 .note { margin: 6px 0; max-width: 30rem; padding: 10px 14px; font-size: 14.7px; line-height: 1.5;
   border-radius: 13.6px 13.6px 13.6px 1.6px; background: var(--ink); color: var(--paper); }
 .source { margin: 4px 0 0; font-size: 12px; color: var(--ink-46); }
-article ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
+article ol, .gw-answer ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
   border-top: 1px solid var(--rule); }
-article ol > li { position: relative; counter-increment: claim; padding: 16px 0 16px 2.4em;
-  border-bottom: 1px solid var(--rule); }
-article ol > li::before { content: counter(claim, decimal-leading-zero); position: absolute;
-  left: 0; top: 20px; font: 11px/1 var(--mono); color: var(--ink-46); }
+article ol > li, .gw-answer ol > li { position: relative; counter-increment: claim;
+  padding: 16px 0 16px 2.4em; border-bottom: 1px solid var(--rule); }
+article ol > li::before, .gw-answer ol > li::before {
+  content: counter(claim, decimal-leading-zero); position: absolute; left: 0; top: 20px;
+  font: 11px/1 var(--mono); color: var(--ink-46); }
 .cites { margin: 8px 0 0; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
 .labels { margin: 8px 0 0; font-size: 10px; line-height: 1.4; font-weight: 700;
@@ -183,7 +194,188 @@ details li { padding: 4px 0; border-bottom: 1px solid var(--rule); }
 details .item { padding: 6px 0 12px; border-bottom: 1px solid var(--rule); }
 details .item p { margin: 0 0 4px; }
 details .item > .stored { font-size: 14px; color: var(--ink-82); }
+[hidden] { display: none !important; }
 """
+
+#: The graph window's styles (spec 0011): a split window, the graph about two thirds and
+#: the panel one third, with a hairline between them; at 720 pixels or less the graph
+#: sits above the panel and the key folds behind a Key button (AC-54, AC-55, AC-91).
+#: Cyan only rings the selection, and the marks' yellow and pink are never used here
+#: (AC-22).
+GRAPH_STYLE = """\
+.graph-open { display: inline-flex; margin: 18px 0 0; padding: 4px 15px; border-radius: 999px;
+  border: 1px solid var(--ink); background: var(--paper); color: var(--ink);
+  font: 500 13px/1.5 var(--sans); cursor: pointer; }
+.graph-open:hover { background: var(--ink); color: var(--paper); }
+html:has(dialog.gw[open]) { overflow: hidden; }
+dialog.gw { width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: var(--paper); color: var(--ink); }
+dialog.gw[open] { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+dialog.gw::backdrop { background: var(--paper); }
+.gw-stage { position: relative; display: flex; flex-direction: column; min-height: 0;
+  border-right: 1px solid var(--rule); }
+.gw-head { display: flex; align-items: center; gap: 8px; padding: 16px 20px; }
+.gw-heading { flex: 1; margin: 0; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-count { margin-left: 10px; font-family: var(--mono); color: var(--ink-46); }
+.gw-button { width: 40px; height: 40px; flex: none; border-radius: 50%;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 18px/1 var(--sans); cursor: pointer; }
+.gw-button:hover { border-color: var(--ink); }
+.gw-button:disabled { border-color: var(--rule); color: var(--ink-46); cursor: default; }
+.gw-button:focus-visible, .graph-open:focus-visible { outline: 2px solid var(--ink);
+  outline-offset: 2px; }
+.gw-view { position: relative; flex: 1; min-height: 0; }
+.gw-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  touch-action: none; user-select: none; cursor: grab; }
+.gw-canvas.is-dragging, .gw-canvas.is-dragging .gw-node { cursor: grabbing; }
+.gw-zoom { position: absolute; right: 20px; bottom: 16px; display: flex; gap: 8px; }
+.gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
+.gw-link.is-held { stroke-opacity: .5; stroke-dasharray: 4 3; }
+.gw-link.is-active { stroke-opacity: 1; }
+.gw-arrow { fill: var(--ink); }
+.gw-dot { fill: var(--ink); }
+.is-other > .gw-dot { fill-opacity: .5; }
+.gw-held { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 2; }
+.gw-ring { fill: none; stroke: var(--cyan); stroke-width: 2; }
+.gw-node:not(.is-selected) > .gw-ring { display: none; }
+.gw-label { font: 500 9.5px/1 var(--mono); fill: var(--ink); stroke: var(--paper);
+  stroke-width: 3px; paint-order: stroke; pointer-events: none; }
+.gw-node.is-other > .gw-label { display: none; }
+.gw-node.is-other:is(.is-hover, .is-selected, .is-near) > .gw-label { display: inline; }
+.gw-node.is-cited.is-crowded:not(.is-hover, .is-selected, .is-near) > .gw-label {
+  display: none; }
+.gw-canvas.is-reach { cursor: pointer; }
+.gw-node, .gw-link { transition: opacity .2s; }
+.gw-canvas .is-dim { opacity: .2; }
+.gw-canvas .is-out { display: none; }
+@media (prefers-reduced-motion: reduce) { .gw-node, .gw-link { transition: none; } }
+.gw-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px;
+  padding: 12px 20px 16px; border-top: 1px solid var(--rule); font-size: 12px;
+  color: var(--ink-82); }
+.gw-switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.gw-switch input { width: 16px; height: 16px; margin: 0; accent-color: var(--ink); }
+.gw-switch:has(input:disabled) { color: var(--ink-46); cursor: default; }
+.gw-key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0;
+  list-style: none; }
+.gw-key li { display: inline-flex; align-items: center; gap: 6px; }
+.gw-sample { width: 30px; height: 30px; overflow: visible; }
+.gw-keytoggle { display: none; padding: 3px 12px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 500 11px/1.5 var(--sans); cursor: pointer; }
+.gw-keytoggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.gw-empty { margin: 0; color: var(--ink-82); }
+.gw-panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; }
+.gw-eyebrow { margin: 0 0 12px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-title { margin: 0 0 18px; font-size: clamp(30px, 4vw, 44px); line-height: 1;
+  font-weight: 700; letter-spacing: -.03em; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  dialog.gw[open] { grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr); }
+  .gw-stage { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .gw-head { padding: 10px 16px; }
+  .gw-view { flex: none; height: 45vh; height: 45dvh; }
+  .gw-zoom { right: 16px; bottom: 12px; }
+  .gw-foot { gap: 6px 14px; padding: 8px 16px 10px; font-size: 11px; }
+  .gw-keytoggle { display: inline-flex; margin-left: auto; }
+  .gw-foot:not(.is-key-open) > .gw-key { display: none; }
+  .gw-panel { padding: 20px 16px 32px; }
+}
+"""
+
+#: The reading panel's styles (spec 0011): quiet body text under the poster title, and
+#: ids drawn as links that select their item.
+PANEL_STYLE = """\
+.gw-back { display: inline-flex; margin: 0 0 18px; padding: 3px 12px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink);
+  font: 500 12px/1.5 var(--sans); cursor: pointer; }
+.gw-back:hover { border-color: var(--ink); }
+.gw-answer .question { font-size: 17px; }
+.gw-answer ol { margin-top: 18px; }
+.gw-text { margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: var(--ink-82); }
+.gw-meta { margin: 0 0 6px; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
+  overflow-wrap: anywhere; }
+.gw-sub { margin: 26px 0 8px; font: 700 10px/1.2 var(--sans); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-64); }
+.gw-list { margin: 0; padding: 0; list-style: none; }
+.gw-list li { padding: 7px 0; border-bottom: 1px solid var(--rule); font: 12px/1.6 var(--mono);
+  color: var(--ink-64); overflow-wrap: anywhere; }
+.gw-phrase { display: block; margin-top: 2px; font: 13px/1.5 var(--sans); color: var(--ink-82); }
+.gw-dir { display: inline-block; min-width: 2.6em; color: var(--ink-46); }
+.gw-id { padding: 0; border: 0; background: none; color: var(--ink); font: inherit;
+  text-align: left; text-decoration: underline; text-decoration-color: var(--cyan);
+  text-underline-offset: 3px; text-decoration-thickness: 1px; cursor: pointer;
+  overflow-wrap: anywhere; }
+.gw-id:hover { color: var(--cyan); }
+.gw-id:focus-visible, .gw-back:focus-visible { outline: 2px solid var(--ink);
+  outline-offset: 2px; }
+.gw-title:focus { outline: none; }
+"""
+
+#: Half the side of an unresolved name's square, which has a cited dot's area (AC-20).
+_HALF = round(CITED_RADIUS * math.sqrt(math.pi) / 2, 2)
+
+
+def _sample(drawing: str) -> str:
+    return f'<svg class="gw-sample" viewBox="-15 -15 30 30" aria-hidden="true">{drawing}</svg>'
+
+
+#: The key's six drawings, drawn outside the canvas with the canvas's own classes (AC-23).
+KEY = (
+    ("Cited", f'<g class="is-cited"><circle class="gw-dot" r="{CITED_RADIUS}"/></g>'),
+    ("Not cited", f'<g class="is-other"><circle class="gw-dot" r="{OTHER_RADIUS}"/></g>'),
+    (
+        "Held item",
+        f'<g class="is-other"><circle class="gw-dot" r="{OTHER_RADIUS}"/>'
+        f'<circle class="gw-held" r="{OTHER_RADIUS + HELD_GAP}"/></g>',
+    ),
+    ("Held link", '<line class="gw-link is-held" x1="-14" y1="0" x2="14" y2="0"/>'),
+    (
+        "Unresolved name",
+        f'<g class="is-cited"><rect class="gw-dot" x="-{_HALF}" y="-{_HALF}" '
+        f'width="{2 * _HALF}" height="{2 * _HALF}"/></g>',
+    ),
+    (
+        "Selected",
+        f'<g class="is-cited"><circle class="gw-dot" r="{CITED_RADIUS}"/>'
+        f'<circle class="gw-ring" r="{CITED_RADIUS + RING_GAP}"/></g>',
+    ),
+)
+
+#: The one graph window, filled by the script for whichever graph is open (spec 0011).
+DIALOG = (
+    f'<dialog class="gw" aria-labelledby="gw-heading" data-held-gap="{HELD_GAP}" '
+    f'data-ring-gap="{RING_GAP}">'
+    '<div class="gw-stage"><div class="gw-head">'
+    '<p class="gw-heading"><span id="gw-heading"></span> <span class="gw-count"></span></p>'
+    '<button type="button" class="gw-button" data-gw="previous" aria-label="Previous graph">'
+    "&larr;</button>"
+    '<button type="button" class="gw-button" data-gw="next" aria-label="Next graph">'
+    "&rarr;</button>"
+    '<button type="button" class="gw-button" data-gw="close" aria-label="Close graph">'
+    "&times;</button></div>"
+    '<div class="gw-view">'
+    '<svg class="gw-canvas" role="img" aria-label="The items sent and their links">'
+    '<defs><marker id="gw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" '
+    'markerHeight="7" orient="auto"><path class="gw-arrow" d="M0 0L10 5L0 10z"/></marker></defs>'
+    '<g class="gw-links"></g><g class="gw-nodes"></g></svg>'
+    '<div class="gw-zoom">'
+    '<button type="button" class="gw-button" data-gw="zoom-in" aria-label="Zoom in">+</button>'
+    '<button type="button" class="gw-button" data-gw="zoom-out" aria-label="Zoom out">'
+    "&minus;</button>"
+    '<button type="button" class="gw-button" data-gw="reset" aria-label="Reset the view">'
+    "&#x21BA;</button></div></div>"
+    '<div class="gw-foot"><label class="gw-switch"><input type="checkbox" role="switch" '
+    'data-gw="switch"> Cited and neighbours only</label>'
+    '<button type="button" class="gw-keytoggle" data-gw="key" aria-expanded="false" '
+    'aria-controls="gw-key">Key</button>'
+    '<ul class="gw-key" id="gw-key" aria-label="Key">'
+    + "".join(f"<li>{_sample(drawing)}{escape(words)}</li>" for words, drawing in KEY)
+    + "</ul></div></div>"
+    '<div class="gw-panel"></div>'
+    "</dialog>"
+)
 
 
 def _text(value: str) -> str:
@@ -202,13 +394,18 @@ def _link(item: ItemLine) -> str:
 
 
 def _citation(claim: StoredClaim, cited: str, items: Mapping[str, ItemLine]) -> str:
-    """One cited id: linked, `held` after it when held, never linked when rejected."""
+    """One cited id: linked, `held` after it when held, never linked when rejected.
+
+    The link's `data-item` names the item for the graph's panel (spec 0011 AC-39); it
+    does nothing in the list.
+    """
     if cited in claim.rejected_ids:
         return escape(cited)
     item = items[cited]
     whole = ", whole file" if item.line is None else ""
     held = " held" if cited in claim.held_ids else ""
-    return f'<a href="{escape(item_link(item) or "")}">{escape(cited)}{whole}</a>{held}'
+    link = escape(item_link(item) or "")
+    return f'<a href="{link}" data-item="{escape(cited)}">{escape(cited)}{whole}</a>{held}'
 
 
 def _claim(claim: StoredClaim, items: Mapping[str, ItemLine]) -> str:
@@ -296,7 +493,20 @@ def _mark(entry: Entry) -> str:
     )
 
 
-def _entry(entry: Entry) -> str:
+def _graph_button(graph: EntryGraph) -> str:
+    """The entry's Graph button, hidden until the script runs (AC-1, AC-2)."""
+    return (
+        f'<button type="button" class="graph-open" data-graph="{graph.slug}" '
+        f'aria-label="Graph: {escape(graph.label)}" hidden>Graph</button>'
+    )
+
+
+def _graph_data(graph: EntryGraph) -> str:
+    """The entry's graph data, parsed only when its graph is opened (AC-57)."""
+    return f'<script type="application/json" id="graph-{graph.slug}">{data_block(graph)}</script>'
+
+
+def _entry(entry: Entry, graph: EntryGraph) -> str:
     return (
         "<article>"
         f"<h3>{_text(entry.marks.label)}</h3>"
@@ -304,9 +514,11 @@ def _entry(entry: Entry) -> str:
         f"{_details(entry)}"
         f"{_verdict(entry)}"
         f"{_mark(entry)}"
+        f"{_graph_button(graph)}"
         f"{_claims(entry)}"
         f"{_missing(entry)}"
         f"{_items_sent(entry)}"
+        f"{_graph_data(graph)}"
         "</article>"
     )
 
@@ -328,8 +540,10 @@ def _section_line(section: Section) -> str:
             )
 
 
-def _section(section: Section, entries: tuple[Entry, ...]) -> str:
-    shown = "".join(_entry(entry) for entry in entries if entry.section is section)
+def _section(section: Section, entries: tuple[Entry, ...], graphs: Mapping[str, EntryGraph]) -> str:
+    shown = "".join(
+        _entry(entry, graphs[entry.marks.label]) for entry in entries if entry.section is section
+    )
     if not shown:
         return ""
     return f"<section><h2>{escape(section.value)}</h2>{_section_line(section)}{shown}</section>"
@@ -374,18 +588,33 @@ def _key() -> str:
     )
 
 
-def render_page(entries: tuple[Entry, ...], records: int) -> str:
+def _scripts(scripts: PageScripts) -> str:
+    """The libraries in order, each followed by its licence, then the graph script (AC-71)."""
+    libraries = "".join(
+        f"<script>{code}\n/*\n{licence}*/</script>" for code, licence in scripts.libraries
+    )
+    return f"{libraries}<script>{scripts.graph}</script>"
+
+
+def render_page(
+    entries: tuple[Entry, ...],
+    records: int,
+    graphs: tuple[EntryGraph, ...],
+    scripts: PageScripts,
+) -> str:
     """The whole page: each section in turn, its entries in marks file order (AC-1 to AC-4).
 
-    `records` is how many records `artifacts/asks/` holds, counted by the build (AC-49).
+    `records` is how many records `artifacts/asks/` holds, counted by the build (AC-49);
+    `graphs` holds one graph per entry (spec 0011).
     """
-    body = "".join(_section(section, entries) for section in Section)
+    by_label = {graph.label: graph for graph in graphs}
+    body = "".join(_section(section, entries, by_label) for section in Section)
     return (
         "<!doctype html>\n"
         '<html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
-        f"<style>{STYLE}</style></head>"
+        f"<style>{STYLE}{GRAPH_STYLE}{PANEL_STYLE}</style></head>"
         f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
-        f"{_key()}{body}</main></body></html>\n"
+        f"{_key()}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
     )

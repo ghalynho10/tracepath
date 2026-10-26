@@ -106,6 +106,8 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 
 `tracepath gallery build` joins the stored ask records, a committed marks file and the pinned JobHunt snapshot into one static page with no JavaScript, and a workflow publishes it from this public repository.
 
+_Note on the Decision: Amended 2026-10-25: the page now also carries inline scripts, for the answer graph of [spec 0011](../0011-answer-graph/index.md). With scripts off it is still this list, and AC-58 still holds, because every script is inline._
+
 **Follows**: static site generation from versioned data (build once, serve files) · functional core with an imperative shell, as the project's own rule.
 
 **Implementation skills**: `typer-and-rich` (`jamie-bitflight/claude_skills`, `.agents/skills/typer-and-rich/`) · `pydantic` (`pydantic/skills`, `.agents/skills/pydantic/`) · `uv` (`astral-sh/claude-code-plugins`, `.agents/skills/uv/`)
@@ -116,7 +118,7 @@ Reasoning and options: see [rationale.md](rationale.md).
 
 ## Feature design
 
-**Mode and platform**: FEATURE. A static web page built by the Python CLI. No server, no database, no JavaScript.
+**Mode and platform**: FEATURE. A static web page built by the Python CLI. No server, no database, no JavaScript. _Note: Amended 2026-10-25: since [spec 0011](../0011-answer-graph/index.md) the page holds inline JavaScript for one graph per entry; the list itself needs none and works with scripts off._
 
 **Data model sketch**: nothing is stored beyond one new committed file and the records that already exist.
 
@@ -131,7 +133,7 @@ Reasoning and options: see [rationale.md](rationale.md).
 | `source_path` | string, required | Repository path of the file the mark was copied from, for example `experiments/0018-realistic-usage-questions/README.md` |
 | `source_row` | string, required | Where in that file, for example `Q7` or `v1 finish line` |
 
-The build reads each named record into a frozen Pydantic model: `question`, `eval_file`, `eval_question`, `prompt_version`, `hops`, `asked_at`, `corpus_commit`, `verdict`, `missing`, `claims` and `items`. The keys `eval_file`, `eval_question` and `hops` default to null when a record lacks them (they are absent from some `ask-1` records and from one `ask-2` record). It does not read the records' `links`.
+The build reads each named record into a frozen Pydantic model: `question`, `eval_file`, `eval_question`, `prompt_version`, `hops`, `asked_at`, `corpus_commit`, `verdict`, `missing`, `claims` and `items`. The keys `eval_file`, `eval_question` and `hops` default to null when a record lacks them (they are absent from some `ask-1` records and from one `ask-2` record). It does not read the records' `links`. _Note: Amended 2026-10-25: since [spec 0011](../0011-answer-graph/index.md) the build reads `links` too, for the answer graph._
 
 **Item location grammar.** An item's stored `line` text, after leading spaces are stripped, is `<id>  <type>  <held or accepted>  [STRUCK or HISTORY  ]<location>  <hit or hop N>`, fields joined by exactly two spaces (so `hop 1` keeps one inside it). `<location>` is `<file>:<line>`, `<file>`, `no file stored` or `no path stored`. Of 3,016 stored items, 2,919 have five fields and 97 have six. The builder splits on exactly two spaces and fails on any other shape (AC-37).
 
@@ -222,7 +224,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - GitHub renders `.md` files, so a plain `#L<line>` link may not open the line. The `?plain=1` form is the fix. It was first inferred from how GitHub behaves, then confirmed on a real link by `/check verify` (step E12 in `docs/reviews/2026-10-24-check-verify-answer-gallery.md`): the link opened GitHub's plain text Code view with the cited line highlighted.
 - Pages deploys on a push to `main` even if the `check` job fails on that push. Pull requests must pass `check` first, so this is accepted.
 - When the build job of the workflow fails, nothing is deployed and the previously published page stays up (AC-62).
-- The page has no search, filter or graph. It is a list.
+- The page has no search, filter or graph. It is a list. _Note: Amended 2026-10-25: [spec 0011](../0011-answer-graph/index.md) adds one graph per entry, opened from the list; there is still no search or filter._
 
 **Neutral**:
 - A new package `src/tracepath/gallery/`, a new top level folder `gallery/` for the marks file, and a new workflow file.
@@ -234,7 +236,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 
 - [x] Wording of the key for each mark (`right`, `partly right`, `wrong`, `declined`) is the engineer's to give, especially `declined`, which no README defines in one line. Needed before slice 4.
 - [x] Visual design (fonts, colours, layout, how the folds look) is left open here. Settle it before task 8, with `/imprint` or by hand.
-- [ ] Next slice, recorded in scope feature 17: a list plus one interactive graph per answer, drawn from each record's stored pack, with cited items highlighted and held items and unresolved names marked. It would cover part of the deferred "Visual UI". Needs its own spec.
+- [x] Next slice, recorded in scope feature 17: a list plus one interactive graph per answer, drawn from each record's stored pack, with cited items highlighted and held items and unresolved names marked. It would cover part of the deferred "Visual UI". Needs its own spec. _Done 2026-10-25: specified in [spec 0011](../0011-answer-graph/index.md) and built as scope feature 18._
 - [x] Reconcile scope feature 17's "Done when" clause with the link only disclosure choice (see Consequences).
 - [x] Confirm the wording of AC-52 against `docs/scope/scope.md` line 238 when slice 5 is built. Experiment 0016's README marks only the `ask-2` runs.
 - [x] Check the `?plain=1` link form on one real link during slice 3, and the Pages action versions during slice 1.

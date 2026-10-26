@@ -32,7 +32,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 15 | Question to start item | folded into feature 16 on 2026-10-19 | dropped |
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
-| 18 | Answer graph | after v1, presentation | planned |
+| 18 | Answer graph | after v1, presentation | in-progress |
 
 ## v1 finish line
 
@@ -429,6 +429,7 @@ A static web page of the answers `tracepath ask` has already recorded, for a rea
 
 spec [0010](../specs/0010-answer-gallery/index.md) · code in `src/tracepath/gallery/`, marks in `gallery/marks.json`, workflow `.github/workflows/pages.yml`
 _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain HTML page from the ask records plus a marks file, published on GitHub Pages by an Actions workflow. It shows 31 records: eval questions 1 to 5 (the `ask-2` runs at 2 hops), the four held out questions in their own labelled section, and experiment 0018's 22. Marks and notes are shown; experiment 0018's disclosures travel by a link to its README only. A plain list, with a graph per answer kept as the next slice below._
+_2026-10-25: the graph per answer is built on the same page by [spec 0011](../specs/0011-answer-graph/index.md) (feature 18). Spec 0010's lines saying no JavaScript and no graph carry a dated note pointing there._
 **Next slice:** enrolled 2026-10-24 as feature 18, the answer graph; see that row.
 - [x] Design it (spec): `/architect answer gallery` · decided the host, the shown set, marks, disclosures, the plain list UI and the build
 - [x] Build it: `/develop answer gallery` · ticked 2026-10-24, every milestone below done
@@ -441,7 +442,7 @@ _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain
 - [x] Test it: `/test answer gallery`
 - [x] Sync it: `/sync answer gallery`
 
-### 18. Answer graph · needs a decision · added 2026-10-24
+### 18. Answer graph · in-progress · added 2026-10-24
 On the gallery page, one interactive graph per shown answer, drawn from the items and links its ask record already stores, so a reader can see how the cited items connect instead of reading a list. The items the answer cites are highlighted, a click on an item opens its text and its source line, and held items and unresolved names are marked as such. It makes no API call. This is the "Next slice" recorded under feature 17.
 **Done when:** a reader on the gallery page can open the graph for each shown answer, see which items the answer cites, open any item's text and its source line with one click, and tell held items and unresolved names apart from the rest.
 **What the records hold, checked 2026-10-24:** each ask record in `artifacts/asks/` stores `items` (id, held or not, hop, its line, its text; an unresolved name has an id starting `unresolved:`) and `links` (type, source, target, the phrase it was read from, held or not). The graph needs no new extraction or model call.
@@ -452,12 +453,26 @@ On the gallery page, one interactive graph per shown answer, drawn from the item
 - How it works at phone width.
 - How it fits spec 0010's rule of a page with no JavaScript (an interactive graph needs some).
 - The style. Reference: `design-notes/aicodingdictionary.com.md` and its screenshot, a local file kept out of git (`.git/info/exclude`), so a spec may cite it but code, tests and CI must never read it.
-- [ ] Design it (spec): `/architect answer graph`
+
+spec [0011](../specs/0011-answer-graph/index.md) · code in `src/tracepath/gallery/` (`graph.py`, `assets/graph.js`, `vendor/`)
+_Design decided 2026-10-25: a Graph button on each of the 31 entries opens a full window, graph on the left and a reading panel on the right. d3-force 3.0.0 (ISC, with three small helpers) places the dots, copied into the repository and inlined; the drawing is hand written SVG. The build computes every item's state in Python and the script only draws from those flags. 76 criteria. The open questions above are answered in the spec; a shareable link to one graph was cut and is in Deferred._
+**Goal, recorded 2026-10-25:** one shared graph of every shown answer's items, where picking a question zooms to its items. Deferred until link resolution improves (scope features 7 and 8): today the 947 items of the 31 packs form 224 separate pieces, 173 with no link, so answers have no section to zoom to. Revisit then; the drawing, flags, panel and d3 setup carry over.
+_2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on its lines saying no JavaScript, no graph and no `links`, and its Follow up is ticked, all pointing to spec 0011._
+- [x] Design it (spec): `/architect answer graph` · decided the library, the placement, the layout, the phone layout, the accents and the test approach
+- [x] Build it: `/develop answer graph`
+  - [x] The thread: stored links and hop read, flags in Python, the four library files vendored and inlined, a graph opens and closes for every entry (spec 0011 tasks 1 and 2; AC-1 to AC-6, AC-12, AC-13, AC-25, AC-57, AC-58, AC-71 to AC-74)
+  - [x] The states and the panel (tasks 3 and 4; AC-14 to AC-24, AC-30 to AC-53, AC-59 to AC-64)
+  - [x] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
+  - [x] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
+- [ ] Verify it: `/check verify answer graph`
+- [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
+- [x] Sync it: `/sync answer graph`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
 - **Prose answers**: generated prose written over the chain · needs a decision · _2026-10-19: no longer deferred; feature 16 prints a cited answer for v1_
 - **Visual UI**: a graphical view of chains · needs a decision · _2026-10-23: overlaps feature 17 (answer gallery), whose UI candidates include a graph per answer; see that row. Not merged._ _2026-10-24: the graph per answer is now feature 18 (answer graph), which covers part of this entry. Still not merged._
+- **Shareable graph link**: an address fragment that opens one answer's graph and selects an item · needs a decision · _from spec 0011, 2026-10-25: cut from feature 18 as outside its Done when; the spec's Follow up lists what to settle first._
 - **Dashboard**: none planned for a single user project
 - **Agentic traversal comparison**: a separate later experiment set against this traversal · needs a decision
 - **Two stage typing**: can a calibrated classifier (e.g. typesafe.ai's Jev, classifier.dev) reduce type and flag churn? Claude segments a unit into spans and relationships; a classifier assigns the entity type from the closed enum with a confidence, and low confidence maps onto unclassified and the review queue. Would amend spec 0001's extraction row and add a second provider. Revisit after feature 5, measured by the eval, as an experiment under `experiments/` · needs a decision
