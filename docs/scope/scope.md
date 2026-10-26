@@ -33,7 +33,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
 | 18 | Answer graph | after v1, presentation | done |
-| 19 | Gallery readability | after v1, presentation | planned |
+| 19 | Gallery readability | after v1, presentation | in-progress |
 
 ## v1 finish line
 
@@ -469,7 +469,7 @@ _2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on i
 - [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
 - [x] Sync it: `/sync answer graph`
 
-### 19. Gallery readability · needs a decision · added 2026-10-26
+### 19. Gallery readability · in-progress · added 2026-10-26
 Makes the answer gallery page (spec 0010) and its graph panel (spec 0011) easier to read for a public reader: formatted inline text, a clear heading hierarchy per entry, one total of the marks, a clearer heading for the missing list, and notes written for the public. Presentation only. No CLI change, no API call.
 **Done when:**
 - Stored text on the page and in the graph panel shows inline code (`...`) and bold (**...**) as formatted text, not raw markers. All HTML stays escaped (spec 0010 AC-24 needs a dated amendment). Measured 2026-10-26 on the 31 shown records: 43 of 107 claims contain backticks; of 125 cited items, 94 contain backticks and 86 contain bold; none has a heading or a table.
@@ -480,8 +480,20 @@ Makes the answer gallery page (spec 0010) and its graph panel (spec 0011) easier
 - A link to one question opens its graph: the page address plus `#<slug>`, set when a graph opens and cleared when it closes, with an unknown slug opening the page as usual. It takes in the Deferred "Shareable graph link" without item selection (added 2026-10-26, spec 0012 AC-82 to AC-92).
 **Out, by the engineer's ruling on 2026-10-26:** rewording "the engineer" or "the author" in JobHunt's own text and the answers that repeat it, and listing the 13 records the page does not show.
 
-Tier: inherits Beta. Approach: inherits Tracer Bullet. Needs spec: yes (a layout choice, a markdown subset rule, and amendments to specs 0010 and 0011).
-- [ ] Design it (spec): `/architect gallery readability` · amends specs 0010 (AC-13, AC-24) and 0011; layout candidates with screenshots of Eval 3
+Tier: inherits Beta. Approach: inherits Tracer Bullet.
+
+spec [0012](../specs/0012-gallery-readability/index.md) · code in `src/tracepath/gallery/` (new `inline.py`; `render.py`, `graph.py`, `assets/graph.js`), notes in `gallery/marks.json`; amends specs 0010 and 0011
+_Design decided 2026-10-26: formatting runs in Python (one pure module) and `graph.js` only draws runs with `textContent`; the entry follows direction B of the Claude Design canvas; 105 criteria. The spec carries dated amendments to specs 0010 and 0011. The notes in `gallery/marks.json` are the engineer's to write; the build does not draft them._
+- [x] Design it (spec): `/architect gallery readability` · decided the inline rule, the code word patterns, the entry layout, the verdict and mark block, the public note, the graph strip, the total of marks and the link to one graph
+- [ ] Build it: `/develop gallery readability`
+  - [ ] The formatting thread: the inline rule, the code words, and where they run, including the panel's runs and link phrases (spec 0012 slices 1 and 2; AC-1 to AC-29, AC-79, AC-96, AC-98 to AC-101)
+  - [ ] Verdict, mark and the total of marks (slice 3; AC-41 to AC-54, AC-71 to AC-75, AC-102)
+  - [ ] Headings, claim lines, note, source and the graph strip (slices 4 and 5; AC-30 to AC-38, AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103 to AC-105)
+  - [ ] The link to one graph (slice 6; AC-82, AC-84 to AC-92)
+  - [ ] The visual pass at both widths (slice 7; AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88)
+- [ ] Verify it: `/check verify gallery readability`
+- [ ] Test it: `/test gallery readability`
+- [ ] Sync it: `/sync gallery readability`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
