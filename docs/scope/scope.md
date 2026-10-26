@@ -466,7 +466,7 @@ _2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on i
   - [x] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
 - [ ] Verify it: `/check verify answer graph`
 - [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
-- [ ] Sync it: `/sync answer graph`
+- [x] Sync it: `/sync answer graph`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
