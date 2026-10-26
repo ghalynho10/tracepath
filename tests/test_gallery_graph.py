@@ -277,12 +277,33 @@ def test_unresolved_is_the_type_in_the_stored_line(blocks: dict[str, dict[str, A
         assert item["type"] == kind
 
 
-def test_neighbours_are_the_distinct_other_ends_in_first_link_order(
+def test_neighbours_are_every_other_item_a_stored_link_joins(
     blocks: dict[str, dict[str, Any]],
 ) -> None:
     """AC-62."""
     for record, _, item in _each_item(blocks):
+        assert set(item["neighbours"]) == set(_neighbours(record, item["id"]))
+
+
+def test_neighbours_list_each_id_once(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-97."""
+    for _, _, item in _each_item(blocks):
+        assert len(item["neighbours"]) == len(set(item["neighbours"]))
+
+
+def test_neighbours_come_in_first_link_order(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-98."""
+    for record, _, item in _each_item(blocks):
         assert item["neighbours"] == _neighbours(record, item["id"])
+
+
+def test_an_item_is_never_its_own_neighbour(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-99, on the 23 items with a link to themselves and every other."""
+    looped = 0
+    for record, _, item in _each_item(blocks):
+        looped += any(k["source"] == k["target"] == item["id"] for k in record["links"])
+        assert item["id"] not in item["neighbours"]
+    assert looped > 0
 
 
 def test_near_cited_is_cited_or_next_to_a_cited_item(blocks: dict[str, dict[str, Any]]) -> None:
@@ -336,7 +357,7 @@ def test_a_link_from_an_item_to_itself_is_listed_once_and_not_drawn(
 def test_two_links_between_two_items_make_one_neighbour(
     blocks: dict[str, dict[str, Any]],
 ) -> None:
-    """AC-62's edge: a pair joined twice lists that neighbour once."""
+    """AC-97's edge: a pair joined twice lists that neighbour once."""
     pairs = 0
     for graph in blocks.values():
         ends = [frozenset((k["source"], k["target"])) for k in graph["links"] if k["drawn"]]
@@ -352,12 +373,23 @@ def _rules(style: str) -> list[str]:
     return [rule.strip() for rule in re.findall(r"[^{}]+\{[^{}]*\}", style)]
 
 
-def test_graph_styles_use_no_mark_colour_and_cyan_only_for_the_selection_ring() -> None:
-    """AC-22: the canvas and key use neither the yellow nor the pink of the marks."""
+@pytest.mark.parametrize(
+    "names",
+    [
+        pytest.param(("--yellow", "#F6E27F", "yellow"), id="yellow"),
+        pytest.param(("--pink", "#FFC8C2", "pink"), id="pink"),
+    ],
+)
+def test_graph_styles_use_no_mark_colour(names: tuple[str, ...]) -> None:
+    """AC-22 (yellow), AC-95 (pink): the canvas and key use neither colour of the marks."""
     style = GRAPH_STYLE + DIALOG + GRAPH_SCRIPT.read_text(encoding="utf-8")
 
-    for colour in ("--yellow", "--pink", "#F6E27F", "#FFC8C2", "yellow", "pink"):
+    for colour in names:
         assert colour.lower() not in style.lower()
+
+
+def test_graph_styles_use_cyan_only_for_the_selection_ring() -> None:
+    """AC-96."""
     assert [rule.split("{")[0].strip() for rule in _rules(GRAPH_STYLE) if "--cyan" in rule] == [
         ".gw-ring"
     ]
@@ -408,6 +440,15 @@ def test_script_never_turns_text_into_markup() -> None:
 
     for parser in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "DOMParser"):
         assert parser not in script
+
+
+def test_the_panels_source_link_opens_in_a_new_tab() -> None:
+    """AC-103, statically: the item view's link to JobHunt sets a new tab, without an opener."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+    view = script[script.index("function showItem(") :]
+
+    assert 'link.target = "_blank";' in view
+    assert 'link.rel = "noopener";' in view
 
 
 def test_graphs_follow_page_order(page: str, blocks: dict[str, dict[str, Any]]) -> None:

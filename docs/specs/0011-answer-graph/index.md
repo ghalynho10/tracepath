@@ -42,7 +42,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-19**: A held link is drawn dashed.
 - **AC-20**: An unresolved name is drawn as a square, and every other item as a circle.
 - **AC-21**: The selected item has a cyan ring.
-- **AC-22**: The styles of the canvas and the key use neither the yellow nor the pink of the marks, and use cyan only for the selection ring.
+- **AC-22**: The styles of the canvas and the key do not use the yellow of the marks. _Split 2026-10-25 after the code review; it also held AC-95 and AC-96._
 - **AC-23**: The window carries a key that shows each of the six drawings above (cited, not cited, held item, held link, unresolved name, selected).
 - **AC-24**: When the answer cites no item, the panel says "This answer cites no item."
 - **AC-25**: When the window opens, the graph is scaled so every dot is inside the canvas.
@@ -55,7 +55,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-31**: Turning on that switch hides every line that touches a hidden item.
 - **AC-32**: Turning the switch off shows them again.
 - **AC-33**: When the answer cites no item, the switch is disabled.
-- **AC-34**: Selecting an item dims every item and line except that item, its neighbours and the lines between them.
+- **AC-34**: Selecting an item dims every item and line except that item, its neighbours and the item's own lines. _Reworded 2026-10-25 after the code review; it said "the lines between them", which reads as keeping a line between two neighbours bright, which neither the code nor the Drawings table does._
 - **AC-35**: A click on empty canvas clears the selection and returns the panel to the answer view.
 
 *The reading panel*
@@ -89,7 +89,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-59**: An item's `cited` flag is true when some claim cites its id and that claim does not list it in `rejected_ids`, and false otherwise.
 - **AC-60**: An item's `held` flag equals the record's stored `held` for it.
 - **AC-61**: An item's `unresolved` flag is true when the type in its stored line is `unresolved`, and false otherwise.
-- **AC-62**: An item's `neighbours` are the distinct ids at the other end of each stored link that touches it, in the order their first link appears, leaving out itself.
+- **AC-62**: An item's `neighbours` hold every other item joined to it by a stored link, and no item that is not. _Split 2026-10-25 after the code review; it also held AC-97, AC-98 and AC-99._
 - **AC-63**: An item's `near_cited` flag is true when it is cited or one of its neighbours is, and false otherwise.
 - **AC-64**: An item's `cited_by` is the numbers, in stored order, of the claims that cite it and do not reject it.
 - **AC-65**: The build fails, exit 1, naming the record and the link, when a stored link's source or target is not among the record's items.
@@ -120,7 +120,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-86**: A drag that starts with no dot centre within that reach pans the graph.
 
 *Visual pass* (added 2026-10-25 at the engineer's request)
-- **AC-87**: A dot's label shows the item id in its stored case, shortened with "…" when it fits on neither side of its dot; the full id stays in the dot's tooltip and the panel.
+- **AC-87**: A dot's label shows the item id in its stored case. _Split 2026-10-25 after the code review; it also held AC-100, AC-101 and AC-102._
 - **AC-88**: A label that would cross the canvas's right edge is drawn to the left of its dot when the left side has more room.
 - **AC-89**: Where two cited items' labels would overlap, the label of the item cited first in claim order is shown.
 - **AC-90**: The other cited item's label is hidden unless that item is hovered, selected, or a neighbour of the selected item.
@@ -128,6 +128,19 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-92**: At that width the canvas is 45 percent of the window's height.
 - **AC-93**: In the view of AC-25, no dot lies under the zoom buttons.
 - **AC-94**: An item's `cite_order` is its place in the order of first citation (claims in stored order, each claim's cites in stored order, rejected ids left out), and null when it is not cited.
+
+*Split from AC-22, AC-62 and AC-87* (added 2026-10-25 after the code review, so each criterion holds one claim; the behaviour is unchanged)
+- **AC-95**: The styles of the canvas and the key do not use the pink of the marks.
+- **AC-96**: The styles of the canvas and the key use cyan only for the selection ring.
+- **AC-97**: An item's `neighbours` list each id once.
+- **AC-98**: An item's `neighbours` are in the order their first link appears among the stored links.
+- **AC-99**: An item with a link to itself is not among its own `neighbours`.
+- **AC-100**: A dot's label is shortened with "…" when it fits on neither side of its dot.
+- **AC-101**: A dot's tooltip gives the item's full id.
+- **AC-102**: The panel's title for a selected item gives its full id.
+
+*The panel's source link* (added 2026-10-25 after the code review)
+- **AC-103**: In the panel, a selected item's JobHunt link opens in a new tab. _So the open graph stays; the list's links, which spec 0010 governs, still open in the same tab._
 
 ## Decision
 
@@ -260,21 +273,24 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 
 **Critical test scenarios** (each maps to acceptance criteria in ## Requirements; the browser steps run at `/check verify`, the rest in pytest):
 - Happy path on real data: build from `artifacts/asks/` and `gallery/marks.json`; every entry has a data block, and its items and links equal its record's, verifies **AC-12, AC-13, AC-57, AC-58**.
-- Flags against the record: for each of the 31 records, every item's `cited`, `held`, `unresolved`, `neighbours`, `near_cited` and `cited_by` equal an independent recomputation from the record, verifies **AC-59 to AC-64**.
+- Flags against the record: for each of the 31 records, every item's `cited`, `held`, `unresolved`, `neighbours`, `near_cited` and `cited_by` equal an independent recomputation from the record, verifies **AC-59 to AC-64, AC-97, AC-98**.
 - Edge: a record that cites no item (Q11 and Q16 cite none) has `cited_count` 0 and no cited item, verifies **AC-24, AC-33**.
 - Edge: a link from an item to itself (23 exist) has `drawn` false and is in its item's `link_ids`, verifies **AC-13, AC-50**.
-- Edge: two items with two links between them (25 such pairs exist) list that neighbour once, in first link order, verifies **AC-62**.
+- Edge: an item with a link to itself is not among its own neighbours, verifies **AC-99**.
+- Edge: two items with two links between them (25 such pairs exist) list that neighbour once, verifies **AC-97**.
+- Styles: the graph's styles and script name neither the yellow nor the pink of the marks, and cyan only in the selection ring's rule, verifies **AC-22, AC-95, AC-96**.
 - Failure: a fixture link whose target is not an item, two items with one id, and two labels with one slug each exit 1 with the record named, verifies **AC-65, AC-66, AC-67**.
 - Failure: a fixture script holding `</script` and another holding `<!--` each exit 1, verifies **AC-68**.
 - Edge: stored text containing `</script>`, `<figure`, `&` and U+2028 survives a write and a parse of the data block unchanged, verifies **AC-53, AC-69, AC-70**.
 - Guard: `SOURCES.md` has one row per vendored file, the page holds each licence text verbatim, and the files are in dependency order, verifies **AC-71, AC-72, AC-73**.
 - Isolation: the built page has no `src=` or `<link` pointing at another file, and the build still passes with sockets blocked, verifies **AC-74**.
-- Browser: open Eval 3 (37 items), then Eval 2 (90 items, 114 links) at 1440 and at 390 pixels wide; check every drawing, select an item, follow its link, use the switch, previous and next, and the network log, verifies **AC-1 to AC-11, AC-14 to AC-23, AC-25 to AC-32, AC-34 to AC-52, AC-54 to AC-56, AC-75, AC-76**.
+- Browser: open Eval 3 (37 items), then Eval 2 (90 items, 114 links) at 1440 and at 390 pixels wide; check every drawing, select an item, follow its link, use the switch, previous and next, and the network log, verifies **AC-1 to AC-11, AC-14 to AC-21, AC-23, AC-25 to AC-32, AC-34 to AC-52, AC-54 to AC-56, AC-75, AC-76**.
+- Browser, the panel's source link: on Eval 1, select `0008/AC-7` and follow its location link; JobHunt opens in a new tab and the graph stays open with the item selected, verifies **AC-103**. A static check that the script gives that link `target="_blank"` and `rel="noopener"` runs in pytest.
 - Browser, scripts off: the page shows no Graph button and the list is unchanged, verifies **AC-2**.
 - Browser, reset after a drag: drag a dot in Eval 2, zoom in, then press reset; every dot is back at its first place and the view is the first view, verifies **AC-29, AC-29a**.
 - Browser, dragging a dot: on Eval 3 and Eval 2, drag a cited dot; it stays under the pointer, every neighbour moves, a press that moves under 4 pixels selects instead, a drag keeps the selection as it was, a drag on empty canvas moves every dot alike, and closing and reopening, or next then previous, restores the first layout, verifies **AC-77 to AC-83**.
 - Browser, pressing near a dot: on Eval 2, press 9 pixels from each small dot, between crowded dots at the smallest zoom, 11 and 16 pixels away with a mouse, and 16 and 24 pixels away with a finger; the nearest dot within reach is chosen, and a drag from further away pans, verifies **AC-84 to AC-86**.
-- Browser, visual pass: every graph at 1440 and at 390 pixels wide; labels in stored case, none cut at an edge, shortened with "…" only when they fit on neither side, no two shown cited labels overlapping, a hidden one shown on hover, selection or next to the selection; on a phone the key behind its Key button and the canvas at 45 percent; no dot under the zoom buttons in the first view, verifies **AC-87 to AC-93**.
+- Browser, visual pass: every graph at 1440 and at 390 pixels wide; labels in stored case, none cut at an edge, shortened with "…" only when they fit on neither side, with the full id in the tooltip and the panel's title, no two shown cited labels overlapping, a hidden one shown on hover, selection or next to the selection; on a phone the key behind its Key button and the canvas at 45 percent; no dot under the zoom buttons in the first view, verifies **AC-87 to AC-93, AC-100 to AC-102**.
 - Data: every item's `cite_order` equals an independent recomputation from its record's claims, verifies **AC-94**.
 
 ## Build plan
@@ -283,7 +299,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 
 1. [x] Slice 1, the thread. Read `links` into `AskRecord` and `hop` into `StoredItem`; add `graph.py` with the flags for one entry; add `vendor/` (the four files from the npm packages at the versions in the Decision, each `LICENSE`, `SOURCES.md` with the version and source) and `assets/graph.js`; render a Graph button, the dialog, the data block and the inlined script for Eval 3 first, then every entry; the dots and lines are drawn and a click selects a dot. Satisfies **AC-1, AC-2, AC-12, AC-13, AC-57, AC-58, AC-71, AC-72, AC-73, AC-74**
 2. [x] Slice 1, check it in a browser. Build to a scratch folder and open Eval 3: the dialog opens and closes, the dots are placed, a click selects. The Pages workflow needs no change; the page goes live on merge. Satisfies **AC-3, AC-4, AC-5, AC-6, AC-25**
-3. [x] Slice 2, the states. Cited, not cited, held, held link, unresolved and selected drawings, the dim on select, the key, the switch, and the no cited item case. Satisfies **AC-14, AC-15, AC-16, AC-17, AC-18, AC-19, AC-20, AC-21, AC-22, AC-23, AC-24, AC-30, AC-31, AC-32, AC-33, AC-34, AC-35, AC-59, AC-60, AC-61, AC-62, AC-63, AC-64**
+3. [x] Slice 2, the states. Cited, not cited, held, held link, unresolved and selected drawings, the dim on select, the key, the switch, and the no cited item case. Satisfies **AC-14, AC-15, AC-16, AC-17, AC-18, AC-19, AC-20, AC-21, AC-22, AC-23, AC-24, AC-30, AC-31, AC-32, AC-33, AC-34, AC-35, AC-59, AC-60, AC-61, AC-62, AC-63, AC-64, AC-95 to AC-99** (AC-95 to AC-99 split from AC-22 and AC-62 on 2026-10-25)
 4. [x] Slice 3, the panel. The `data-item` attribute on the list's citation links, the cloned answer view, the item view with its link, claim numbers, links in and out, and the all items list. Satisfies **AC-36, AC-37, AC-38, AC-39, AC-40, AC-41, AC-42, AC-43, AC-44, AC-45, AC-46, AC-47, AC-48, AC-49, AC-50, AC-51, AC-52, AC-53**
 5. [x] Slice 4, moving around. Pan, wheel, zoom buttons, reset, previous and next with the counter, a repeatable layout. Satisfies **AC-7, AC-8, AC-9, AC-10, AC-11, AC-26, AC-27, AC-28, AC-29, AC-75, AC-76**
    - [x] Added 2026-10-25: dragging a dot, with d3-force running live so its neighbours follow, on a fresh copy of the layout each open; reset restores that layout too. Satisfies **AC-29, AC-29a, AC-77, AC-78, AC-79, AC-80, AC-81, AC-82, AC-83**
@@ -292,6 +308,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 7. [x] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
 8. [x] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
 9. [x] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
+10. [x] Fixes from the code review of 2026-10-25 (`docs/reviews/2026-10-25-feat-answer-graph.md`): split AC-22, AC-62 and AC-87 into one claim each, reword AC-34 to match the code, and open the panel's JobHunt link in a new tab. Satisfies **AC-103** (AC-100 to AC-102 split from AC-87, already built by the visual pass)
 
 ## Consequences
 

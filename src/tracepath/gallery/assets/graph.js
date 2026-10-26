@@ -405,8 +405,11 @@
     if (item.unresolved) words.push("UNRESOLVED NAME");
     const where = html("p", "gw-meta");
     if (item.source) {
+      // A new tab, so the open graph survives the visit to JobHunt (AC-103).
       const link = html("a", "", item.location);
       link.href = item.source;
+      link.target = "_blank";
+      link.rel = "noopener";
       where.append(link);
     } else {
       where.textContent = item.location;
