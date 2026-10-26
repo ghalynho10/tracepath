@@ -89,14 +89,14 @@ def test_slug_follows_the_rule_of_the_data_model(label: str, slug: str) -> None:
 
 
 def test_every_entry_has_one_graph_button_written_hidden(page: str) -> None:
-    """AC-1, AC-2: one Graph button per entry, hidden until the script shows it."""
+    """AC-1, AC-2 as amended: one strip per entry, hidden until the script shows it."""
     articles = _articles(page)
-    buttons = [re.findall(r"<button [^>]*>Graph</button>", article) for article in articles]
+    buttons = [re.findall(r"<button [^>]*data-graph=[^>]*>", article) for article in articles]
 
     assert len(articles) == len(_records())
     assert all(len(found) == 1 for found in buttons)
     assert all(re.search(r'\bdata-graph="[a-z0-9-]+"', b[0]) for b in buttons)
-    assert all(b[0].endswith(" hidden>Graph</button>") for b in buttons)
+    assert all(b[0].endswith(" hidden>") for b in buttons)
     assert "[hidden] { display: none !important; }" in STYLE
 
 

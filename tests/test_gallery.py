@@ -6,7 +6,7 @@ import re
 import shutil
 import socket
 from collections.abc import Callable
-from html import escape
+from html import escape, unescape
 from pathlib import Path
 from typing import Any
 
@@ -53,7 +53,7 @@ MARKS: tuple[dict[str, object], ...] = (
         "section": "development",
         "mark": "right",
         "note": None,
-        "source_path": "experiments/0016-hops/README.md",
+        "source_path": "experiments/0016-link-hops/README.md",
         "source_row": "Q1",
     },
     {
@@ -102,8 +102,8 @@ def _cited_item(record: dict[str, Any]) -> dict[str, Any]:
 
 @pytest.fixture
 def root(tmp_path: Path) -> Path:
-    """A repository root with four records, a marks file naming three of them, and the
-    snapshot files those records' items sit in."""
+    """A repository root with four records, a marks file naming three of them, the
+    snapshot files those records' items sit in, and the rulings its marks link to."""
     asks = tmp_path / ASKS_DIR
     asks.mkdir(parents=True)
     for name in (DEV, HELD, REAL, UNNAMED):
@@ -115,6 +115,11 @@ def root(tmp_path: Path) -> Path:
                 target = tmp_path / SNAPSHOT_DOCS / line.file
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(PROJECT_ROOT / SNAPSHOT_DOCS / line.file, target)
+    for marks in MARKS:
+        source = str(marks["source_path"])
+        if source.startswith("experiments/"):
+            (tmp_path / source).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(PROJECT_ROOT / source, tmp_path / source)
     (tmp_path / MARKS_FILE).parent.mkdir()
     _write_marks(tmp_path, list(MARKS))
     return tmp_path
@@ -212,8 +217,12 @@ def test_entry_shows_mark_and_note_exactly(
     assert f'<span class="swipe" data-mark="{marks["mark"]}">{marks["mark"]}</span>' in entry
     if marks["note"] is None:
         assert 'class="note"' not in entry
+        assert "My note." not in entry
     else:
-        assert f'<p class="note"><span class="stored">{marks["note"]}</span></p>' in entry
+        assert (
+            f'<p class="note"><strong>My note.</strong> <span class="stored">{marks["note"]}</span>'
+            "</p>"
+        ) in entry
 
 
 def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: Path) -> None:
@@ -321,15 +330,58 @@ def test_build_fails_on_a_verdict_it_does_not_know(root: Path, tmp_path: Path) -
     assert not (tmp_path / "site" / "index.html").exists()
 
 
-def test_entry_links_to_the_source_of_its_mark(root: Path, tmp_path: Path) -> None:
-    """AC-16."""
-    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+def test_a_ruling_under_experiments_is_linked_and_followed_by_its_row(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-16 as amended, spec 0012 AC-59, AC-105."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
 
     assert (
-        '<a href="https://github.com/ghalynho10/tracepath/blob/main/docs/scope/scope.md">'
-        "docs/scope/scope.md</a>, "
-        '<span class="stored">v1 finish line</span>'
+        '<p class="source"><a href="https://github.com/ghalynho10/tracepath/blob/main/'
+        'experiments/0016-link-hops/README.md">My full ruling</a>, '
+        '<span class="stored">Q1</span></p>'
     ) in entry
+
+
+def test_a_ruling_elsewhere_is_plain_text_with_no_link(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-60."""
+    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+    source = entry.split('<p class="source">', 1)[1].split("</p>", 1)[0]
+
+    assert re.sub(r"<[^>]+>", "", unescape(source)) == (
+        "My full ruling: the v1 finish line in the project's scope notes (not published)."
+    )
+    assert "<a " not in source
+
+
+@pytest.mark.parametrize(
+    "source", ["experiments/0099-missing/README.md", "experiments/../../outside.md"]
+)
+def test_build_fails_on_a_ruling_that_is_not_a_file_under_the_root(
+    root: Path, tmp_path: Path, source: str
+) -> None:
+    """Spec 0012 AC-61: exit 1, naming the entry."""
+    (tmp_path / "outside.md").write_text("x", encoding="utf-8")
+    _write_marks(root, [dict(m, source_path=source) if m["label"] == "Q2" else m for m in MARKS])
+
+    code, output = _run(root, tmp_path / "site")
+
+    assert code == 1
+    assert "(Q2)" in output
+    assert source in output
+
+
+@pytest.mark.parametrize("marks", MARKS)
+def test_the_note_and_source_sit_below_the_verdict_and_mark(
+    root: Path, tmp_path: Path, marks: dict[str, object]
+) -> None:
+    """Spec 0012 AC-57, AC-58: "My note." only with a note, after the verdict and mark."""
+    entry = _article(_build(root, tmp_path / "site"), str(marks["label"]))
+
+    assert entry.index('<div class="verdict-mark">') < entry.index('<div class="ruling">')
+    assert ("My note." in entry) is (marks["note"] is not None)
+    if marks["note"] is not None:
+        assert entry.index('<div class="mark">') < entry.index("My note.")
 
 
 def test_build_fails_on_a_record_not_in_asks(root: Path, tmp_path: Path) -> None:
@@ -759,7 +811,10 @@ def _first_claim(page: str, label: str = "Eval 1") -> str:
 
 
 def _labels(page: str) -> str:
-    return _first_claim(page).split('<p class="labels">', 1)[1].split("</p>", 1)[0]
+    """The first claim's labels as words, without the "Labels:" lead or the chips."""
+    line = _first_claim(page).split('<p class="labels">', 1)[1].split("</p>", 1)[0]
+    assert line.startswith("Labels: ")
+    return re.sub(r"<[^>]+>", "", line.removeprefix("Labels: "))
 
 
 def _items_sent(page: str, label: str = "Eval 1") -> str:
@@ -769,12 +824,12 @@ def _items_sent(page: str, label: str = "Eval 1") -> str:
 def test_missing_notes_shown_when_the_record_has_any(root: Path, tmp_path: Path) -> None:
     """AC-20: shown when the record lists some, absent when it lists none."""
     assert _stored(DEV)["missing"] == []
-    assert "Missing, as the answer says" not in _article(_build(root, tmp_path / "a"), "Eval 1")
+    assert "records lack" not in _article(_build(root, tmp_path / "a"), "Eval 1")
 
     _edit_record(root, DEV, lambda r: r.update(missing=["A first gap", "A second gap"]))
 
     assert (
-        '<p class="eyebrow">Missing, as the answer says</p><ul>'
+        '<h4 class="lack">What the answer says the records lack</h4><ul class="lack">'
         '<li><span class="stored">A first gap</span></li>'
         '<li><span class="stored">A second gap</span></li></ul>'
     ) in _article(_build(root, tmp_path / "b"), "Eval 1")
@@ -893,14 +948,14 @@ def test_items_sent_is_closed_until_opened(root: Path, tmp_path: Path) -> None:
 
     assert entry.count("<details>") == 1
     assert "<details open" not in entry
-    assert "<summary>Items sent (" in entry
+    assert "<summary>Show all (" in entry
 
 
 def test_cited_items_are_shown_in_full(root: Path, tmp_path: Path) -> None:
     """AC-45."""
     record = _stored(DEV)
     cited = {c for claim in record["claims"] for c in claim["cites"]}
-    sent = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[0]
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[0]
 
     for item in record["items"]:
         if item["id"] in cited:
@@ -912,7 +967,7 @@ def test_other_items_are_one_row_each(root: Path, tmp_path: Path) -> None:
     """AC-46, AC-48: id, type, held or accepted, and the location's link."""
     record = _stored(DEV)
     cited = {c for claim in record["claims"] for c in claim["cites"]}
-    rows = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[1]
+    rows = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[1]
 
     assert rows.count("<li>") == len(record["items"]) - len(cited)
     for stored in record["items"]:
@@ -1127,13 +1182,15 @@ def test_the_note_is_formatted_from_its_markers_only(root: Path, tmp_path: Path)
 
     entry = _article(_build(root, tmp_path / "site"), "Q2")
 
-    assert f'<p class="note"><span class="stored">{WITHOUT_WORDS}</span></p>' in entry
+    assert (
+        f'<p class="note"><strong>My note.</strong> <span class="stored">{WITHOUT_WORDS}</span></p>'
+    ) in entry
 
 
 def test_cited_item_text_is_formatted_from_its_markers_only(root: Path, tmp_path: Path) -> None:
     """Spec 0012 AC-18, AC-28."""
     _edit_record(root, DEV, lambda r: _cited_item(r).update(text=MARKED))
 
-    sent = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[0]
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[0]
 
     assert f'<span class="stored">{WITHOUT_WORDS}</span>' in sent

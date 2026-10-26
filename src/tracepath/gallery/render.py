@@ -30,9 +30,16 @@ from tracepath.gallery.graph import (
     data_block,
 )
 from tracepath.gallery.inline import runs, to_html
-from tracepath.gallery.records import Entry, Mark, PageScripts, Section, StoredClaim
+from tracepath.gallery.records import (
+    RULINGS_DIR,
+    Entry,
+    Mark,
+    PageScripts,
+    Section,
+    StoredClaim,
+)
 
-#: This repository on GitHub; each marks entry links back to the file it was copied from.
+#: This repository on GitHub; a ruling under `experiments/` links to its file there.
 TRACEPATH_REPO_URL = "https://github.com/ghalynho10/tracepath"
 
 #: The records folder on GitHub (AC-50).
@@ -40,9 +47,6 @@ ASKS_URL = f"{TRACEPATH_REPO_URL}/tree/main/artifacts/asks"
 
 #: JobHunt's tree at the pinned commit (AC-54).
 JOBHUNT_TREE_URL = f"{JOBHUNT_REPO_URL}/tree/{JOBHUNT_COMMIT}"
-
-#: Where the `ask-1` marks of eval questions 1 to 5 are recorded (AC-52).
-SCOPE_URL = f"{TRACEPATH_REPO_URL}/blob/main/docs/scope/scope.md"
 
 #: Where experiment 0018 records how its questions were set and run (AC-53).
 EXPERIMENT_0018_URL = (
@@ -80,6 +84,48 @@ MARK_KEY: tuple[tuple[Mark, str], ...] = (
         "For a question the records don't cover: says no record supports an answer, and "
         "invents nothing.",
     ),
+)
+
+#: The headings of an entry's sections, in order (spec 0012 AC-31).
+QUESTION_HEADING = "Question"
+ANSWER_HEADING = "Answer"
+MISSING_HEADING = "What the answer says the records lack"
+ITEMS_HEADING = "Items sent"
+
+#: The graph strip's title and its sentence (spec 0012 AC-66, board measures).
+STRIP_TITLE = "Explore the graph"
+STRIP_LINE = "Every item the model was sent and how they link, the cited ones labelled"
+
+#: The strip's drawing, the same in every entry and highlighting no node (spec 0012
+#: AC-68, AC-69), copied from the spec: the board's drawing, its inline style a class,
+#: cropped to its middle on a phone.
+STRIP_DRAWING = (
+    '<svg class="strip-drawing" width="176" height="72" viewBox="0 0 176 72" preserveAspe'
+    'ctRatio="xMidYMid slice" aria-hidden="true"><rect width="176" height="72" rx="6" fil'
+    'l="#F2F4F7"></rect><g stroke="rgba(1,25,54,.18)" stroke-width="1"><path d="M26 30 46'
+    " 30M46 30 70 36M52 40 70 36M78 26 98 24M98 24 122 16M116 44 128 40M116 44 118 52M92 "
+    "50 88 60M92 50 84 48M108 34 116 44M138 28 128 40M40 18 46 30M14 12 24 20M24 20 26 30"
+    'M148 46 158 40M156 14 144 8M138 28 156 14"></path></g><g fill="rgba(1,25,54,.3)"><ci'
+    'rcle cx="14" cy="12" r="1.8"></circle><circle cx="26" cy="30" r="1.8"></circle><circ'
+    'le cx="12" cy="52" r="1.8"></circle><circle cx="34" cy="60" r="1.8"></circle><circle'
+    ' cx="40" cy="18" r="1.8"></circle><circle cx="52" cy="40" r="1.8"></circle><circle c'
+    'x="30" cy="44" r="1.8"></circle><circle cx="60" cy="10" r="1.8"></circle><circle cx='
+    '"66" cy="58" r="1.8"></circle><circle cx="78" cy="26" r="1.8"></circle><circle cx="8'
+    '4" cy="48" r="1.8"></circle><circle cx="96" cy="10" r="1.8"></circle><circle cx="100'
+    '" cy="64" r="1.8"></circle><circle cx="108" cy="34" r="1.8"></circle><circle cx="118'
+    '" cy="52" r="1.8"></circle><circle cx="122" cy="16" r="1.8"></circle><circle cx="134'
+    '" cy="62" r="1.8"></circle><circle cx="138" cy="28" r="1.8"></circle><circle cx="148'
+    '" cy="46" r="1.8"></circle><circle cx="156" cy="14" r="1.8"></circle><circle cx="162'
+    '" cy="58" r="1.8"></circle><circle cx="168" cy="32" r="1.8"></circle><circle cx="20"'
+    ' cy="64" r="1.8"></circle><circle cx="46" cy="30" r="1.8"></circle><circle cx="112" '
+    'cy="8" r="1.8"></circle><circle cx="128" cy="40" r="1.8"></circle><circle cx="144" c'
+    'y="8" r="1.8"></circle><circle cx="158" cy="40" r="1.8"></circle><circle cx="56" cy='
+    '"24" r="1.8"></circle><circle cx="88" cy="60" r="1.8"></circle><circle cx="24" cy="2'
+    '0" r="1.8"></circle><circle cx="140" cy="54" r="1.8"></circle><circle cx="76" cy="8"'
+    ' r="1.8"></circle></g><path d="M70 36 98 24 116 44 92 50Z" fill="none" stroke="rgba('
+    '1,25,54,.18)" stroke-width="1"></path><g fill="rgba(1,25,54,.3)"><circle cx="70" cy='
+    '"36" r="1.8"></circle><circle cx="98" cy="24" r="1.8"></circle><circle cx="116" cy="'
+    '44" r="1.8"></circle><circle cx="92" cy="50" r="1.8"></circle></g></svg>'
 )
 
 #: How each stored verdict code reads on the page; none equals a mark word (spec 0012
@@ -171,11 +217,13 @@ section > h2 + p { margin: 14px 0 0; max-width: 36rem; font-size: 14px; color: v
   .key dd { margin-bottom: 12px; }
 }
 article { padding: 28px 0 32px; border-bottom: 1px solid var(--rule); }
-article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight: 700;
-  letter-spacing: -.035em; margin: 0 0 18px; }
-.question { font-size: 20px; line-height: 1.4; margin: 0 0 10px; max-width: 36rem; }
-.details { font: 500 11px/1.4 var(--mono); letter-spacing: .06em;
-  color: var(--ink-46); margin: 0 0 22px; }
+article > h3 { font-size: 44px; line-height: 1.05; font-weight: 700;
+  letter-spacing: -.02em; margin: 0; }
+.details { font: 11px/1.4 var(--mono); letter-spacing: .04em; color: var(--ink-64);
+  margin: 6px 0 0; }
+article > h4 { margin: 24px 0 0; padding-top: 14px; border-top: 2px solid var(--ink);
+  font-size: 18px; line-height: 1.3; font-weight: 700; }
+.question { font-size: 22px; line-height: 1.35; margin: 8px 0 0; max-width: 36rem; }
 .verdict-mark { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px; margin: 18px 0 0; }
 .verdict p, .mark p { margin: 0; }
@@ -198,30 +246,44 @@ article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight
   .swipe { padding: 0 5px; }
   .mark-word .swipe { margin-left: -5px; }
 }
-.note { margin: 6px 0; max-width: 30rem; padding: 10px 14px; font-size: 14.7px; line-height: 1.5;
-  border-radius: 13.6px 13.6px 13.6px 1.6px; background: var(--ink); color: var(--paper); }
-.source { margin: 4px 0 0; font-size: 12px; color: var(--ink-46); }
-article ol, .gw-answer ol { list-style: none; counter-reset: claim; padding: 0; margin: 26px 0 0;
+.ruling { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.note { margin: 0; max-width: 36rem; font-size: 15px; line-height: 1.6; }
+.source { margin: 8px 0 0; font-size: 12px; color: var(--ink-64); }
+.strip { display: flex; align-items: center; gap: 16px; width: 100%; margin: 20px 0 0;
+  padding: 10px; border: 1.5px solid var(--ink); border-radius: 10px; background: var(--paper);
+  color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.strip-drawing { flex: none; display: block; width: 176px; height: 72px; }
+.strip-text { flex: 1; min-width: 0; }
+.strip-text > span { display: block; }
+.strip-title { font-size: 16px; line-height: 1.3; font-weight: 700; }
+.strip-line { margin-top: 2px; font-size: 13px; line-height: 1.4; color: var(--ink-82); }
+.strip-counts { margin-top: 4px; font: 11.5px/1.4 var(--mono); color: var(--ink-64); }
+.strip-go { flex: none; display: grid; place-items: center; width: 40px; height: 40px;
+  border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 18px; }
+.strip:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+article ol, .gw-answer ol { list-style: none; counter-reset: claim; padding: 0; margin: 12px 0 0;
   border-top: 1px solid var(--rule); }
 article ol > li, .gw-answer ol > li { position: relative; counter-increment: claim;
-  padding: 16px 0 16px 2.4em; border-bottom: 1px solid var(--rule); }
+  padding: 22px 0 22px 2.4em; border-bottom: 1px solid var(--rule); font-size: 16px;
+  line-height: 1.6; }
 article ol > li::before, .gw-answer ol > li::before {
-  content: counter(claim, decimal-leading-zero); position: absolute; left: 0; top: 20px;
+  content: counter(claim, decimal-leading-zero); position: absolute; left: 0; top: 27px;
   font: 11px/1 var(--mono); color: var(--ink-46); }
-.cites { margin: 8px 0 0; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
+.cites { margin: 8px 0 0; font: 12px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
-.labels { margin: 8px 0 0; font-size: 10px; line-height: 1.4; font-weight: 700;
-  letter-spacing: .16em; color: var(--ink-64); }
-.eyebrow, details > summary { margin: 22px 0 6px; font-size: 10px; line-height: 1;
-  font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-64); }
-article > ul { margin: 0; padding-left: 1.1em; color: var(--ink-82); }
-details { margin-top: 22px; border-top: 1px solid var(--rule); padding-top: 4px; }
-details > summary { cursor: pointer; list-style: none; padding: 14px 0 4px; }
+.labels { margin: 6px 0 0; font: 12px/1.8 var(--mono); color: var(--ink-64); }
+.chip { padding: 0 5px; border: 1px solid rgba(1, 25, 54, .35); border-radius: 3px;
+  font-size: 11px; white-space: nowrap; }
+article > h4.lack { margin-top: 28px; }
+article > ul.lack { margin: 10px 0 0; padding-left: 1.1em; font-size: 16px; line-height: 1.6;
+  color: var(--ink-64); }
+details { margin-top: 10px; }
+details > summary { cursor: pointer; list-style: none; padding: 4px 0; font-size: 14px;
+  color: var(--ink-82); }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::after { content: " +"; color: var(--cyan); }
 details[open] > summary::after { content: " \\2212"; }
-details h4 { margin: 18px 0 8px; font-size: 10px; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--ink-46); }
+details h5 { margin: 18px 0 8px; font-size: 13px; font-weight: 700; color: var(--ink-64); }
 details .item p, details li { font: 12px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
 details ul { list-style: none; padding: 0; margin: 0; }
@@ -230,6 +292,20 @@ details .item { padding: 6px 0 12px; border-bottom: 1px solid var(--rule); }
 details .item p { margin: 0 0 4px; }
 details .item > .stored { font-size: 14px; color: var(--ink-82); }
 [hidden] { display: none !important; }
+@media (max-width: 560px) {
+  article > h3 { font-size: 36px; }
+  article > h4 { margin-top: 20px; padding-top: 12px; font-size: 17px; }
+  .question { font-size: 19px; margin-top: 6px; }
+  .ruling { margin-top: 14px; padding-top: 12px; }
+  .strip { margin-top: 16px; }
+  .strip-drawing { width: 96px; height: 64px; }
+  .strip-line { display: none !important; }
+  .strip-go { width: 36px; height: 36px; }
+  article ol > li { padding: 18px 0 18px 2.4em; font-size: 15px; }
+  article ol > li::before { top: 23px; }
+  article > h4.lack { margin-top: 24px; }
+  article > ul.lack { font-size: 15px; }
+}
 """
 
 #: The graph window's styles (spec 0011): a split window, the graph about two thirds and
@@ -238,10 +314,6 @@ details .item > .stored { font-size: 14px; color: var(--ink-82); }
 #: Cyan only rings the selection, and the marks' yellow and pink are never used here
 #: (AC-22).
 GRAPH_STYLE = """\
-.graph-open { display: inline-flex; margin: 18px 0 0; padding: 4px 15px; border-radius: 999px;
-  border: 1px solid var(--ink); background: var(--paper); color: var(--ink);
-  font: 500 13px/1.5 var(--sans); cursor: pointer; }
-.graph-open:hover { background: var(--ink); color: var(--paper); }
 html:has(dialog.gw[open]) { overflow: hidden; }
 dialog.gw { width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
   margin: 0; padding: 0; border: 0; background: var(--paper); color: var(--ink); }
@@ -258,7 +330,7 @@ dialog.gw::backdrop { background: var(--paper); }
   font: 18px/1 var(--sans); cursor: pointer; }
 .gw-button:hover { border-color: var(--ink); }
 .gw-button:disabled { border-color: var(--rule); color: var(--ink-46); cursor: default; }
-.gw-button:focus-visible, .graph-open:focus-visible { outline: 2px solid var(--ink);
+.gw-button:focus-visible { outline: 2px solid var(--ink);
   outline-offset: 2px; }
 .gw-view { position: relative; flex: 1; min-height: 0; }
 .gw-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
@@ -459,9 +531,12 @@ def _claim(claim: StoredClaim, items: Mapping[str, ItemLine]) -> str:
         if cited
         else ""
     )
-    labels = " ".join(escape(label) for label in claim_marks(claim.checked()))
+    labels = " ".join(
+        f'<span class="chip">{escape(label)}</span>' for label in claim_marks(claim.checked())
+    )
     return (
-        f'<li>{_formatted(claim.text, code_words=True)}{cites}<p class="labels">{labels}</p></li>'
+        f"<li>{_formatted(claim.text, code_words=True)}{cites}"
+        f'<p class="labels">Labels: {labels}</p></li>'
     )
 
 
@@ -515,12 +590,15 @@ def _details(entry: Entry) -> str:
 
 
 def _missing(entry: Entry) -> str:
-    """What the answer says is missing, when it says anything (AC-20)."""
+    """What the answer says the records lack, when it says anything, whatever the mark.
+
+    AC-20, spec 0012 AC-32, AC-33.
+    """
     missing = entry.record.missing
     if not missing:
         return ""
     rows = "".join(f"<li>{_formatted(m, code_words=True)}</li>" for m in missing)
-    return f'<p class="eyebrow">Missing, as the answer says</p><ul>{rows}</ul>'
+    return f'<h4 class="lack">{escape(MISSING_HEADING)}</h4><ul class="lack">{rows}</ul>'
 
 
 def _item_head(item: ItemLine) -> str:
@@ -531,9 +609,16 @@ def _item_head(item: ItemLine) -> str:
     return " · ".join([*parts, _link(item)])
 
 
+def _cited(entry: Entry) -> frozenset[str]:
+    """The ids some claim cites without rejecting: the M of the strip and of Items sent."""
+    return frozenset(
+        c for claim in entry.record.claims for c in claim.cites if c not in claim.rejected_ids
+    )
+
+
 def _items_sent(entry: Entry) -> str:
     """The pack sent, closed until opened: cited items in full, others one row each."""
-    cited = {c for claim in entry.record.claims for c in claim.cites if c not in claim.rejected_ids}
+    cited = _cited(entry)
     lines = dict(zip((item.id for item in entry.record.items), entry.items, strict=True))
     shown = "".join(
         f'<div class="item"><p>{_item_head(lines[item.id])}</p>'
@@ -543,34 +628,59 @@ def _items_sent(entry: Entry) -> str:
     )
     rows = "".join(f"<li>{_item_head(line)}</li>" for line in entry.items if line.id not in cited)
     return (
-        f"<details><summary>Items sent ({len(entry.items)}, {len(cited)} cited)</summary>"
-        f"<h4>Cited</h4>{shown or '<p>None.</p>'}"
-        f"<h4>Not cited</h4>{f'<ul>{rows}</ul>' if rows else '<p>None.</p>'}"
+        f"<h4>{escape(ITEMS_HEADING)}</h4>"
+        f"<details><summary>Show all ({len(entry.items)}, {len(cited)} cited)</summary>"
+        f"<h5>Cited</h5>{shown or '<p>None.</p>'}"
+        f"<h5>Not cited</h5>{f'<ul>{rows}</ul>' if rows else '<p>None.</p>'}"
         "</details>"
     )
 
 
-def _ruling(entry: Entry) -> str:
-    """The engineer's note and where the mark was copied from (AC-13, AC-16)."""
+def _source(entry: Entry) -> str:
+    """Where the full ruling is (spec 0012 AC-59, AC-60, AC-105).
+
+    A link for a file under `experiments/`, else plain words naming the row in the
+    unpublished scope notes.
+    """
     marks = entry.marks
-    note = (
+    if marks.source_path.startswith(RULINGS_DIR):
+        link = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
+        return (
+            f'<p class="source"><a href="{escape(link)}">My full ruling</a>, '
+            f"{_text(marks.source_row)}</p>"
+        )
+    return (
+        f'<p class="source">My full ruling: the {_text(marks.source_row)} in the '
+        "project&#x27;s scope notes (not published).</p>"
+    )
+
+
+def _ruling(entry: Entry) -> str:
+    """The engineer's note, when there is one, then the source line (spec 0012 AC-57)."""
+    note = entry.marks.note
+    shown = (
         ""
-        if marks.note is None
-        else f'<p class="note">{_formatted(marks.note, code_words=False)}</p>'
+        if note is None
+        else f'<p class="note"><strong>My note.</strong> {_formatted(note, code_words=False)}</p>'
     )
-    source = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
-    return (
-        f"{note}"
-        f'<p class="source">From <a href="{escape(source)}">{escape(marks.source_path)}</a>, '
-        f"{_text(marks.source_row)}</p>"
-    )
+    return f'<div class="ruling">{shown}{_source(entry)}</div>'
 
 
-def _graph_button(graph: EntryGraph) -> str:
-    """The entry's Graph button, hidden until the script runs (AC-1, AC-2)."""
+def _strip(entry: Entry, graph: EntryGraph) -> str:
+    """The entry's graph strip, hidden until the script runs (spec 0012 AC-65 to AC-69).
+
+    Its counts and accessible name carry the same N and M as Items sent (AC-93 to AC-97).
+    """
+    sent = len(entry.items)
+    cited = len(_cited(entry))
+    name = f"{STRIP_TITLE}: {graph.label}, {sent} sent, {cited} cited"
     return (
-        f'<button type="button" class="graph-open" data-graph="{graph.slug}" '
-        f'aria-label="Graph: {escape(graph.label)}" hidden>Graph</button>'
+        f'<button type="button" class="strip" data-graph="{graph.slug}" '
+        f'aria-label="{escape(name)}" hidden>{STRIP_DRAWING}'
+        f'<span class="strip-text"><span class="strip-title">{escape(STRIP_TITLE)}</span>'
+        f'<span class="strip-line">{escape(STRIP_LINE)}</span>'
+        f'<span class="strip-counts">{sent} sent · {cited} cited</span></span>'
+        '<span class="strip-go" aria-hidden="true">&rarr;</span></button>'
     )
 
 
@@ -580,14 +690,20 @@ def _graph_data(graph: EntryGraph) -> str:
 
 
 def _entry(entry: Entry, graph: EntryGraph) -> str:
+    """One entry, flat: its title, details, then each section's `h4` and its parts.
+
+    Spec 0012 AC-30, AC-31, AC-65.
+    """
     return (
         "<article>"
         f"<h3>{_text(entry.marks.label)}</h3>"
-        f'<p class="question">{_formatted(entry.record.question, code_words=True)}</p>'
         f"{_details(entry)}"
+        f"<h4>{escape(QUESTION_HEADING)}</h4>"
+        f'<p class="question">{_formatted(entry.record.question, code_words=True)}</p>'
+        f"<h4>{escape(ANSWER_HEADING)}</h4>"
         f"{_verdict_and_mark(entry)}"
         f"{_ruling(entry)}"
-        f"{_graph_button(graph)}"
+        f"{_strip(entry, graph)}"
         f"{_claims(entry)}"
         f"{_missing(entry)}"
         f"{_items_sent(entry)}"
@@ -600,9 +716,7 @@ def _section_line(section: Section) -> str:
     """The statement under a section's heading (AC-8, AC-52, AC-53)."""
     match section:
         case Section.DEVELOPMENT:
-            return (
-                f'<p>{escape(ASK_1_LINE)} (<a href="{escape(SCOPE_URL)}">v1 finish line</a>).</p>'
-            )
+            return f"<p>{escape(ASK_1_LINE)} (v1 finish line).</p>"
         case Section.HELD_OUT:
             return f"<p>{escape(HELD_OUT_LINE)}</p>"
         case Section.REALISTIC:

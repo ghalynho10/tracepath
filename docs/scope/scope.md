@@ -488,7 +488,7 @@ _Design decided 2026-10-26: formatting runs in Python (one pure module) and `gra
 - [ ] Build it: `/develop gallery readability`
   - [x] The formatting thread: the inline rule, the code words, and where they run, including the panel's runs and link phrases (spec 0012 slices 1 and 2; AC-1 to AC-29, AC-79, AC-96, AC-98 to AC-101) · built 2026-10-26, code in `src/tracepath/gallery/inline.py`, `render.py`, `graph.py` and `assets/graph.js`; AC-78 held by the existing static test; AC-12 and AC-13 wait for the visual pass
   - [x] Verdict, mark and the total of marks (slice 3; AC-41 to AC-54, AC-71 to AC-75, AC-102) · built 2026-10-26, code in `src/tracepath/gallery/render.py` and `records.py` (the stored verdict typed as `Verdict`); `graph.js` finds the cloned parts anywhere in the entry (AC-76, taken early so the panel keeps its verdict); AC-55 and AC-56 wait for the visual pass
-  - [ ] Headings, claim lines, note, source and the graph strip (slices 4 and 5; AC-30 to AC-38, AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103 to AC-105)
+  - [x] Headings, claim lines, note, source and the graph strip (slices 4 and 5; AC-30 to AC-38, AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103 to AC-105) · built 2026-10-26, code in `src/tracepath/gallery/render.py` and `records.py` (the `experiments/` file check), tests in `tests/test_gallery_entry.py`; AC-39, AC-40 and AC-70 wait for the visual pass
   - [ ] The link to one graph (slice 6; AC-82, AC-84 to AC-92)
   - [ ] The visual pass at both widths (slice 7; AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88)
 - [ ] Verify it: `/check verify gallery readability`
