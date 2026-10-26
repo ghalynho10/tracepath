@@ -36,3 +36,15 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] On Q4 the mark sits under the verdict → AC-56
 - [ ] On Held out 2 select an item with a long code word (for example `supabase/migrations/20260825162457_data_model.sql:168`) → the word breaks inside itself and nothing runs past the screen edge → AC-13
 - [ ] Every entry's headings and strip match the phone column of the board measures → AC-39, AC-40
+
+## The link to one graph (browser, desktop 1440 by 900; steps 4 to 6 also at 390 by 844)
+- [ ] Open `/tmp/gallery/index.html#q4` with JavaScript turned off → the page scrolls to Q4 and shows no graph → AC-83
+- [ ] Open `/tmp/gallery/index.html#q4` with JavaScript on → Q4's graph opens over the page, headed "Q4" → AC-84
+- [ ] Open the page with no fragment, press Q4's strip → the address now ends `#q4`, and the back button leaves the page (it did not add a step) → AC-85
+- [ ] With Q4's graph open, press next → the address ends `#q5` and the back button still leaves the page → AC-86
+- [ ] Close Q4's graph with Esc, then again with the close button → each time the address has no `#…` at the end, and the back button leaves the page → AC-87
+- [ ] After the close, look at the page → Q4 is still in view, as before the graph opened → AC-88
+- [ ] Open `/tmp/gallery/index.html#nope` and `#Q4` → the page opens as usual, no graph, and the console shows no error → AC-89
+- [ ] Open Q4's graph and select an item → the address still ends `#q4` → AC-90
+- [ ] Look at the address after opening Eval 3, Held out 2 and Q22 → `#eval-3`, `#held-out-2`, `#q22`, each the entry's slug and nothing else → AC-92
+- [ ] `uv run pytest tests/test_gallery_graph.py -k "slug_is_article_id or replace_state"` → passes: the slug is each article's `id`, and `graph.js` uses only `replaceState` → AC-82, AC-91

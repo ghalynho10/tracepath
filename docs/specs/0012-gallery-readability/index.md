@@ -5,7 +5,7 @@
 
 ## Summary
 
-This spec makes the answer gallery easier to read for a stranger. Stored text shows `code` and **bold** as formatted text, code looking words are styled by a fixed pattern, and each entry gets a clear heading order. The top of each answer puts the model's verdict and my mark side by side, then my note and a link to my full ruling, then one "Explore the graph" strip. One line of totals sits beside the key to the marks. The page and the graph panel change; no command changes, and nothing is stored differently except that each note in `gallery/marks.json` becomes a public note I write myself.
+This spec makes the answer gallery easier to read for a stranger. Stored text shows `code` and **bold** as formatted text, code looking words are styled by a fixed pattern, and each entry gets a clear heading order. The top of each answer puts the model's verdict and my mark side by side, then my note and a link to my full ruling, then one "Explore the graph" strip. One line of totals sits beside the key to the marks. A link to one question, the page address plus `#<slug>`, opens that question's graph. The page and the graph panel change; no command changes, and nothing is stored differently except that each note in `gallery/marks.json` becomes a public note I write myself.
 
 ## Requirements
 
@@ -15,6 +15,7 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - As a reader, I want the model's verdict and the engineer's mark side by side in different words, so I can compare them at a glance.
 - As a reader, I want one total of the engineer's marks next to the key that defines them, so I know how the answers were judged overall.
 - As the engineer, I want each note on the page written for a public reader, with a link to the full ruling where one exists.
+- As the engineer, I want to send one link that opens one question's graph, so a reader lands on the picture without searching the page.
 
 **Acceptance criteria** (each holds one claim; a criterion marked _browser_ is checked by looking at the page at 1440 by 900 and 390 by 844, because no test in CI draws a page):
 
@@ -116,6 +117,19 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-79**: An item whose text holds a marker pair has `runs` in its graph data, and an item whose text holds none has no `runs`.
 - **AC-80**: The graph window's styles use none of the four swipe colours.
 - **AC-81** (_browser_): With nothing selected, the panel shows the same verdict wording and captions as the list.
+
+*The link to one graph* (added 2026-10-26; takes in the Deferred entry "Shareable graph link" of the scope, without item selection. The address is written as in Feature design, "The link to one graph")
+- **AC-82**: Each entry's `article` carries its slug as its `id`.
+- **AC-83** (_browser_): With scripts off, opening the page with `#<slug>` scrolls to that entry.
+- **AC-84** (_browser_): With scripts running, opening the page with `#<slug>` of an entry opens that entry's graph.
+- **AC-85** (_browser_): A click on an entry's strip replaces the address fragment with `#<slug>` and adds no history step.
+- **AC-86** (_browser_): Pressing previous or next replaces the address fragment with the slug of the graph now open and adds no history step.
+- **AC-87** (_browser_): Closing the graph, by Esc or by the close button, clears the address fragment and adds no history step.
+- **AC-88** (_browser_): After the graph closes, the page is still at the entry it was opened from.
+- **AC-89** (_browser_): An address fragment that is not an entry's slug opens the page as usual, with no graph and no error message.
+- **AC-90** (_browser_): Selecting an item changes nothing in the address.
+- **AC-91**: `graph.js` changes the address only with `history.replaceState`, and never with `pushState` or by setting `location.hash`.
+- **AC-92** (_browser_): The address fragment is `#` followed by the entry's slug as spec 0011 AC-67 makes it, and nothing else.
 
 ## Decision
 
@@ -222,6 +236,16 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 | Format a text | runs | `inline.runs` from the stored string; code words only for a question, a claim and (proposed) a missing note |
 | Fill a selected item | runs | the item's `runs` in the graph data block, built by `inline.runs` at build |
 
+**The link to one graph.** The link is the page address plus `#<slug>`, where the slug is the one `slug_of` makes from the entry's label and spec 0011 AC-67 keeps unique (`Eval 3` gives `eval-3`; basis: `graph.py` `slug_of`). There is no copy button: the address bar is the link once a graph is open.
+- The build writes the slug as the `id` of each entry's `article` (AC-82). With scripts off this alone makes the link scroll to the entry, because the browser follows a fragment to an element with that id (AC-83).
+- With scripts running, the script reads the fragment when the page loads. A fragment equal to the slug of an entry opens that entry's graph with `open(slug)`; the match is exact, so `#Q4` is not `#q4`. Any other fragment does nothing, shows no message and is left as it is (AC-84, AC-89).
+- Opening a graph by a click, and swapping it with previous or next, replaces the fragment with `#<slug>` by `history.replaceState`, so the back button is not used up (AC-85, AC-86). The `open` function does this, so a graph opened by the link does not rewrite an address that is already right.
+- Closing, by Esc or the close button, replaces the address with the same path and query and no fragment, by `history.replaceState`. This does not scroll, so the page stays at the entry (AC-87, AC-88). All closing paths end in the dialog's `close` event, where it is done.
+- The script uses no other way to change the address (AC-91).
+- The fragment holds the slug only. Selecting an item never changes the address, so a link cannot select an item (AC-90, AC-92). Item selection in a link stays deferred.
+- A label is the key of its link. Renaming a label in `gallery/marks.json` changes its slug and breaks any link already sent; nothing in the build can know which links were sent (Consequences). A label must not make a slug that starts `graph-` or `gw-`, because the page already holds ids with those starts.
+- Typing a new fragment into a page that is already open is not handled; the link opens its graph when the page loads.
+
 **Key invariants**:
 - No text reaches the page unescaped. Every run is escaped where HTML is written (AC-10).
 - Stored text is never changed; formatting only styles it (AC-9).
@@ -247,7 +271,9 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 - Fixture: an `experiments/` source path that is not a file fails the build, verifies **AC-61**.
 - Pinned marks: the 31 marks equal the pinned list, verifies **AC-64**.
 - Static: `graph.js` finds the three parts anywhere in the entry and never sets `innerHTML`; the swipe colours are absent from the graph styles, verifies **AC-76, AC-78, AC-80**.
-- Browser: see `verify.md`, verifies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-81**.
+- Real page: each entry's `article` has its slug as `id`; the slugs are unique, verifies **AC-82**.
+- Static: `graph.js` calls `history.replaceState` and never `pushState` or `location.hash =`, verifies **AC-91**.
+- Browser: see `verify.md`, verifies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-81, AC-83 to AC-90, AC-92**.
 
 ## Build plan
 
@@ -258,7 +284,8 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 3. [ ] Slice 3, verdict and mark. The verdict wording table with its failure on an unknown code, the four swipe colours, both captions, the Key's mark rows in the swipe style and the total line, satisfies **AC-41 to AC-54, AC-71 to AC-75**
 4. [ ] Slice 4, the entry's headings and the claim lines. The `h4` sections in order, the renamed missing section, `h5` groups and the Items sent summary, the "Cites:" and "Labels:" lines with chips; update the tests that name the old strings, satisfies **AC-30 to AC-38**
 5. [ ] Slice 5, note, source and strip. "My note.", "My full ruling" with the `experiments/` rule and its build check, plain text for `docs/` sources and the development section's line, the pinned marks test, the strip with its fixed drawing and counts, and the `graph.js` selectors, satisfies **AC-57 to AC-70, AC-76, AC-77**
-6. [ ] Slice 6, the visual pass. Write the styles from the board measures at both widths; check each browser criterion in `verify.md` at 1440 by 900 and 390 by 844; keep the four swipe colours out of the graph styles, satisfies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81**
+6. [ ] Slice 6, the link to one graph. The slug as the `id` of each `article`; in `graph.js`, open the graph named by the fragment when the page loads, replace the fragment on open, swap and close with `history.replaceState`, and leave an unknown fragment alone, satisfies **AC-82, AC-84, AC-85, AC-86, AC-87, AC-89, AC-90, AC-91, AC-92**
+7. [ ] Slice 7, the visual pass. Write the styles from the board measures at both widths; check each browser criterion in `verify.md` at 1440 by 900 and 390 by 844; keep the four swipe colours out of the graph styles, satisfies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88**
 
 ## Consequences
 
@@ -272,12 +299,14 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 - The fixed word patterns can style a word that is not code, for example a snake case word in prose. They cannot style camelCase names. This is the price of a fixed list; the pinned list test shows each change.
 - The four held out entries lose their public note wording and show a path the reader cannot open ("My full ruling: docs/scope/scope.md, v1 finish line"). This is the engineer's ruling.
 - The design source is a private canvas. The table in this spec is the copy; the canvas can change without this spec.
-- The styles and the one `graph.js` change are checked in a browser, not in CI.
+- The styles and the `graph.js` changes (the cloned parts, the runs, the link to one graph) are checked in a browser, not in CI.
+- Renaming a label in `gallery/marks.json` breaks links already sent, because the slug is made from the label. Nothing keeps a list of links that were sent.
 - `gallery/marks.json`'s `note` is no longer a word for word copy, so the original wording lives only in the experiment READMEs (and `docs/scope/scope.md` until it leaves the public repository).
 
 **Neutral**:
 - New module `src/tracepath/gallery/inline.py`; `render.py`, `graph.py` and `graph.js` change; several tests that name old strings or the old pill change.
 - Experiment 0018's README and `docs/scope/scope.md` keep the original notes untouched.
+- It takes in the Deferred entry "Shareable graph link" of the scope without item selection. A link that also selects an item stays deferred (spec 0011 Follow-up).
 - Out, by ruling: rewording "the engineer" or "the author" in JobHunt's text and in the answers that repeat it, and listing the 13 records the page does not show.
 
 ## Follow-up
