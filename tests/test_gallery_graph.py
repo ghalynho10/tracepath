@@ -77,7 +77,7 @@ def _records() -> dict[str, dict[str, Any]]:
 
 
 def _articles(page: str) -> list[str]:
-    return [a.split("</article>")[0] for a in page.split("<article>")[1:]]
+    return [a.split("</article>")[0] for a in re.split(r'<article id="[a-z0-9-]+">', page)[1:]]
 
 
 @pytest.mark.parametrize(
@@ -876,3 +876,22 @@ def test_a_link_carries_phrase_runs_exactly_when_its_phrase_holds_a_marker_pair(
         assert link.get("phrase_runs") == expected, link
     assert sum("phrase_runs" in link for link in links) == 1579
     assert any("phrase_runs" not in link and link["phrase"] for link in links)
+
+
+def test_the_slug_is_article_id(page: str, blocks: dict[str, dict[str, Any]]) -> None:
+    """Spec 0012 AC-82: each entry's `article` carries its slug as `id`, every one unique."""
+    ids = re.findall(r'<article id="([^"]*)">', page)
+
+    assert ids == [graph["slug"] for graph in sorted(blocks.values(), key=lambda g: g["position"])]
+    assert len(ids) == len(set(ids)) == len(_records())
+    assert set(ids) == {slug_of(label) for label in _records()}
+
+
+def test_the_script_changes_the_address_only_with_replace_state() -> None:
+    """Spec 0012 AC-91: `history.replaceState`, never `pushState` or a set location."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+
+    assert script.count("history.replaceState(") == 2
+    assert "pushState" not in script
+    assert not re.search(r"location\.(?:hash|href|search|pathname)\s*=(?!=)", script)
+    assert not re.search(r"location\s*=(?!=)|location\.(?:assign|replace)\(", script)

@@ -692,10 +692,10 @@ def _graph_data(graph: EntryGraph) -> str:
 def _entry(entry: Entry, graph: EntryGraph) -> str:
     """One entry, flat: its title, details, then each section's `h4` and its parts.
 
-    Spec 0012 AC-30, AC-31, AC-65.
+    Spec 0012 AC-30, AC-31, AC-65; its `id` is its slug, so `#<slug>` reaches it (AC-82).
     """
     return (
-        "<article>"
+        f'<article id="{graph.slug}">'
         f"<h3>{_text(entry.marks.label)}</h3>"
         f"{_details(entry)}"
         f"<h4>{escape(QUESTION_HEADING)}</h4>"

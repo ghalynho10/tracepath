@@ -531,6 +531,9 @@
     counter.textContent = found.graph.position + " / " + found.graph.total;
     previousButton.disabled = found.graph.previous === null;
     nextButton.disabled = found.graph.next === null;
+    // The address names the open graph, replaced so no history step is added (spec 0012
+    // AC-85, AC-86, AC-91, AC-92).
+    history.replaceState(history.state, "", "#" + slug);
     const swapped = dialog.open;
     if (!swapped) dialog.showModal();
     state.fit = fitted();
@@ -661,10 +664,13 @@
     keyToggle.setAttribute("aria-expanded", String(open));
   });
   closeButton.addEventListener("click", () => dialog.close());
-  // Esc, the close button and a back gesture all end here (AC-6).
+  // Esc, the close button and a back gesture all end here (AC-6). The address loses its
+  // fragment without a scroll; the focus below brings the page to the entry whose graph
+  // was showing (spec 0012 AC-87, AC-88).
   dialog.addEventListener("close", () => {
     stopLive();
     drag = null;
+    history.replaceState(history.state, "", location.pathname + location.search);
     const button = state && buttons.get(state.slug);
     if (button) button.focus();
   });
@@ -684,4 +690,10 @@
     button.addEventListener("click", () => open(button.dataset.graph));
     button.hidden = false;
   }
+
+  // A link to one graph: a fragment equal to a slug opens that graph, matched exactly
+  // against the buttons just registered. Any other fragment, an id on the page or not,
+  // is left as it is (spec 0012 AC-84, AC-89).
+  const linked = location.hash.slice(1);
+  if (buttons.has(linked)) open(linked);
 })();

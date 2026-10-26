@@ -69,6 +69,9 @@ MARKS: tuple[dict[str, object], ...] = (
 
 runner = CliRunner()
 
+#: An entry's opening tag, which carries its slug as `id` (spec 0012 AC-82).
+_ARTICLE = re.compile(r'<article id="[a-z0-9-]+">')
+
 
 def _stored(name: str) -> dict[str, Any]:
     data = json.loads((PROJECT_ROOT / ASKS_DIR / name).read_text(encoding="utf-8"))
@@ -138,7 +141,7 @@ def _build(root: Path, out: Path) -> str:
 
 def _article(page: str, label: str) -> str:
     """The one entry whose heading is `label`."""
-    found = [a for a in page.split("<article>")[1:] if f'<h3><span class="stored">{label}<' in a]
+    found = [a for a in _ARTICLE.split(page)[1:] if f'<h3><span class="stored">{label}<' in a]
     assert len(found) == 1, label
     return found[0].split("</article>")[0]
 
@@ -156,7 +159,7 @@ def test_page_shows_only_the_records_the_marks_file_names(root: Path, tmp_path: 
     """AC-1."""
     page = _build(root, tmp_path / "site")
 
-    assert page.count("<article>") == len(MARKS)
+    assert len(_ARTICLE.findall(page)) == len(MARKS)
     for name in (DEV, HELD, REAL):
         assert _shown(str(_stored(name)["question"])) in page
     assert _shown(str(_stored(UNNAMED)["question"])) not in page
@@ -611,7 +614,7 @@ def test_build_from_the_committed_marks_file(tmp_path: Path) -> None:
 
     page = _build(PROJECT_ROOT, tmp_path / "site")
 
-    assert page.count("<article>") == len(marks) > 0
+    assert len(_ARTICLE.findall(page)) == len(marks) > 0
 
 
 def test_cited_item_links_to_its_line_in_jobhunt(root: Path, tmp_path: Path) -> None:
@@ -1076,7 +1079,7 @@ def test_entries_in_a_section_follow_the_marks_file_order(root: Path, tmp_path: 
 
 
 def _section_html(page: str, title: str) -> str:
-    return page.split(f"<section><h2>{title}</h2>", 1)[1].split("<article>", 1)[0]
+    return _ARTICLE.split(page.split(f"<section><h2>{title}</h2>", 1)[1], maxsplit=1)[0]
 
 
 def test_page_counts_the_records_asks_holds(root: Path, tmp_path: Path) -> None:

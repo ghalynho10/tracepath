@@ -91,7 +91,7 @@ def _records() -> dict[str, dict[str, Any]]:
 def articles(page: str) -> dict[str, str]:
     """Each entry's inner HTML, by its label."""
     found = {}
-    for article in page.split("<article>")[1:]:
+    for article in re.split(r'<article id="[a-z0-9-]+">', page)[1:]:
         inner = article.split("</article>")[0]
         label = re.search(r'^<h3><span class="stored">(.*?)</span></h3>', inner)
         assert label is not None
