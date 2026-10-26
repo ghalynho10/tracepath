@@ -286,7 +286,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
    - [x] Added 2026-10-25: a press acts on the nearest dot centre within 12 pixels (20 for a touch), found with d3-quadtree's `find`; the dot within reach also shows as hovered. Satisfies **AC-84, AC-85, AC-86**
 7. [x] Slice 6, the guards. The three build failures, the inline script check, the escaping and its round trip test, the vendor table test, the self contained test. Satisfies **AC-65, AC-66, AC-67, AC-68, AC-69, AC-70**
 8. [x] Visual pass, settled before it starts: build to a scratch folder, screenshot Eval 3, Eval 2, Held out 1 and Q16 at 1440, 768 and 390 pixels, tune the layout constants and the radii once against the three 90 item packs, and compare to the reference's layout; screenshots stay in the scratchpad, never committed. Satisfies **AC-23, AC-25** (no new criterion)
-9. [ ] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
+9. [x] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
 
 ## Consequences
 
@@ -315,7 +315,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 
 ## Follow-up
 
-- [ ] Amend spec 0010: its Feature design says "no JavaScript", its Decision says "with no JavaScript", its Consequences say "no search, filter or graph", its Feature design says the build does not read the records' `links`, and its Follow up lists this slice as open. Add a dated amendment note on each pointing at this spec, and tick the Follow up. The build task 9 does it.
+- [x] Amend spec 0010: its Feature design says "no JavaScript", its Decision says "with no JavaScript", its Consequences say "no search, filter or graph", its Feature design says the build does not read the records' `links`, and its Follow up lists this slice as open. Add a dated amendment note on each pointing at this spec, and tick the Follow up. The build task 9 does it.
 - [ ] Reconcile scope features 17 and 18 and the Deferred "Visual UI" entry once built: feature 18's Done when is this spec's AC-3, AC-14 to AC-21, AC-42, AC-46 and AC-48.
 - [ ] Shareable link to one graph: an address fragment that opens a graph and selects an item. Cut from this spec on 2026-10-25. If it comes back, settle first how the address is written (replace, not push, and the close path), how a bad slug or item is handled, and how an id holding `#`, `:` and `/` is encoded.
 - [ ] Read the four LICENSE files from the packages when vendoring, and copy each word for word. This spec checked the licence of `d3-force` and `d3` from their repositories, but did not read the four packages' own LICENSE files.

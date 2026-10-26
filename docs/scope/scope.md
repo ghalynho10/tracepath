@@ -429,6 +429,7 @@ A static web page of the answers `tracepath ask` has already recorded, for a rea
 
 spec [0010](../specs/0010-answer-gallery/index.md) · code in `src/tracepath/gallery/`, marks in `gallery/marks.json`, workflow `.github/workflows/pages.yml`
 _Design decided 2026-10-23: a `tracepath gallery build` command writes one plain HTML page from the ask records plus a marks file, published on GitHub Pages by an Actions workflow. It shows 31 records: eval questions 1 to 5 (the `ask-2` runs at 2 hops), the four held out questions in their own labelled section, and experiment 0018's 22. Marks and notes are shown; experiment 0018's disclosures travel by a link to its README only. A plain list, with a graph per answer kept as the next slice below._
+_2026-10-25: the graph per answer is built on the same page by [spec 0011](../specs/0011-answer-graph/index.md) (feature 18). Spec 0010's lines saying no JavaScript and no graph carry a dated note pointing there._
 **Next slice:** enrolled 2026-10-24 as feature 18, the answer graph; see that row.
 - [x] Design it (spec): `/architect answer gallery` · decided the host, the shown set, marks, disclosures, the plain list UI and the build
 - [x] Build it: `/develop answer gallery` · ticked 2026-10-24, every milestone below done
@@ -456,12 +457,13 @@ On the gallery page, one interactive graph per shown answer, drawn from the item
 spec [0011](../specs/0011-answer-graph/index.md) · code in `src/tracepath/gallery/` (`graph.py`, `assets/graph.js`, `vendor/`)
 _Design decided 2026-10-25: a Graph button on each of the 31 entries opens a full window, graph on the left and a reading panel on the right. d3-force 3.0.0 (ISC, with three small helpers) places the dots, copied into the repository and inlined; the drawing is hand written SVG. The build computes every item's state in Python and the script only draws from those flags. 76 criteria. The open questions above are answered in the spec; a shareable link to one graph was cut and is in Deferred._
 **Goal, recorded 2026-10-25:** one shared graph of every shown answer's items, where picking a question zooms to its items. Deferred until link resolution improves (scope features 7 and 8): today the 947 items of the 31 packs form 224 separate pieces, 173 with no link, so answers have no section to zoom to. Revisit then; the drawing, flags, panel and d3 setup carry over.
+_2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on its lines saying no JavaScript, no graph and no `links`, and its Follow up is ticked, all pointing to spec 0011._
 - [x] Design it (spec): `/architect answer graph` · decided the library, the placement, the layout, the phone layout, the accents and the test approach
-- [ ] Build it: `/develop answer graph`
+- [x] Build it: `/develop answer graph`
   - [x] The thread: stored links and hop read, flags in Python, the four library files vendored and inlined, a graph opens and closes for every entry (spec 0011 tasks 1 and 2; AC-1 to AC-6, AC-12, AC-13, AC-25, AC-57, AC-58, AC-71 to AC-74)
   - [x] The states and the panel (tasks 3 and 4; AC-14 to AC-24, AC-30 to AC-53, AC-59 to AC-64)
   - [x] Moving around and the phone layout (tasks 5 and 6; AC-7 to AC-11, AC-26 to AC-29, AC-54 to AC-56, AC-75, AC-76)
-  - [ ] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
+  - [x] The guards, the visual pass and the note on spec 0010 (tasks 7 to 9; AC-65 to AC-70)
 - [ ] Verify it: `/check verify answer graph`
 - [ ] Test it: `/test answer graph`
 - [ ] Sync it: `/sync answer graph`
