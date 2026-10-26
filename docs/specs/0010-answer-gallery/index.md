@@ -41,9 +41,9 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections come from the record and the marks file, never from an eval file name in source, to keep AC-27 and the report guard intact._
 
 *Each answer*
-- **AC-17**: Each entry shows the question text as stored in the record.
+- **AC-17**: Each entry shows the question text as stored in the record. _Amended 2026-10-26: `code` and **bold** markers are drawn as formatted text, not shown as typed ([spec 0012](../0012-gallery-readability/index.md) AC-9, AC-14)._
 - **AC-18** (amended 2026-10-26): Each entry shows the model's verdict by the fixed wording of its stored code (`answered`, `partly answered`, `not supported by the records`, `no documented link`); the stored code is unchanged ([spec 0012](../0012-gallery-readability/index.md) AC-42 to AC-48).
-- **AC-19**: Each entry shows the claims in stored order, with each claim's text as stored.
+- **AC-19**: Each entry shows the claims in stored order, with each claim's text as stored. _Amended 2026-10-26: markers are drawn as formatted text ([spec 0012](../0012-gallery-readability/index.md) AC-9, AC-15)._
 - **AC-20** (amended 2026-10-26): Each entry shows the record's `missing` notes when it has any, under the heading "What the answer says the records lack", whatever its mark ([spec 0012](../0012-gallery-readability/index.md) AC-32, AC-33).
 - **AC-21**: Each entry shows the date asked.
 - **AC-22**: Each entry shows the prompt version.
@@ -75,7 +75,7 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 
 *Evidence*
 - **AC-44**: Each entry has an "Items sent" section that is closed until the reader opens it.
-- **AC-45**: In that section, each item the answer cites is shown with its full stored text.
+- **AC-45**: In that section, each item the answer cites is shown with its full stored text. _Amended 2026-10-26: markers are drawn as formatted text ([spec 0012](../0012-gallery-readability/index.md) AC-9, AC-18)._
 - **AC-46**: In that section, each item the answer does not cite is one row that shows its id, its type and whether it is held or accepted.
 - **AC-47**: That row shows `STRUCK` or `HISTORY` when the stored line has that marker.
 - **AC-48**: That row carries a link built by AC-34, AC-35 and AC-36.

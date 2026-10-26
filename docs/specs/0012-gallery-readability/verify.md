@@ -9,32 +9,34 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] `uv run pytest tests/test_gallery_inline.py` → passes: pairs, nesting, unpaired markers, line breaks, double backticks, single asterisks, escaping → AC-1 to AC-8, AC-10
 - [ ] Same file, the property over the 31 records → runs rebuild all 2,602 stored texts → AC-9
 - [ ] Same file, the real records: Q4 claim 3, Held out 2 items 0017#build-plan:2, 0017#build-plan:4 and 0021#feature-design:25, Eval 1 item 0021#feature-design:13 → AC-3, AC-4, AC-7, AC-8
-- [ ] The page's question, claims, missing notes, note and cited item texts show the rule's output; a selected item's `runs` are in its data block only when its text has a pair → AC-11, AC-14 to AC-19, AC-79
+- [ ] The page's question, claims, missing notes, note and cited item texts show the rule's output; a selected item's `runs` are in its data block only when its text has a pair, and a link's `phrase_runs` likewise; a code span keeps its spaces between its word elements → AC-11, AC-14 to AC-18, AC-79, AC-96, AC-98, AC-100, AC-101
 - [ ] The code word patterns, and the pinned list of 15 words in 5 questions and 16 in 10 claims → AC-20 to AC-26, AC-29
+- [ ] A note in the missing list is read for code words, and a bare file name in item text is not → AC-27, AC-28
 
 ## The entry (pytest)
 - [ ] Headings: `h3` entry title, `h4` sections in the order of AC-31, `h5` groups inside Items sent → AC-30, AC-31, AC-35
 - [ ] Eval 1 shows "What the answer says the records lack" and no entry shows "Missing, as the answer says"; an entry with no missing list shows none (25 of 31 show it) → AC-32, AC-33, AC-34
 - [ ] Items sent summary reads "Show all (N, M cited)"; the "Cites:" and "Labels:" lines; each label is a chip → AC-36, AC-37, AC-38
+- [ ] The Answer section opens with the verdict block and then the mark block → AC-41
 - [ ] The four verdict codes show their wordings; an unknown code fails the build naming the record; no wording equals a mark word → AC-42 to AC-48
 - [ ] The four swipe colours, the captions, no button and no border on the mark → AC-49 to AC-54
-- [ ] A note shows "My note."; Eval 3 shows none; `experiments/` paths link as "My full ruling"; the four held out entries read "My full ruling: the v1 finish line in the project's scope notes (not published)." as plain text; a missing `experiments/` file fails the build; no link into this repository's `docs/`; the development section's "v1 finish line" is plain → AC-57 to AC-63
+- [ ] A note shows "My note."; Eval 3 shows none; `experiments/` paths link as "My full ruling" followed by the row as text; the four held out entries read "My full ruling: the v1 finish line in the project's scope notes (not published)." as plain text; a missing `experiments/` file fails the build; no link into this repository's `docs/`; the development section's "v1 finish line" is plain → AC-57 to AC-63, AC-105
 - [ ] The pinned marks test → AC-64
-- [ ] The strip is a hidden direct child button after the source line; its title, its counts equal the Items sent counts, one drawing for all entries with no highlighted node → AC-65 to AC-69
-- [ ] The total line reads 31, 17, 2, 2, 10, sits above the mark list in the Key, draws each mark as its swipe; a mark with no entry reads `0` → AC-71 to AC-75
-- [ ] `graph.js` finds the three parts anywhere in the entry, never sets `innerHTML`; each entry has one `.question`, one `.verdict`, at most one `ol`; no swipe colour in the graph styles → AC-76, AC-77, AC-78, AC-80
+- [ ] The strip is a hidden direct child button of the article, after the source line and before the claims, with `data-graph`; its title, its accessible name `Explore the graph: <label>, N sent, M cited`, its counts equal the Items sent counts, one drawing for all entries with no highlighted node → AC-65 to AC-69, AC-93 to AC-95, AC-97
+- [ ] The total line reads 31, 17, 2, 2, 10, sits above the mark list in the Key, draws each mark as its swipe, and the Key's mark rows draw the same swipe; a mark with no entry reads `0` → AC-71 to AC-75, AC-102
+- [ ] `graph.js` finds the three parts anywhere in the entry, never sets `innerHTML`; each entry has one `.question`, one `.verdict`, at most one `ol`; no swipe colour in the graph styles → AC-76, AC-77, AC-78, AC-80, AC-103, AC-104
 
 ## What the eye checks (browser, desktop 1440 by 900)
-- [ ] On Held out 2 item 0017#build-plan:2 and Q4 claim 3, a code word with a hyphen stays on one line when it fits → AC-12
+- [ ] On Q4 claim 3 (`--font-mono`, `--font-sans`) a code word with a hyphen stays on one line when it fits; in the open graph of Held out 2, select item 0017#build-plan:2 and check the same for its code → AC-12
 - [ ] On the entry for Eval 3, every section heading sits under a 2px dark rule, and the title, the question and the headings match the board measures → AC-39, AC-40
 - [ ] On Q4, the verdict word and the mark are side by side, the verdict's words wrap balanced, and each caption is under its word → AC-55
 - [ ] With scripts off (disable JavaScript), Q4 shows no strip and no gap between the source line and the claims → AC-70
 - [ ] With scripts on, press Q4's strip → the graph opens, and the panel's answer view shows the list's verdict wording and captions, with the formatting on its question and claims → AC-81
-- [ ] In the open graph select Held out 2 item 0021#feature-design:25 → the panel shows `skillCounts` as bold code → AC-19
+- [ ] In the open graph select Held out 2 item 0021#feature-design:25 → the panel shows `skillCounts` as bold code; on Eval 1 select item 0001#binding-rules:26 → the phrase of its link to 0001#binding-rules:30 shows as bold, without its `**` → AC-19, AC-99
 
 ## What the eye checks (browser, phone 390 by 844)
 - [ ] On Q4 the mark sits under the verdict → AC-56
-- [ ] On Held out 2 select an item with a long code word (for example `supabase/migrations/20260825162457_data_model.sql:168`) → the word breaks inside itself and nothing runs past the screen edge → AC-13
+- [ ] On Q14 open the graph and select item 0013#follow-up:13, whose text holds `supabase/migrations/20260825162457_data_model.sql:168` → the word breaks inside itself and nothing runs past the screen edge; check Held out 1's question the same way (`test/integration/profile-form.test.ts`) → AC-13
 - [ ] Every entry's headings and strip match the phone column of the board measures → AC-39, AC-40
 
 ## The link to one graph (browser, desktop 1440 by 900; steps 4 to 6 also at 390 by 844)
@@ -43,8 +45,8 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] Open the page with no fragment, press Q4's strip → the address now ends `#q4`, and the back button leaves the page (it did not add a step) → AC-85
 - [ ] With Q4's graph open, press next → the address ends `#q5` and the back button still leaves the page → AC-86
 - [ ] Close Q4's graph with Esc, then again with the close button → each time the address has no `#…` at the end, and the back button leaves the page → AC-87
-- [ ] After the close, look at the page → Q4 is still in view, as before the graph opened → AC-88
-- [ ] Open `/tmp/gallery/index.html#nope` and `#Q4` → the page opens as usual, no graph, and the console shows no error → AC-89
+- [ ] Open Q4's graph and close it → Q4 is in view; open Q4's graph, press next, then close it → the page is at Q5, the entry whose graph was showing → AC-88
+- [ ] Open `/tmp/gallery/index.html#nope`, `#Q4` and `#gw-key` → each time the page opens as usual, no graph, and the console shows no error → AC-89
 - [ ] Open Q4's graph and select an item → the address still ends `#q4` → AC-90
 - [ ] Look at the address after opening Eval 3, Held out 2 and Q22 → `#eval-3`, `#held-out-2`, `#q22`, each the entry's slug and nothing else → AC-92
 - [ ] `uv run pytest tests/test_gallery_graph.py -k "slug_is_article_id or replace_state"` → passes: the slug is each article's `id`, and `graph.js` uses only `replaceState` → AC-82, AC-91

@@ -59,7 +59,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-35**: A click on empty canvas clears the selection and returns the panel to the answer view.
 
 *The reading panel*
-- **AC-36**: With nothing selected, the panel shows the question as stored.
+- **AC-36**: With nothing selected, the panel shows the question as stored. _Amended 2026-10-26: markers and code words are drawn as the list draws them ([spec 0012](../0012-gallery-readability/index.md) AC-9, AC-14)._
 - **AC-37** (amended 2026-10-26): With nothing selected, the panel shows the verdict block the list shows (the verdict wording and its captions, including "N of M claims failed a check" when spec 0010 AC-33 adds it), but not the mark ([spec 0012](../0012-gallery-readability/index.md) AC-81).
 - **AC-38**: With nothing selected, the panel shows the claims in stored order, each with the labels spec 0010 AC-26 to AC-32 give it.
 - **AC-39**: A cited id that is not rejected, in a claim shown in the panel, selects that item.
@@ -71,7 +71,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-45**: A selected item shows the numbers of the claims that cite it, in the two digit form the list uses (`01`).
 - **AC-46**: A selected item with a file shows its location as a link built by spec 0010 AC-34 and AC-35.
 - **AC-47**: A selected item with no file shows "no file stored" and no link (spec 0010 AC-36).
-- **AC-48**: A selected item lists each of its links, in and out, with the link type, its direction, the other item's id, and the stored phrase it was read from.
+- **AC-48**: A selected item lists each of its links, in and out, with the link type, its direction, the other item's id, and the stored phrase it was read from. _Amended 2026-10-26: the phrase is drawn with `code` and **bold** formatted, from the link's `phrase_runs` ([spec 0012](../0012-gallery-readability/index.md) AC-99 to AC-101)._
 - **AC-49**: A held link in that list shows `HELD`.
 - **AC-50**: A link from an item to itself is listed in the panel, though it is drawn as no line.
 - **AC-51**: The id of the other item in each listed link selects that item.
@@ -176,7 +176,7 @@ The files in `assets/` and `vendor/` are read in the command's shell (`cli.py` o
 
 | Field | Type | Rule |
 |---|---|---|
-| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the data block and the entry; it is not in the address |
+| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the data block and the entry; it is not in the address | _Note 2026-10-26: the slug is also in the address: `#<slug>`, and the `id` of each entry's `article` ([spec 0012](../0012-gallery-readability/index.md) AC-82 to AC-92)._
 | `label` | string | The marks entry's label, shown in the window's heading row |
 | `position`, `total` | integers | This entry's place in page order (sections in `Section` order, entries in marks file order), counted from 1, and the number of entries |
 | `previous`, `next` | slug or null | The entries either side in that order; null at either end |
