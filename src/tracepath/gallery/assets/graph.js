@@ -394,7 +394,8 @@
   }
 
   // The answer view: the entry's own question, verdict and claims from the list on the
-  // page, so their labels cannot differ (AC-36 to AC-38), then every item (AC-52).
+  // page, so their labels cannot differ (AC-36 to AC-38), then every item (AC-52). The
+  // parts are found anywhere inside the entry (spec 0012 AC-76).
   function showAnswer() {
     const view = html("div", "gw-answer");
     view.append(html("p", "gw-eyebrow", state.graph.label), title("Answer"));
@@ -402,10 +403,10 @@
       view.append(html("p", "gw-empty", "This answer cites no item."));
     }
     for (const part of [".question", ".verdict", "ol"]) {
-      const found = state.article.querySelector(":scope > " + part);
+      const found = state.article.querySelector(part);
       if (found) view.append(found.cloneNode(true));
     }
-    if (!state.article.querySelector(":scope > ol")) view.append(html("p", "", "No claims."));
+    if (!state.article.querySelector("ol")) view.append(html("p", "", "No claims."));
     view.append(
       ...itemList("Cited", state.graph.items.filter((item) => item.cited)),
       ...itemList("Not cited", state.graph.items.filter((item) => !item.cited))

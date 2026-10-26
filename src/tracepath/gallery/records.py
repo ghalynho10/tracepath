@@ -15,7 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from tracepath.ask.answer import Basis, CheckedClaim, Claim
+from tracepath.ask.answer import Basis, CheckedClaim, Claim, Verdict
 from tracepath.ask.record import ASKS_DIR
 from tracepath.gallery.citations import (
     JOBHUNT_COMMIT,
@@ -117,7 +117,7 @@ class AskRecord(BaseModel):
     hops: int | None = None
     asked_at: datetime
     corpus_commit: str
-    verdict: str
+    verdict: Verdict
     missing: tuple[str, ...]
     claims: tuple[StoredClaim, ...]
     items: tuple[StoredItem, ...]

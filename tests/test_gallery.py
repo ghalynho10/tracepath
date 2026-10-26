@@ -18,7 +18,14 @@ from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
 from tracepath.gallery.inline import runs, to_html
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
-from tracepath.gallery.render import LABEL_KEY, MARK_KEY, STYLE
+from tracepath.gallery.render import (
+    LABEL_KEY,
+    MARK_CAPTION,
+    MARK_KEY,
+    STYLE,
+    VERDICT_CAPTION,
+    VERDICT_WORDS,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -158,7 +165,7 @@ def test_entry_shows_question_verdict_and_claims_in_order(root: Path, tmp_path: 
     assert isinstance(claims, list)
 
     assert _shown(str(record["question"])) in entry
-    assert f'verdict: <span class="stored">{record["verdict"]}</span>' in entry
+    assert '<p class="verdict-word">answered</p>' in entry
     places = [entry.index(_shown(str(claim["text"]))) for claim in claims]
     assert places == sorted(places)
     assert len(places) == len(claims) > 0
@@ -202,7 +209,7 @@ def test_entry_shows_mark_and_note_exactly(
     """AC-12, AC-13: the mark as given, the note as given, no note when it is null."""
     entry = _article(_build(root, tmp_path / "site"), str(marks["label"]))
 
-    assert f'<span class="stored">{marks["mark"]}</span>' in entry
+    assert f'<span class="swipe" data-mark="{marks["mark"]}">{marks["mark"]}</span>' in entry
     if marks["note"] is None:
         assert 'class="note"' not in entry
     else:
@@ -210,26 +217,108 @@ def test_entry_shows_mark_and_note_exactly(
 
 
 def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: Path) -> None:
-    """AC-14, AC-15: the author's mark in first person, the model's verdict as its own."""
+    """AC-14, AC-15 as amended: each word carries the caption that says whose it is."""
     page = _build(root, tmp_path / "site")
     entry = _article(page, "Held out 3")
 
-    assert '<p class="verdict">Model\'s own verdict: ' in entry
-    assert '<p class="mark" data-mark="partly right">My mark: ' in entry
+    assert f'<p class="caption">{escape(VERDICT_CAPTION)}</p>' in entry
+    assert f'<p class="caption">{escape(MARK_CAPTION)}</p>' in entry
     assert "<h3>My marks</h3>" in page
     assert "each with my own mark." in page
     words = re.sub(r"<script[^>]*>.*?</script>", "", page, flags=re.S)
     assert "engineer" not in re.sub(r"<[^>]+>", "", words).lower()
 
 
-@pytest.mark.parametrize("mark", ["right", "partly right", "wrong", "declined"])
-def test_mark_is_a_filled_pill_and_the_verdict_an_outlined_one(mark: str) -> None:
-    """AC-14, task 8: each mark has its own fill; the verdict has a border and no fill."""
-    verdict = re.search(r"\.verdict \{([^}]*)\}", STYLE)
-    assert verdict is not None
-    assert "border:" in verdict.group(1)
-    assert "background" not in verdict.group(1)
-    assert re.search(rf'\.mark\[data-mark="{mark}"\] \{{ background: [^;]+; \}}', STYLE)
+def _rule(selector: str) -> str:
+    """The body of the one style rule for `selector`."""
+    found = re.findall(rf"(?:^|\n){re.escape(selector)} \{{([^}}]*)\}}", STYLE)
+    assert len(found) == 1, selector
+    return str(found[0])
+
+
+@pytest.mark.parametrize(
+    ("mark", "colour"),
+    [
+        pytest.param("right", "#B9E3EE", id="AC-49"),
+        pytest.param("partly right", "#F6E27F", id="AC-50"),
+        pytest.param("wrong", "#FFC8C2", id="AC-51"),
+        pytest.param("declined", "#CBD3DC", id="AC-52"),
+    ],
+)
+def test_each_mark_is_bold_on_its_own_swipe(
+    root: Path, tmp_path: Path, mark: str, colour: str
+) -> None:
+    """Spec 0012 AC-49 to AC-52."""
+    _write_marks(root, [dict(m, mark=mark) if m["label"] == "Eval 1" else m for m in MARKS])
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<p class="mark-word"><span class="swipe" data-mark="{mark}">{mark}</span></p>' in entry
+    assert _rule(f'.swipe[data-mark="{mark}"]').strip() == f"background: {colour};"
+    assert "font-weight: 700;" in _rule(".swipe")
+
+
+def test_the_mark_is_no_button_and_has_no_border(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-54."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+    mark = entry.split('<div class="mark">', 1)[1].split("</div>", 1)[0]
+
+    assert "<button" not in mark
+    assert "border:" not in _rule(".swipe") + _rule(".mark-word") + _rule(".mark-word .swipe")
+    assert not re.search(r"\.mark\b[^{]*\{[^}]*border", STYLE)
+
+
+def test_the_verdict_and_the_mark_share_one_block_verdict_first(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-41: one block, the model's verdict then the engineer's mark."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert entry.count('<div class="verdict-mark">') == 1
+    block = entry.split('<div class="verdict-mark">', 1)[1]
+    assert block.startswith('<div class="verdict"><p class="verdict-word">')
+    assert block.index('<div class="verdict">') < block.index('<div class="mark">')
+    assert entry.index('<p class="details">') < entry.index('<div class="verdict-mark">')
+
+
+@pytest.mark.parametrize(
+    ("code", "words"),
+    [
+        pytest.param("answered", "answered", id="AC-42"),
+        pytest.param("partly", "partly answered", id="AC-43"),
+        pytest.param("not_supported", "not supported by the records", id="AC-44"),
+        pytest.param("no_documented_link", "no documented link", id="AC-45"),
+    ],
+)
+def test_each_verdict_code_shows_its_words_in_mono_with_its_caption(
+    root: Path, tmp_path: Path, code: str, words: str
+) -> None:
+    """Spec 0012 AC-42 to AC-46."""
+    _edit_record(root, DEV, lambda r: r.update(verdict=code))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        f'<div class="verdict"><p class="verdict-word">{words}</p>'
+        '<p class="caption">\u2014 the model&#x27;s verdict on its own answer</p></div>'
+    ) in entry
+    assert "var(--mono)" in _rule(".verdict-word")
+
+
+def test_no_verdict_wording_is_a_mark_word() -> None:
+    """Spec 0012 AC-47, over every stored code."""
+    assert set(VERDICT_WORDS) == {"answered", "partly", "not_supported", "no_documented_link"}
+    assert not set(VERDICT_WORDS.values()) & {mark for mark, _ in MARK_KEY}
+
+
+def test_build_fails_on_a_verdict_it_does_not_know(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-48: exit 1, naming the record."""
+    _edit_record(root, DEV, lambda r: r.update(verdict="maybe"))
+
+    code, output = _run(root, tmp_path / "site")
+
+    assert code == 1
+    assert DEV in output
+    assert "verdict" in output
+    assert not (tmp_path / "site" / "index.html").exists()
 
 
 def test_entry_links_to_the_source_of_its_mark(root: Path, tmp_path: Path) -> None:
@@ -773,13 +862,17 @@ def test_labels_and_details_keep_their_stored_case(rule: str) -> None:
     assert "text-transform" not in found.group(1)
 
 
+#: The failed claims tally, a second caption under the verdict's (AC-33, as amended).
+TALLY = '<p class="caption">1 of 4 claims failed a check</p>'
+
+
 @pytest.mark.parametrize(
     ("change", "tally"),
     [
         ({}, ""),
-        ({"cites": [], "uncited": True}, "; 1 of 4 claims failed a check"),
-        ({"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]}, "; 1 of 4 claims failed a check"),
-        ({"basis": "link", "inferred": True}, "; 1 of 4 claims failed a check"),
+        ({"cites": [], "uncited": True}, TALLY),
+        ({"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]}, TALLY),
+        ({"basis": "link", "inferred": True}, TALLY),
         ({"basis": "inferred", "inferred": True}, ""),
     ],
 )
@@ -791,7 +884,7 @@ def test_verdict_line_counts_claims_that_failed_a_check(
 
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
 
-    assert f'verdict: <span class="stored">answered</span>{tally}</p>' in entry
+    assert f"own answer</p>{tally}</div>" in entry
 
 
 def test_items_sent_is_closed_until_opened(root: Path, tmp_path: Path) -> None:
@@ -858,14 +951,47 @@ def test_row_with_no_location_has_no_link(root: Path, tmp_path: Path) -> None:
 
 
 def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path) -> None:
-    """The key, task 6: the marks' wording is the engineer's, word for word."""
+    """The key, task 6, and spec 0012 AC-102: the engineer's words, each mark a swipe."""
     page = _build(root, tmp_path / "site")
 
     for mark, meaning in MARK_KEY:
         assert (
-            f'<dt class="mark" data-mark="{escape(mark)}">{escape(mark)}</dt>'
+            f'<dt><span class="swipe" data-mark="{mark}">{mark}</span></dt>'
             f"<dd>{escape(meaning)}</dd>"
         ) in page
+
+
+def _key_section(page: str) -> str:
+    return page.split('<section class="key">', 1)[1].split("</section>", 1)[0]
+
+
+def test_the_total_counts_each_mark_shown(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-71 to AC-73, AC-75: the fixture's three entries, one mark carried by none."""
+    total = _key_section(_build(root, tmp_path / "site")).split('<p class="total">', 1)[1]
+
+    assert total.split("</p>", 1)[0] == (
+        "My marks on the 3 shown answers: "
+        '<span class="swipe" data-mark="right">right</span> 1 · '
+        '<span class="swipe" data-mark="partly right">partly right</span> 1 · '
+        '<span class="swipe" data-mark="wrong">wrong</span> 1 · '
+        '<span class="swipe" data-mark="declined">declined</span> 0'
+    )
+
+
+def test_the_total_sits_in_the_key_above_the_marks_list(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-74."""
+    key = _key_section(_build(root, tmp_path / "site"))
+
+    assert key.index("<h3>My marks</h3>") < key.index('<p class="total">') < key.index("<dl>")
+
+
+def test_the_total_of_the_committed_marks(tmp_path: Path) -> None:
+    """Spec 0012 AC-71, AC-72: 31 shown, 17 right, 2 partly right, 2 wrong, 10 declined."""
+    total = _key_section(_build(PROJECT_ROOT, tmp_path / "site")).split('<p class="total">')[1]
+
+    assert re.sub(r"<[^>]+>", "", total.split("</p>", 1)[0]) == (
+        "My marks on the 31 shown answers: right 17 · partly right 2 · wrong 2 · declined 10"
+    )
 
 
 def test_key_gives_each_label_its_meaning(root: Path, tmp_path: Path) -> None:

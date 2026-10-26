@@ -10,9 +10,10 @@ import math
 from collections.abc import Mapping
 from datetime import UTC
 from html import escape
+from types import MappingProxyType
 from urllib.parse import quote
 
-from tracepath.ask.answer import claim_marks
+from tracepath.ask.answer import Verdict, claim_marks
 from tracepath.gallery.citations import (
     JOBHUNT_COMMIT,
     JOBHUNT_REPO_URL,
@@ -29,7 +30,7 @@ from tracepath.gallery.graph import (
     data_block,
 )
 from tracepath.gallery.inline import runs, to_html
-from tracepath.gallery.records import Entry, PageScripts, Section, StoredClaim
+from tracepath.gallery.records import Entry, Mark, PageScripts, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
 TRACEPATH_REPO_URL = "https://github.com/ghalynho10/tracepath"
@@ -62,7 +63,7 @@ ASK_1_LINE = (
 HELD_OUT_LINE = "Asked once at the end of v1, never used to tune the tool."
 
 #: What each of the engineer's marks means, in the engineer's words (spec 0010 Follow-up).
-MARK_KEY = (
+MARK_KEY: tuple[tuple[Mark, str], ...] = (
     ("right", "Answers the question with the points it needs, even if it leaves out some detail."),
     (
         "partly right",
@@ -80,6 +81,23 @@ MARK_KEY = (
         "invents nothing.",
     ),
 )
+
+#: How each stored verdict code reads on the page; none equals a mark word (spec 0012
+#: AC-42 to AC-47).
+VERDICT_WORDS: Mapping[Verdict, str] = MappingProxyType(
+    {
+        "answered": "answered",
+        "partly": "partly answered",
+        "not_supported": "not supported by the records",
+        "no_documented_link": "no documented link",
+    }
+)
+
+#: The caption under the model's verdict (spec 0012 AC-46).
+VERDICT_CAPTION = "\u2014 the model's verdict on its own answer"
+
+#: The caption under the engineer's mark (spec 0012 AC-53).
+MARK_CAPTION = "\u2014 my mark"
 
 #: What each label code set on a claim at ask time means (spec 0009 AC-16 to AC-20),
 #: in the wording the engineer settled on 2026-10-24.
@@ -118,7 +136,7 @@ STYLE = """\
 :root { --paper: #FFFFFF; --ink: #011936; --ink-82: rgba(1, 25, 54, .82);
   --ink-64: #3F5877; --ink-46: rgba(63, 88, 119, .78);
   --rule: rgba(1, 25, 54, .14); --rule-strong: rgba(1, 25, 54, .30);
-  --cyan: #07A0C3; --yellow: #F6E27F; --pink: #FFC8C2;
+  --cyan: #07A0C3;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 * { box-sizing: border-box; }
@@ -145,7 +163,7 @@ section > h2 + p { margin: 14px 0 0; max-width: 36rem; font-size: 14px; color: v
 .key dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px;
   align-items: baseline; font-size: 14px; }
 .key dt { font: 12px/1.5 var(--mono); max-width: 10rem; }
-.key dt.mark { font: 500 13px/1.5 var(--sans); margin: 0; justify-self: start; }
+.key .total { margin: 0 0 14px; font-size: 14px; color: var(--ink-82); }
 .key dd { margin: 0; color: var(--ink-82); }
 @media (max-width: 480px) {
   .key dl { grid-template-columns: 1fr; gap: 4px; }
@@ -158,14 +176,28 @@ article > h3 { font-size: clamp(44px, 11vw, 62px); line-height: .94; font-weight
 .question { font-size: 20px; line-height: 1.4; margin: 0 0 10px; max-width: 36rem; }
 .details { font: 500 11px/1.4 var(--mono); letter-spacing: .06em;
   color: var(--ink-46); margin: 0 0 22px; }
-.verdict, .mark { display: inline-flex; gap: .4em; align-items: baseline; margin: 0 8px 8px 0;
-  padding: 4px 13px; border-radius: 999px; font-size: 13px; line-height: 1.5; }
-.verdict { border: 1px solid var(--rule-strong); color: var(--ink-82); }
-.mark { border: 1px solid var(--ink); color: var(--ink); font-weight: 500; }
-.mark[data-mark="right"] { background: rgba(7, 160, 195, .18); }
-.mark[data-mark="partly right"] { background: var(--yellow); }
-.mark[data-mark="wrong"] { background: var(--pink); }
-.mark[data-mark="declined"] { background: rgba(1, 25, 54, .06); }
+.verdict-mark { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px; margin: 18px 0 0; }
+.verdict p, .mark p { margin: 0; }
+.verdict-word { font: 22px/1.3 var(--mono); text-wrap: balance; }
+.mark-word { font-size: 22px; line-height: 1.3; }
+.caption { margin-top: 8px !important; font-size: 12.5px; line-height: 1.4; color: var(--ink-64); }
+.caption + .caption { margin-top: 2px !important; }
+.swipe { padding: 0 6px; border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; font-weight: 700;
+  font-family: var(--sans); color: var(--ink); -webkit-box-decoration-break: clone;
+  box-decoration-break: clone; }
+.mark-word .swipe { margin-left: -6px; }
+.swipe[data-mark="right"] { background: #B9E3EE; }
+.swipe[data-mark="partly right"] { background: #F6E27F; }
+.swipe[data-mark="wrong"] { background: #FFC8C2; }
+.swipe[data-mark="declined"] { background: #CBD3DC; }
+@media (max-width: 560px) {
+  .verdict-mark { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+  .verdict-word, .mark-word { font-size: 18px; }
+  .caption { margin-top: 6px !important; font-size: 12px; }
+  .swipe { padding: 0 5px; }
+  .mark-word .swipe { margin-left: -5px; }
+}
 .note { margin: 6px 0; max-width: 30rem; padding: 10px 14px; font-size: 14.7px; line-height: 1.5;
   border-radius: 13.6px 13.6px 13.6px 1.6px; background: var(--ink); color: var(--paper); }
 .source { margin: 4px 0 0; font-size: 12px; color: var(--ink-46); }
@@ -439,12 +471,35 @@ def _claims(entry: Entry) -> str:
     return f"<ol>{rows}</ol>" if rows else "<p>No claims.</p>"
 
 
+def _swipe(mark: Mark) -> str:
+    """A mark word, bold on its own colour (spec 0012 AC-49 to AC-52)."""
+    return f'<span class="swipe" data-mark="{escape(mark)}">{escape(mark)}</span>'
+
+
 def _verdict(entry: Entry) -> str:
-    """The model's verdict, and how many claims failed a check when any did (AC-33)."""
+    """The model's verdict in words, under it its caption (spec 0012 AC-42 to AC-46).
+
+    When any claim failed a check, the tally is a second caption (spec 0010 AC-33).
+    """
     claims = entry.record.claims
     failed = sum(1 for claim in claims if claim.checked().failed)
-    tally = f"; {failed} of {len(claims)} claims failed a check" if failed else ""
-    return f'<p class="verdict">Model\'s own verdict: {_text(entry.record.verdict)}{tally}</p>'
+    tally = (
+        f'<p class="caption">{failed} of {len(claims)} claims failed a check</p>' if failed else ""
+    )
+    return (
+        '<div class="verdict">'
+        f'<p class="verdict-word">{escape(VERDICT_WORDS[entry.record.verdict])}</p>'
+        f'<p class="caption">{escape(VERDICT_CAPTION)}</p>{tally}</div>'
+    )
+
+
+def _verdict_and_mark(entry: Entry) -> str:
+    """One block: the model's verdict first, the engineer's mark second (spec 0012 AC-41)."""
+    return (
+        f'<div class="verdict-mark">{_verdict(entry)}'
+        f'<div class="mark"><p class="mark-word">{_swipe(entry.marks.mark)}</p>'
+        f'<p class="caption">{escape(MARK_CAPTION)}</p></div></div>'
+    )
 
 
 def _details(entry: Entry) -> str:
@@ -495,8 +550,8 @@ def _items_sent(entry: Entry) -> str:
     )
 
 
-def _mark(entry: Entry) -> str:
-    """The engineer's mark, note and where both were copied from (AC-12 to AC-16)."""
+def _ruling(entry: Entry) -> str:
+    """The engineer's note and where the mark was copied from (AC-13, AC-16)."""
     marks = entry.marks
     note = (
         ""
@@ -505,7 +560,6 @@ def _mark(entry: Entry) -> str:
     )
     source = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
     return (
-        f'<p class="mark" data-mark="{escape(marks.mark)}">My mark: {_text(marks.mark)}</p>'
         f"{note}"
         f'<p class="source">From <a href="{escape(source)}">{escape(marks.source_path)}</a>, '
         f"{_text(marks.source_row)}</p>"
@@ -531,8 +585,8 @@ def _entry(entry: Entry, graph: EntryGraph) -> str:
         f"<h3>{_text(entry.marks.label)}</h3>"
         f'<p class="question">{_formatted(entry.record.question, code_words=True)}</p>'
         f"{_details(entry)}"
-        f"{_verdict(entry)}"
-        f"{_mark(entry)}"
+        f"{_verdict_and_mark(entry)}"
+        f"{_ruling(entry)}"
         f"{_graph_button(graph)}"
         f"{_claims(entry)}"
         f"{_missing(entry)}"
@@ -584,25 +638,27 @@ def _intro(shown: int, records: int) -> str:
     )
 
 
-def _key_list(rows: tuple[tuple[str, str], ...], marks: bool) -> str:
-    """One key list; a mark's term is drawn as the same pill an entry shows."""
-    pill = ' class="mark" data-mark="{}"'
-    return (
-        "<dl>"
-        + "".join(
-            f"<dt{pill.format(escape(t)) if marks else ''}>{escape(t)}</dt><dd>{escape(d)}</dd>"
-            for t, d in rows
-        )
-        + "</dl>"
+def _key_list(rows: tuple[tuple[str, str], ...]) -> str:
+    return "<dl>" + "".join(f"<dt>{t}</dt><dd>{escape(d)}</dd>" for t, d in rows) + "</dl>"
+
+
+def _total(entries: tuple[Entry, ...]) -> str:
+    """How many answers are shown and how many carry each mark (spec 0012 AC-71 to AC-75)."""
+    counts = " · ".join(
+        f"{_swipe(mark)} {sum(1 for entry in entries if entry.marks.mark == mark)}"
+        for mark, _ in MARK_KEY
     )
+    return f'<p class="total">My marks on the {len(entries)} shown answers: {counts}</p>'
 
 
-def _key() -> str:
-    """What the engineer's marks and the claim labels mean."""
+def _key(entries: tuple[Entry, ...]) -> str:
+    """What the engineer's marks and the claim labels mean, with the total of the marks."""
+    marks = tuple((_swipe(mark), meaning) for mark, meaning in MARK_KEY)
+    labels = tuple((escape(label), meaning) for label, meaning in LABEL_KEY)
     return (
         '<section class="key"><h2>Key</h2>'
-        f"<h3>My marks</h3>{_key_list(MARK_KEY, marks=True)}"
-        f"<h3>Labels on a claim</h3>{_key_list(LABEL_KEY, marks=False)}"
+        f"<h3>My marks</h3>{_total(entries)}{_key_list(marks)}"
+        f"<h3>Labels on a claim</h3>{_key_list(labels)}"
         "</section>"
     )
 
@@ -635,5 +691,5 @@ def render_page(
         "<title>tracepath answer gallery</title>"
         f"<style>{STYLE}{GRAPH_STYLE}{PANEL_STYLE}</style></head>"
         f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
-        f"{_key()}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
+        f"{_key(entries)}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
     )
