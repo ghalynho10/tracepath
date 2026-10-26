@@ -341,6 +341,33 @@
     panel.querySelector(".gw-title").focus({ preventScroll: true });
   }
 
+  // Stored text drawn from the runs the build made (spec 0012): one element per run, by
+  // textContent; flag 1 is code, 2 bold. A code run holds one `w` element per word, the
+  // spaces kept as text between them (AC-96). No runs means plain text (AC-98, AC-101).
+  function formatted(node, text, runs) {
+    if (!runs) {
+      node.textContent = text;
+      return node;
+    }
+    for (const [words, flags] of runs) {
+      let part = document.createTextNode(words);
+      if (flags & 1) {
+        part = html("code");
+        for (const piece of words.split(/( +)/)) {
+          if (/^ +$/.test(piece)) part.append(piece);
+          else if (piece) part.append(html("span", "w", piece));
+        }
+      }
+      if (flags & 2) {
+        const strong = html("strong");
+        strong.append(part);
+        part = strong;
+      }
+      node.append(part);
+    }
+    return node;
+  }
+
   // An id that selects its item when clicked; the id goes in a data attribute only.
   function idButton(id) {
     const button = html("button", "gw-id", id);
@@ -423,7 +450,7 @@
       back,
       html("p", "gw-eyebrow", words.join(" · ")),
       title(item.id),
-      html("p", "gw-text stored", item.text),
+      formatted(html("p", "gw-text stored"), item.text, item.runs),
       where,
       html("p", "gw-meta", claims),
       html("h3", "gw-sub", "Links (" + item.link_ids.length + ")")
@@ -441,7 +468,7 @@
       );
       if (link.held) row.append(" HELD");
       const phrase = link.phrase === null ? "no phrase stored" : link.phrase;
-      row.append(html("span", "gw-phrase stored", phrase));
+      row.append(formatted(html("span", "gw-phrase stored"), phrase, link.phrase_runs));
       list.append(row);
     }
     if (item.link_ids.length === 0) view.append(html("p", "gw-meta", "No links."));

@@ -16,6 +16,7 @@ from typer.testing import CliRunner
 from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
+from tracepath.gallery.inline import runs, to_html
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
 from tracepath.gallery.render import LABEL_KEY, MARK_KEY, STYLE
 
@@ -80,6 +81,11 @@ def _edit_record(root: Path, name: str, change: Callable[[dict[str, Any]], None]
     path.write_text(json.dumps(record), encoding="utf-8")
 
 
+def _shown(text: str, code_words: bool = True) -> str:
+    """A stored text as the page writes it, by the inline rule of spec 0012."""
+    return to_html(runs(text, code_words))
+
+
 def _cited_item(record: dict[str, Any]) -> dict[str, Any]:
     """The item the record's first claim cites first."""
     cited = record["claims"][0]["cites"][0]
@@ -140,20 +146,20 @@ def test_page_shows_only_the_records_the_marks_file_names(root: Path, tmp_path: 
 
     assert page.count("<article>") == len(MARKS)
     for name in (DEV, HELD, REAL):
-        assert escape(str(_stored(name)["question"])) in page
-    assert escape(str(_stored(UNNAMED)["question"])) not in page
+        assert _shown(str(_stored(name)["question"])) in page
+    assert _shown(str(_stored(UNNAMED)["question"])) not in page
 
 
 def test_entry_shows_question_verdict_and_claims_in_order(root: Path, tmp_path: Path) -> None:
-    """AC-17, AC-18, AC-19: stored text as stored, escaped."""
+    """AC-17, AC-18, AC-19: stored text as stored, escaped, formatted by spec 0012's rule."""
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
     record = _stored(DEV)
     claims = record["claims"]
     assert isinstance(claims, list)
 
-    assert escape(str(record["question"])) in entry
+    assert _shown(str(record["question"])) in entry
     assert f'verdict: <span class="stored">{record["verdict"]}</span>' in entry
-    places = [entry.index(escape(str(claim["text"]))) for claim in claims]
+    places = [entry.index(_shown(str(claim["text"]))) for claim in claims]
     assert places == sorted(places)
     assert len(places) == len(claims) > 0
 
@@ -711,14 +717,14 @@ def test_stored_markup_shows_as_text(root: Path, tmp_path: Path) -> None:
     assert "<figure" not in page
 
 
-def test_line_breaks_kept_and_markdown_not_rendered(root: Path, tmp_path: Path) -> None:
-    """AC-25."""
-    _edit_record(root, DEV, lambda r: r["claims"][0].update(text="First line\n**not bold**"))
+def test_line_breaks_kept_and_no_other_markdown_rendered(root: Path, tmp_path: Path) -> None:
+    """AC-25, as spec 0012 changes it: line breaks kept, bold drawn, a heading left as typed."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(text="# First line\n**bold**"))
 
     claim = _first_claim(_build(root, tmp_path / "site"))
 
-    assert '<span class="stored">First line\n**not bold**</span>' in claim
-    assert "<strong>" not in claim
+    assert '<span class="stored"># First line\n<strong>bold</strong></span>' in claim
+    assert "<h1>" not in claim
     assert ".stored { white-space: pre-wrap; }" in _build(root, tmp_path / "site2")
 
 
@@ -805,7 +811,7 @@ def test_cited_items_are_shown_in_full(root: Path, tmp_path: Path) -> None:
 
     for item in record["items"]:
         if item["id"] in cited:
-            assert f'<span class="stored">{escape(item["text"])}</span>' in sent
+            assert f'<span class="stored">{_shown(item["text"], False)}</span>' in sent
     assert sent.count('<div class="item">') == len(cited) > 0
 
 
@@ -948,3 +954,60 @@ def test_page_names_jobhunt_at_the_pinned_commit(root: Path, tmp_path: Path) -> 
         f'at commit <a href="https://github.com/ghalynho10/JobHunt/tree/{JOBHUNT_COMMIT}">'
         "2e40bcf</a>"
     ) in page
+
+
+#: A stored text with an explicit code span, a bold pair and a bare file name.
+MARKED = "Read `x_y` and **z** in a.ts"
+
+#: How the page writes `MARKED` with code words on, and with them off.
+WITH_WORDS = (
+    'Read <code><span class="w">x_y</span></code> and <strong>z</strong> in '
+    '<code><span class="w">a.ts</span></code>'
+)
+WITHOUT_WORDS = 'Read <code><span class="w">x_y</span></code> and <strong>z</strong> in a.ts'
+
+
+def test_the_question_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-14, AC-20."""
+    _edit_record(root, DEV, lambda r: r.update(question=MARKED))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<p class="question"><span class="stored">{WITH_WORDS}</span></p>' in entry
+
+
+def test_each_claim_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-15, AC-20."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(text=MARKED))
+
+    claim = _first_claim(_build(root, tmp_path / "site"))
+
+    assert claim.startswith(f'<span class="stored">{WITH_WORDS}</span>')
+
+
+def test_each_missing_note_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-16, AC-27."""
+    _edit_record(root, DEV, lambda r: r.update(missing=[MARKED]))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<li><span class="stored">{WITH_WORDS}</span></li>' in entry
+
+
+def test_the_note_is_formatted_from_its_markers_only(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-17, AC-29: the fixture's own marks file, never the committed one."""
+    marks = [dict(m, note=MARKED) if m["label"] == "Q2" else m for m in MARKS]
+    _write_marks(root, marks)
+
+    entry = _article(_build(root, tmp_path / "site"), "Q2")
+
+    assert f'<p class="note"><span class="stored">{WITHOUT_WORDS}</span></p>' in entry
+
+
+def test_cited_item_text_is_formatted_from_its_markers_only(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-18, AC-28."""
+    _edit_record(root, DEV, lambda r: _cited_item(r).update(text=MARKED))
+
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[0]
+
+    assert f'<span class="stored">{WITHOUT_WORDS}</span>' in sent

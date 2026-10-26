@@ -22,6 +22,7 @@ from tracepath.gallery.graph import (
     data_block,
     slug_of,
 )
+from tracepath.gallery.inline import has_pair, runs
 from tracepath.gallery.records import (
     GRAPH_SCRIPT,
     MARKS_FILE,
@@ -435,7 +436,8 @@ def test_only_cited_unrejected_ids_carry_data_item(page: str) -> None:
 
 
 def test_script_never_turns_text_into_markup() -> None:
-    """AC-53: the panel is filled with textContent; no call parses a string as markup."""
+    """AC-53, spec 0012 AC-78: the panel is filled with textContent, runs included; no call
+    parses a string as markup, and `innerHTML` is never set."""
     script = GRAPH_SCRIPT.read_text(encoding="utf-8")
 
     for parser in ("innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "DOMParser"):
@@ -807,3 +809,70 @@ def test_build_fails_on_a_label_that_makes_no_slug(tmp_path: Path) -> None:
     assert code == 1
     assert "'***': its label makes an empty slug" in output
     assert not (tmp_path / "site" / "index.html").exists()
+
+
+def _flags(text: str) -> list[list[Any]] | None:
+    """The `runs` a data block should hold for a text: explicit markers only, or none."""
+    found = runs(text)
+    if not has_pair(found):
+        return None
+    return [[run.text, int(run.code) + 2 * int(run.bold)] for run in found]
+
+
+def test_an_item_carries_runs_exactly_when_its_text_holds_a_marker_pair(
+    blocks: dict[str, dict[str, Any]],
+) -> None:
+    """Spec 0012 AC-79, AC-98, AC-19 (the data the panel draws), AC-28 (no code words)."""
+    items = [item for graph in blocks.values() for item in graph["items"]]
+
+    for item in items:
+        assert item.get("runs") == _flags(item["text"]), item["id"]
+    assert any("runs" in item for item in items)
+    assert any("runs" not in item for item in items)
+
+
+@pytest.mark.parametrize(
+    ("label", "item", "run"),
+    [
+        pytest.param("Held out 2", "0021#feature-design:25", ["skillCounts", 3], id="bold code"),
+        pytest.param(
+            "Held out 2",
+            "0017#build-plan:2",
+            ['include: ["test/eval/**/*.test.ts"]', 1],
+            id="stars inside code",
+        ),
+    ],
+)
+def test_a_real_item_carries_its_runs(
+    blocks: dict[str, dict[str, Any]], label: str, item: str, run: list[Any]
+) -> None:
+    """Spec 0012 AC-3, AC-4, AC-79 on the real records the spec names."""
+    found = next(i for i in blocks[label]["items"] if i["id"] == item)
+
+    assert run in found["runs"]
+
+
+def test_a_real_item_keeps_double_backticks_and_single_stars_as_typed(
+    blocks: dict[str, dict[str, Any]],
+) -> None:
+    """Spec 0012 AC-7 (Held out 2, 0017#build-plan:4) and AC-8 (Eval 1, 0021#feature-design:13)."""
+    double = next(i for i in blocks["Held out 2"]["items"] if i["id"] == "0017#build-plan:4")
+    single = next(i for i in blocks["Eval 1"]["items"] if i["id"] == "0021#feature-design:13")
+
+    assert any("``" in text for text, flags in double["runs"] if not flags)
+    assert any(
+        "*succeeds and returns nothing*" in text for text, flags in single["runs"] if not flags
+    )
+
+
+def test_a_link_carries_phrase_runs_exactly_when_its_phrase_holds_a_marker_pair(
+    blocks: dict[str, dict[str, Any]],
+) -> None:
+    """Spec 0012 AC-99 (explicit markers only), AC-100, AC-101."""
+    links = [link for graph in blocks.values() for link in graph["links"]]
+
+    for link in links:
+        expected = None if link["phrase"] is None else _flags(link["phrase"])
+        assert link.get("phrase_runs") == expected, link
+    assert sum("phrase_runs" in link for link in links) == 1579
+    assert any("phrase_runs" not in link and link["phrase"] for link in links)

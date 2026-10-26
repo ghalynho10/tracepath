@@ -486,7 +486,7 @@ spec [0012](../specs/0012-gallery-readability/index.md) · code in `src/tracepat
 _Design decided 2026-10-26: formatting runs in Python (one pure module) and `graph.js` only draws runs with `textContent`; the entry follows direction B of the Claude Design canvas; 105 criteria. The spec carries dated amendments to specs 0010 and 0011. The notes in `gallery/marks.json` are the engineer's to write; the build does not draft them._
 - [x] Design it (spec): `/architect gallery readability` · decided the inline rule, the code word patterns, the entry layout, the verdict and mark block, the public note, the graph strip, the total of marks and the link to one graph
 - [ ] Build it: `/develop gallery readability`
-  - [ ] The formatting thread: the inline rule, the code words, and where they run, including the panel's runs and link phrases (spec 0012 slices 1 and 2; AC-1 to AC-29, AC-79, AC-96, AC-98 to AC-101)
+  - [x] The formatting thread: the inline rule, the code words, and where they run, including the panel's runs and link phrases (spec 0012 slices 1 and 2; AC-1 to AC-29, AC-79, AC-96, AC-98 to AC-101) · built 2026-10-26, code in `src/tracepath/gallery/inline.py`, `render.py`, `graph.py` and `assets/graph.js`; AC-78 held by the existing static test; AC-12 and AC-13 wait for the visual pass
   - [ ] Verdict, mark and the total of marks (slice 3; AC-41 to AC-54, AC-71 to AC-75, AC-102)
   - [ ] Headings, claim lines, note, source and the graph strip (slices 4 and 5; AC-30 to AC-38, AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103 to AC-105)
   - [ ] The link to one graph (slice 6; AC-82, AC-84 to AC-92)

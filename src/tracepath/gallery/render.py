@@ -1,8 +1,9 @@
-"""The gallery page as one self contained HTML string (specs 0010 and 0011). Pure.
+"""The gallery page as one self contained HTML string (specs 0010, 0011 and 0012). Pure.
 
-Every stored text is escaped, so markup in a record shows as text (AC-24). The page
-has inline styles and scripts only and refers to no other file of the site (AC-58,
-spec 0011 AC-74).
+Every stored text is escaped, so markup in a record shows as text (AC-24); inline code
+and bold are drawn from runs, each run escaped where it is written (spec 0012 AC-10).
+The page has inline styles and scripts only and refers to no other file of the site
+(AC-58, spec 0011 AC-74).
 """
 
 import math
@@ -27,6 +28,7 @@ from tracepath.gallery.graph import (
     EntryGraph,
     data_block,
 )
+from tracepath.gallery.inline import runs, to_html
 from tracepath.gallery.records import Entry, PageScripts, Section, StoredClaim
 
 #: This repository on GitHub; each marks entry links back to the file it was copied from.
@@ -128,6 +130,7 @@ a { color: inherit; text-decoration-color: var(--cyan); text-underline-offset: 3
   text-decoration-thickness: 1px; }
 a:hover { color: var(--cyan); }
 code { font-family: var(--mono); font-size: .9em; }
+code .w { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
 h1 { font-size: clamp(36px, 8vw, 48px); line-height: 1; font-weight: 700;
   letter-spacing: -.03em; margin: 0 0 20px; }
 .intro { max-width: 36rem; color: var(--ink-82); }
@@ -383,6 +386,15 @@ def _text(value: str) -> str:
     return f'<span class="stored">{escape(value)}</span>'
 
 
+def _formatted(value: str, code_words: bool) -> str:
+    """Stored text with its `code` and **bold** drawn by the inline rule (spec 0012).
+
+    `code_words` also shows code looking words as code: for a question, a claim and a
+    missing note, never for the note or item text (AC-20 to AC-29).
+    """
+    return f'<span class="stored">{to_html(runs(value, code_words))}</span>'
+
+
 def _link(item: ItemLine) -> str:
     """The item's location, linked when it has a file (AC-34 to AC-36, AC-48)."""
     link = item_link(item)
@@ -416,7 +428,9 @@ def _claim(claim: StoredClaim, items: Mapping[str, ItemLine]) -> str:
         else ""
     )
     labels = " ".join(escape(label) for label in claim_marks(claim.checked()))
-    return f'<li>{_text(claim.text)}{cites}<p class="labels">{labels}</p></li>'
+    return (
+        f'<li>{_formatted(claim.text, code_words=True)}{cites}<p class="labels">{labels}</p></li>'
+    )
 
 
 def _claims(entry: Entry) -> str:
@@ -450,7 +464,7 @@ def _missing(entry: Entry) -> str:
     missing = entry.record.missing
     if not missing:
         return ""
-    rows = "".join(f"<li>{_text(m)}</li>" for m in missing)
+    rows = "".join(f"<li>{_formatted(m, code_words=True)}</li>" for m in missing)
     return f'<p class="eyebrow">Missing, as the answer says</p><ul>{rows}</ul>'
 
 
@@ -467,7 +481,8 @@ def _items_sent(entry: Entry) -> str:
     cited = {c for claim in entry.record.claims for c in claim.cites if c not in claim.rejected_ids}
     lines = dict(zip((item.id for item in entry.record.items), entry.items, strict=True))
     shown = "".join(
-        f'<div class="item"><p>{_item_head(lines[item.id])}</p>{_text(item.text)}</div>'
+        f'<div class="item"><p>{_item_head(lines[item.id])}</p>'
+        f"{_formatted(item.text, code_words=False)}</div>"
         for item in entry.record.items
         if item.id in cited
     )
@@ -483,7 +498,11 @@ def _items_sent(entry: Entry) -> str:
 def _mark(entry: Entry) -> str:
     """The engineer's mark, note and where both were copied from (AC-12 to AC-16)."""
     marks = entry.marks
-    note = "" if marks.note is None else f'<p class="note">{_text(marks.note)}</p>'
+    note = (
+        ""
+        if marks.note is None
+        else f'<p class="note">{_formatted(marks.note, code_words=False)}</p>'
+    )
     source = f"{TRACEPATH_REPO_URL}/blob/main/{quote(marks.source_path)}"
     return (
         f'<p class="mark" data-mark="{escape(marks.mark)}">My mark: {_text(marks.mark)}</p>'
@@ -510,7 +529,7 @@ def _entry(entry: Entry, graph: EntryGraph) -> str:
     return (
         "<article>"
         f"<h3>{_text(entry.marks.label)}</h3>"
-        f'<p class="question">{_text(entry.record.question)}</p>'
+        f'<p class="question">{_formatted(entry.record.question, code_words=True)}</p>'
         f"{_details(entry)}"
         f"{_verdict(entry)}"
         f"{_mark(entry)}"
