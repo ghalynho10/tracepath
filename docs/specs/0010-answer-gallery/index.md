@@ -33,23 +33,23 @@ This spec adds a static web page that shows answers `tracepath ask` has already 
 - **AC-10**: The build fails, exit 1, naming the entry, when an entry lacks one of those fields.
 - **AC-11**: The build fails, exit 1, naming the entry, when `mark` is not one of `right`, `partly right`, `wrong`, `declined`.
 - **AC-12**: Each entry shows the mark exactly as in `gallery/marks.json`.
-- **AC-13**: Each entry shows the note exactly as in `gallery/marks.json`, and shows no note when the note is null.
-- **AC-14**: The mark is labelled as the author's own mark, in first person (My mark).
-- **AC-15**: The model's verdict is labelled as the model's own verdict.
-- **AC-16**: Each entry shows `source_row` as text and links `source_path` to `https://github.com/ghalynho10/tracepath/blob/main/<source_path>`.
+- **AC-13** (amended 2026-10-26): Each entry shows the note as in `gallery/marks.json`, with `code` and **bold** drawn by [spec 0012](../0012-gallery-readability/index.md)'s rule, and shows no note when the note is null. _The note is now a public note the engineer writes for a reader (the note field only); it is no longer copied word for word. The mark is never changed (spec 0012 AC-64)._
+- **AC-14** (amended 2026-10-26): The mark is labelled as the author's own mark, in first person, by the caption "— my mark" ([spec 0012](../0012-gallery-readability/index.md) AC-53).
+- **AC-15** (amended 2026-10-26): The model's verdict is labelled as the model's own verdict, by the caption "— the model's verdict on its own answer" ([spec 0012](../0012-gallery-readability/index.md) AC-46).
+- **AC-16** (amended 2026-10-26): Each entry shows `source_row` as text after "My full ruling". Only a `source_path` under `experiments/` is a link, to `https://github.com/ghalynho10/tracepath/blob/main/<source_path>`; any other path is plain text ([spec 0012](../0012-gallery-readability/index.md) AC-59, AC-60).
 
 _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections come from the record and the marks file, never from an eval file name in source, to keep AC-27 and the report guard intact._
 
 *Each answer*
 - **AC-17**: Each entry shows the question text as stored in the record.
-- **AC-18**: Each entry shows the model's verdict as stored in the record.
+- **AC-18** (amended 2026-10-26): Each entry shows the model's verdict by the fixed wording of its stored code (`answered`, `partly answered`, `not supported by the records`, `no documented link`); the stored code is unchanged ([spec 0012](../0012-gallery-readability/index.md) AC-42 to AC-48).
 - **AC-19**: Each entry shows the claims in stored order, with each claim's text as stored.
-- **AC-20**: Each entry shows the record's `missing` notes when it has any.
+- **AC-20** (amended 2026-10-26): Each entry shows the record's `missing` notes when it has any, under the heading "What the answer says the records lack", whatever its mark ([spec 0012](../0012-gallery-readability/index.md) AC-32, AC-33).
 - **AC-21**: Each entry shows the date asked.
 - **AC-22**: Each entry shows the prompt version.
 - **AC-23**: Each entry shows the hop count when the record stores one, and none when it does not.
-- **AC-24**: Stored text that contains markup, for example `<figure`, appears on the page as visible text and is not interpreted.
-- **AC-25**: Line breaks in stored text are kept, and no markdown in stored text is rendered.
+- **AC-24**: Stored text that contains markup, for example `<figure`, appears on the page as visible text and is not interpreted. _Amended 2026-10-26: this still holds when the text sits inside a code span or a bold span; every piece of text is escaped where HTML is written ([spec 0012](../0012-gallery-readability/index.md) AC-10)._
+- **AC-25** (amended 2026-10-26): Line breaks in stored text are kept, and the only markdown rendered is `code` and **bold**, by the rule of [spec 0012](../0012-gallery-readability/index.md); no other markdown is rendered.
 
 *Claim labels* (each derived from stored fields only; nothing is looked up again)
 - **AC-26**: A cited id that is in the claim's `held_ids` shows `held` after it.
@@ -59,7 +59,7 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 - **AC-30**: A claim whose `uncited` is true shows `UNCITED`.
 - **AC-31**: A claim that cites at least one id, where every cited id is in `rejected_ids`, shows `unsupported`.
 - **AC-32**: A claim that is neither inferred nor unsupported shows `link` when its `basis` is `link`, and `read from text` otherwise.
-- **AC-33**: When one or more claims failed a check, the verdict line adds "N of M claims failed a check"; a claim failed when its `rejected_ids` is not empty, or it is uncited, or its `basis` is `link` and it is inferred.
+- **AC-33**: When one or more claims failed a check, the verdict adds "N of M claims failed a check"; a claim failed when its `rejected_ids` is not empty, or it is uncited, or its `basis` is `link` and it is inferred. _Amended 2026-10-26: the tally is a second caption line under the verdict caption ([spec 0012](../0012-gallery-readability/index.md), Feature design)._
 
 *Citations*
 - **AC-34**: Each linked item links to `https://github.com/ghalynho10/JobHunt/blob/<full pinned commit>/docs/<file>?plain=1#L<line>`, where `<file>` and `<line>` come from the item's stored location.
@@ -106,7 +106,7 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 
 `tracepath gallery build` joins the stored ask records, a committed marks file and the pinned JobHunt snapshot into one static page with no JavaScript, and a workflow publishes it from this public repository.
 
-_Note on the Decision: Amended 2026-10-25: the page now also carries inline scripts, for the answer graph of [spec 0011](../0011-answer-graph/index.md). With scripts off it is still this list, and AC-58 still holds, because every script is inline._
+_Note on the Decision: Amended 2026-10-26: the entry's layout, headings, verdict and mark block, note line and graph strip are specified by [spec 0012](../0012-gallery-readability/index.md), which replaces the pill look of the first visual pass (AC-14, task 8). Amended 2026-10-25: the page now also carries inline scripts, for the answer graph of [spec 0011](../0011-answer-graph/index.md). With scripts off it is still this list, and AC-58 still holds, because every script is inline._
 
 **Follows**: static site generation from versioned data (build once, serve files) · functional core with an imperative shell, as the project's own rule.
 
@@ -129,7 +129,7 @@ Reasoning and options: see [rationale.md](rationale.md).
 | `record` | string, required | File name in `artifacts/asks/`; unique across entries; the key |
 | `label` | string, required | Short name used for the heading, for example `Eval 3`, `Held out 2` or `Q7`; unique across entries |
 | `mark` | string, required | One of `right`, `partly right`, `wrong`, `declined` |
-| `note` | string or null, required | Copied word for word from the source; null when the source gives none |
+| `note` | string or null, required | The public note the engineer writes for a reader; null when there is none. _Amended 2026-10-26: it was copied word for word from the source; now only this field is rewritten, and `mark` never changes ([spec 0012](../0012-gallery-readability/index.md) AC-64)._ |
 | `source_path` | string, required | Repository path of the file the mark was copied from, for example `experiments/0018-realistic-usage-questions/README.md` |
 | `source_row` | string, required | Where in that file, for example `Q7` or `v1 finish line` |
 
@@ -149,7 +149,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 |---|---|---|
 | Render an entry | question, verdict, claims, missing notes | the record named by `gallery/marks.json` (`question`, `verdict`, `claims`, `missing`) |
 | Render an entry | date asked, prompt version, hops | the record's `asked_at`, `prompt_version`, `hops` (hops omitted when null) |
-| Render an entry | mark, note, source link and row | `gallery/marks.json` (`mark`, `note`, `source_path`, `source_row`) |
+| Render an entry | mark, note, source link and row | `gallery/marks.json` (`mark`, `note`, `source_path`, `source_row`); _amended 2026-10-26: the link only for a path under `experiments/`, see [spec 0012](../0012-gallery-readability/index.md)_ |
 | Render an entry | section | the marks entry's `section`, checked against the record's `eval_file`: the development eval file means development, null means realistic, any other means held out (amended 2026-10-24, AC-6) |
 | Render an entry | heading | `label` in `gallery/marks.json` |
 | Render a claim | `held`, `HISTORY`, `INFERRED`, `CITATION REJECTED`, `UNCITED` | the claim's stored `held_ids`, `history`, `inferred`, `rejected_ids`, `uncited` |
@@ -162,12 +162,12 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 | Page statement | number of records in all | count of `*.json` in `artifacts/asks/` at build time |
 | Page statement | held out line | a constant (AC-8) |
 | Page statement | `ask-1` runs of eval 1 to 5 were marked right | a constant, from `docs/scope/scope.md` line 238 (the v1 finish line) |
-| Held out marks | mark and note for held out 1 to 4 | `docs/scope/scope.md`, the v1 finish line: 3 right, 1 partly right (question 3); notes copied word for word |
+| Held out marks | mark and note for held out 1 to 4 | `docs/scope/scope.md`, the v1 finish line: 3 right, 1 partly right (question 3); notes copied word for word when first written; _amended 2026-10-26: the notes are now the engineer's public notes, and the source shows as plain text_ |
 | Key text for labels and marks | one line each | a constant written in the build; the marks' wording is the engineer's (see Follow-up) |
 
 **Key invariants**:
 - A link is built only from a file and line that exist in the pinned snapshot (AC-38, AC-39), for every item that gets a link, not only cited ones.
-- The page shows stored fields as stored, escaped. It looks nothing up again and rewrites no claim, note or question.
+- The page shows stored fields as stored, escaped. It looks nothing up again and rewrites no claim, note or question. _Note 2026-10-26: formatting only styles stored text, and the runs give the stored text back ([spec 0012](../0012-gallery-readability/index.md) AC-9)._
 - `gallery/marks.json` is the only list of what is shown; the code holds no second list.
 - The page carries no timestamp of the build.
 - Records in `artifacts/asks/` and files in `corpus/` are read, never written (AC-57).
@@ -218,7 +218,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 **Negative / tradeoffs**:
 - Experiment 0018's disclosures reach the reader by one link only (the engineer's choice). The notes that Q19 and Q22's expected lines were written after the advisor's summary, and that Q1 ran before the questions were committed, are not on the page next to those answers. This leaves scope feature 17's "Done when" clause, "anything the page leaves out or qualifies is stated on the page", only partly met, and the scope row should be reconciled with it.
 - The page now shows the four held out records. Those questions are public from the day it is published, so they cannot be used again as unseen questions, which they already could not for any new claim.
-- The marks exist only as README tables and the v1 finish line today, so `gallery/marks.json` is a second copy that can drift if a source changes. AC-16 links each entry back to its source to make that visible.
+- The marks exist only as README tables and the v1 finish line today, so `gallery/marks.json` is a second copy that can drift if a source changes. AC-16 links each entry back to its source to make that visible. _Note 2026-10-26: the notes are no longer a copy, and the link is shown only for sources under `experiments/`._
 - The page shows 31 of 44 records; the other 13 are named only as a count.
 - Parsing an item's location out of its stored display text depends on that text's format. The build fails on a shape it does not know rather than guessing.
 - GitHub renders `.md` files, so a plain `#L<line>` link may not open the line. The `?plain=1` form is the fix. It was first inferred from how GitHub behaves, then confirmed on a real link by `/check verify` (step E12 in `docs/reviews/2026-10-24-check-verify-answer-gallery.md`): the link opened GitHub's plain text Code view with the cited line highlighted.

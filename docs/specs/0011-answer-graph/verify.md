@@ -1,4 +1,5 @@
 # Verify: answer graph · spec 0011 · updated 2026-10-25 (after the code review)
+_Note 2026-10-26: steps here that name the old pill, the old verdict line ("Model's own verdict: answered"), "My mark", "Missing, as the answer says", the Graph button or a source link to `docs/` are superseded by spec 0012's `verify.md`._
 _Steps derived from spec 0011's acceptance criteria, one step per criterion, plus the live check after the merge. `/check verify` runs these; `/test` locks the durable ones. The pytest steps already run in `uv run pytest -m "not integration"`._
 
 Build the page once for the browser steps: `uv run tracepath gallery build --out /tmp/gallery`, then open `/tmp/gallery/index.html`. Desktop steps use a window of 1440 by 900 pixels; phone steps use the browser's device mode at 390 by 844 with touch on. No step makes a paid call, and none opens `eval/held-out.json`.

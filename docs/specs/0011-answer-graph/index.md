@@ -19,8 +19,8 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 **Acceptance criteria** (each holds one claim):
 
 *Opening and closing*
-- **AC-1**: With scripts running, each entry has a Graph button.
-- **AC-2**: With scripts off, the page shows no Graph button.
+- **AC-1** (amended 2026-10-26): With scripts running, each entry has a Graph button. _The button is the "Explore the graph" strip of [spec 0012](../0012-gallery-readability/index.md) (AC-65 to AC-69)._
+- **AC-2** (amended 2026-10-26): With scripts off, the page shows no Graph button. _The strip leaves no gap ([spec 0012](../0012-gallery-readability/index.md) AC-70)._
 - **AC-3**: A click on an entry's Graph button opens a full window showing that entry's graph.
 - **AC-4**: The Esc key closes the window.
 - **AC-5**: The window's close button closes it.
@@ -60,12 +60,12 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 
 *The reading panel*
 - **AC-36**: With nothing selected, the panel shows the question as stored.
-- **AC-37**: With nothing selected, the panel shows the verdict line the list shows, including "N of M claims failed a check" when spec 0010 AC-33 adds it.
+- **AC-37** (amended 2026-10-26): With nothing selected, the panel shows the verdict block the list shows (the verdict wording and its captions, including "N of M claims failed a check" when spec 0010 AC-33 adds it), but not the mark ([spec 0012](../0012-gallery-readability/index.md) AC-81).
 - **AC-38**: With nothing selected, the panel shows the claims in stored order, each with the labels spec 0010 AC-26 to AC-32 give it.
 - **AC-39**: A cited id that is not rejected, in a claim shown in the panel, selects that item.
 - **AC-40**: That selection moves the view to centre the item.
 - **AC-41**: A rejected id in a claim shown in the panel is text and selects nothing.
-- **AC-42**: A selected item's stored text is shown in full.
+- **AC-42** (amended 2026-10-26): A selected item's stored text is shown in full, with `code` and **bold** drawn from the item's `runs` ([spec 0012](../0012-gallery-readability/index.md) AC-19, AC-79).
 - **AC-43**: A selected item's id and type are shown.
 - **AC-44**: A selected item shows `HELD`, `STRUCK` or `HISTORY`, and `UNRESOLVED NAME`, for each of those that is true of it.
 - **AC-45**: A selected item shows the numbers of the claims that cite it, in the two digit form the list uses (`01`).
@@ -76,7 +76,7 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-50**: A link from an item to itself is listed in the panel, though it is drawn as no line.
 - **AC-51**: The id of the other item in each listed link selects that item.
 - **AC-52**: The panel has a list of all items, cited ones first, each one selecting that item.
-- **AC-53**: Stored text containing markup, for example `<figure`, or `</script>`, appears in the panel as visible text and is not interpreted.
+- **AC-53**: Stored text containing markup, for example `<figure`, or `</script>`, appears in the panel as visible text and is not interpreted. _Amended 2026-10-26: this still holds inside a code or bold run; `graph.js` makes each run with `textContent` and never sets `innerHTML` ([spec 0012](../0012-gallery-readability/index.md) AC-10, AC-78)._
 
 *On a phone*
 - **AC-54**: At a window width of 720 pixels or less, the graph sits above the panel.
@@ -227,7 +227,7 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 - The graph has no tab stop on dots. The all items list (AC-52) and the claim ids are the keyboard route.
 
 **The panel**: two views in one scrolling column.
-- *Answer view* (nothing selected): a clone of the entry's own question, verdict line and claim list from the list on the page, so labels (AC-38) cannot differ from the list's. Each cited, unrejected id in the list's citation link carries `data-item="<id>"`, which does nothing on the list. Clicks on a `[data-item]` link inside the panel are caught, the browser's navigation to JobHunt is stopped, and that item is selected (AC-39). The JobHunt link of that item is reached from the item view (AC-46). Then the all items list (AC-52).
+- *Answer view* (nothing selected; _amended 2026-10-26: `graph.js` finds the three parts anywhere inside the entry, because the new layout no longer makes them direct children, [spec 0012](../0012-gallery-readability/index.md) AC-76, AC-77_): a clone of the entry's own question, verdict block and claim list from the list on the page, so labels (AC-38) cannot differ from the list's. Each cited, unrejected id in the list's citation link carries `data-item="<id>"`, which does nothing on the list. Clicks on a `[data-item]` link inside the panel are caught, the browser's navigation to JobHunt is stopped, and that item is selected (AC-39). The JobHunt link of that item is reached from the item view (AC-46). Then the all items list (AC-52).
 - *Item view*: eyebrow (type and state words), poster title (the id), the stored text, the location or its link, the claim numbers, then the links in and out. The script fills it from the data block with `textContent`, never `innerHTML`, so stored text stays text (AC-53). Links are listed in stored order, each marked `out` when the item is the link's source, `in` when it is the target and `self` for a loop, which is listed once.
 
 **Previous and next**: they read `previous` and `next` from the data block and swap the open graph (AC-8, AC-9).
