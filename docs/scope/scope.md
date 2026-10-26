@@ -33,6 +33,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
 | 18 | Answer graph | after v1, presentation | done |
+| 19 | Gallery readability | after v1, presentation | planned |
 
 ## v1 finish line
 
@@ -467,6 +468,19 @@ _2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on i
 - [x] Verify it: `/check verify answer graph`
 - [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
 - [x] Sync it: `/sync answer graph`
+
+### 19. Gallery readability · needs a decision · added 2026-10-26
+Makes the answer gallery page (spec 0010) and its graph panel (spec 0011) easier to read for a public reader: formatted inline text, a clear heading hierarchy per entry, one total of the marks, a clearer heading for the missing list, and notes written for the public. Presentation only. No CLI change, no API call.
+**Done when:**
+- Stored text on the page and in the graph panel shows inline code (`...`) and bold (**...**) as formatted text, not raw markers. All HTML stays escaped (spec 0010 AC-24 needs a dated amendment). Measured 2026-10-26 on the 31 shown records: 43 of 107 claims contain backticks; of 125 cited items, 94 contain backticks and 86 contain bold; none has a heading or a table.
+- Each entry has a clear heading hierarchy, as a markdown file would: the entry title (Eval 3), then named sections one level below it (for example Question, Answer, My mark, What the answer says the records lack, Items sent), then each claim's cites and labels a level below the claim text. Seen 2026-10-26 on Eval 3: the question (20px regular, `render.py:155`) reads at nearly the same level as the claim text; nothing marks where the answer starts (only a hairline, `render.py:169-170`); the model's verdict and my mark are the same pill shape side by side; the claim labels (10px bold spaced capitals, `render.py:178-179`) look like section headings and share their style with the Missing and Items sent headings (`render.py:180-181`). `/architect` proposes two or three layout candidates (for example: labelled sections with a type scale; tinted blocks per section; the question as the entry's main heading with the label above it), each with a screenshot of Eval 3, for the engineer to choose.
+- One total of the marks at the top of the page, computed from `gallery/marks.json` at build (today: 31 shown, 17 right, 2 partly right, 2 wrong, 10 declined), placed next to the key that defines each mark.
+- The heading "Missing, as the answer says" becomes "What the answer says the records lack". It still shows on every entry whose record has a missing list, whatever the mark (25 of the 31 today).
+- The notes on the page are written for a public reader, in the engineer's voice. The engineer writes each one in `gallery/marks.json`; the mark never changes. The line under each note links to the original wording as "My full ruling". Spec 0010's rule that a note is copied word for word (`index.md:132`, AC-13) needs a dated amendment for the note field only. The experiment 0018 README and this file keep the original notes untouched.
+**Out, by the engineer's ruling on 2026-10-26:** rewording "the engineer" or "the author" in JobHunt's own text and the answers that repeat it, and listing the 13 records the page does not show.
+
+Tier: inherits Beta. Approach: inherits Tracer Bullet. Needs spec: yes (a layout choice, a markdown subset rule, and amendments to specs 0010 and 0011).
+- [ ] Design it (spec): `/architect gallery readability` · amends specs 0010 (AC-13, AC-24) and 0011; layout candidates with screenshots of Eval 3
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
