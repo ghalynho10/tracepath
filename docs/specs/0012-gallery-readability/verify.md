@@ -50,3 +50,8 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] Open Q4's graph and select an item → the address still ends `#q4` → AC-90
 - [ ] Look at the address after opening Eval 3, Held out 2 and Q22 → `#eval-3`, `#held-out-2`, `#q22`, each the entry's slug and nothing else → AC-92
 - [ ] `uv run pytest tests/test_gallery_graph.py -k "slug_is_article_id or replace_state"` → passes: the slug is each article's `id`, and `graph.js` uses only `replaceState` → AC-82, AC-91
+
+## The code tint (pytest and browser)
+- [ ] `uv run pytest tests/test_gallery.py -k code_tint` → passes: the `code` rule has a faint background, the panel adds none of its own, and it is none of the four swipe colours and lighter than `#CBD3DC` → AC-106 to AC-109
+- [ ] On Q4 claim 3 and in the open graph of Held out 2 (select item 0017/AC-8), look at a code span of several words → the tint is one unbroken run across its spaces, in the list and in the panel → AC-110
+- [ ] At 390 by 844 make a multi word code span wrap (the same item) → the tint continues on the next line with rounded ends on each line, and no word is split at a hyphen → AC-110, AC-12

@@ -146,6 +146,13 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-104** (splits AC-77): Each entry holds at most one `ol`.
 - **AC-105** (splits AC-59): The "My full ruling" link is followed by `source_row` as text.
 
+*Added 2026-10-26 after the engineer's ruling on the code tint* (see Feature design, "The code tint")
+- **AC-106**: A `code` element in the list has a faint background tint.
+- **AC-107**: A `code` element in the graph panel has the same faint background tint.
+- **AC-108**: The code tint is none of the four swipe colours of AC-49 to AC-52.
+- **AC-109**: The code tint is lighter than the declined swipe `#CBD3DC`.
+- **AC-110** (_browser_): A code span of several words reads as one tinted run, with the tint unbroken across its spaces and across a line break, and a word is still not split at a hyphen (AC-12).
+
 ## Decision
 
 **Chosen option**: Option 1: format in Python, send the panel plain data, follow canvas direction B.
@@ -204,6 +211,8 @@ Each pattern is a regular expression searched in each line, outside code spans. 
 Excluded: product names `Next.js` and `Node.js` (a constant list), because the file name expression would otherwise take them.
 
 *Measured 2026-10-26:* the patterns find 15 words in 5 of the 31 questions and 16 words in 10 of the 107 claims. A test pins that list (AC-26). They find 0 words in the 46 missing notes.
+
+**The code tint** (the engineer's ruling of 2026-10-26, as in the set 2 mockups). One rule on the `code` element, `background: rgba(1, 25, 54, .07)` (ink at 7 percent, which is `#EDEFF1` on the white page), `border-radius: 3px`, and `box-decoration-break: clone` so a span that wraps keeps its rounded ends on each line. The list and the graph panel use the one rule, because the panel's clone of the list, its selected item text and its link phrases all write the same `code` element (AC-106, AC-107). Measured 2026-10-26: the tint is 1.15 to 1 against white, where the declined swipe is 1.51, the lightest of the four swipe colours is 1.30 and the ink text on the tint is 15.3 to 1 (AC-108, AC-109). The tint sits on the `code` element, not on each word element, and the `w` elements carry no background. So the tint runs unbroken across the spaces between words and across a line break, and a word is still one unbreakable piece (AC-110, AC-11, AC-12). The second candidate, a tint on each word with the spaces left bare, would show gaps in a multi word span and is not used. A test reads the `code` rule in the page styles and asserts its background is none of the four swipe colours and is lighter than `#CBD3DC`; the look of a wrapped span is checked in a browser.
 
 **Board measures** (copied from the two boards of the canvas on 2026-10-26; this spec is the authority, not the canvas)
 
@@ -299,6 +308,7 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 - Fixture: an `experiments/` source path that is not a file under the `--root` fails the build, verifies **AC-61**.
 - Pinned marks: the 31 marks equal the pinned list, verifies **AC-64**.
 - Static: `graph.js` finds the three parts anywhere in the entry and never sets `innerHTML`; the swipe colours are absent from the graph styles, verifies **AC-76, AC-78, AC-80**.
+- Static: the `code` rule has a background, the panel styles add none of their own, and the background is none of the four swipe colours and lighter than `#CBD3DC`, verifies **AC-106 to AC-109**.
 - Real page: each entry's `article` has its slug as `id`; the slugs are unique, verifies **AC-82**.
 - Static: `graph.js` calls `history.replaceState` and never `pushState` or `location.hash =`, verifies **AC-91**.
 - Browser: see `verify.md`, verifies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-81, AC-83 to AC-90, AC-92**.
@@ -313,7 +323,7 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 4. [x] Slice 4, the entry's headings and the claim lines. The `h4` sections in order, the renamed missing section, `h5` groups and the Items sent summary, the "Cites:" and "Labels:" lines with chips; update the tests that name the old strings, satisfies **AC-30 to AC-38**
 5. [x] Slice 5, note, source and strip. "My note.", "My full ruling" with the `experiments/` rule and its build check, plain text for `docs/` sources and the development section's line, the pinned marks test, the strip with its fixed drawing, counts and accessible name, and the `graph.js` selectors; make the test fixture's marks paths real (it names `experiments/0016-hops/README.md`, but the folder is `0016-link-hops`) and give it the `experiments/` files the new check needs, satisfies **AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103, AC-104, AC-105**
 6. [x] Slice 6, the link to one graph. The slug as the `id` of each `article`; in `graph.js`, open the graph named by the fragment when the page loads, replace the fragment on open, swap and close with `history.replaceState`, and leave an unknown fragment alone, satisfies **AC-82, AC-84, AC-85, AC-86, AC-87, AC-89, AC-90, AC-91, AC-92**
-7. [x] Slice 7, the visual pass. Write the styles from the board measures at both widths; check each browser criterion in `verify.md` at 1440 by 900 and 390 by 844; keep the four swipe colours out of the graph styles, satisfies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88**
+7. [x] Slice 7, the visual pass. Write the styles from the board measures at both widths; check each browser criterion in `verify.md` at 1440 by 900 and 390 by 844; keep the four swipe colours out of the graph styles, satisfies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88, AC-106 to AC-110**
 
 ## Consequences
 
@@ -345,6 +355,7 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 - [x] Confirm the wording of the plain text source line and the placement of the failed claims caption under the verdict caption. _Ruled 2026-10-26: the source line reads "My full ruling: the v1 finish line in the project's scope notes (not published)."; the failed claims count is a caption under the verdict caption._
 - [x] Phone layout at 560 pixels and narrower, AC-61, AC-64 and AC-86 kept; the `graph-` and `gw-` label prefixes stay unchecked and typing a fragment into an open page stays unhandled. _Ruled 2026-10-26._
 - [ ] After the merge, `docs/specs`, `docs/scope` and `docs/reviews` leave the public repository. Reconcile the links in `README`, `AGENTS.md` and the gallery's own comments that name those paths, in a later change.
+- [x] The code tint: ruled 2026-10-26, a faint ink tint on the `code` element, in the list and the panel (AC-106 to AC-110). A build may adjust the exact alpha if the tint reads too heavy in a browser, as long as AC-108 and AC-109 hold.
 - [ ] Dark mode, recorded in spec 0010's Follow up, stays deferred; the swipe colours were chosen for a white page only.
 
 ## References
