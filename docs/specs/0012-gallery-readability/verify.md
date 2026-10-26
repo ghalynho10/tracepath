@@ -18,7 +18,7 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] Items sent summary reads "Show all (N, M cited)"; the "Cites:" and "Labels:" lines; each label is a chip → AC-36, AC-37, AC-38
 - [ ] The four verdict codes show their wordings; an unknown code fails the build naming the record; no wording equals a mark word → AC-42 to AC-48
 - [ ] The four swipe colours, the captions, no button and no border on the mark → AC-49 to AC-54
-- [ ] A note shows "My note."; Eval 3 shows none; `experiments/` paths link as "My full ruling"; the four held out entries read as plain text; a missing `experiments/` file fails the build; no link into this repository's `docs/`; the development section's "v1 finish line" is plain → AC-57 to AC-63
+- [ ] A note shows "My note."; Eval 3 shows none; `experiments/` paths link as "My full ruling"; the four held out entries read "My full ruling: the v1 finish line in the project's scope notes (not published)." as plain text; a missing `experiments/` file fails the build; no link into this repository's `docs/`; the development section's "v1 finish line" is plain → AC-57 to AC-63
 - [ ] The pinned marks test → AC-64
 - [ ] The strip is a hidden direct child button after the source line; its title, its counts equal the Items sent counts, one drawing for all entries with no highlighted node → AC-65 to AC-69
 - [ ] The total line reads 31, 17, 2, 2, 10, sits above the mark list in the Key, draws each mark as its swipe; a mark with no entry reads `0` → AC-71 to AC-75

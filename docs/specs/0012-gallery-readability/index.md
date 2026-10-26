@@ -50,8 +50,8 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-24**: A lower_snake word in a question or a claim, outside a code span, is shown as code.
 - **AC-25**: A product name on the exclusion list (`Next.js`, `Node.js`) is not shown as code.
 - **AC-26**: The words the patterns find in the 31 questions and 107 claims equal the list a test pins: 15 words in 5 questions and 16 words in 10 claims on 2026-10-26.
-- **AC-27** (_proposed, see Follow-up_): A note in the "What the answer says the records lack" list is read for code words by the same patterns.
-- **AC-28** (_proposed, see Follow-up_): A file name or other code looking word in item text, outside a code span, is not styled.
+- **AC-27**: A note in the "What the answer says the records lack" list is read for code words by the same patterns.
+- **AC-28**: A file name or other code looking word in item text, outside a code span, is not styled.
 - **AC-29**: A word in the entry's note that is not inside a code span is not styled as code.
 
 *The entry's headings and parts*
@@ -89,7 +89,7 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-57**: An entry with a note shows the bold words "My note." followed by the note, below the verdict and mark block.
 - **AC-58**: An entry with no note shows no "My note.".
 - **AC-59**: A source path that starts with `experiments/` shows "My full ruling" as a link to that file in this repository on GitHub, followed by `source_row` as text.
-- **AC-60**: A source path that does not start with `experiments/` shows "My full ruling: <path>, <row>" as plain text with no link.
+- **AC-60**: A source path that does not start with `experiments/` shows the plain text "My full ruling: the <row> in the project's scope notes (not published)." with no link.
 - **AC-61**: The build fails, exit 1, naming the entry, when a `source_path` that starts with `experiments/` is not a file in the repository.
 - **AC-62**: The built page holds no link into the `docs/` folder of this repository.
 - **AC-63**: The development section's "v1 finish line" is plain text with no link.
@@ -220,7 +220,7 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 
 **The top of the Answer section**, in order: the verdict and mark block (`.verdict` holds the word and its caption lines; `.mark` holds the swipe and its caption); the ruling block, when there is a note ("My note." and the note) and then the source line; the strip. The strip is the existing `button[data-graph]` (so spec 0011's AC-1 to AC-3 still hold), hidden until the script runs, with its spacing on the button itself and no wrapper, so nothing remains with scripts off (AC-65, AC-70). Its drawing is one fixed SVG copied from the board, drawn the same for every entry, in ink at low opacity, with no highlighted node; entry specific facts are only in the text (AC-68, AC-69).
 
-**The source line.** For a path under `experiments/`: `<a href="…/blob/main/<path>">My full ruling</a>, <source_row>`. For any other path: `My full ruling: <path>, <source_row>`, all text. The 27 entries sourced from experiments 0016 and 0018 link; the four held out entries (source `docs/scope/scope.md`) are plain, because `docs/` leaves the public repository after this feature merges (history kept). The "v1 finish line" link of the development section becomes plain text for the same reason, and the constant that held its URL is removed.
+**The source line.** For a path under `experiments/`: `<a href="…/blob/main/<path>">My full ruling</a>, <source_row>`. For any other path: the plain text `My full ruling: the <source_row> in the project's scope notes (not published).`, with no link and no path (the engineer's wording of 2026-10-26; today the only such path is `docs/scope/scope.md`). The 27 entries sourced from experiments 0016 and 0018 link; the four held out entries (source `docs/scope/scope.md`) are plain, because `docs/` leaves the public repository after this feature merges (history kept). The "v1 finish line" link of the development section becomes plain text for the same reason, and the constant that held its URL is removed.
 
 **The total of my marks.** One line inside the Key section, above the list of mark definitions, built from the marks entries at build: "My marks on the N shown answers:" then each mark word as a swipe followed by its count, in the order right, partly right, wrong, declined. On 2026-10-26: 31, 17, 2, 2, 10 (the counts sum to the total). The Key's mark rows use the same swipe instead of the old pill.
 
@@ -233,7 +233,7 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 | Render the source line | link text, target, row | `source_path`, `source_row` in `gallery/marks.json`; target is the repository URL constant plus the path, only for a path under `experiments/` |
 | Render the strip | N sent, M cited | N is the number of the record's items; M is the number of items a claim cites without rejecting, the same value the Items sent summary uses (one function) |
 | Render the total | total and four counts | counted over the entries read from `gallery/marks.json` |
-| Format a text | runs | `inline.runs` from the stored string; code words only for a question, a claim and (proposed) a missing note |
+| Format a text | runs | `inline.runs` from the stored string; code words only for a question, a claim and a missing note |
 | Fill a selected item | runs | the item's `runs` in the graph data block, built by `inline.runs` at build |
 
 **The link to one graph.** The link is the page address plus `#<slug>`, where the slug is the one `slug_of` makes from the entry's label and spec 0011 AC-67 keeps unique (`Eval 3` gives `eval-3`; basis: `graph.py` `slug_of`). There is no copy button: the address bar is the link once a graph is open.
@@ -267,7 +267,7 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 - Fixture per verdict code, and one unknown code, verifies **AC-42 to AC-48**.
 - Real page: every entry has one `.question`, one `.verdict`, at most one `ol`; the strip is a hidden direct child; the strip counts equal the Items sent counts, verifies **AC-65, AC-67, AC-77**.
 - Real page: the total line reads 31, 17, 2, 2, 10 and sits in the Key above the mark list, verifies **AC-71 to AC-74**.
-- Real page: no link into this repository's `docs/`; the four held out entries read "My full ruling: docs/scope/scope.md, …" as text; the 27 others link, verifies **AC-59, AC-60, AC-62, AC-63**.
+- Real page: no link into this repository's `docs/`; the four held out entries read "My full ruling: the v1 finish line in the project's scope notes (not published)." as text; the 27 others link, verifies **AC-59, AC-60, AC-62, AC-63**.
 - Fixture: an `experiments/` source path that is not a file fails the build, verifies **AC-61**.
 - Pinned marks: the 31 marks equal the pinned list, verifies **AC-64**.
 - Static: `graph.js` finds the three parts anywhere in the entry and never sets `innerHTML`; the swipe colours are absent from the graph styles, verifies **AC-76, AC-78, AC-80**.
@@ -297,7 +297,7 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 **Negative / tradeoffs**:
 - The graph data block grows. The 31 blocks hold 0.93 million characters of item text today (block size 2.6 MB of a 3.5 MB page), and `runs` repeats the text of an item that has a pair, so the page may grow by up to about 1 MB. This is far under GitHub Pages limits (basis: spec 0010 Consequences) and is accepted.
 - The fixed word patterns can style a word that is not code, for example a snake case word in prose. They cannot style camelCase names. This is the price of a fixed list; the pinned list test shows each change.
-- The four held out entries lose their public note wording and show a path the reader cannot open ("My full ruling: docs/scope/scope.md, v1 finish line"). This is the engineer's ruling.
+- The four held out entries lose their public note wording and say their full ruling is in notes that are not published ("My full ruling: the v1 finish line in the project's scope notes (not published)."). This is the engineer's ruling.
 - The design source is a private canvas. The table in this spec is the copy; the canvas can change without this spec.
 - The styles and the `graph.js` changes (the cloned parts, the runs, the link to one graph) are checked in a browser, not in CI.
 - Renaming a label in `gallery/marks.json` breaks links already sent, because the slug is made from the label. Nothing keeps a list of links that were sent.
@@ -311,10 +311,11 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 
 ## Follow-up
 
-- [ ] Rule on the open question of the code word patterns (proposed in the report of 2026-10-26): the "What the answer says the records lack" list follows the same patterns (AC-27), and item text does not (AC-28), because item text is JobHunt's own words, where the author already marked code. Strike or keep AC-27 and AC-28 before the build.
-- [ ] Rule on the label chips: the board draws `history` in lower case; spec 0010 AC-27 and the Key show `HISTORY`. This spec keeps the stored wording of every label and chip.
+- [x] Rule on the open question of the code word patterns. _Ruled 2026-10-26: keep both._ The "What the answer says the records lack" list follows the same patterns (AC-27), and item text does not (AC-28), because item text is JobHunt's own words, where the author already marked code. AC-27 and AC-28 stand.
+- [x] Rule on the label chips (_ruled 2026-10-26: HISTORY as stored_): the board draws `history` in lower case; spec 0010 AC-27 and the Key show `HISTORY`. This spec keeps the stored wording of every label and chip.
 - [ ] Write the notes: the 10 notes in `gallery/marks.json` are mine to write for a public reader. No note and no mark was drafted or changed by this spec.
-- [ ] Confirm the wording of the plain text source line, "My full ruling: docs/scope/scope.md, v1 finish line", and the placement of the failed claims caption under the verdict caption.
+- [x] Confirm the wording of the plain text source line and the placement of the failed claims caption under the verdict caption. _Ruled 2026-10-26: the source line reads "My full ruling: the v1 finish line in the project's scope notes (not published)."; the failed claims count is a caption under the verdict caption._
+- [x] Phone layout at 560 pixels and narrower, AC-61, AC-64 and AC-86 kept; the `graph-` and `gw-` label prefixes stay unchecked and typing a fragment into an open page stays unhandled. _Ruled 2026-10-26._
 - [ ] After the merge, `docs/specs`, `docs/scope` and `docs/reviews` leave the public repository. Reconcile the links in `README`, `AGENTS.md` and the gallery's own comments that name those paths, in a later change.
 - [ ] Dark mode, recorded in spec 0010's Follow up, stays deferred; the swipe colours were chosen for a white page only.
 
