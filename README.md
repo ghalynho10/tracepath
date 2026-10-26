@@ -6,6 +6,8 @@ A terminal tool that answers "why was this built this way?" over a project's spe
 
 Read the case study: [how I built and evaluated tracepath](docs/case-study.md).
 
+Browse the recorded answers, each with my mark and an interactive graph of what the tool was given: https://ghalynho10.github.io/tracepath/
+
 ## Example
 
 This is eval question 1, asked against JobHunt's specs. The output below is copied from its saved record, [`artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json`](artifacts/asks/2026-10-19T21-08-46Z-why-does-the-landing-rule.json). It ran under prompt `ask-1`. The search words, the 84 item lines and the record path are cut.

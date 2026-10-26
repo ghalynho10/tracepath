@@ -30,8 +30,8 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] On Eval 3 → its one unresolved name is a square; every other dot is a circle → AC-20
 - [ ] Select any dot → it gains a cyan ring → AC-21
 - [ ] `uv run pytest tests/test_gallery_graph.py -k "no_mark_colour and yellow"` → passes: no yellow → AC-22
-- [ ] `uv run pytest tests/test_gallery_graph.py -k "no_mark_colour and pink"` → passes: no pink → AC-95
-- [ ] `uv run pytest tests/test_gallery_graph.py -k cyan_only` → passes: cyan only on the selection ring → AC-96
+- [x] `uv run pytest tests/test_gallery_graph.py -k "no_mark_colour and pink"` → passes: no pink → AC-95
+- [x] `uv run pytest tests/test_gallery_graph.py -k cyan_only` → passes: cyan only on the selection ring → AC-96
 - [ ] Look at the strip under the canvas → a key with the six drawings: cited, not cited, held item, held link, unresolved name, selected → AC-23
 - [ ] Open Q11 (and Q16) → the panel says "This answer cites no item." → AC-24
 - [ ] Open Eval 2, Eval 3 and Q6 → every dot sits inside the canvas → AC-25
@@ -79,9 +79,9 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] `uv run pytest tests/test_gallery_graph.py -k held_is_the_stored_held` → passes → AC-60
 - [ ] `uv run pytest tests/test_gallery_graph.py -k unresolved_is_the_type` → passes → AC-61
 - [ ] `uv run pytest tests/test_gallery_graph.py -k neighbours_are_every_other_item` → passes → AC-62
-- [ ] `uv run pytest tests/test_gallery_graph.py -k "neighbours_list_each_id_once or two_links_between"` → passes → AC-97
-- [ ] `uv run pytest tests/test_gallery_graph.py -k first_link_order` → passes → AC-98
-- [ ] `uv run pytest tests/test_gallery_graph.py -k never_its_own_neighbour` → passes → AC-99
+- [x] `uv run pytest tests/test_gallery_graph.py -k "neighbours_list_each_id_once or two_links_between"` → passes → AC-97
+- [x] `uv run pytest tests/test_gallery_graph.py -k first_link_order` → passes → AC-98
+- [x] `uv run pytest tests/test_gallery_graph.py -k never_its_own_neighbour` → passes → AC-99
 - [ ] `uv run pytest tests/test_gallery_graph.py -k near_cited` → passes → AC-63
 - [ ] `uv run pytest tests/test_gallery_graph.py -k cited_by_is_the_numbers` → passes → AC-64
 - [ ] `uv run pytest tests/test_gallery_graph.py -k link_whose_end_is_not_an_item` → passes: exit 1, the record and the link named → AC-65
@@ -113,9 +113,9 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 
 ## Visual pass (browser)
 - [ ] Every label shows its id in stored case (for example `0014/AC-20a`, not capitals) → AC-87
-- [ ] On the phone, Q2's `unresolved:0011:the-emergency-kill-switch-built-in-feature-3` → its label is shortened with "…" → AC-100
-- [ ] Hover that dot → its tooltip gives the full id → AC-101
-- [ ] Select it → the panel's title gives the full id → AC-102
+- [x] On the phone, Q2's `unresolved:0011:the-emergency-kill-switch-built-in-feature-3` → its label is shortened with "…" → AC-100
+- [x] Hover that dot → its tooltip gives the full id → AC-101
+- [x] Select it → the panel's title gives the full id → AC-102
 - [ ] On the phone, open Q17: `feature-11#11-job-search-results-list:1` sits left of its dot, shortened; pan its dot to the left edge → the full label returns, right of the dot → AC-88
 - [ ] On the phone, open Eval 2 → in the top cluster, `0014/AC-20a` (cited first) keeps its label, and no two shown cited labels overlap → AC-89
 - [ ] There, `0001#binding-rules:25` has no label; hover it, select it, or select its neighbour `0001#binding-rules:28` → its label shows → AC-90
@@ -125,8 +125,8 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] `uv run pytest tests/test_gallery_graph.py -k cite_order` → passes → AC-94
 
 ## The panel's source link (browser, desktop; added 2026-10-25 after the code review)
-- [ ] On Eval 1, select `0008/AC-7` and click its location link → JobHunt opens in a new tab, and the graph stays open in the first tab with `0008/AC-7` selected → AC-103
-- [ ] `uv run pytest tests/test_gallery_graph.py -k opens_in_a_new_tab` → passes: the script gives that link `target="_blank"` and `rel="noopener"` → AC-103
+- [x] On Eval 1, select `0008/AC-7` and click its location link → JobHunt opens in a new tab, and the graph stays open in the first tab with `0008/AC-7` selected → AC-103
+- [x] `uv run pytest tests/test_gallery_graph.py -k opens_in_a_new_tab` → passes: the script gives that link `target="_blank"` and `rel="noopener"` → AC-103
 
 ## After the merge
-- [ ] The Pages workflow run on `main` succeeds, and https://ghalynho10.github.io/tracepath/ shows 31 entries, each with a Graph button; Eval 3's graph opens there with 37 dots, the network panel shows no request on opening, and the page with scripts off still shows the list with no Graph button → spec 0011 live, AC-1, AC-2, AC-12, AC-75 on the published page
+- [x] The Pages workflow run on `main` succeeds, and https://ghalynho10.github.io/tracepath/ shows 31 entries, each with a Graph button; Eval 3's graph opens there with 37 dots, the network panel shows no request on opening, and the page with scripts off still shows the list with no Graph button → spec 0011 live, AC-1, AC-2, AC-12, AC-75 on the published page
