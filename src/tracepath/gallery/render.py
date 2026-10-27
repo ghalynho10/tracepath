@@ -193,7 +193,8 @@ main { max-width: 44rem; margin: 0 auto; padding: 48px 16px 72px; }
 a { color: inherit; text-decoration-color: var(--cyan); text-underline-offset: 3px;
   text-decoration-thickness: 1px; }
 a:hover { color: var(--cyan); }
-code { font-family: var(--mono); font-size: .9em; }
+code { font-family: var(--mono); font-size: .9em; background: rgba(1, 25, 54, .07);
+  border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 code .w { display: inline-block; max-width: 100%; overflow-wrap: anywhere; white-space: pre-wrap; }
 .g { white-space: nowrap; }
 .g code { white-space: pre-wrap; }
