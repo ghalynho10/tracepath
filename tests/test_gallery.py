@@ -373,14 +373,17 @@ def test_a_ruling_elsewhere_is_plain_text_with_no_link(root: Path, tmp_path: Pat
         "experiments/0099-missing/README.md",
         "experiments/../../outside.md",
         "experiments/0016-link-hops",
+        "experiments/../docs/scope/scope.md",
     ],
 )
 def test_build_fails_on_a_ruling_that_is_not_a_file_under_the_root(
     root: Path, tmp_path: Path, source: str
 ) -> None:
-    """Spec 0012 AC-61: exit 1, naming the entry; a missing file, one outside the root, a
-    folder."""
+    """Spec 0012 AC-61, AC-62: exit 1, naming the entry; a missing file, one outside the
+    root, a folder, one climbing into `docs/`."""
     (tmp_path / "outside.md").write_text("x", encoding="utf-8")
+    (root / "docs" / "scope").mkdir(parents=True)
+    (root / "docs" / "scope" / "scope.md").write_text("x", encoding="utf-8")
     _write_marks(root, [dict(m, source_path=source) if m["label"] == "Q2" else m for m in MARKS])
 
     code, output = _run(root, tmp_path / "site")

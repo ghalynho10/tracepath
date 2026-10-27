@@ -306,6 +306,11 @@ def load_entries(root: Path) -> tuple[Entry, ...]:
                 f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names "
                 f"{entry.record}, which is not in {ASKS_DIR.as_posix()}/"
             )
+        if ".." in entry.source_path or "\\" in entry.source_path:
+            raise GalleryError(
+                f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names source_path "
+                f"{entry.source_path}, which holds .. or a backslash (AC-62)"
+            )
         if entry.source_path.startswith(RULINGS_DIR) and not _is_file_under(
             root, entry.source_path
         ):
