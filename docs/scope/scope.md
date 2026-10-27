@@ -33,7 +33,7 @@ _You are in charge. Every box below is a **suggestion**, not a gate: run any, sk
 | 16 | Answer at question time | v1, replaces the remaining v1 needs | done |
 | 17 | Answer gallery | after v1, presentation | done |
 | 18 | Answer graph | after v1, presentation | done |
-| 19 | Gallery readability | after v1, presentation | in-progress |
+| 19 | Gallery readability | after v1, presentation | done |
 
 ## v1 finish line
 
@@ -469,7 +469,7 @@ _2026-10-25: spec 0010, the gallery this graph sits on, carries dated notes on i
 - [x] Test it: `/test answer graph` · the build's suite already covered every pytest step of `verify.md`; closed 4 gaps the real records never reach: the panel's `location`, `source` and `marker` (AC-46, AC-47, with a no file item and a whole file item), a claim that cites and rejects an item or cites one id twice (AC-41, AC-59, AC-64, AC-94), and a label that makes an empty slug. 4 tests added to `tests/test_gallery_graph.py`; unit suite 1291 passed, 1 skipped, mypy strict clean, ruff clean
 - [x] Sync it: `/sync answer graph`
 
-### 19. Gallery readability · in-progress · added 2026-10-26
+### 19. Gallery readability · done · added 2026-10-26
 Makes the answer gallery page (spec 0010) and its graph panel (spec 0011) easier to read for a public reader: formatted inline text, a clear heading hierarchy per entry, one total of the marks, a clearer heading for the missing list, and notes written for the public. Presentation only. No CLI change, no API call.
 **Done when:**
 - Stored text on the page and in the graph panel shows inline code (`...`) and bold (**...**) as formatted text, not raw markers. All HTML stays escaped (spec 0010 AC-24 needs a dated amendment). Measured 2026-10-26 on the 31 shown records: 43 of 107 claims contain backticks; of 125 cited items, 94 contain backticks and 86 contain bold; none has a heading or a table.
@@ -493,7 +493,7 @@ _Design decided 2026-10-26: formatting runs in Python (one pure module) and `gra
   - [x] The visual pass at both widths (slice 7; AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88) · built 2026-10-26: a code run and the text touching it share one `g` element in `inline.py` and `graph.js`, so a line never ends on `(` or starts on `),`; browser criteria measured once by hand at 1440, 561, 560 and 390 wide, still owed to `/check verify`
 - [x] Verify it: `/check verify gallery readability` · ticked 2026-10-26, every criterion of spec 0012 met in Chromium at 1440 and 390 (`docs/reviews/2026-10-26-check-verify-gallery-readability.md`); AC-110 not checked in WebKit, not installed
 - [x] Test it: `/test gallery readability` · ticked 2026-10-26 (`2ff11db`), scoped to the whole branch: closed 3 gaps, an empty `**` pair shown as typed (AC-2), a folder under `experiments/` as `source_path` fails the build (AC-61), and the mark caption's own words (AC-53); full suite 1510 passed, 1 skipped; the browser criteria stay with `/check verify`
-- [ ] Sync it: `/sync gallery readability`
+- [x] Sync it: `/sync gallery readability`
 
 ## Deferred
 Out of scope for the current build pass, kept so the plan stays honest.
