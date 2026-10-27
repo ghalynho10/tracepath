@@ -67,7 +67,7 @@
     "label": "Held out 3",
     "section": "held out",
     "mark": "partly right",
-    "note": "Held out question 3's cause is retrieval: it did not reach 0018 line 63 (`0018#review-findings:10`), the invariant's text. Nothing was cut; the item sat beyond two hops.",
+    "note": "The cause is retrieval. The answer reaches the right decision, that this pair cannot be given a range of accepted results, but not the rule behind it: the text of spec 0018's invariant (`0018#review-findings:10`), which its own \"records lack\" list names. Nothing was cut by the 90 item limit; the item sat more than two links (hops) from what the search found, so it was never sent to the model.",
     "source_path": "docs/scope/scope.md",
     "source_row": "v1 finish line"
   },
@@ -94,7 +94,7 @@
     "label": "Q2",
     "section": "realistic",
     "mark": "wrong",
-    "note": "Feature 3 (\"Deployment & environments\", scope row 3) and spec 0002 are the same thing. The tool cited spec 0011's item naming \"the emergency kill switch built in feature 3\", but that name stayed unresolved: it was not linked to feature 3 or to spec 0002. So it said the decision was missing.",
+    "note": "JobHunt's spec 0002 (Deployment and environments, its feature 3) does decide this: the kill switch is stored as a single row in Postgres. The answer found spec 0011's mention of \"the emergency kill switch built in feature 3\", but that name was never linked to feature 3 or spec 0002, so the tool said the decision was missing. The search did not reach spec 0002 directly either: the question says \"emergency stop toggle\" where the spec says \"kill switch\".",
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q2"
   },
@@ -130,7 +130,7 @@
     "label": "Q6",
     "section": "realistic",
     "mark": "right",
-    "note": "The second claim arguably answers the question. It may not give all the answers, but it is a valid answer.",
+    "note": "The answer explains how the diff works and gives two of the reasons I expected: it keeps the stored capitalisation and respects the unique index on skill names. It misses that a diff also avoids needless database writes. The deeper reason is in JobHunt's rationale file, which the tool does not read yet: the skills table can only insert and delete, never update, by design.",
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q6"
   },
@@ -139,7 +139,7 @@
     "label": "Q7",
     "section": "realistic",
     "mark": "right",
-    "note": "Right. Partly would also be a fair judgment, but explaining the difference between a failure and a refusal (a usage limit being a refusal) can be considered an answer. The cited items were not from spec 0011, and the alert ratio wording is in the source but not in the answer.",
+    "note": "Right, because the answer gives the core reason: hitting a usage limit is a refusal, a normal outcome, not a failure reported as an error. It misses why JobHunt cares: counting refusals as failures would set off the error alert while everything works as intended. That reason is in spec 0011's rationale file, which the tool does not read yet. Partly right would also be a fair mark.",
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q7"
   },
@@ -175,7 +175,7 @@
     "label": "Q11",
     "section": "realistic",
     "mark": "declined",
-    "note": "The tool has no set verdict for a false premise. Its verdicts are answered, partly, not_supported and no_documented_link, so not_supported is the closest it can give.",
+    "note": null,
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q11"
   },
@@ -184,7 +184,7 @@
     "label": "Q12",
     "section": "realistic",
     "mark": "declined",
-    "note": "I don't see the model inventing anything.",
+    "note": null,
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q12"
   },
@@ -247,7 +247,7 @@
     "label": "Q19",
     "section": "realistic",
     "mark": "right",
-    "note": "Marked against the question, not the committed line. \"Not built\" is the answer to the question; adding \"a deferred idea\" to the expected line was my mistake. It shows a needed improvement: when a related item exists (here, the deferred \"Scheduled push digest\" idea), the answer should give that context. Claim 3 says the scope document does not mention a digest, but scope.md:497 does; the tool checked only the preamble item it cited.",
+    "note": "The answer is right that JobHunt never built a daily email digest, but it misses that the idea was deferred: JobHunt's scope lists a \"Scheduled push digest\" for later. The tool's search matches exact words, and the question's \"daily email digest\" shared only \"digest\" with that entry, so it ranked too low to be sent to the model. Claim 3 is wrong for the same reason: the scope does mention a digest, in a part the tool never saw. It shows a needed improvement: when a related item exists, the answer should give that context.",
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q19"
   },
@@ -274,7 +274,7 @@
     "label": "Q22",
     "section": "realistic",
     "mark": "right",
-    "note": "The answers are correct except for claim 3, which misreads \"the author family\" (the Opus model family that wrote the code) as the human author's family.",
+    "note": "The answers are correct except for claim 3, which reads \"the author's family\" (the Claude Opus model family) as the family of the human author, me.",
     "source_path": "experiments/0018-realistic-usage-questions/README.md",
     "source_row": "Q22"
   }
