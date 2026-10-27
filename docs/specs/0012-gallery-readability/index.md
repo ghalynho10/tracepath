@@ -123,7 +123,7 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-83** (_browser_): With scripts off, opening the page with `#<slug>` scrolls to that entry.
 - **AC-84** (_browser_): With scripts running, opening the page with `#<slug>` of an entry opens that entry's graph.
 - **AC-85** (_browser_): A click on an entry's strip replaces the address fragment with `#<slug>` and adds no history step.
-- **AC-86** (_browser_): Pressing previous or next replaces the address fragment with the slug of the graph now open and adds no history step.
+- **AC-86** (_browser_): Pressing previous or next replaces the address fragment with the slug of the graph now open and adds no history step. _Note 2026-10-27: AC-85 to AC-87 hold for the page's own address writes. A fragment the reader types adds a history entry of its own, and the next write replaces that entry, so these criteria hold as written; see AC-111 to AC-115._
 - **AC-87** (_browser_): Closing the graph, by Esc or by the close button, clears the address fragment and adds no history step.
 - **AC-88** (_browser_): After the graph closes, the page is at the entry whose graph was showing.
 - **AC-89** (_browser_): An address fragment that is not an entry's slug opens the page as usual, with no graph and no error message.
@@ -152,6 +152,14 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-108**: The code tint is none of the four swipe colours of AC-49 to AC-52.
 - **AC-109**: The code tint is lighter than the declined swipe `#CBD3DC`.
 - **AC-110** (_browser_): A code span of several words reads as one tinted run, with the tint unbroken across its spaces and across a line break, and a word is still not split at a hyphen (AC-12).
+
+*Added 2026-10-27 after the engineer's ruling on a typed fragment* (reverses the ruling of 2026-10-26 that typing a fragment into an open page stays unhandled; see Feature design, "The link to one graph")
+- **AC-111** (_browser_): When the address fragment of an open page changes to an entry's slug, that entry's graph opens.
+- **AC-112** (_browser_): That graph replaces a graph already open, and the page holds one graph window.
+- **AC-113** (_browser_): When the address fragment of an open page changes to anything that is neither an entry's slug nor empty, the page is left as it is, with no error message. _Amended 2026-10-27: the empty fragment is AC-116._
+- **AC-114** (_browser_): The page's own address writes, on open, swap and close, fire no `hashchange` event, so the page never reacts to itself.
+- **AC-115** (_browser_): After the reader types one slug and then another, Back returns the address to the first slug and reopens its graph.
+- **AC-116** (_browser_): When the address fragment of an open page changes to empty, an open graph closes, as it does when the reader closes it.
 
 ## Decision
 
@@ -278,7 +286,10 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 - The script uses no other way to change the address (AC-91).
 - The fragment holds the slug only. Selecting an item never changes the address, so a link cannot select an item (AC-90, AC-92). Item selection in a link stays deferred.
 - A label is the key of its link. Renaming a label in `gallery/marks.json` changes its slug and breaks any link already sent; nothing in the build can know which links were sent (Consequences). A label must not make a slug that starts `graph-` or `gw-`, because the page already holds ids with those starts.
-- Typing a new fragment into a page that is already open is not handled; the link opens its graph when the page loads.
+- _Amended 2026-10-27, reversing the ruling of 2026-10-26: the engineer's reason is that the earlier ruling assumed no reader edits the address, and that is not known._ The script also listens for `hashchange` (AC-111). When the fragment becomes a slug, the key of the registry of Graph buttons, that graph opens with `open(slug)`, which swaps out any graph already open (AC-112). An empty fragment closes an open graph (AC-116, below). Any other fragment, one that is neither a slug nor empty, does nothing and is left as it is, as for AC-89 (AC-113).
+- The page's own writes, by `history.replaceState`, fire no `hashchange` and no `popstate` event, so the page never reacts to itself. This is how `replaceState` is documented to behave and is confirmed in a browser at the build, by counting events through a click, a swap and a close (AC-114).
+- A fragment the reader types, or a link to another entry followed in an open tab, makes the browser add a history entry. Back then returns to the previous fragment, and when that equals a slug its graph reopens, because Back fires `hashchange` too (AC-115). This is intended. The page's own writes add no entry (AC-85 to AC-87), and a write made while a typed entry is current replaces that entry.
+- _Ruled 2026-10-27._ Back to an address with no fragment, or any change to an empty fragment, fires `hashchange` with an empty fragment, and an open graph closes (AC-116). This matches what closing writes: the close event already replaces the address with the bare path and query (basis: `graph.js` lines 704 to 708), so the address and the window agree. The listener closes the graph by `dialog.close()`, so the close event runs as for Esc: it rewrites the same bare address, which fires nothing, and hands focus to the Graph button of the graph that was showing (spec 0011 AC-6). With no graph open, an empty fragment does nothing.
 
 **Key invariants**:
 - No text reaches the page unescaped. Every run is escaped where HTML is written (AC-10).
@@ -311,7 +322,7 @@ The four codes are the `Verdict` type in `src/tracepath/ask/answer.py` (basis: l
 - Static: the `code` rule has a background, the panel styles add none of their own, and the background is none of the four swipe colours and lighter than `#CBD3DC`, verifies **AC-106 to AC-109**.
 - Real page: each entry's `article` has its slug as `id`; the slugs are unique, verifies **AC-82**.
 - Static: `graph.js` calls `history.replaceState` and never `pushState` or `location.hash =`, verifies **AC-91**.
-- Browser: see `verify.md`, verifies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-81, AC-83 to AC-90, AC-92**.
+- Browser: see `verify.md`, verifies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-81, AC-83 to AC-90, AC-92, AC-111 to AC-116**.
 
 ## Build plan
 
@@ -324,6 +335,7 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 5. [x] Slice 5, note, source and strip. "My note.", "My full ruling" with the `experiments/` rule and its build check, plain text for `docs/` sources and the development section's line, the pinned marks test, the strip with its fixed drawing, counts and accessible name, and the `graph.js` selectors; make the test fixture's marks paths real (it names `experiments/0016-hops/README.md`, but the folder is `0016-link-hops`) and give it the `experiments/` files the new check needs, satisfies **AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103, AC-104, AC-105**
 6. [x] Slice 6, the link to one graph. The slug as the `id` of each `article`; in `graph.js`, open the graph named by the fragment when the page loads, replace the fragment on open, swap and close with `history.replaceState`, and leave an unknown fragment alone, satisfies **AC-82, AC-84, AC-85, AC-86, AC-87, AC-89, AC-90, AC-91, AC-92**
 7. [x] Slice 7, the visual pass. Write the styles from the board measures at both widths; check each browser criterion in `verify.md` at 1440 by 900 and 390 by 844; keep the four swipe colours out of the graph styles, satisfies **AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88, AC-106 to AC-110**
+8. [x] Slice 8, the typed fragment (added 2026-10-27). In `graph.js`, a `hashchange` listener that opens the graph when the fragment equals a registered slug, closes an open graph when the fragment is empty, and does nothing otherwise; confirm in a browser that the page's own `replaceState` writes fire no event, satisfies **AC-111, AC-112, AC-113, AC-114, AC-115, AC-116**
 
 ## Consequences
 
@@ -351,11 +363,12 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 
 - [x] Rule on the open question of the code word patterns. _Ruled 2026-10-26: keep both._ The "What the answer says the records lack" list follows the same patterns (AC-27), and item text does not (AC-28), because item text is JobHunt's own words, where the author already marked code. AC-27 and AC-28 stand.
 - [x] Rule on the label chips (_ruled 2026-10-26: HISTORY as stored_): the board draws `history` in lower case; spec 0010 AC-27 and the Key show `HISTORY`. This spec keeps the stored wording of every label and chip.
-- [ ] Write the notes: the 10 notes in `gallery/marks.json` are mine to write for a public reader. No note and no mark was drafted or changed by this spec.
+- [x] Write the notes: the 10 notes in `gallery/marks.json` are mine to write for a public reader. No note and no mark was drafted or changed by this spec. _Done 2026-10-27 in af25217: eight public notes, Q11 and Q12 set to none, no mark changed._
 - [x] Confirm the wording of the plain text source line and the placement of the failed claims caption under the verdict caption. _Ruled 2026-10-26: the source line reads "My full ruling: the v1 finish line in the project's scope notes (not published)."; the failed claims count is a caption under the verdict caption._
-- [x] Phone layout at 560 pixels and narrower, AC-61, AC-64 and AC-86 kept; the `graph-` and `gw-` label prefixes stay unchecked and typing a fragment into an open page stays unhandled. _Ruled 2026-10-26._
+- [x] Phone layout at 560 pixels and narrower, AC-61, AC-64 and AC-86 kept; the `graph-` and `gw-` label prefixes stay unchecked and typing a fragment into an open page stays unhandled. _Ruled 2026-10-26; the last point is reversed by the ruling of 2026-10-27, AC-111 to AC-115._
 - [ ] After the merge, `docs/specs`, `docs/scope` and `docs/reviews` leave the public repository. Reconcile the links in `README`, `AGENTS.md` and the gallery's own comments that name those paths, in a later change.
 - [x] The code tint: ruled 2026-10-26, a faint ink tint on the `code` element, in the list and the panel (AC-106 to AC-110). A build may adjust the exact alpha if the tint reads too heavy in a browser, as long as AC-108 and AC-109 hold.
+- [x] Back to an address with no fragment: _ruled 2026-10-27: an empty fragment closes an open graph (AC-116)_, matching what closing writes.
 - [ ] Dark mode, recorded in spec 0010's Follow up, stays deferred; the swipe colours were chosen for a white page only.
 
 ## References

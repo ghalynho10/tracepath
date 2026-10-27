@@ -5,8 +5,10 @@ import os
 import re
 import shutil
 import socket
+import struct
 from collections.abc import Callable
 from html import escape, unescape
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -17,11 +19,14 @@ from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
 from tracepath.gallery.inline import runs, to_html
-from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
+from tracepath.gallery.records import MARKS_FILE, PREVIEW_FILE, SNAPSHOT_DOCS
 from tracepath.gallery.render import (
     LABEL_KEY,
     MARK_CAPTION,
     MARK_KEY,
+    PAGE_URL,
+    PREVIEW_DESCRIPTION,
+    PREVIEW_NAME,
     STYLE,
     VERDICT_CAPTION,
     VERDICT_WORDS,
@@ -68,6 +73,9 @@ MARKS: tuple[dict[str, object], ...] = (
 )
 
 runner = CliRunner()
+
+#: Stands in for `gallery/preview.png` in the fixture; the build copies it byte for byte.
+PREVIEW_STUB = b"\x89PNG stand in for the preview image"
 
 #: An entry's opening tag, which carries its slug as `id` (spec 0012 AC-82).
 _ARTICLE = re.compile(r'<article id="[a-z0-9-]+">')
@@ -125,6 +133,7 @@ def root(tmp_path: Path) -> Path:
             shutil.copy(PROJECT_ROOT / source, tmp_path / source)
     (tmp_path / MARKS_FILE).parent.mkdir()
     _write_marks(tmp_path, list(MARKS))
+    (tmp_path / PREVIEW_FILE).write_bytes(PREVIEW_STUB)
     return tmp_path
 
 
@@ -617,14 +626,175 @@ def test_build_refuses_an_out_folder_inside_artifacts_or_corpus(root: Path, insi
 
 
 def test_page_is_self_contained(root: Path, tmp_path: Path) -> None:
-    """AC-58: inline styles, no stylesheet or other file of the site; scripts are inline
-    since spec 0011 (its AC-74)."""
+    """AC-58: inline styles and scripts, so no `<link>` and no `<script>` with a `src`
+    (scripts are inline since spec 0011, its AC-74)."""
     page = _build(root, tmp_path / "site")
 
     assert "<style>" in page
     assert "<link" not in page
+    assert not re.search(r"<script[^>]*\ssrc=", page)
     assert not re.search(r"<script(?! type=\"application/json\")[^>]", page)
     assert not re.search(r'\b(src|href)="(?!https://|#)', page)
+
+
+class _Metas(HTMLParser):
+    """The `<meta>` tags of a page and where each, and the first `<style>`, start (line, column)."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.metas: list[dict[str, str | None]] = []
+        self.first_style: tuple[int, int] | None = None
+        self.meta_offsets: list[tuple[int, int]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        offset = self.getpos()
+        if tag == "meta":
+            self.metas.append(dict(attrs))
+            self.meta_offsets.append(offset)
+        if tag == "style" and self.first_style is None:
+            self.first_style = offset
+
+
+def _metas(page: str) -> _Metas:
+    parsed = _Metas()
+    parsed.feed(page)
+    return parsed
+
+
+def _meta(page: str, key: str, value: str) -> str:
+    """The content of the one `<meta>` tag whose `property` or `name` is `value`."""
+    found = [m for m in _metas(page).metas if m.get(key) == value]
+    assert len(found) == 1, value
+    content = found[0]["content"]
+    assert content is not None
+    return content
+
+
+def test_the_preview_image_is_the_only_other_file_the_page_refers_to(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-63: every address on the Pages site the page holds is the page itself or the image."""
+    page = _build(root, tmp_path / "site")
+
+    site_refs = set(re.findall(re.escape(PAGE_URL) + r"[^\"'\s<>)]*", page))
+    assert site_refs == {PAGE_URL, PAGE_URL + PREVIEW_NAME}
+
+
+def test_the_preview_image_is_named_only_in_meta_tags(root: Path, tmp_path: Path) -> None:
+    """AC-64: the image's name appears once, inside the `og:image` meta tag."""
+    page = _build(root, tmp_path / "site")
+
+    tags = re.findall(r"<[^>]*" + re.escape(PREVIEW_NAME) + r"[^>]*>", page)
+    assert page.count(PREVIEW_NAME) == 1
+    assert len(tags) == 1 and tags[0].startswith("<meta ")
+
+
+@pytest.mark.parametrize(
+    ("ac", "key", "value", "content"),
+    [
+        ("AC-65", "property", "og:title", "tracepath answer gallery"),
+        ("AC-66", "property", "og:url", "https://ghalynho10.github.io/tracepath/"),
+        ("AC-67", "property", "og:image", "https://ghalynho10.github.io/tracepath/preview.png"),
+        ("AC-68", "property", "og:image:width", "1200"),
+        ("AC-69", "property", "og:image:height", "627"),
+        (
+            "AC-70",
+            "property",
+            "og:description",
+            "Answers recorded by tracepath, a tool that answers questions about a project's "
+            "decisions from its specs and decision records, each with my own mark and a graph "
+            "of what the model was given.",
+        ),
+    ],
+)
+def test_the_page_carries_each_preview_tag_with_its_ruled_content(
+    root: Path, tmp_path: Path, ac: str, key: str, value: str, content: str
+) -> None:
+    """AC-65 to AC-70: one tag each, with the content spec 0010 rules, written out in full."""
+    page = _build(root, tmp_path / "site")
+
+    assert _meta(page, key, value) == content, ac
+
+
+def test_the_meta_description_equals_the_og_description(root: Path, tmp_path: Path) -> None:
+    """AC-71."""
+    page = _build(root, tmp_path / "site")
+
+    assert _meta(page, "name", "description") == _meta(page, "property", "og:description")
+    assert _meta(page, "name", "description") == PREVIEW_DESCRIPTION
+
+
+def test_the_preview_tags_come_before_the_first_style(root: Path, tmp_path: Path) -> None:
+    """AC-72: all seven tags of AC-65 to AC-71 sit before the first `<style>`."""
+    parsed = _metas(_build(root, tmp_path / "site"))
+    wanted = {
+        "og:title",
+        "og:url",
+        "og:image",
+        "og:image:width",
+        "og:image:height",
+        "og:description",
+        "description",
+    }
+
+    assert parsed.first_style is not None
+    positions = [
+        offset
+        for meta, offset in zip(parsed.metas, parsed.meta_offsets, strict=True)
+        if (meta.get("property") or meta.get("name")) in wanted
+    ]
+    assert len(positions) == len(wanted)
+    assert max(positions) < parsed.first_style
+
+
+def _png_size(path: Path) -> tuple[int, int]:
+    """Width and height from a PNG's signature and IHDR chunk."""
+    head = path.read_bytes()[:24]
+    assert head[:8] == b"\x89PNG\r\n\x1a\n", f"{path} is not a PNG"
+    width, height = struct.unpack(">II", head[16:24])
+    return int(width), int(height)
+
+
+def test_the_preview_image_is_1200_by_627() -> None:
+    """AC-73: the committed `gallery/preview.png` is a PNG of 1200 by 627 pixels."""
+    assert _png_size(PROJECT_ROOT / PREVIEW_FILE) == (1200, 627)
+
+
+def test_the_preview_image_is_at_most_5_mb() -> None:
+    """AC-74."""
+    assert (PROJECT_ROOT / PREVIEW_FILE).stat().st_size <= 5 * 1024 * 1024
+
+
+def test_build_copies_the_preview_image_byte_for_byte(root: Path, tmp_path: Path) -> None:
+    """AC-75."""
+    _build(root, tmp_path / "site")
+
+    assert (tmp_path / "site" / PREVIEW_NAME).read_bytes() == PREVIEW_STUB
+
+
+def test_build_fails_naming_a_missing_preview_image(root: Path, tmp_path: Path) -> None:
+    """AC-76: exit 1 naming `gallery/preview.png`, and nothing written."""
+    (root / PREVIEW_FILE).unlink()
+
+    code, output = _run(root, tmp_path / "site")
+
+    assert code == 1
+    assert "gallery/preview.png" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_the_intro_names_what_tracepath_answers_in_the_resume_wording(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-77: the first sentence says tracepath answers questions about a project's decisions
+    from its specs and decision records, not "why was this built this way?"."""
+    page = _build(root, tmp_path / "site")
+    intro = page.split('<div class="intro">')[1].split("</p>")[0]
+
+    assert (
+        "answers questions about a project's decisions from its specs and decision records" in intro
+    )
+    assert "why was this built this way" not in page
 
 
 def test_build_from_the_committed_marks_file(tmp_path: Path) -> None:

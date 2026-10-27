@@ -88,10 +88,11 @@ from tracepath.gallery.records import (
     GalleryError,
     count_records,
     load_entries,
+    read_preview,
     read_scripts,
     refuse_read_only_out,
 )
-from tracepath.gallery.render import render_page
+from tracepath.gallery.render import PREVIEW_NAME, render_page
 from tracepath.graph import GraphUnavailable, connect, server_version
 from tracepath.graph.load import GraphWriteFailed
 from tracepath.graph.read import read_graph
@@ -1259,6 +1260,7 @@ def gallery_build(
         entries = load_entries(base)
         graphs = entry_graphs(entries)
         scripts = read_scripts()
+        preview = read_preview(base)
     except GalleryError as exc:
         _fail(str(exc))
     page = out / "index.html"
@@ -1267,6 +1269,7 @@ def gallery_build(
         page.write_text(
             render_page(entries, count_records(base), graphs, scripts), encoding="utf-8"
         )
+        (out / PREVIEW_NAME).write_bytes(preview)
     except OSError as exc:
         _fail(f"{page}: could not be written ({exc}).")
     _say(f"✓ {len(entries)} entries → {page}")

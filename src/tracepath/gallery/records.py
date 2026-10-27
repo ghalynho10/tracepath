@@ -28,6 +28,9 @@ from tracepath.report import EVAL_FILE
 #: The marks file, relative to the repository root: the only list of what is shown.
 MARKS_FILE = Path("gallery") / "marks.json"
 
+#: The link preview image, relative to the repository root; the build copies it (AC-75).
+PREVIEW_FILE = Path("gallery") / "preview.png"
+
 #: The pinned JobHunt snapshot every linked item is checked against (AC-38, AC-39).
 SNAPSHOT_DOCS = Path("corpus") / "jobhunt" / "docs"
 
@@ -193,6 +196,15 @@ def _read_text(path: Path) -> str:
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         raise GalleryError(f"{path}: cannot be read ({exc})") from None
+
+
+def read_preview(base: Path) -> bytes:
+    """The link preview image's bytes, or a `GalleryError` naming the file (AC-76)."""
+    path = base / PREVIEW_FILE
+    try:
+        return path.read_bytes()
+    except OSError as exc:
+        raise GalleryError(f"{path}: cannot be read ({exc.strerror or exc})") from None
 
 
 #: Text that would end an inline script element or change how the browser reads it (AC-68).

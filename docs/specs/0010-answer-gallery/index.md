@@ -92,7 +92,24 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 - **AC-55**: `uv run tracepath gallery build --out DIR` writes `DIR/index.html` and exits 0.
 - **AC-56**: The build makes no network call and no API call; a test that blocks sockets still passes.
 - **AC-57**: The build never writes inside `artifacts/` or `corpus/`.
-- **AC-58**: `index.html` is self contained: its styles are inline and it refers to no other file of the site.
+- **AC-58** (amended 2026-10-27): `index.html` is self contained: its styles and scripts are inline, so it has no `<link>` element and no `<script>` element with a `src`.
+- **AC-63** (added 2026-10-27): The only file of the site that `index.html` refers to is the preview image `preview.png`.
+- **AC-64** (added 2026-10-27): `index.html` names `preview.png` only inside `<meta>` tags.
+
+*Link preview* (added 2026-10-27; LinkedIn lists `og:title`, `og:image`, `og:description` and `og:url` as required, and an image of at least 1200 by 627 and at most 5 MB, per linkedin.com/help/linkedin/answer/46687)
+- **AC-65**: `index.html` has an `og:title` tag whose content is `tracepath answer gallery`.
+- **AC-66**: `index.html` has an `og:url` tag whose content is `https://ghalynho10.github.io/tracepath/`.
+- **AC-67**: `index.html` has an `og:image` tag whose content is the absolute URL `https://ghalynho10.github.io/tracepath/preview.png`.
+- **AC-68**: `index.html` has an `og:image:width` tag whose content is `1200`.
+- **AC-69**: `index.html` has an `og:image:height` tag whose content is `627`.
+- **AC-70**: `index.html` has an `og:description` tag whose content is `Answers recorded by tracepath, a tool that answers questions about a project's decisions from its specs and decision records, each with my own mark and a graph of what the model was given.`
+- **AC-71**: `index.html` has a `<meta name="description">` tag whose content equals the `og:description` content.
+- **AC-72**: Every tag of AC-65 to AC-71 comes before the first `<style>` element.
+- **AC-73**: `gallery/preview.png` is a PNG file of 1200 by 627 pixels.
+- **AC-74**: `gallery/preview.png` is at most 5 MB.
+- **AC-75**: `uv run tracepath gallery build --out DIR` writes `DIR/preview.png`, a copy of `gallery/preview.png`.
+- **AC-76**: The build exits 1, naming `gallery/preview.png`, when that file is missing.
+- **AC-77**: The first sentence of the intro reads: tracepath "answers questions about a project's decisions from its specs and decision records", in place of "why was this built this way?".
 
 *Publishing*
 - **AC-59**: A workflow builds the page on a push to `main`.
@@ -107,6 +124,8 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 `tracepath gallery build` joins the stored ask records, a committed marks file and the pinned JobHunt snapshot into one static page with no JavaScript, and a workflow publishes it from this public repository.
 
 _Note on the Decision: Amended 2026-10-26: the entry's layout, headings, verdict and mark block, note line and graph strip are specified by [spec 0012](../0012-gallery-readability/index.md), which replaces the pill look of the first visual pass (AC-14, task 8). Amended 2026-10-25: the page now also carries inline scripts, for the answer graph of [spec 0011](../0011-answer-graph/index.md). With scripts off it is still this list, and AC-58 still holds, because every script is inline._
+
+_Note on the Decision: Amended 2026-10-27: the page gains a link preview, ruled by the engineer on 2026-10-27. The live page has a `<title>` but no Open Graph tags and no meta description, so LinkedIn shows no preview. The head carries the tags of AC-65 to AC-71 before the styles, and one image, `gallery/preview.png`, which the build copies beside `index.html`, so Pages serves it at the URL in AC-67. AC-58 now allows that one image, named only in meta tags (AC-63, AC-64). The page is not split and no record moves out of it: LinkedIn documents no page size limit, and the tags sit in the first kilobyte. The `og:type` tag (`website`) is ruled too, but LinkedIn does not list it as required, so it has no criterion._
 
 **Follows**: static site generation from versioned data (build once, serve files) · functional core with an imperative shell, as the project's own rule.
 
@@ -142,7 +161,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 **Command surface**:
 | Command | Key inputs | Key outputs | Key errors |
 |---|---|---|---|
-| `tracepath gallery build` | `--out DIR` (required), `--root PATH` (default: the repository root) | `DIR/index.html`, a one line count of entries written | exit 1 with a typed message on AC-5, AC-6, AC-7, AC-10, AC-11, AC-37 to AC-40, AC-42 |
+| `tracepath gallery build` | `--out DIR` (required), `--root PATH` (default: the repository root) | `DIR/index.html`, `DIR/preview.png` (AC-75), a one line count of entries written | exit 1 with a typed message on AC-5, AC-6, AC-7, AC-10, AC-11, AC-37 to AC-40, AC-42, AC-76 |
 
 **Value sourcing**:
 | Action | Value produced / displayed | Source |
@@ -164,6 +183,9 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 | Page statement | `ask-1` runs of eval 1 to 5 were marked right | a constant, from `docs/scope/scope.md` line 238 (the v1 finish line) |
 | Held out marks | mark and note for held out 1 to 4 | `docs/scope/scope.md`, the v1 finish line: 3 right, 1 partly right (question 3); notes copied word for word when first written; _amended 2026-10-26: the notes are now the engineer's public notes, and the source shows as plain text_ |
 | Key text for labels and marks | one line each | a constant written in the build; the marks' wording is the engineer's (see Follow-up) |
+| Link preview tags | `og:title`, `og:type`, `og:url`, `og:image`, `og:image:width`, `og:image:height`, `og:description`, meta description | constants in the build, with the values ruled by the engineer on 2026-10-27 (AC-65 to AC-71); the page URL and the image URL share one constant for the Pages address |
+| Link preview image | `DIR/preview.png` | a copy of `gallery/preview.png`, a screenshot of one entry's open graph view; the engineer picks the entry when the build task runs |
+| Intro first sentence | the words "answers questions about a project's decisions from its specs and decision records" | a constant in the build, the engineer's resume wording (AC-77); the README keeps its tagline |
 
 **Key invariants**:
 - A link is built only from a file and line that exist in the pinned snapshot (AC-38, AC-39), for every item that gets a link, not only cited ones.
@@ -191,6 +213,10 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 - Guard: the pinned commit in code equals `SNAPSHOT.md`, verifies **AC-43**.
 - Isolation: the build passes with sockets blocked and writes nothing under `artifacts/` or `corpus/`, verifies **AC-56, AC-57**.
 - Workflow: the workflow file's trigger lists the paths of AC-61, and its deploy job lists the build job under `needs`, verifies **AC-59, AC-60, AC-61, AC-62**.
+- Link preview: a build from the real data has each tag of AC-65 to AC-71 with its ruled content, all before the first `<style>`, and names `preview.png` only in meta tags, verifies **AC-63 to AC-72**.
+- Image: `gallery/preview.png` is read as a PNG of 1200 by 627 pixels and at most 5 MB, and the build copies it byte for byte to `DIR/preview.png`, verifies **AC-73, AC-74, AC-75**.
+- Failure: a build in a copy of the repository with `gallery/preview.png` removed exits 1 naming it, verifies **AC-76**.
+- Intro: the intro's first sentence holds the resume wording and no longer holds "why was this built this way?", verifies **AC-77**.
 
 ## Build plan
 
@@ -208,6 +234,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 7. [x] Slice 5, page statements. Add the record count and directory link, the shown set, the `ask-1` line, the 0018 link and the source line, satisfies **AC-49, AC-50, AC-51, AC-52, AC-53, AC-54**
 8. [x] Visual design pass, settled before this task starts (see Follow-up), then applied so the engineer's mark reads clearly apart from the model's verdict, satisfies **AC-14**
 
+9. [x] Link preview (added 2026-10-27; built 2026-10-27, image Eval 3, see verify.md). Add the head tags before the styles and the new intro sentence in `src/tracepath/gallery/render.py`; copy `gallery/preview.png` to the output folder in the build and fail when it is missing; the engineer picks one entry, opens its graph and a screenshot of 1200 by 627 is saved as `gallery/preview.png` (checked in a browser, no CI test can judge it); add the tests for AC-58 and AC-63 to AC-77 and change the tests that name the old intro or the old AC-58 wording; satisfies **AC-58, AC-63, AC-64, AC-65, AC-66, AC-67, AC-68, AC-69, AC-70, AC-71, AC-72, AC-73, AC-74, AC-75, AC-76, AC-77**. After the merge and the Pages run, check the live URL in LinkedIn's Post Inspector.
+
 ## Consequences
 
 **Positive**:
@@ -224,6 +252,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - GitHub renders `.md` files, so a plain `#L<line>` link may not open the line. The `?plain=1` form is the fix. It was first inferred from how GitHub behaves, then confirmed on a real link by `/check verify` (step E12 in `docs/reviews/2026-10-24-check-verify-answer-gallery.md`): the link opened GitHub's plain text Code view with the cited line highlighted.
 - Pages deploys on a push to `main` even if the `check` job fails on that push. Pull requests must pass `check` first, so this is accepted.
 - When the build job of the workflow fails, nothing is deployed and the previously published page stays up (AC-62).
+- _Added 2026-10-27:_ the page URL is a constant in the build, so renaming the repository or moving the Pages address breaks `og:url` and `og:image` until the constant changes. LinkedIn also keeps a preview it has already fetched, so a changed image can take a Post Inspector refresh to show.
+- _Added 2026-10-27:_ the preview image is a screenshot of one entry, so it goes stale if the entry's look changes (spec 0012). Nothing checks that it still matches.
 - The page has no search, filter or graph. It is a list. _Note: Amended 2026-10-25: [spec 0011](../0011-answer-graph/index.md) adds one graph per entry, opened from the list; there is still no search or filter._
 
 **Neutral**:
@@ -242,3 +272,6 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - [x] Check the `?plain=1` link form on one real link during slice 3, and the Pages action versions during slice 1.
 - [ ] Decide whether Netlify or the portfolio site is worth a second look later; the unchecked Netlify facts are in `rationale.md`.
 - [ ] Dark mode that follows the visitor's system setting, CSS only, with each mark pill readable in both modes; later, after launch.
+- [ ] Pick the entry for `gallery/preview.png` when build task 9 runs (the engineer's choice, 2026-10-27).
+- [ ] Run LinkedIn's Post Inspector on https://ghalynho10.github.io/tracepath/ once the tags are live (added 2026-10-27).
+- [ ] Split the page or move records out of it (added 2026-10-27). Not doing now: LinkedIn documents no page size limit and the tags sit in the first kilobyte. Revisit only if Post Inspector still fails with the tags in place.

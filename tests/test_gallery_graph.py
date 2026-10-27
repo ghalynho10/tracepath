@@ -26,6 +26,7 @@ from tracepath.gallery.inline import has_pair, runs
 from tracepath.gallery.records import (
     GRAPH_SCRIPT,
     MARKS_FILE,
+    PREVIEW_FILE,
     SNAPSHOT_DOCS,
     VENDOR_DIR,
     VENDOR_PACKAGES,
@@ -521,6 +522,7 @@ def _fixture(tmp_path: Path, entries: tuple[tuple[str, str, str], ...]) -> Path:
             }
         )
     (root / MARKS_FILE).write_text(json.dumps(marks), encoding="utf-8")
+    (root / PREVIEW_FILE).write_bytes(b"\x89PNG stand in for the preview image")
     return root
 
 

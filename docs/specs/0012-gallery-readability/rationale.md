@@ -64,6 +64,8 @@ The verdict words are fixed and never equal a mark word, because the page must k
 
 The public note lives in the existing `note` field rather than a new field: the field's meaning changes, nothing else does, and the original wording stays where it was written (the experiment READMEs), reachable by "My full ruling" for the 27 entries whose source is under `experiments/`. A second field would make every entry carry two notes. The pinned marks test (AC-64) guards the one real risk of rewriting 10 notes by hand: a mark changed by accident.
 
+**A typed fragment** (amended 2026-10-27). The ruling of 2026-10-26 left typing a fragment into an open page unhandled, because it assumed that no reader edits the address. That is not known, and a reader who pastes a link into a tab that already shows the page would see the page scroll and no graph open. The engineer reversed it on 2026-10-27: a fragment that equals a slug opens that graph and replaces any graph already open. The cost is a `hashchange` listener in the one script with no test in CI, so the listener only calls the `open` function that already exists, and the browser steps count events to confirm the page never reacts to its own writes. Back is left to the browser: a typed fragment adds a history entry, and Back reopens the previous graph by the same listener. On 2026-10-27 the engineer ruled that an empty fragment closes an open graph, so Back to the bare page closes the window: the address and the window then agree, and the listener reuses the close path that already writes a bare address.
+
 ## References
 
 **Project sources**:

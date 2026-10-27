@@ -48,6 +48,18 @@ ASKS_URL = f"{TRACEPATH_REPO_URL}/tree/main/artifacts/asks"
 #: JobHunt's tree at the pinned commit (AC-54).
 JOBHUNT_TREE_URL = f"{JOBHUNT_REPO_URL}/tree/{JOBHUNT_COMMIT}"
 
+#: Where the page is served and the image Pages serves beside it (AC-66, AC-67).
+PAGE_URL = "https://ghalynho10.github.io/tracepath/"
+PREVIEW_NAME = "preview.png"
+
+#: The link preview text, ruled 2026-10-27; the `og:description` and the meta description
+#: carry the same words (AC-70, AC-71).
+PREVIEW_DESCRIPTION = (
+    "Answers recorded by tracepath, a tool that answers questions about a project's "
+    "decisions from its specs and decision records, each with my own mark and a graph "
+    "of what the model was given."
+)
+
 #: Where experiment 0018 records how its questions were set and run (AC-53).
 EXPERIMENT_0018_URL = (
     f"{TRACEPATH_REPO_URL}/blob/main/experiments/0018-realistic-usage-questions/README.md"
@@ -750,7 +762,7 @@ def _intro(shown: int, records: int) -> str:
     return (
         '<div class="intro">'
         "<p>Answers recorded by <code>tracepath ask</code>, a terminal tool that answers "
-        "&quot;why was this built this way?&quot; from a project's decision records, each "
+        "questions about a project's decisions from its specs and decision records, each "
         "with my own mark.</p>"
         f'<p>Every citation points into <a href="{escape(JOBHUNT_REPO_URL)}">JobHunt</a> '
         f'at commit <a href="{escape(JOBHUNT_TREE_URL)}">{JOBHUNT_COMMIT[:SHORT_COMMIT]}</a> '
@@ -794,6 +806,22 @@ def _scripts(scripts: PageScripts) -> str:
     return f"{libraries}<script>{scripts.graph}</script>"
 
 
+def _preview_tags() -> str:
+    """The link preview meta tags, written before the styles (AC-65 to AC-72)."""
+    description = escape(PREVIEW_DESCRIPTION)
+    tags = (
+        ("property", "og:title", "tracepath answer gallery"),
+        ("property", "og:type", "website"),
+        ("property", "og:url", PAGE_URL),
+        ("property", "og:image", f"{PAGE_URL}{PREVIEW_NAME}"),
+        ("property", "og:image:width", "1200"),
+        ("property", "og:image:height", "627"),
+        ("property", "og:description", description),
+        ("name", "description", description),
+    )
+    return "".join(f'<meta {kind}="{name}" content="{content}">' for kind, name, content in tags)
+
+
 def render_page(
     entries: tuple[Entry, ...],
     records: int,
@@ -812,6 +840,7 @@ def render_page(
         '<html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         "<title>tracepath answer gallery</title>"
+        f"{_preview_tags()}"
         f"<style>{STYLE}{GRAPH_STYLE}{PANEL_STYLE}</style></head>"
         f"<body><main><h1>tracepath answer gallery</h1>{_intro(len(entries), records)}"
         f"{_key(entries)}{body}</main>{DIALOG}{_scripts(scripts)}</body></html>\n"
