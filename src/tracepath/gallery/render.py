@@ -404,7 +404,11 @@ PANEL_STYLE = """\
   font: 500 12px/1.5 var(--sans); cursor: pointer; }
 .gw-back:hover { border-color: var(--ink); }
 .gw-answer .question { font-size: 17px; }
+.gw-answer .verdict { margin-top: 24px; }
 .gw-answer ol { margin-top: 18px; }
+@media (max-width: 560px) {
+  .gw-answer .verdict { margin-top: 20px; }
+}
 .gw-text { margin: 0 0 18px; font-size: 15px; line-height: 1.55; color: var(--ink-82); }
 .gw-meta { margin: 0 0 6px; font: 12.5px/1.6 var(--mono); color: var(--ink-64);
   overflow-wrap: anywhere; }
