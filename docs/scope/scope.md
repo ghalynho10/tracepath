@@ -491,7 +491,7 @@ _Design decided 2026-10-26: formatting runs in Python (one pure module) and `gra
   - [x] Headings, claim lines, note, source and the graph strip (slices 4 and 5; AC-30 to AC-38, AC-57 to AC-70, AC-76, AC-77, AC-93 to AC-95, AC-97, AC-103 to AC-105) · built 2026-10-26, code in `src/tracepath/gallery/render.py` and `records.py` (the `experiments/` file check), tests in `tests/test_gallery_entry.py`; AC-39, AC-40 and AC-70 wait for the visual pass
   - [x] The link to one graph (slice 6; AC-82, AC-84 to AC-92) · built 2026-10-26, code in `src/tracepath/gallery/render.py` (the `article` id) and `assets/graph.js` (`open` replaces the fragment, the `close` event clears it, the fragment is read once after the buttons register); browser steps of `verify.md` run once by hand, still owed to `/check verify`
   - [x] The visual pass at both widths (slice 7; AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88) · built 2026-10-26: a code run and the text touching it share one `g` element in `inline.py` and `graph.js`, so a line never ends on `(` or starts on `),`; browser criteria measured once by hand at 1440, 561, 560 and 390 wide, still owed to `/check verify`
-- [ ] Verify it: `/check verify gallery readability`
+- [x] Verify it: `/check verify gallery readability` · ticked 2026-10-26, every criterion of spec 0012 met in Chromium at 1440 and 390 (`docs/reviews/2026-10-26-check-verify-gallery-readability.md`); AC-110 not checked in WebKit, not installed
 - [ ] Test it: `/test gallery readability`
 - [ ] Sync it: `/sync gallery readability`
 
