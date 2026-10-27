@@ -270,6 +270,16 @@ def test_each_mark_is_bold_on_its_own_swipe(
     assert "font-weight: 700;" in _rule(".swipe")
 
 
+def test_the_mark_is_followed_by_its_caption(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-53: the caption's own words, right after the mark."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        '<p class="mark-word"><span class="swipe" data-mark="right">right</span></p>'
+        '<p class="caption">— my mark</p></div>'
+    ) in entry
+
+
 def test_the_mark_is_no_button_and_has_no_border(root: Path, tmp_path: Path) -> None:
     """Spec 0012 AC-54."""
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
@@ -358,12 +368,18 @@ def test_a_ruling_elsewhere_is_plain_text_with_no_link(root: Path, tmp_path: Pat
 
 
 @pytest.mark.parametrize(
-    "source", ["experiments/0099-missing/README.md", "experiments/../../outside.md"]
+    "source",
+    [
+        "experiments/0099-missing/README.md",
+        "experiments/../../outside.md",
+        "experiments/0016-link-hops",
+    ],
 )
 def test_build_fails_on_a_ruling_that_is_not_a_file_under_the_root(
     root: Path, tmp_path: Path, source: str
 ) -> None:
-    """Spec 0012 AC-61: exit 1, naming the entry."""
+    """Spec 0012 AC-61: exit 1, naming the entry; a missing file, one outside the root, a
+    folder."""
     (tmp_path / "outside.md").write_text("x", encoding="utf-8")
     _write_marks(root, [dict(m, source_path=source) if m["label"] == "Q2" else m for m in MARKS])
 

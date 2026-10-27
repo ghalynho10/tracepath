@@ -65,6 +65,12 @@ def test_a_pair_of_double_stars_is_bold_and_its_markers_are_not_shown() -> None:
     assert to_html(found) == "a <strong>firm</strong> rule"
 
 
+@pytest.mark.parametrize("text", ["a **** b", "****"])
+def test_a_pair_of_double_stars_with_nothing_between_is_shown_as_typed(text: str) -> None:
+    """AC-2: a pair needs at least one character between its markers."""
+    assert runs(text) == _plain(text)
+
+
 def test_a_code_span_inside_bold_is_bold_code() -> None:
     """AC-3."""
     found = runs("**`skillCounts`** (added)")
