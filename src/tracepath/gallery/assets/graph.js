@@ -730,4 +730,14 @@
   // is left as it is (spec 0012 AC-84, AC-89).
   const linked = location.hash.slice(1);
   if (buttons.has(linked)) open(linked);
+
+  // A fragment the reader types, or Back and Forward moving between typed ones: a slug
+  // opens that graph in place of any open one, an empty fragment closes an open graph, and
+  // anything else leaves the page as it is. The page's own writes above use replaceState,
+  // which fires no hashchange, so it never reacts to itself (spec 0012 AC-111 to AC-116).
+  window.addEventListener("hashchange", () => {
+    const typed = location.hash.slice(1);
+    if (buttons.has(typed)) open(typed);
+    else if (typed === "" && dialog.open) dialog.close();
+  });
 })();
