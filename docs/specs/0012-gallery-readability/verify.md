@@ -55,3 +55,11 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [x] `uv run pytest tests/test_gallery_code_tint.py` → passes: the `code` rule has a faint background, the panel adds none of its own, and it is none of the four swipe colours and lighter than `#CBD3DC` → AC-106 to AC-109 · 2026-10-26: 7 passed (the step named `tests/test_gallery.py -k code_tint` until this date, which selected no test)
 - [x] On Q4 claim 3 and in the open graph of Held out 2 (select item 0017/AC-8), look at a code span of several words → the tint is one unbroken run across its spaces, in the list and in the panel → AC-110 · 2026-10-26: Q4 claim 3's spans are one word each; in the list Q1's `Result<{ … }>` and in the panel `pnpm eval -t control-direct-match` show one unbroken tint across spaces and a line break; `.w` carry no background
 - [x] At 390 by 844 make a multi word code span wrap (the same item) → the tint continues on the next line with rounded ends on each line, and no word is split at a hyphen → AC-110, AC-12 · 2026-10-26: Chromium only, `${pair.id} [${pair.tags.join(" ")}]` wraps tinted on both lines, `box-decoration-break: clone`, no word split; WebKit not checked (not installed)
+
+## The typed fragment (browser, desktop 1440 by 900; added 2026-10-27)
+- [ ] Open the page with no fragment, then type `#q4` in the address bar → Q4's graph opens → AC-111
+- [ ] With Q4's graph open, change the fragment to `#q7` → the graph of Q7 replaces it, the page holds one graph window and the heading reads "Q7" → AC-112
+- [ ] With a graph open, change the fragment to `#nope`, then to `#gw-key` → the graph stays as it is and the console shows no error; with no graph open, the page stays as it is → AC-113
+- [ ] In the console add a `hashchange` listener that counts events, then press Q4's strip, press next, and close the graph → the count stays 0 → AC-114
+- [ ] Open the page, type `#q4`, then type `#q7`, then press Back → the address ends `#q4` and Q4's graph is open → AC-115
+- [ ] Note, not a criterion: from `#q4` press Back to the address with no fragment → record what the page does (the ruling leaves an open graph open)
