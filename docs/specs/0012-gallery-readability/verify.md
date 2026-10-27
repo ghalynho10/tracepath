@@ -62,4 +62,4 @@ Facts these steps lean on, measured 2026-10-26 on the 31 shown records: 17 right
 - [ ] With a graph open, change the fragment to `#nope`, then to `#gw-key` → the graph stays as it is and the console shows no error; with no graph open, the page stays as it is → AC-113
 - [ ] In the console add a `hashchange` listener that counts events, then press Q4's strip, press next, and close the graph → the count stays 0 → AC-114
 - [ ] Open the page, type `#q4`, then type `#q7`, then press Back → the address ends `#q4` and Q4's graph is open → AC-115
-- [ ] Note, not a criterion: from `#q4` press Back to the address with no fragment → record what the page does (the ruling leaves an open graph open)
+- [ ] Open the page with no fragment, type `#q4` so Q4's graph opens, then press Back → the graph closes, the address has no fragment, and the page is at Q4; with no graph open, an empty fragment changes nothing → AC-116
