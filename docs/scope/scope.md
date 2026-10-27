@@ -492,7 +492,7 @@ _Design decided 2026-10-26: formatting runs in Python (one pure module) and `gra
   - [x] The link to one graph (slice 6; AC-82, AC-84 to AC-92) · built 2026-10-26, code in `src/tracepath/gallery/render.py` (the `article` id) and `assets/graph.js` (`open` replaces the fragment, the `close` event clears it, the fragment is read once after the buttons register); browser steps of `verify.md` run once by hand, still owed to `/check verify`
   - [x] The visual pass at both widths (slice 7; AC-12, AC-13, AC-39, AC-40, AC-55, AC-56, AC-70, AC-80, AC-81, AC-83, AC-88) · built 2026-10-26: a code run and the text touching it share one `g` element in `inline.py` and `graph.js`, so a line never ends on `(` or starts on `),`; browser criteria measured once by hand at 1440, 561, 560 and 390 wide, still owed to `/check verify`
 - [x] Verify it: `/check verify gallery readability` · ticked 2026-10-26, every criterion of spec 0012 met in Chromium at 1440 and 390 (`docs/reviews/2026-10-26-check-verify-gallery-readability.md`); AC-110 not checked in WebKit, not installed
-- [ ] Test it: `/test gallery readability`
+- [x] Test it: `/test gallery readability` · ticked 2026-10-26 (`2ff11db`), scoped to the whole branch: closed 3 gaps, an empty `**` pair shown as typed (AC-2), a folder under `experiments/` as `source_path` fails the build (AC-61), and the mark caption's own words (AC-53); full suite 1510 passed, 1 skipped; the browser criteria stay with `/check verify`
 - [ ] Sync it: `/sync gallery readability`
 
 ## Deferred
