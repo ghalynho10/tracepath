@@ -9,7 +9,14 @@ Build the page once for the UI steps: `uv run tracepath gallery build --out /tmp
 - [ ] Run the build with no `.env` and no Neo4j (`env -i PATH="$PATH" HOME="$HOME" uv run tracepath gallery build --out DIR`) → exits 0 → AC-56, Security model
 - [ ] `git status --short artifacts/ corpus/` after a build → nothing changed → AC-57
 - [ ] `uv run tracepath gallery build --out artifacts/site` and `--out corpus/site` → exit 1, "never writes inside", no file written → AC-57
-- [ ] `grep -c '<link\|<script' DIR/index.html` → 0, and every `href` is `https://…` → AC-58
+- [ ] `grep -c '<link\|<script[^>]*src' DIR/index.html` → 0, and every `href` is `https://…` → AC-58 _(amended 2026-10-27: inline `<script>` elements are allowed)_
+- [ ] `grep -o 'preview.png' DIR/index.html | wc -l` → each hit sits in a `<meta>` tag, and no other file name of the site appears → AC-63, AC-64
+- [ ] `head -c 2000 DIR/index.html` shows `og:title`, `og:url`, `og:image`, `og:image:width` (1200), `og:image:height` (627), `og:description` and `<meta name="description">` with the ruled content, all before the first `<style>`, and the two descriptions are equal → AC-65 to AC-72
+- [ ] `file gallery/preview.png` → PNG, 1200 x 627, and `ls -l` → at most 5 MB → AC-73, AC-74
+- [ ] `cmp gallery/preview.png DIR/preview.png` → no difference → AC-75
+- [ ] In a copy of the repo, delete `gallery/preview.png` and build → exit 1 naming the file → AC-76
+- [ ] The intro's first sentence reads "answers questions about a project's decisions from its specs and decision records" → AC-77
+- [ ] After the merge and the Pages run, paste the live URL into LinkedIn's Post Inspector → title, description and image all show (not a criterion; the check the change is for)
 - [ ] In a copy of the repo, point a `gallery/marks.json` entry at a record name not in `artifacts/asks/` → exit 1 naming the entry → AC-5
 - [ ] In a copy, set a shown record's `eval_file` to `eval/other.json` → exit 1 naming the record → AC-6
 - [ ] In a copy, set a shown record's `corpus_commit` to `abcdef1` → exit 1 naming the record; the full commit `2e40bcfe…` builds → AC-7

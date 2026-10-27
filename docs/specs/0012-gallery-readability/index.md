@@ -351,7 +351,7 @@ Approach: Tracer Bullet (the project default). The first slice is one thin threa
 
 - [x] Rule on the open question of the code word patterns. _Ruled 2026-10-26: keep both._ The "What the answer says the records lack" list follows the same patterns (AC-27), and item text does not (AC-28), because item text is JobHunt's own words, where the author already marked code. AC-27 and AC-28 stand.
 - [x] Rule on the label chips (_ruled 2026-10-26: HISTORY as stored_): the board draws `history` in lower case; spec 0010 AC-27 and the Key show `HISTORY`. This spec keeps the stored wording of every label and chip.
-- [ ] Write the notes: the 10 notes in `gallery/marks.json` are mine to write for a public reader. No note and no mark was drafted or changed by this spec.
+- [x] Write the notes: the 10 notes in `gallery/marks.json` are mine to write for a public reader. No note and no mark was drafted or changed by this spec. _Done 2026-10-27 in af25217: eight public notes, Q11 and Q12 set to none, no mark changed._
 - [x] Confirm the wording of the plain text source line and the placement of the failed claims caption under the verdict caption. _Ruled 2026-10-26: the source line reads "My full ruling: the v1 finish line in the project's scope notes (not published)."; the failed claims count is a caption under the verdict caption._
 - [x] Phone layout at 560 pixels and narrower, AC-61, AC-64 and AC-86 kept; the `graph-` and `gw-` label prefixes stay unchecked and typing a fragment into an open page stays unhandled. _Ruled 2026-10-26._
 - [ ] After the merge, `docs/specs`, `docs/scope` and `docs/reviews` leave the public repository. Reconcile the links in `README`, `AGENTS.md` and the gallery's own comments that name those paths, in a later change.
