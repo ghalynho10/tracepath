@@ -341,6 +341,67 @@
     panel.querySelector(".gw-title").focus({ preventScroll: true });
   }
 
+  // A code run: one `w` element per word, the spaces kept as text between them (AC-96).
+  function codeRun(words) {
+    const code = html("code");
+    for (const piece of words.split(/( +)/)) {
+      if (/^ +$/.test(piece)) code.append(piece);
+      else if (piece) code.append(html("span", "w", piece));
+    }
+    return code;
+  }
+
+  // Runs of one boldness into `into`, as the list's `to_html` writes them: a code run and
+  // the text touching it with no space between share one `g` element (AC-12).
+  function glued(into, runs) {
+    let cluster = [];
+    const flush = () => {
+      if (cluster.length > 1 && cluster.some((atom) => atom.code)) {
+        const glue = html("span", "g");
+        glue.append(...cluster.map((atom) => atom.node));
+        into.append(glue);
+      } else {
+        into.append(...cluster.map((atom) => atom.node));
+      }
+      cluster = [];
+    };
+    for (const [words, flags] of runs) {
+      if (flags & 1) {
+        cluster.push({ node: codeRun(words), code: true });
+        continue;
+      }
+      words.split(/(\s+)/).forEach((piece, index) => {
+        if (!piece) return;
+        if (index % 2) {
+          flush();
+          into.append(piece);
+        } else {
+          cluster.push({ node: document.createTextNode(piece), code: false });
+        }
+      });
+    }
+    flush();
+  }
+
+  // Stored text drawn from the runs the build made (spec 0012), by textContent only;
+  // flag 1 is code, 2 bold, and each stretch of one boldness is one element. No runs
+  // means plain text (AC-98, AC-101).
+  function formatted(node, text, runs) {
+    if (!runs) {
+      node.textContent = text;
+      return node;
+    }
+    let start = 0;
+    while (start < runs.length) {
+      const bold = runs[start][1] & 2;
+      let end = start;
+      while (end < runs.length && (runs[end][1] & 2) === bold) end += 1;
+      glued(bold ? node.appendChild(html("strong")) : node, runs.slice(start, end));
+      start = end;
+    }
+    return node;
+  }
+
   // An id that selects its item when clicked; the id goes in a data attribute only.
   function idButton(id) {
     const button = html("button", "gw-id", id);
@@ -367,7 +428,8 @@
   }
 
   // The answer view: the entry's own question, verdict and claims from the list on the
-  // page, so their labels cannot differ (AC-36 to AC-38), then every item (AC-52).
+  // page, so their labels cannot differ (AC-36 to AC-38), then every item (AC-52). The
+  // parts are found anywhere inside the entry (spec 0012 AC-76).
   function showAnswer() {
     const view = html("div", "gw-answer");
     view.append(html("p", "gw-eyebrow", state.graph.label), title("Answer"));
@@ -375,10 +437,10 @@
       view.append(html("p", "gw-empty", "This answer cites no item."));
     }
     for (const part of [".question", ".verdict", "ol"]) {
-      const found = state.article.querySelector(":scope > " + part);
+      const found = state.article.querySelector(part);
       if (found) view.append(found.cloneNode(true));
     }
-    if (!state.article.querySelector(":scope > ol")) view.append(html("p", "", "No claims."));
+    if (!state.article.querySelector("ol")) view.append(html("p", "", "No claims."));
     view.append(
       ...itemList("Cited", state.graph.items.filter((item) => item.cited)),
       ...itemList("Not cited", state.graph.items.filter((item) => !item.cited))
@@ -423,7 +485,7 @@
       back,
       html("p", "gw-eyebrow", words.join(" · ")),
       title(item.id),
-      html("p", "gw-text stored", item.text),
+      formatted(html("p", "gw-text stored"), item.text, item.runs),
       where,
       html("p", "gw-meta", claims),
       html("h3", "gw-sub", "Links (" + item.link_ids.length + ")")
@@ -441,7 +503,7 @@
       );
       if (link.held) row.append(" HELD");
       const phrase = link.phrase === null ? "no phrase stored" : link.phrase;
-      row.append(html("span", "gw-phrase stored", phrase));
+      row.append(formatted(html("span", "gw-phrase stored"), phrase, link.phrase_runs));
       list.append(row);
     }
     if (item.link_ids.length === 0) view.append(html("p", "gw-meta", "No links."));
@@ -503,6 +565,9 @@
     counter.textContent = found.graph.position + " / " + found.graph.total;
     previousButton.disabled = found.graph.previous === null;
     nextButton.disabled = found.graph.next === null;
+    // The address names the open graph, replaced so no history step is added (spec 0012
+    // AC-85, AC-86, AC-91, AC-92).
+    history.replaceState(history.state, "", "#" + slug);
     const swapped = dialog.open;
     if (!swapped) dialog.showModal();
     state.fit = fitted();
@@ -633,10 +698,13 @@
     keyToggle.setAttribute("aria-expanded", String(open));
   });
   closeButton.addEventListener("click", () => dialog.close());
-  // Esc, the close button and a back gesture all end here (AC-6).
+  // Esc, the close button and a back gesture all end here (AC-6). The address loses its
+  // fragment without a scroll; the focus below brings the page to the entry whose graph
+  // was showing (spec 0012 AC-87, AC-88).
   dialog.addEventListener("close", () => {
     stopLive();
     drag = null;
+    history.replaceState(history.state, "", location.pathname + location.search);
     const button = state && buttons.get(state.slug);
     if (button) button.focus();
   });
@@ -656,4 +724,10 @@
     button.addEventListener("click", () => open(button.dataset.graph));
     button.hidden = false;
   }
+
+  // A link to one graph: a fragment equal to a slug opens that graph, matched exactly
+  // against the buttons just registered. Any other fragment, an id on the page or not,
+  // is left as it is (spec 0012 AC-84, AC-89).
+  const linked = location.hash.slice(1);
+  if (buttons.has(linked)) open(linked);
 })();

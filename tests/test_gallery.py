@@ -6,7 +6,7 @@ import re
 import shutil
 import socket
 from collections.abc import Callable
-from html import escape
+from html import escape, unescape
 from pathlib import Path
 from typing import Any
 
@@ -16,8 +16,16 @@ from typer.testing import CliRunner
 from tracepath.ask.record import ASKS_DIR
 from tracepath.cli import app
 from tracepath.gallery.citations import JOBHUNT_COMMIT, item_link, parse_item_line
+from tracepath.gallery.inline import runs, to_html
 from tracepath.gallery.records import MARKS_FILE, SNAPSHOT_DOCS
-from tracepath.gallery.render import LABEL_KEY, MARK_KEY, STYLE
+from tracepath.gallery.render import (
+    LABEL_KEY,
+    MARK_CAPTION,
+    MARK_KEY,
+    STYLE,
+    VERDICT_CAPTION,
+    VERDICT_WORDS,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -45,7 +53,7 @@ MARKS: tuple[dict[str, object], ...] = (
         "section": "development",
         "mark": "right",
         "note": None,
-        "source_path": "experiments/0016-hops/README.md",
+        "source_path": "experiments/0016-link-hops/README.md",
         "source_row": "Q1",
     },
     {
@@ -60,6 +68,9 @@ MARKS: tuple[dict[str, object], ...] = (
 )
 
 runner = CliRunner()
+
+#: An entry's opening tag, which carries its slug as `id` (spec 0012 AC-82).
+_ARTICLE = re.compile(r'<article id="[a-z0-9-]+">')
 
 
 def _stored(name: str) -> dict[str, Any]:
@@ -80,6 +91,11 @@ def _edit_record(root: Path, name: str, change: Callable[[dict[str, Any]], None]
     path.write_text(json.dumps(record), encoding="utf-8")
 
 
+def _shown(text: str, code_words: bool = True) -> str:
+    """A stored text as the page writes it, by the inline rule of spec 0012."""
+    return to_html(runs(text, code_words))
+
+
 def _cited_item(record: dict[str, Any]) -> dict[str, Any]:
     """The item the record's first claim cites first."""
     cited = record["claims"][0]["cites"][0]
@@ -89,8 +105,8 @@ def _cited_item(record: dict[str, Any]) -> dict[str, Any]:
 
 @pytest.fixture
 def root(tmp_path: Path) -> Path:
-    """A repository root with four records, a marks file naming three of them, and the
-    snapshot files those records' items sit in."""
+    """A repository root with four records, a marks file naming three of them, the
+    snapshot files those records' items sit in, and the rulings its marks link to."""
     asks = tmp_path / ASKS_DIR
     asks.mkdir(parents=True)
     for name in (DEV, HELD, REAL, UNNAMED):
@@ -102,6 +118,11 @@ def root(tmp_path: Path) -> Path:
                 target = tmp_path / SNAPSHOT_DOCS / line.file
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(PROJECT_ROOT / SNAPSHOT_DOCS / line.file, target)
+    for marks in MARKS:
+        source = str(marks["source_path"])
+        if source.startswith("experiments/"):
+            (tmp_path / source).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(PROJECT_ROOT / source, tmp_path / source)
     (tmp_path / MARKS_FILE).parent.mkdir()
     _write_marks(tmp_path, list(MARKS))
     return tmp_path
@@ -120,7 +141,7 @@ def _build(root: Path, out: Path) -> str:
 
 def _article(page: str, label: str) -> str:
     """The one entry whose heading is `label`."""
-    found = [a for a in page.split("<article>")[1:] if f'<h3><span class="stored">{label}<' in a]
+    found = [a for a in _ARTICLE.split(page)[1:] if f'<h3><span class="stored">{label}<' in a]
     assert len(found) == 1, label
     return found[0].split("</article>")[0]
 
@@ -138,22 +159,22 @@ def test_page_shows_only_the_records_the_marks_file_names(root: Path, tmp_path: 
     """AC-1."""
     page = _build(root, tmp_path / "site")
 
-    assert page.count("<article>") == len(MARKS)
+    assert len(_ARTICLE.findall(page)) == len(MARKS)
     for name in (DEV, HELD, REAL):
-        assert escape(str(_stored(name)["question"])) in page
-    assert escape(str(_stored(UNNAMED)["question"])) not in page
+        assert _shown(str(_stored(name)["question"])) in page
+    assert _shown(str(_stored(UNNAMED)["question"])) not in page
 
 
 def test_entry_shows_question_verdict_and_claims_in_order(root: Path, tmp_path: Path) -> None:
-    """AC-17, AC-18, AC-19: stored text as stored, escaped."""
+    """AC-17, AC-18, AC-19: stored text as stored, escaped, formatted by spec 0012's rule."""
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
     record = _stored(DEV)
     claims = record["claims"]
     assert isinstance(claims, list)
 
-    assert escape(str(record["question"])) in entry
-    assert f'verdict: <span class="stored">{record["verdict"]}</span>' in entry
-    places = [entry.index(escape(str(claim["text"]))) for claim in claims]
+    assert _shown(str(record["question"])) in entry
+    assert '<p class="verdict-word">answered</p>' in entry
+    places = [entry.index(_shown(str(claim["text"]))) for claim in claims]
     assert places == sorted(places)
     assert len(places) == len(claims) > 0
 
@@ -196,45 +217,193 @@ def test_entry_shows_mark_and_note_exactly(
     """AC-12, AC-13: the mark as given, the note as given, no note when it is null."""
     entry = _article(_build(root, tmp_path / "site"), str(marks["label"]))
 
-    assert f'<span class="stored">{marks["mark"]}</span>' in entry
+    assert f'<span class="swipe" data-mark="{marks["mark"]}">{marks["mark"]}</span>' in entry
     if marks["note"] is None:
         assert 'class="note"' not in entry
+        assert "My note." not in entry
     else:
-        assert f'<p class="note"><span class="stored">{marks["note"]}</span></p>' in entry
+        assert (
+            f'<p class="note"><strong>My note.</strong> <span class="stored">{marks["note"]}</span>'
+            "</p>"
+        ) in entry
 
 
 def test_mark_and_verdict_are_labelled_by_whose_they_are(root: Path, tmp_path: Path) -> None:
-    """AC-14, AC-15: the author's mark in first person, the model's verdict as its own."""
+    """AC-14, AC-15 as amended: each word carries the caption that says whose it is."""
     page = _build(root, tmp_path / "site")
     entry = _article(page, "Held out 3")
 
-    assert '<p class="verdict">Model\'s own verdict: ' in entry
-    assert '<p class="mark" data-mark="partly right">My mark: ' in entry
+    assert f'<p class="caption">{escape(VERDICT_CAPTION)}</p>' in entry
+    assert f'<p class="caption">{escape(MARK_CAPTION)}</p>' in entry
     assert "<h3>My marks</h3>" in page
     assert "each with my own mark." in page
     words = re.sub(r"<script[^>]*>.*?</script>", "", page, flags=re.S)
     assert "engineer" not in re.sub(r"<[^>]+>", "", words).lower()
 
 
-@pytest.mark.parametrize("mark", ["right", "partly right", "wrong", "declined"])
-def test_mark_is_a_filled_pill_and_the_verdict_an_outlined_one(mark: str) -> None:
-    """AC-14, task 8: each mark has its own fill; the verdict has a border and no fill."""
-    verdict = re.search(r"\.verdict \{([^}]*)\}", STYLE)
-    assert verdict is not None
-    assert "border:" in verdict.group(1)
-    assert "background" not in verdict.group(1)
-    assert re.search(rf'\.mark\[data-mark="{mark}"\] \{{ background: [^;]+; \}}', STYLE)
+def _rule(selector: str) -> str:
+    """The body of the one style rule for `selector`."""
+    found = re.findall(rf"(?:^|\n){re.escape(selector)} \{{([^}}]*)\}}", STYLE)
+    assert len(found) == 1, selector
+    return str(found[0])
 
 
-def test_entry_links_to_the_source_of_its_mark(root: Path, tmp_path: Path) -> None:
-    """AC-16."""
-    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+@pytest.mark.parametrize(
+    ("mark", "colour"),
+    [
+        pytest.param("right", "#B9E3EE", id="AC-49"),
+        pytest.param("partly right", "#F6E27F", id="AC-50"),
+        pytest.param("wrong", "#FFC8C2", id="AC-51"),
+        pytest.param("declined", "#CBD3DC", id="AC-52"),
+    ],
+)
+def test_each_mark_is_bold_on_its_own_swipe(
+    root: Path, tmp_path: Path, mark: str, colour: str
+) -> None:
+    """Spec 0012 AC-49 to AC-52."""
+    _write_marks(root, [dict(m, mark=mark) if m["label"] == "Eval 1" else m for m in MARKS])
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<p class="mark-word"><span class="swipe" data-mark="{mark}">{mark}</span></p>' in entry
+    assert _rule(f'.swipe[data-mark="{mark}"]').strip() == f"background: {colour};"
+    assert "font-weight: 700;" in _rule(".swipe")
+
+
+def test_the_mark_is_followed_by_its_caption(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-53: the caption's own words, right after the mark."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
 
     assert (
-        '<a href="https://github.com/ghalynho10/tracepath/blob/main/docs/scope/scope.md">'
-        "docs/scope/scope.md</a>, "
-        '<span class="stored">v1 finish line</span>'
+        '<p class="mark-word"><span class="swipe" data-mark="right">right</span></p>'
+        '<p class="caption">— my mark</p></div>'
     ) in entry
+
+
+def test_the_mark_is_no_button_and_has_no_border(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-54."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+    mark = entry.split('<div class="mark">', 1)[1].split("</div>", 1)[0]
+
+    assert "<button" not in mark
+    assert "border:" not in _rule(".swipe") + _rule(".mark-word") + _rule(".mark-word .swipe")
+    assert not re.search(r"\.mark\b[^{]*\{[^}]*border", STYLE)
+
+
+def test_the_verdict_and_the_mark_share_one_block_verdict_first(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-41: one block, the model's verdict then the engineer's mark."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert entry.count('<div class="verdict-mark">') == 1
+    block = entry.split('<div class="verdict-mark">', 1)[1]
+    assert block.startswith('<div class="verdict"><p class="verdict-word">')
+    assert block.index('<div class="verdict">') < block.index('<div class="mark">')
+    assert entry.index('<p class="details">') < entry.index('<div class="verdict-mark">')
+
+
+@pytest.mark.parametrize(
+    ("code", "words"),
+    [
+        pytest.param("answered", "answered", id="AC-42"),
+        pytest.param("partly", "partly answered", id="AC-43"),
+        pytest.param("not_supported", "not supported by the records", id="AC-44"),
+        pytest.param("no_documented_link", "no documented link", id="AC-45"),
+    ],
+)
+def test_each_verdict_code_shows_its_words_in_mono_with_its_caption(
+    root: Path, tmp_path: Path, code: str, words: str
+) -> None:
+    """Spec 0012 AC-42 to AC-46."""
+    _edit_record(root, DEV, lambda r: r.update(verdict=code))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        f'<div class="verdict"><p class="verdict-word">{words}</p>'
+        '<p class="caption">\u2014 the model&#x27;s verdict on its own answer</p></div>'
+    ) in entry
+    assert "var(--mono)" in _rule(".verdict-word")
+
+
+def test_no_verdict_wording_is_a_mark_word() -> None:
+    """Spec 0012 AC-47, over every stored code."""
+    assert set(VERDICT_WORDS) == {"answered", "partly", "not_supported", "no_documented_link"}
+    assert not set(VERDICT_WORDS.values()) & {mark for mark, _ in MARK_KEY}
+
+
+def test_build_fails_on_a_verdict_it_does_not_know(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-48: exit 1, naming the record."""
+    _edit_record(root, DEV, lambda r: r.update(verdict="maybe"))
+
+    code, output = _run(root, tmp_path / "site")
+
+    assert code == 1
+    assert DEV in output
+    assert "verdict" in output
+    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_a_ruling_under_experiments_is_linked_and_followed_by_its_row(
+    root: Path, tmp_path: Path
+) -> None:
+    """AC-16 as amended, spec 0012 AC-59, AC-105."""
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert (
+        '<p class="source"><a href="https://github.com/ghalynho10/tracepath/blob/main/'
+        'experiments/0016-link-hops/README.md">My full ruling</a>, '
+        '<span class="stored">Q1</span></p>'
+    ) in entry
+
+
+def test_a_ruling_elsewhere_is_plain_text_with_no_link(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-60."""
+    entry = _article(_build(root, tmp_path / "site"), "Held out 3")
+    source = entry.split('<p class="source">', 1)[1].split("</p>", 1)[0]
+
+    assert re.sub(r"<[^>]+>", "", unescape(source)) == (
+        "My full ruling: the v1 finish line in the project's scope notes (not published)."
+    )
+    assert "<a " not in source
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "experiments/0099-missing/README.md",
+        "experiments/../../outside.md",
+        "experiments/0016-link-hops",
+        "experiments/../docs/scope/scope.md",
+    ],
+)
+def test_build_fails_on_a_ruling_that_is_not_a_file_under_the_root(
+    root: Path, tmp_path: Path, source: str
+) -> None:
+    """Spec 0012 AC-61, AC-62: exit 1, naming the entry; a missing file, one outside the
+    root, a folder, one climbing into `docs/`."""
+    (tmp_path / "outside.md").write_text("x", encoding="utf-8")
+    (root / "docs" / "scope").mkdir(parents=True)
+    (root / "docs" / "scope" / "scope.md").write_text("x", encoding="utf-8")
+    _write_marks(root, [dict(m, source_path=source) if m["label"] == "Q2" else m for m in MARKS])
+
+    code, output = _run(root, tmp_path / "site")
+
+    assert code == 1
+    assert "(Q2)" in output
+    assert source in output
+
+
+@pytest.mark.parametrize("marks", MARKS)
+def test_the_note_and_source_sit_below_the_verdict_and_mark(
+    root: Path, tmp_path: Path, marks: dict[str, object]
+) -> None:
+    """Spec 0012 AC-57, AC-58: "My note." only with a note, after the verdict and mark."""
+    entry = _article(_build(root, tmp_path / "site"), str(marks["label"]))
+
+    assert entry.index('<div class="verdict-mark">') < entry.index('<div class="ruling">')
+    assert ("My note." in entry) is (marks["note"] is not None)
+    if marks["note"] is not None:
+        assert entry.index('<div class="mark">') < entry.index("My note.")
 
 
 def test_build_fails_on_a_record_not_in_asks(root: Path, tmp_path: Path) -> None:
@@ -464,7 +633,7 @@ def test_build_from_the_committed_marks_file(tmp_path: Path) -> None:
 
     page = _build(PROJECT_ROOT, tmp_path / "site")
 
-    assert page.count("<article>") == len(marks) > 0
+    assert len(_ARTICLE.findall(page)) == len(marks) > 0
 
 
 def test_cited_item_links_to_its_line_in_jobhunt(root: Path, tmp_path: Path) -> None:
@@ -664,7 +833,10 @@ def _first_claim(page: str, label: str = "Eval 1") -> str:
 
 
 def _labels(page: str) -> str:
-    return _first_claim(page).split('<p class="labels">', 1)[1].split("</p>", 1)[0]
+    """The first claim's labels as words, without the "Labels:" lead or the chips."""
+    line = _first_claim(page).split('<p class="labels">', 1)[1].split("</p>", 1)[0]
+    assert line.startswith("Labels: ")
+    return re.sub(r"<[^>]+>", "", line.removeprefix("Labels: "))
 
 
 def _items_sent(page: str, label: str = "Eval 1") -> str:
@@ -674,12 +846,12 @@ def _items_sent(page: str, label: str = "Eval 1") -> str:
 def test_missing_notes_shown_when_the_record_has_any(root: Path, tmp_path: Path) -> None:
     """AC-20: shown when the record lists some, absent when it lists none."""
     assert _stored(DEV)["missing"] == []
-    assert "Missing, as the answer says" not in _article(_build(root, tmp_path / "a"), "Eval 1")
+    assert "records lack" not in _article(_build(root, tmp_path / "a"), "Eval 1")
 
     _edit_record(root, DEV, lambda r: r.update(missing=["A first gap", "A second gap"]))
 
     assert (
-        '<p class="eyebrow">Missing, as the answer says</p><ul>'
+        '<h4 class="lack">What the answer says the records lack</h4><ul class="lack">'
         '<li><span class="stored">A first gap</span></li>'
         '<li><span class="stored">A second gap</span></li></ul>'
     ) in _article(_build(root, tmp_path / "b"), "Eval 1")
@@ -711,14 +883,14 @@ def test_stored_markup_shows_as_text(root: Path, tmp_path: Path) -> None:
     assert "<figure" not in page
 
 
-def test_line_breaks_kept_and_markdown_not_rendered(root: Path, tmp_path: Path) -> None:
-    """AC-25."""
-    _edit_record(root, DEV, lambda r: r["claims"][0].update(text="First line\n**not bold**"))
+def test_line_breaks_kept_and_no_other_markdown_rendered(root: Path, tmp_path: Path) -> None:
+    """AC-25, as spec 0012 changes it: line breaks kept, bold drawn, a heading left as typed."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(text="# First line\n**bold**"))
 
     claim = _first_claim(_build(root, tmp_path / "site"))
 
-    assert '<span class="stored">First line\n**not bold**</span>' in claim
-    assert "<strong>" not in claim
+    assert '<span class="stored"># First line\n<strong>bold</strong></span>' in claim
+    assert "<h1>" not in claim
     assert ".stored { white-space: pre-wrap; }" in _build(root, tmp_path / "site2")
 
 
@@ -767,13 +939,17 @@ def test_labels_and_details_keep_their_stored_case(rule: str) -> None:
     assert "text-transform" not in found.group(1)
 
 
+#: The failed claims tally, a second caption under the verdict's (AC-33, as amended).
+TALLY = '<p class="caption">1 of 4 claims failed a check</p>'
+
+
 @pytest.mark.parametrize(
     ("change", "tally"),
     [
         ({}, ""),
-        ({"cites": [], "uncited": True}, "; 1 of 4 claims failed a check"),
-        ({"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]}, "; 1 of 4 claims failed a check"),
-        ({"basis": "link", "inferred": True}, "; 1 of 4 claims failed a check"),
+        ({"cites": [], "uncited": True}, TALLY),
+        ({"cites": ["0099/AC-1"], "rejected_ids": ["0099/AC-1"]}, TALLY),
+        ({"basis": "link", "inferred": True}, TALLY),
         ({"basis": "inferred", "inferred": True}, ""),
     ],
 )
@@ -785,7 +961,7 @@ def test_verdict_line_counts_claims_that_failed_a_check(
 
     entry = _article(_build(root, tmp_path / "site"), "Eval 1")
 
-    assert f'verdict: <span class="stored">answered</span>{tally}</p>' in entry
+    assert f"own answer</p>{tally}</div>" in entry
 
 
 def test_items_sent_is_closed_until_opened(root: Path, tmp_path: Path) -> None:
@@ -794,18 +970,18 @@ def test_items_sent_is_closed_until_opened(root: Path, tmp_path: Path) -> None:
 
     assert entry.count("<details>") == 1
     assert "<details open" not in entry
-    assert "<summary>Items sent (" in entry
+    assert "<summary>Show all (" in entry
 
 
 def test_cited_items_are_shown_in_full(root: Path, tmp_path: Path) -> None:
     """AC-45."""
     record = _stored(DEV)
     cited = {c for claim in record["claims"] for c in claim["cites"]}
-    sent = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[0]
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[0]
 
     for item in record["items"]:
         if item["id"] in cited:
-            assert f'<span class="stored">{escape(item["text"])}</span>' in sent
+            assert f'<span class="stored">{_shown(item["text"], False)}</span>' in sent
     assert sent.count('<div class="item">') == len(cited) > 0
 
 
@@ -813,7 +989,7 @@ def test_other_items_are_one_row_each(root: Path, tmp_path: Path) -> None:
     """AC-46, AC-48: id, type, held or accepted, and the location's link."""
     record = _stored(DEV)
     cited = {c for claim in record["claims"] for c in claim["cites"]}
-    rows = _items_sent(_build(root, tmp_path / "site")).split("<h4>Not cited</h4>")[1]
+    rows = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[1]
 
     assert rows.count("<li>") == len(record["items"]) - len(cited)
     for stored in record["items"]:
@@ -852,14 +1028,47 @@ def test_row_with_no_location_has_no_link(root: Path, tmp_path: Path) -> None:
 
 
 def test_key_gives_the_engineers_words_for_each_mark(root: Path, tmp_path: Path) -> None:
-    """The key, task 6: the marks' wording is the engineer's, word for word."""
+    """The key, task 6, and spec 0012 AC-102: the engineer's words, each mark a swipe."""
     page = _build(root, tmp_path / "site")
 
     for mark, meaning in MARK_KEY:
         assert (
-            f'<dt class="mark" data-mark="{escape(mark)}">{escape(mark)}</dt>'
+            f'<dt><span class="swipe" data-mark="{mark}">{mark}</span></dt>'
             f"<dd>{escape(meaning)}</dd>"
         ) in page
+
+
+def _key_section(page: str) -> str:
+    return page.split('<section class="key">', 1)[1].split("</section>", 1)[0]
+
+
+def test_the_total_counts_each_mark_shown(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-71 to AC-73, AC-75: the fixture's three entries, one mark carried by none."""
+    total = _key_section(_build(root, tmp_path / "site")).split('<p class="total">', 1)[1]
+
+    assert total.split("</p>", 1)[0] == (
+        "My marks on the 3 shown answers: "
+        '<span class="swipe" data-mark="right">right</span> 1 · '
+        '<span class="swipe" data-mark="partly right">partly right</span> 1 · '
+        '<span class="swipe" data-mark="wrong">wrong</span> 1 · '
+        '<span class="swipe" data-mark="declined">declined</span> 0'
+    )
+
+
+def test_the_total_sits_in_the_key_above_the_marks_list(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-74."""
+    key = _key_section(_build(root, tmp_path / "site"))
+
+    assert key.index("<h3>My marks</h3>") < key.index('<p class="total">') < key.index("<dl>")
+
+
+def test_the_total_of_the_committed_marks(tmp_path: Path) -> None:
+    """Spec 0012 AC-71, AC-72: 31 shown, 17 right, 2 partly right, 2 wrong, 10 declined."""
+    total = _key_section(_build(PROJECT_ROOT, tmp_path / "site")).split('<p class="total">')[1]
+
+    assert re.sub(r"<[^>]+>", "", total.split("</p>", 1)[0]) == (
+        "My marks on the 31 shown answers: right 17 · partly right 2 · wrong 2 · declined 10"
+    )
 
 
 def test_key_gives_each_label_its_meaning(root: Path, tmp_path: Path) -> None:
@@ -889,7 +1098,7 @@ def test_entries_in_a_section_follow_the_marks_file_order(root: Path, tmp_path: 
 
 
 def _section_html(page: str, title: str) -> str:
-    return page.split(f"<section><h2>{title}</h2>", 1)[1].split("<article>", 1)[0]
+    return _ARTICLE.split(page.split(f"<section><h2>{title}</h2>", 1)[1], maxsplit=1)[0]
 
 
 def test_page_counts_the_records_asks_holds(root: Path, tmp_path: Path) -> None:
@@ -948,3 +1157,62 @@ def test_page_names_jobhunt_at_the_pinned_commit(root: Path, tmp_path: Path) -> 
         f'at commit <a href="https://github.com/ghalynho10/JobHunt/tree/{JOBHUNT_COMMIT}">'
         "2e40bcf</a>"
     ) in page
+
+
+#: A stored text with an explicit code span, a bold pair and a bare file name.
+MARKED = "Read `x_y` and **z** in a.ts"
+
+#: How the page writes `MARKED` with code words on, and with them off.
+WITH_WORDS = (
+    'Read <code><span class="w">x_y</span></code> and <strong>z</strong> in '
+    '<code><span class="w">a.ts</span></code>'
+)
+WITHOUT_WORDS = 'Read <code><span class="w">x_y</span></code> and <strong>z</strong> in a.ts'
+
+
+def test_the_question_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-14, AC-20."""
+    _edit_record(root, DEV, lambda r: r.update(question=MARKED))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<p class="question"><span class="stored">{WITH_WORDS}</span></p>' in entry
+
+
+def test_each_claim_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-15, AC-20."""
+    _edit_record(root, DEV, lambda r: r["claims"][0].update(text=MARKED))
+
+    claim = _first_claim(_build(root, tmp_path / "site"))
+
+    assert claim.startswith(f'<span class="stored">{WITH_WORDS}</span>')
+
+
+def test_each_missing_note_is_formatted_with_code_words(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-16, AC-27."""
+    _edit_record(root, DEV, lambda r: r.update(missing=[MARKED]))
+
+    entry = _article(_build(root, tmp_path / "site"), "Eval 1")
+
+    assert f'<li><span class="stored">{WITH_WORDS}</span></li>' in entry
+
+
+def test_the_note_is_formatted_from_its_markers_only(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-17, AC-29: the fixture's own marks file, never the committed one."""
+    marks = [dict(m, note=MARKED) if m["label"] == "Q2" else m for m in MARKS]
+    _write_marks(root, marks)
+
+    entry = _article(_build(root, tmp_path / "site"), "Q2")
+
+    assert (
+        f'<p class="note"><strong>My note.</strong> <span class="stored">{WITHOUT_WORDS}</span></p>'
+    ) in entry
+
+
+def test_cited_item_text_is_formatted_from_its_markers_only(root: Path, tmp_path: Path) -> None:
+    """Spec 0012 AC-18, AC-28."""
+    _edit_record(root, DEV, lambda r: _cited_item(r).update(text=MARKED))
+
+    sent = _items_sent(_build(root, tmp_path / "site")).split("<h5>Not cited</h5>")[0]
+
+    assert f'<span class="stored">{WITHOUT_WORDS}</span>' in sent

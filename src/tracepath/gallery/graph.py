@@ -6,9 +6,10 @@ The page's script only draws from these flags; it decides nothing about an item.
 import json
 import re
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from tracepath.gallery.citations import ItemLine, item_link
+from tracepath.gallery.inline import has_pair, runs
 from tracepath.gallery.records import Entry, GalleryError, Section
 
 #: A cited item's radius, in pixels at the starting scale (AC-14).
@@ -27,6 +28,10 @@ RING_GAP = 6.0
 UNRESOLVED_TYPE = "unresolved"
 
 _NOT_SLUG = re.compile(r"[^a-z0-9]+")
+
+#: A stored text's runs as the page's script reads them: `[text, flags]`, where flag 1
+#: is code and flag 2 is bold, so 3 is bold code (spec 0012).
+Runs = tuple[tuple[str, int], ...]
 
 #: Characters a data block writes as `\u` escapes, so stored text cannot close the
 #: script element or end a line inside it (AC-69).
@@ -62,6 +67,7 @@ class GraphItem(BaseModel):
     link_ids: tuple[int, ...]
     source: str | None
     location: str
+    runs: Runs | None = Field(default=None, exclude_if=lambda value: value is None)
 
 
 class GraphLink(BaseModel):
@@ -75,6 +81,7 @@ class GraphLink(BaseModel):
     phrase: str | None
     held: bool
     drawn: bool
+    phrase_runs: Runs | None = Field(default=None, exclude_if=lambda value: value is None)
 
 
 class EntryGraph(BaseModel):
@@ -96,6 +103,17 @@ class EntryGraph(BaseModel):
 def slug_of(label: str) -> str:
     """The label lowercased, each run of other than ASCII letters and digits one `-`."""
     return _NOT_SLUG.sub("-", label.lower()).strip("-")
+
+
+def runs_of(text: str) -> Runs | None:
+    """The text's runs, explicit markers only; none when it holds no marker pair.
+
+    Spec 0012 AC-79, AC-98, AC-100, AC-101.
+    """
+    found = runs(text)
+    if not has_pair(found):
+        return None
+    return tuple((run.text, int(run.code) + 2 * int(run.bold)) for run in found)
 
 
 def page_order(entries: tuple[Entry, ...]) -> tuple[Entry, ...]:
@@ -147,6 +165,7 @@ def entry_graph(
             phrase=link.phrase,
             held=link.held,
             drawn=link.source != link.target,
+            phrase_runs=None if link.phrase is None else runs_of(link.phrase),
         )
         for link in record.links
     )
@@ -174,6 +193,7 @@ def entry_graph(
             ),
             source=item_link(lines[item.id]),
             location=location(lines[item.id]),
+            runs=runs_of(item.text),
         )
         for item in sorted(record.items, key=lambda i: (i.id not in cited_by, i.hop, i.id))
     )

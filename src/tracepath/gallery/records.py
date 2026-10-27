@@ -15,7 +15,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from tracepath.ask.answer import Basis, CheckedClaim, Claim
+from tracepath.ask.answer import Basis, CheckedClaim, Claim, Verdict
 from tracepath.ask.record import ASKS_DIR
 from tracepath.gallery.citations import (
     JOBHUNT_COMMIT,
@@ -48,6 +48,11 @@ VENDOR_DIR = Path(__file__).parent / "vendor"
 
 #: The page's own script (spec 0011).
 GRAPH_SCRIPT = Path(__file__).parent / "assets" / "graph.js"
+
+
+#: Where a ruling the page may link to lives; any other source path is not published
+#: (spec 0012 AC-59 to AC-61).
+RULINGS_DIR = "experiments/"
 
 
 class GalleryError(Exception):
@@ -117,7 +122,7 @@ class AskRecord(BaseModel):
     hops: int | None = None
     asked_at: datetime
     corpus_commit: str
-    verdict: str
+    verdict: Verdict
     missing: tuple[str, ...]
     claims: tuple[StoredClaim, ...]
     items: tuple[StoredItem, ...]
@@ -280,6 +285,12 @@ def _is_plain_name(record: str) -> bool:
     return bool(record) and "/" not in record and "\\" not in record and ".." not in record
 
 
+def _is_file_under(root: Path, name: str) -> bool:
+    """Whether `name` is a file inside `root`, never outside it."""
+    path = (root / name).resolve()
+    return path.is_relative_to(root.resolve()) and path.is_file()
+
+
 def load_entries(root: Path) -> tuple[Entry, ...]:
     """Every entry the marks file names, in its order, each with its record (AC-1, AC-5)."""
     marks = parse_marks(_read_json(root / MARKS_FILE), MARKS_FILE.as_posix())
@@ -294,6 +305,18 @@ def load_entries(root: Path) -> tuple[Entry, ...]:
             raise GalleryError(
                 f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names "
                 f"{entry.record}, which is not in {ASKS_DIR.as_posix()}/"
+            )
+        if ".." in entry.source_path or "\\" in entry.source_path:
+            raise GalleryError(
+                f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names source_path "
+                f"{entry.source_path}, which holds .. or a backslash (AC-62)"
+            )
+        if entry.source_path.startswith(RULINGS_DIR) and not _is_file_under(
+            root, entry.source_path
+        ):
+            raise GalleryError(
+                f"{MARKS_FILE.as_posix()}: entry {number} ({entry.label}) names source_path "
+                f"{entry.source_path}, which is not a file under {root}"
             )
         record = read_record(root, entry.record)
         section = section_of(number, entry, record)

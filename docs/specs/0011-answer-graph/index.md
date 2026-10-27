@@ -19,8 +19,8 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 **Acceptance criteria** (each holds one claim):
 
 *Opening and closing*
-- **AC-1**: With scripts running, each entry has a Graph button.
-- **AC-2**: With scripts off, the page shows no Graph button.
+- **AC-1** (amended 2026-10-26): With scripts running, each entry has a Graph button. _The button is the "Explore the graph" strip of [spec 0012](../0012-gallery-readability/index.md) (AC-65 to AC-69)._
+- **AC-2** (amended 2026-10-26): With scripts off, the page shows no Graph button. _The strip leaves no gap ([spec 0012](../0012-gallery-readability/index.md) AC-70)._
 - **AC-3**: A click on an entry's Graph button opens a full window showing that entry's graph.
 - **AC-4**: The Esc key closes the window.
 - **AC-5**: The window's close button closes it.
@@ -59,24 +59,24 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-35**: A click on empty canvas clears the selection and returns the panel to the answer view.
 
 *The reading panel*
-- **AC-36**: With nothing selected, the panel shows the question as stored.
-- **AC-37**: With nothing selected, the panel shows the verdict line the list shows, including "N of M claims failed a check" when spec 0010 AC-33 adds it.
+- **AC-36**: With nothing selected, the panel shows the question as stored. _Amended 2026-10-26: markers and code words are drawn as the list draws them ([spec 0012](../0012-gallery-readability/index.md) AC-9, AC-14)._
+- **AC-37** (amended 2026-10-26): With nothing selected, the panel shows the verdict block the list shows (the verdict wording and its captions, including "N of M claims failed a check" when spec 0010 AC-33 adds it), but not the mark ([spec 0012](../0012-gallery-readability/index.md) AC-81).
 - **AC-38**: With nothing selected, the panel shows the claims in stored order, each with the labels spec 0010 AC-26 to AC-32 give it.
 - **AC-39**: A cited id that is not rejected, in a claim shown in the panel, selects that item.
 - **AC-40**: That selection moves the view to centre the item.
 - **AC-41**: A rejected id in a claim shown in the panel is text and selects nothing.
-- **AC-42**: A selected item's stored text is shown in full.
+- **AC-42** (amended 2026-10-26): A selected item's stored text is shown in full, with `code` and **bold** drawn from the item's `runs` ([spec 0012](../0012-gallery-readability/index.md) AC-19, AC-79).
 - **AC-43**: A selected item's id and type are shown.
 - **AC-44**: A selected item shows `HELD`, `STRUCK` or `HISTORY`, and `UNRESOLVED NAME`, for each of those that is true of it.
 - **AC-45**: A selected item shows the numbers of the claims that cite it, in the two digit form the list uses (`01`).
 - **AC-46**: A selected item with a file shows its location as a link built by spec 0010 AC-34 and AC-35.
 - **AC-47**: A selected item with no file shows "no file stored" and no link (spec 0010 AC-36).
-- **AC-48**: A selected item lists each of its links, in and out, with the link type, its direction, the other item's id, and the stored phrase it was read from.
+- **AC-48**: A selected item lists each of its links, in and out, with the link type, its direction, the other item's id, and the stored phrase it was read from. _Amended 2026-10-26: the phrase is drawn with `code` and **bold** formatted, from the link's `phrase_runs` ([spec 0012](../0012-gallery-readability/index.md) AC-99 to AC-101)._
 - **AC-49**: A held link in that list shows `HELD`.
 - **AC-50**: A link from an item to itself is listed in the panel, though it is drawn as no line.
 - **AC-51**: The id of the other item in each listed link selects that item.
 - **AC-52**: The panel has a list of all items, cited ones first, each one selecting that item.
-- **AC-53**: Stored text containing markup, for example `<figure`, or `</script>`, appears in the panel as visible text and is not interpreted.
+- **AC-53**: Stored text containing markup, for example `<figure`, or `</script>`, appears in the panel as visible text and is not interpreted. _Amended 2026-10-26: this still holds inside a code or bold run; `graph.js` makes each run with `textContent` and never sets `innerHTML` ([spec 0012](../0012-gallery-readability/index.md) AC-10, AC-78)._
 
 *On a phone*
 - **AC-54**: At a window width of 720 pixels or less, the graph sits above the panel.
@@ -176,7 +176,7 @@ The files in `assets/` and `vendor/` are read in the command's shell (`cli.py` o
 
 | Field | Type | Rule |
 |---|---|---|
-| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the data block and the entry; it is not in the address |
+| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the data block and the entry; it is not in the address | _Note 2026-10-26: the slug is also in the address: `#<slug>`, and the `id` of each entry's `article` ([spec 0012](../0012-gallery-readability/index.md) AC-82 to AC-92)._
 | `label` | string | The marks entry's label, shown in the window's heading row |
 | `position`, `total` | integers | This entry's place in page order (sections in `Section` order, entries in marks file order), counted from 1, and the number of entries |
 | `previous`, `next` | slug or null | The entries either side in that order; null at either end |
@@ -227,7 +227,7 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 - The graph has no tab stop on dots. The all items list (AC-52) and the claim ids are the keyboard route.
 
 **The panel**: two views in one scrolling column.
-- *Answer view* (nothing selected): a clone of the entry's own question, verdict line and claim list from the list on the page, so labels (AC-38) cannot differ from the list's. Each cited, unrejected id in the list's citation link carries `data-item="<id>"`, which does nothing on the list. Clicks on a `[data-item]` link inside the panel are caught, the browser's navigation to JobHunt is stopped, and that item is selected (AC-39). The JobHunt link of that item is reached from the item view (AC-46). Then the all items list (AC-52).
+- *Answer view* (nothing selected; _amended 2026-10-26: `graph.js` finds the three parts anywhere inside the entry, because the new layout no longer makes them direct children, [spec 0012](../0012-gallery-readability/index.md) AC-76, AC-77_): a clone of the entry's own question, verdict block and claim list from the list on the page, so labels (AC-38) cannot differ from the list's. Each cited, unrejected id in the list's citation link carries `data-item="<id>"`, which does nothing on the list. Clicks on a `[data-item]` link inside the panel are caught, the browser's navigation to JobHunt is stopped, and that item is selected (AC-39). The JobHunt link of that item is reached from the item view (AC-46). Then the all items list (AC-52).
 - *Item view*: eyebrow (type and state words), poster title (the id), the stored text, the location or its link, the claim numbers, then the links in and out. The script fills it from the data block with `textContent`, never `innerHTML`, so stored text stays text (AC-53). Links are listed in stored order, each marked `out` when the item is the link's source, `in` when it is the target and `self` for a loop, which is listed once.
 
 **Previous and next**: they read `previous` and `next` from the data block and swap the open graph (AC-8, AC-9).
@@ -339,7 +339,7 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 
 - [x] Amend spec 0010: its Feature design says "no JavaScript", its Decision says "with no JavaScript", its Consequences say "no search, filter or graph", its Feature design says the build does not read the records' `links`, and its Follow up lists this slice as open. Add a dated amendment note on each pointing at this spec, and tick the Follow up. The build task 9 does it.
 - [ ] Reconcile scope features 17 and 18 and the Deferred "Visual UI" entry once built: feature 18's Done when is this spec's AC-3, AC-14 to AC-21, AC-42, AC-46 and AC-48.
-- [ ] Shareable link to one graph: an address fragment that opens a graph and selects an item. Cut from this spec on 2026-10-25. If it comes back, settle first how the address is written (replace, not push, and the close path), how a bad slug or item is handled, and how an id holding `#`, `:` and `/` is encoded.
+- [ ] Shareable link to one graph: an address fragment that opens a graph and selects an item. Cut from this spec on 2026-10-25. _Note 2026-10-26: the part that opens a graph is taken into [spec 0012](../0012-gallery-readability/index.md) (AC-82 to AC-92), written as `#<slug>`, set by `history.replaceState`, with an unknown slug opening the page as usual. Selecting an item by the link stays deferred._ If it comes back, settle first how the address is written (replace, not push, and the close path), how a bad slug or item is handled, and how an id holding `#`, `:` and `/` is encoded.
 - [x] Read the four LICENSE files from the packages when vendoring, and copy each word for word. This spec checked the licence of `d3-force` and `d3` from their repositories, but did not read the four packages' own LICENSE files. _Done 2026-10-25 (task 1): each LICENSE was read from its npm tarball after the tarball's sha1 matched the registry's `dist.shasum`; all four are the same 731 byte ISC text, copied unchanged with `cp`._
 - [x] Check in a real browser that the four UMD files load from plain script tags in the order given. This spec checked it in Node's `vm` sandbox only (task 2 does it). _Done 2026-10-25 (task 2, and every slice after): in Chromium through Playwright the four files load from plain inline script tags in that order and every graph lays out. Other browser engines were not checked._
 - [ ] Decide later whether the other data (the 13 records the page does not show) deserves a graph, and whether a link between two entries' shared items is worth drawing. Neither is in this spec.
