@@ -153,7 +153,7 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] Focus previous on Eval 1 with Eval 2's file not yet loaded and press it → focus moves to the close button → AC-123
 - [ ] Open Eval 2 with the switch on, then reach an unloaded graph → the dots, lines and panel of Eval 2 are gone and the switch is off → AC-124
 - [ ] `uv run pytest tests/test_gallery_graph.py -k dialog_holds_the_status_words` → passes → AC-125
-- [ ] Block a file's request so it stays pending, close the window, press the button again → a new request is made → AC-126
+- ~~Block a file's request so it stays pending, close the window, press the button again → a new request is made → AC-126~~ Dropped 2026-10-28, ruled by the engineer: Chromium shares the running download, so no new request is sent; see the note under AC-126 in `index.md`.
 - [ ] `uv run pytest tests/test_gallery_graph.py -k writes_the_page_last` → passes: `index.html` written after every graph file → AC-127; a build with a file standing where `graphs/` should be exits 1 naming that path → AC-127a
 
 ## After the merge
