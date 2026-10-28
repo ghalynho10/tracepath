@@ -783,7 +783,7 @@
   dialog.addEventListener("close", () => {
     stopLive();
     drag = null;
-    // A file still loading is asked for again on the next open (AC-126).
+    // Forget loads still pending, so the next open adds a fresh script element; Chromium may reuse a download still running (spec 0011, the note under AC-126).
     pending.clear();
     history.replaceState(history.state, "", location.pathname + location.search);
     const button = state && buttons.get(state.slug);
