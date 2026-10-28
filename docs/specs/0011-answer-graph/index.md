@@ -5,7 +5,7 @@
 
 ## Summary
 
-This spec adds one interactive graph to each answer on the gallery page. A Graph button on an entry opens a full window: the answer's items and links on the left, a reading panel on the right. Cited items are large and dark, held items have a dashed ring, unresolved names are squares, and a click on any item shows its text and a link to its exact line in JobHunt. The build works out every item's state in Python and writes it into the page, and a small script only draws and toggles from those flags. The one library is d3-force (it only computes where the dots go), copied into the repository and pasted into the page.
+This spec adds one interactive graph to each answer on the gallery page. A Graph button on an entry opens a full window: the answer's items and links on the left, a reading panel on the right. Cited items are large and dark, held items have a dashed ring, unresolved names are squares, and a click on any item shows its text and a link to its exact line in JobHunt. The build works out every item's state in Python and writes it to a file for that entry, and a small script only draws and toggles from those flags. _Amended 2026-10-27: that file sits beside the page and loads when its graph opens. It used to be a block inside the page, and with 31 of them the page was too big for LinkedIn to read (AC-104 to AC-127a)._ The one library is d3-force (it only computes where the dots go), copied into the repository and pasted into the page.
 
 ## Requirements
 
@@ -84,8 +84,8 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-56**: At that width a one finger drag on the canvas pans the graph.
 
 *The build and its data*
-- **AC-57**: The build writes, for each entry, a data block that holds every item and every link of its record.
-- **AC-58**: The data block holds no item's stored `line`.
+- **AC-57** (amended 2026-10-27): The build writes, for each entry, a graph file that holds every item and every link of its record. _It was a data block inside `index.html`; see the note under AC-104 to AC-127a._
+- **AC-58** (amended 2026-10-27): The graph file holds no item's stored `line`.
 - **AC-59**: An item's `cited` flag is true when some claim cites its id and that claim does not list it in `rejected_ids`, and false otherwise.
 - **AC-60**: An item's `held` flag equals the record's stored `held` for it.
 - **AC-61**: An item's `unresolved` flag is true when the type in its stored line is `unresolved`, and false otherwise.
@@ -96,13 +96,13 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 - **AC-66**: The build fails, exit 1, naming the record and the id, when two items of one record share an id.
 - **AC-67**: The build fails, exit 1, naming both entries, when two entries make the same slug.
 - **AC-68**: The build fails, exit 1, naming the script, when an inlined script holds `</script` or `<!--`, in any letter case.
-- **AC-69**: In a data block, the characters `<`, `>`, `&`, U+2028 and U+2029 are written as `\u` escapes.
-- **AC-70**: Parsing a data block gives back each stored text exactly.
+- **AC-69** (amended 2026-10-27): In a graph file, the characters `<`, `>`, `&`, U+2028 and U+2029 are written as `\u` escapes. _They are no longer needed to keep a block from ending its script tag, but the same writer is kept, so one rule covers the data._
+- **AC-70** (amended 2026-10-27): Parsing the data object in a graph file gives back each stored text exactly.
 - **AC-71**: The page inlines d3-dispatch, d3-quadtree, d3-timer and d3-force, in that order.
 - **AC-72**: Each inlined library file is followed by the licence text its package ships, copied word for word.
 - **AC-73**: `src/tracepath/gallery/vendor/SOURCES.md` lists each of the four files in one row: package, version, file name and where it was taken from.
-- **AC-74**: The page refers to no script, style or font file.
-- **AC-75**: Opening a graph makes no network request.
+- **AC-74** (amended 2026-10-27): No tag in the HTML the build writes names a script, style or font file. _`graph.js` adds a script element for a graph file when a graph opens (AC-119); that element is not in the HTML the build writes._
+- **AC-75** (amended 2026-10-27, _browser_): Opening a graph for the first time makes one network request, for that entry's file under `graphs/` on the page's own site, and no other. _It said "no network request". Opening it a second time makes none (AC-115)._
 - **AC-76**: Two loads of the same graph in the same browser put every dot at the same place.
 
 *Dragging a dot* (added 2026-10-25 at the engineer's request)
@@ -142,11 +142,47 @@ This spec adds one interactive graph to each answer on the gallery page. A Graph
 *The panel's source link* (added 2026-10-25 after the code review)
 - **AC-103**: In the panel, a selected item's JobHunt link opens in a new tab. _So the open graph stays; the list's links, which spec 0010 governs, still open in the same tab._
 
+*Graph files* (added 2026-10-27, ruled by the engineer). _Why: LinkedIn's Post Inspector refused the live page with "Maximum size for this input stream is 3145728 bytes". `index.html` was 4,817,451 bytes, and the 31 graph blocks were 3,834,664 of them (rebuilt and measured again on 2026-10-27 at 747365c: the same two numbers, 982,787 for the rest). Each entry's data now lives in its own file. This reverses spec 0010 AC-58's "nothing loaded separately" for graph data only; the styles, libraries and script stay inline._
+
+- **AC-104**: `index.html` holds no graph data: it has no `<script type="application/json">` element.
+- **AC-105**: A build into an empty folder writes `graphs/<slug>.js` for each entry and no other file under `graphs/`.
+- **AC-106**: A graph file is one call, `tracepathGraph(<the slug as a JSON string>,<the data object>);`, followed by one newline, and nothing else.
+- **AC-107**: In a graph file, the slug in the call, the `slug` field of the data object and the slug in the file's name are the same.
+- **AC-108** (_browser_): A press on a Graph button opens the window at once, before the file has arrived, with the words "Loading the graph…" in the canvas's place.
+- **AC-109** (_browser_): While the file loads, previous, next, the switch, zoom in, zoom out and reset are disabled.
+- **AC-109a** (_browser_): While the file loads, the close button and Esc close the window.
+- **AC-110** (_browser_): When the file arrives, the loading words go and the graph is drawn as AC-12 to AC-25 describe.
+- **AC-111** (_browser_): When the file arrives, the controls of AC-109 are enabled, except where AC-10, AC-11 or AC-33 disables one.
+- **AC-112** (_browser_): When the file fails to load, because it is missing or the reader is offline, the canvas's place reads "This graph did not load. Close the window and open it again to try."
+- **AC-112a** (_browser_): After a failed load the window stays open.
+- **AC-113** (_browser_): After a failed load, the address still reads `#<slug>` until the window closes.
+- **AC-114** (_browser_): After a failed load, closing the window and pressing the same Graph button asks for the file again.
+- **AC-115** (_browser_): A graph that has loaded is kept; opening it again makes no request.
+- **AC-115a** (_browser_): Reaching a graph that has loaded again by previous or next makes no request.
+- **AC-116** (_browser_): When the address fragment changes to another entry's slug while a graph is loading, the window ends on the graph of the newer slug.
+- **AC-116a** (_browser_): In that case the earlier file's arrival draws nothing.
+- **AC-117** (_browser_): Opening the page at `#<slug>` of an entry opens the window in the loading state, then draws that entry's graph.
+- **AC-118** (_by hand_): With `index.html` and `graphs/` opened as plain files (`file://`), a graph opens. _Inferred to work because a script tag is not held to the cross origin rule that stops `fetch()` on `file://` in Chrome; not tested in this spec's session, and the Playwright tool there refuses `file:` URLs, so the engineer opens it by hand once at `/check verify`._
+- **AC-119**: `graph.js` uses none of `fetch(`, `XMLHttpRequest`, `import(`, `new Image` or `sendBeacon`.
+- **AC-119a**: `graph.js` adds a script element for a graph file. _The test looks for `createElement("script")` and `graphs/` in the script._
+- **AC-120** (_browser_): When the window is closed while a graph's file is loading, the file's arrival draws nothing and does not reopen the window.
+- **AC-121** (_browser_): When an earlier graph's file fails after the window has moved to another graph, the failure words are not shown over the newer graph.
+- **AC-122** (_browser_): In the failed state the heading row reads "Graph" with no counter.
+- **AC-122a** (_browser_): In the failed state previous, next, the switch, zoom in, zoom out and reset are disabled.
+- **AC-123** (_browser_): When previous or next has focus and the window enters the loading state, focus moves to the close button.
+- **AC-124** (_browser_): Entering the loading state empties the dots, lines and panel of the graph shown before, and unchecks the switch.
+- **AC-125**: The dialog's markup holds the loading words, the failure words and the word "Graph" for the loading heading.
+- **AC-126** (_browser_): After the window closes with a file still pending, opening the same graph adds a new request for it.
+- **AC-127**: The build writes `index.html` after every graph file.
+- **AC-127a**: A build that cannot write a graph file exits 1 naming that file's path.
+
 ## Decision
 
 **Chosen option**: Option 1: d3-force for layout only, vendored and inlined, with a hand written SVG drawing and a full window `<dialog>`.
 
-`tracepath gallery build` computes each item's state and each item's neighbours in Python, writes them as JSON beside each entry, and pastes in four small ISC licensed files (d3-force 3.0.0, d3-dispatch 3.0.1, d3-quadtree 3.0.1, d3-timer 3.0.1) plus about 300 lines of script, which place the dots with d3-force and draw, highlight and toggle from the flags.
+`tracepath gallery build` computes each item's state and each item's neighbours in Python, writes them as one file per entry under `graphs/` (amended 2026-10-27; they were JSON blocks in the page), and pastes in four small ISC licensed files (d3-force 3.0.0, d3-dispatch 3.0.1, d3-quadtree 3.0.1, d3-timer 3.0.1) plus about 300 lines of script, which place the dots with d3-force and draw, highlight and toggle from the flags.
+
+_Note on the Decision: Amended 2026-10-27, ruled by the engineer. Each entry's data moves out of `index.html` into its own file, loaded by a script element that `graph.js` adds when that graph opens (Option A of the amendment in [rationale.md](rationale.md)). Wherever this spec still says "data block", it now means that entry's graph file._
 
 **Follows**: functional core with an imperative shell, as the project's own rule (the flags are pure functions of the record) · progressive enhancement (the list of spec 0010 works with scripts off, the graph adds to it) · vendoring a pinned dependency (copy a known version into the repository, record its version and where it came from; git records any later change to the files).
 
@@ -164,19 +200,19 @@ Reasoning and options: see [rationale.md](rationale.md).
 
 | File | What it holds |
 |---|---|
-| `graph.py` (new, pure) | Frozen models and the functions that turn one `Entry` and its stored links into the page's graph data: flags, neighbours, `cited_by`, the slug, the position and the total |
+| `graph.py` (new, pure) | Frozen models and the functions that turn one `Entry` and its stored links into an entry's graph data, written as its graph file: flags, neighbours, `cited_by`, the slug, the position and the total |
 | `records.py` (changed) | A frozen `StoredLink` model (`type`, `source`, `target`, `phrase`, `held`); `AskRecord` gains `links`; `StoredItem` gains `hop: int`; the build checks AC-65 to AC-67 |
-| `render.py` (changed) | The Graph button, the one `<dialog>`, one data block per entry, the vendored files and the script inlined, the new styles, and a `data-item` attribute on each cited, unrejected id in a claim's citation link |
+| `render.py` (changed) | The Graph button, the one `<dialog>`, the two hidden loading and failure elements in the dialog, the vendored files and the script inlined, the new styles, and a `data-item` attribute on each cited, unrejected id in a claim's citation link |
 | `assets/graph.js` (new) | The script: position, draw, select, pan, zoom, switch, previous and next. It decides nothing about an item's state |
 | `vendor/` (new) | `d3-dispatch.min.js`, `d3-quadtree.min.js`, `d3-timer.min.js`, `d3-force.min.js`, each package's `LICENSE`, and `SOURCES.md` |
 
 The files in `assets/` and `vendor/` are read in the command's shell (`cli.py` or a small loader beside `load_entries`) and handed to `render_page`, so `render.py` stays pure. `SOURCES.md` is a table with the columns package, version, file, url, which the AC-73 test parses.
 
-**Data model sketch**: nothing is stored beyond the records that exist. Each entry gets one JSON data block, `<script type="application/json" id="graph-<slug>">`, parsed only when its graph is opened.
+**Data model sketch**: nothing is stored beyond the records that exist. Each entry gets one graph file, `graphs/<slug>.js`, loaded only when its graph is opened (see *The graph files*). _Amended 2026-10-27: it was a block, `<script type="application/json" id="graph-<slug>">`, inside `index.html`, parsed when the graph opened._
 
 | Field | Type | Rule |
 |---|---|---|
-| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the data block and the entry; it is not in the address | _Note 2026-10-26: the slug is also in the address: `#<slug>`, and the `id` of each entry's `article` ([spec 0012](../0012-gallery-readability/index.md) AC-82 to AC-92)._
+| `slug` | string | The label lowercased, each run of characters other than ASCII letters and digits turned into one `-`, no `-` at either end. `Eval 3` gives `eval-3`, `Held out 2` gives `held-out-2`, `Q7` gives `q7`. Unique across entries (AC-67), and never empty (the build fails if a label gives an empty one). It names the graph file and the entry; it is not in the address | _Note 2026-10-26: the slug is also in the address: `#<slug>`, and the `id` of each entry's `article` ([spec 0012](../0012-gallery-readability/index.md) AC-82 to AC-92)._
 | `label` | string | The marks entry's label, shown in the window's heading row |
 | `position`, `total` | integers | This entry's place in page order (sections in `Section` order, entries in marks file order), counted from 1, and the number of entries |
 | `previous`, `next` | slug or null | The entries either side in that order; null at either end |
@@ -193,6 +229,21 @@ Each link: `type`, `source`, `target`, `phrase`, `held`, `drawn` (false for a li
 The data block never holds an item's stored `line` (AC-58); everything the script needs from it, the type, the marker, the location and the link, is a field above, computed once by the grammar of spec 0010.
 
 **Link grammar and the checks it reuses**: unchanged. `graph.py` takes `ItemLine` and `item_link` from `citations.py`, so a graph link is built by the same function, from the same checked file and line, as a list link (AC-46).
+
+**The graph files** (added 2026-10-27, ruled by the engineer):
+
+- *What a file holds.* `graph.py` gains a pure function that turns an `EntryGraph` into the file's text: `tracepathGraph(<slug as JSON>,<data>);` and a newline, where `<data>` is what `data_block` writes today (same fields, same `\u` escapes of AC-69). The shell writes one file per entry into `DIR/graphs/` (creating the folder), as UTF-8 since the data keeps its non ASCII text as typed, and writes `index.html` last, so a failure partway leaves no page that points at missing files. A write error names the path that failed, not always `index.html`. `render.py` stays pure. A file is JavaScript, not a JSON document; the wrapper is why (a script tag cannot hand back bare JSON).
+- *How it loads (Q1, ruled).* `graph.js` first defines `window.tracepathGraph`, which keeps the object it is given in a map by slug. To load a slug it adds a script element whose address is `graphs/<slug>.js` resolved against `document.baseURI`, so the page works at any path. On the element's `load` event the script checks the map holds that slug; on `error`, or a `load` with nothing in the map, the load has failed. The element is removed either way. Two loads of one slug at once share one element; but once a load has failed or the window has closed with the file still pending, the next open of that slug adds a fresh element, so closing and reopening is a real retry even if the first request never settled (AC-126). There is no timeout of the script's own. A loaded graph stays in the script's memory (`laid`), so a second open makes no request (AC-115); a failed load stores nothing, so the next press asks again (AC-114).
+- *Why not `fetch()`.* Chrome refuses `fetch()` of a `file://` address (inferred from how the browser behaves; not tested here), so a page opened by double click would show Graph buttons that cannot open. A script tag has no such rule (inferred), so AC-118 is expected to hold. The graph data is not private, so a script file costs no secrecy. `fetch()` would give a clean `.json` file and an HTTP status; the cost of losing both is accepted.
+- *Opening (Q2 and Q4, ruled).* `open(slug)` sets `state` first (with `slug` set and `graph` null), replaces the address with `#<slug>` as today, shows the window if it is shut, and puts the window in its *loading state*, which also stops any live layout (`stopLive()`), clears a drag in progress, runs `hover(null)`, empties both SVG layers and the panel, and unchecks the switch (AC-124): the heading row reads "Graph" with no counter, the canvas and the panel are empty, the words "Loading the graph…" show in the canvas's place, and previous, next, the switch, zoom in, zoom out and reset are disabled (AC-108, AC-109). When the graph is already in memory, `open` skips the loading state and draws at once. There is no `wanted` token. When the file arrives, `open` draws only if the window is open, `state.slug` is still this slug and `state.graph` is null; otherwise the graph stays in memory and nothing is drawn. That one test covers a typed slug that came later (AC-116, AC-116a) and a window closed meanwhile (AC-120), because `open` always sets `state` first and `close` leaves it as it was, with the window shut. Then the heading, counter, previous and next come from the file as before (AC-7 to AC-11 are unchanged), and the controls are enabled (AC-110, AC-111).
+- *Failing.* The same spot reads "This graph did not load. Close the window and open it again to try." and the window stays open, with the address still `#<slug>` until it closes (AC-112, AC-112a, AC-113). The failed state keeps the loading state's heading ("Graph", no counter) and keeps all six controls disabled, because previous and next come from the file; the canvas and panel stay empty (AC-122, AC-122a). A failure is judged by the same test as an arrival: if the window has moved to another slug or shut, a late `error` shows nothing (AC-121). There is no Try again button, because no load failure has been seen; closing and pressing the Graph button again is the retry. There is no timeout of the script's own; the browser's decides.
+- *The words.* Both sentences are written in the dialog's markup in `render.py`, as `<p class="gw-status" data-gw="loading" hidden>` and `data-gw="failed"`, placed inside `.gw-view` after the `</svg>` (the key test at `tests/test_gallery_graph.py` line 424 keeps passing), and the word "Graph" for the loading heading is a `data-loading-heading` attribute on the dialog. The script only shows one of them and reads the heading word from the attribute, so the page's words stay in Python (AC-125).
+- *What stays inline.* The list, with the question, verdict and claims the panel's answer view clones; the buttons; the dialog; the four libraries; `graph.js`; the preview tags. Only the data of the 31 graphs leaves the page. The answer view needs the file only for its all items list, so it too waits for the file.
+- *Build notes for the code.* `close` restores focus from `state.slug`, so `state` is set before the window is shown, with `graph` null until the file arrives. Every handler that reads `state.graph` returns while `graph` is null: pointerdown, pointermove, pointerup, pointercancel, wheel, resize and the panel click; the disabled controls cover the buttons (the key button reads no `state.graph`). Entering the loading state moves focus to the close button when focus sat on previous or next, because both become disabled; arrival leaves focus where it is (AC-123). The `swapped` test in today's `open` is read at the start of `open`, before the window shows, and not again at arrival.
+- *On page load and the typed address (Q4, ruled).* A page opened at `#q9` registers the buttons and then calls `open("q9")`, which now opens the window in the loading state (AC-117; spec 0012 AC-84 holds, its "opens" now means "opens, then fills"). A `hashchange` to a slug calls `open` the same way, so the newest slug wins (AC-116; spec 0012 AC-111 and AC-112 hold). A `hashchange` to an empty fragment closes the window, loading or not (spec 0012 AC-116). Previous and next cannot be pressed while loading, so a swap never races a load.
+- *Size (spec 0010 AC-78).* `index.html` falls to about 982,787 bytes, which leaves 2,162,941 bytes under LinkedIn's 3,145,728. The 31 files together hold the 3,834,664 bytes the blocks held, plus about 30 bytes of wrapper each; the largest block was 156,649 bytes. The inline part per entry was not measured, so this spec does not say how many more entries fit.
+- *Stale files.* GitHub Pages serves a file with a cache lifetime of its own (inferred from how Pages behaves; not checked on its docs here). For a short while after a deploy that changes an entry, a reader's browser may hold the older graph file beside the newer page. The records are append only and the graph files change only when the build code changes, so this is accepted, with no version number in the file name (the filter below).
+- *Filter applied to this amendment.* A load failure, a stale file and a lost race were not seen in real output, so none gets a guard beyond the words above and the newest wins rule, which costs one check of `state.slug`. The one failure seen in real output is the size, and it gets AC-78 in spec 0010.
 
 **Layout**: d3-force runs once, in the browser, to the end, before anything is drawn: `simulation.stop()` and then 300 `tick()` calls, the number d3's own cooling schedule uses. It lays out around (0, 0) and the view transform fits the result to the canvas, so positions never depend on the window size. The forces, as starting values: `forceLink` (distance 40), `forceManyBody` (strength -60), `forceCollide` (the item's radius plus 2), and a weak `forceX` and `forceY` (0.06) toward (0, 0), so the 9 percent of items with no link stay near the rest. Nothing is random: d3 places the first positions on a fixed spiral and breaks ties with a fixed seed, which I checked on 2026-10-24 by running two 300 tick layouts of a 90 node graph with 89 links and getting identical positions (in Node's `vm` sandbox, not in a browser). A different browser engine may compute the spiral's sine and cosine in the last digits differently, so AC-76 holds within one browser. Positions are never stored. The layout does not run again when the switch flips: hidden items keep their place, and the fit and the reset always cover every dot. The pan and zoom range is from half of the fitted scale to six times it.
 
@@ -236,7 +287,7 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 
 **On a phone** (720 pixels and under): the dialog fills the screen; a grid of two rows puts the canvas on top (45 percent of the dynamic viewport height, set in the visual pass of 2026-10-25; it was 55) and the panel below it, scrolling on its own. The key folds behind one Key button, so the panel keeps more of the screen. The canvas ignores page scrolling for touches (`touch-action: none`), so a one finger drag pans it.
 
-**Command surface**: unchanged. `uv run tracepath gallery build --out DIR` writes the same single `DIR/index.html`.
+**Command surface**: `uv run tracepath gallery build --out DIR` writes `DIR/index.html`, `DIR/preview.png` and, since 2026-10-27, `DIR/graphs/<slug>.js` for each entry (AC-105). The options are unchanged. _It used to write the single `DIR/index.html`._ The build does not delete anything already in `DIR/graphs/`; a file left from an earlier build under a slug that no longer exists is not read by the page and is not published by the workflow, which builds into an empty folder.
 
 **Value sourcing**:
 | Action | Value produced / displayed | Source |
@@ -256,6 +307,10 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 | Show the answer view | Question, verdict, claims, labels and their two digit numbers | The entry's own rendered list, cloned (AC-36 to AC-38, AC-45) |
 | Show the heading row | `label`, `position`, `total`, `previous`, `next` | `label` of the marks entry; the rest computed in `graph.py` from page order |
 | Name a data block | `slug` | Computed from `label` by the rule in the data model (AC-67) |
+| Request a graph file | The address `graphs/<slug>.js` | The Graph button's `data-graph` (the slug) and `document.baseURI` (amended 2026-10-27) |
+| Write a graph file | The file's text and its place `DIR/graphs/<slug>.js` | The entry's `EntryGraph` and `--out`, by the shell (AC-105, AC-106) |
+| Show the loading and failure words | Two sentences | Constants in the dialog's markup in `render.py` (AC-108, AC-112) |
+| Decide whether to draw after a load | whether the window is open, `state.slug`, `state.graph` | `state`, set by the newest `open(slug)` call, from a click, the address on load, or a typed fragment (AC-116, AC-120) |
 | Show the key | The six drawings | A constant fragment of SVG and words in `render.py` |
 | Inline the library | The four files, their licences and `SOURCES.md` | `src/tracepath/gallery/vendor/`, read by the shell (AC-71 to AC-73) |
 
@@ -265,14 +320,15 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 - Every source link on the graph is built by spec 0010's `item_link` from a file and line the build already checked against the snapshot.
 - Stored text reaches the page only escaped in the data block (AC-69, AC-70) and only through `textContent` or the page's own escaped list in the panel (AC-53).
 - With scripts off, the page is the list of spec 0010, with no dead control (AC-2).
-- The page carries no timestamp of the build, and the graph makes no network request (AC-75), as spec 0010 requires of the page.
+- The page carries no timestamp of the build, and opening a graph makes one request, for its own file on the page's own site, and no other (AC-75). _Amended 2026-10-27; it said the graph makes no request._
+- `index.html` holds no graph data (AC-104), and the script adds no element that loads a resource other than the one script for a graph file (AC-119a).
 
-**Security model**: the page is public and holds only stored records, the engineer's marks and links to public repositories. The new risk is the inline script reading stored text: it is covered by AC-53, AC-68, AC-69 and AC-70. GitHub Pages cannot set a Content Security Policy header, so there is no second line of defence; that is acceptable because the page loads no third party content and the script never turns stored text into markup. No secret is read; no compliance scope applies.
+**Security model**: the page is public and holds only stored records, the engineer's marks and links to public repositories. The new risk is the inline script reading stored text: it is covered by AC-53, AC-68, AC-69 and AC-70. GitHub Pages cannot set a Content Security Policy header, so there is no second line of defence; that is acceptable because the page loads no third party content and the script never turns stored text into markup. No secret is read; no compliance scope applies. _Added 2026-10-27: a graph file is JavaScript the browser runs, so stored text reaches an executing script, not only a parsed block. The wrapper is a constant, the data is one object literal, and the escapes of AC-69 are kept, so the rule that keeps stored text as text is the same one (AC-70). The graph files come from the same origin as the page; no third party file is added._
 
 **Configuration required**: none. The Pages workflow is unchanged: its `src/tracepath/**` path filter already covers the new code and the vendored files, so a change to either deploys the page on a push to `main`. Pages action versions are as in spec 0010.
 
 **Critical test scenarios** (each maps to acceptance criteria in ## Requirements; the browser steps run at `/check verify`, the rest in pytest):
-- Happy path on real data: build from `artifacts/asks/` and `gallery/marks.json`; every entry has a data block, and its items and links equal its record's, verifies **AC-12, AC-13, AC-57, AC-58**.
+- Happy path on real data: build from `artifacts/asks/` and `gallery/marks.json`; every entry has a graph file, and its items and links equal its record's, verifies **AC-12, AC-13, AC-57, AC-58**. _Amended 2026-10-27: the tests in `tests/test_gallery_graph.py` that read the inline blocks (the `_BLOCK` pattern and the `blocks` fixture, the one block per entry test, the no stored line test, `refers_to_no_script`, the escape and round trip tests, the hostile text test and the helper that reads `[0][1]`) read `DIR/graphs/*.js` instead: strip the constant wrapper, then `json.loads`. A new module fixture `site` (the output folder, a Path) is added and `page` is derived from it, so about twenty tests keep a `str` page. The escape and round trip tests (lines 661 and 671) call the new file text function and strip the wrapper._
 - Flags against the record: for each of the 31 records, every item's `cited`, `held`, `unresolved`, `neighbours`, `near_cited` and `cited_by` equal an independent recomputation from the record, verifies **AC-59 to AC-64, AC-97, AC-98**.
 - Edge: a record that cites no item (Q11 and Q16 cite none) has `cited_count` 0 and no cited item, verifies **AC-24, AC-33**.
 - Edge: a link from an item to itself (23 exist) has `drawn` false and is in its item's `link_ids`, verifies **AC-13, AC-50**.
@@ -292,6 +348,14 @@ Contrast against the white page, by my calculation: ink at 50 percent is about 3
 - Browser, pressing near a dot: on Eval 2, press 9 pixels from each small dot, between crowded dots at the smallest zoom, 11 and 16 pixels away with a mouse, and 16 and 24 pixels away with a finger; the nearest dot within reach is chosen, and a drag from further away pans, verifies **AC-84 to AC-86**.
 - Browser, visual pass: every graph at 1440 and at 390 pixels wide; labels in stored case, none cut at an edge, shortened with "…" only when they fit on neither side, with the full id in the tooltip and the panel's title, no two shown cited labels overlapping, a hidden one shown on hover, selection or next to the selection; on a phone the key behind its Key button and the canvas at 45 percent; no dot under the zoom buttons in the first view, verifies **AC-87 to AC-93, AC-100 to AC-102**.
 - Data: every item's `cite_order` equals an independent recomputation from its record's claims, verifies **AC-94**.
+- Graph files, added 2026-10-27, on the real build: `index.html` has no `application/json` element; `graphs/` holds one `<slug>.js` per entry and nothing else; each file is the wrapper, the slug, the object and a newline, with the slug equal in the call, the object and the file name, verifies **AC-104, AC-105, AC-106, AC-107**.
+- Static, added 2026-10-27: `graph.js` adds a script element for a graph file and holds none of `fetch(`, `XMLHttpRequest`, `import(`, `new Image` or `sendBeacon`, verifies **AC-119, AC-119a**. This replaces `test_script_makes_no_request`, which forbade `src` and so cannot stay as written.
+- Static, added 2026-10-27, verifies **AC-125, AC-127, AC-127a**: the dialog's markup holds both sentences and the heading word; a build whose `graphs/` cannot be written (a file standing where the folder should be) exits 1 naming the path, and no `index.html` is left behind from that run.
+- Existing tests that stay as they are: the inline script break out refusal (AC-68) still covers the scripts the page inlines; the graph files are not inlined, so it does not read them. `tests/test_gallery.py` line 636 (`<script(?! type="application/json")[^>]`) changes to forbid every `<script` that has an attribute, since the page no longer has a JSON block (spec 0010 AC-58).
+- Browser, added 2026-10-27, over `127.0.0.1` (the Playwright tool refuses `file:`): press Graph on Eval 3 with the network throttled → the window opens at once with "Loading the graph…", the six controls disabled and close working, then the graph draws and the controls enable; exactly one request, for `graphs/eval-3.js`, verifies **AC-75, AC-108, AC-109, AC-110, AC-111**. Open it again, and reach it again by next then previous → no request, verifies **AC-115**.
+- Browser, failure, added 2026-10-27: build into a folder, delete `graphs/eval-3.js`, press Graph → the failure words show, the window stays open, the address reads `#eval-3`; close, restore the file, press again → it loads, verifies **AC-112, AC-113, AC-114**.
+- Browser, the address, added 2026-10-27: open `…/#q9` with the network throttled → the window opens loading, then draws Q9; with a throttled network, set the fragment to `#eval-1` and at once to `#eval-3` → the window ends on Eval 3 and Eval 1's late file draws nothing, verifies **AC-116, AC-117**.
+- By hand, added 2026-10-27: double click the built `index.html` (a `file://` address) and press Graph on Eval 3 → it opens, verifies **AC-118**. If Chrome refuses, record that here and decide again; AC-118 is the one claim of this amendment resting on an inference.
 
 ## Build plan
 
@@ -310,16 +374,21 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 9. [x] Amend spec 0010's three lines that say no JavaScript or no graph, and its Follow up and scope rows 17 and 18, as a dated note pointing here (see Follow up). Satisfies the spec record, no AC
 10. [x] Fixes from the code review of 2026-10-25 (`docs/reviews/2026-10-25-feat-answer-graph.md`): split AC-22, AC-62 and AC-87 into one claim each, reword AC-34 to match the code, and open the panel's JobHunt link in a new tab. Satisfies **AC-103** (AC-100 to AC-102 split from AC-87, already built by the visual pass)
 
+11. [ ] Graph files (added 2026-10-27, ruled by the engineer; branch `feat/gallery-graph-files`). In `graph.py`, a pure function for a graph file's text; in `cli.py`, write `DIR/graphs/<slug>.js` for each entry; in `render.py`, drop the data block and add the two hidden loading and failure elements to the dialog; in `graph.js`, define `tracepathGraph`, load a file by a script element on open, add the loading state, the failure state, the draw test on `state` (AC-116, AC-120, AC-121) and the null `graph` guards (see *The graph files*). Change the tests named under Critical test scenarios, and update `verify.md`. Satisfies **AC-57, AC-58, AC-69, AC-70, AC-74, AC-75, AC-104 to AC-127a**. Done when the built `index.html` is under 3,145,728 bytes (spec 0010 AC-78), and after the merge and the Pages run the engineer checks the live URL in LinkedIn's Post Inspector.
+
 ## Consequences
 
 **Positive**:
 - A reader sees how the cited items connect, what else the model was sent, and which parts were held or unresolved, without reading 90 rows.
 - Every state on the graph is computed and tested in Python against the record, so the script cannot show a state the record does not hold.
-- The page stays one file, works offline, and still works with scripts off.
+- The list stays in one file and still works with scripts off. _Amended 2026-10-27: it no longer holds the graphs; each graph is a file beside it. The list and its links work offline as before; a graph opens when its file can be reached._
 - The one library is small (17 KB raw, about 7 KB gzipped), has an ISC licence, and its version and source are recorded.
 
 **Negative / tradeoffs**:
-- The page grows. Today it is 776 KB raw and 81 KB gzipped. The data for 31 graphs adds about 1.5 MB raw (measured on 2026-10-24: 1.8 MB of JSON with the stored lines, from which the `line` field and the repeated link lists come out), roughly 0.4 MB gzipped. Each graph's data is parsed only when opened.
+- The page grows. Today it is 776 KB raw and 81 KB gzipped. The data for 31 graphs adds about 1.5 MB raw (measured on 2026-10-24: 1.8 MB of JSON with the stored lines, from which the `line` field and the repeated link lists come out), roughly 0.4 MB gzipped. Each graph's data is parsed only when opened. _Corrected 2026-10-27: that estimate was wrong. The blocks came to 3,834,664 bytes, the page to 4,817,451, and LinkedIn refused it. The data now sits in 31 files, so the page is about 983 KB again (AC-104)._
+- _Added 2026-10-27:_ a graph needs a second request. If a file cannot be reached, the graph does not open and the window says so (AC-112); the list is unaffected. The page and its files must be published together, which the Pages workflow does because it uploads the whole `site` folder (`pages.yml`, `path: site`, read on 2026-10-27).
+- _Added 2026-10-27:_ for a short time after a deploy a browser may hold an older graph file beside a newer page (see *The graph files*). Accepted.
+- _Added 2026-10-27:_ `index.html` is no longer one self contained file, so saving the page from a browser or sending the one file by email loses the graphs. The list stays whole.
 - A third party file lives in git. d3-force's last release is 3.0.0 from 2021 and its repository was last pushed on 2023-12-30 (researcher check, 2026-10-24); it is still what d3 7.9.0 (2024-03-12) ships. Pinning makes this a non issue until the project wants a newer one.
 - There is no JavaScript test runner. pytest covers the page the build writes and the flags; the script's own behaviour (click, pan, switch, the window) is checked in a browser at `/check verify`, and nothing re runs it on every push. A regression in the script is not caught by CI.
 - No pinch to zoom on a phone. The zoom buttons and one finger pan cover it.
@@ -344,6 +413,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 - [x] Check in a real browser that the four UMD files load from plain script tags in the order given. This spec checked it in Node's `vm` sandbox only (task 2 does it). _Done 2026-10-25 (task 2, and every slice after): in Chromium through Playwright the four files load from plain inline script tags in that order and every graph lays out. Other browser engines were not checked._
 - [ ] Decide later whether the other data (the 13 records the page does not show) deserves a graph, and whether a link between two entries' shared items is worth drawing. Neither is in this spec.
 - [ ] Pinch to zoom, if a reader asks for it.
+- [ ] Added 2026-10-27: run AC-118 by hand once (the built page as a plain file) when task 11 is built, and write the result beside the criterion. If Chrome refuses a script file on `file://`, the choice of a script file over `fetch()` loses its one advantage and should be decided again.
+- [ ] Added 2026-10-27: after the merge and the Pages run, run LinkedIn's Post Inspector on https://ghalynho10.github.io/tracepath/ and on `…/#q9`, and write the result in spec 0010's Follow up.
 - [ ] Goal: one shared graph of every shown answer's items, where picking a question zooms to its items. Deferred until link resolution improves (scope features 7 and 8): today the 947 items of the 31 packs form 224 separate pieces, 173 with no link, so answers have no section to zoom to. Revisit then; the drawing, flags, panel and d3 setup carry over. _Recorded 2026-10-25 by the engineer, who kept one graph per answer for now._
 - [x] Visual pass (task 8): show item ids in their stored case, never in capitals. This replaces "mono uppercase" for the dot labels in Drawings and Style. _Engineer's ruling, 2026-10-25._
 
@@ -357,6 +428,9 @@ Approach: Tracer Bullet (the project default). The first slice is one real entry
 - Measured on 2026-10-24 and 2026-10-25 from `artifacts/asks/` and `gallery/marks.json`: 31 entries, up to 90 items and 138 links in a pack, 2,408 items and 2,955 links in all, 39 unresolved names, 270 held items, 522 held links, 23 links from an item to itself, 25 item pairs with more than one link, no duplicate item id, no link whose end is not an item, stored `hop` equal to the line's reach on every item, item ids holding `#`, `:` and `/`.
 - `design-notes/aicodingdictionary.com.md` and its screenshot: a local style reference, git ignored, layout and type ideas only.
 - Cross check of 2026-10-25, a read only pass by another model, whose gaps are settled in the Feature design.
+- Measured on 2026-10-27 by rebuilding the page at 747365c (`uv run tracepath gallery build`, no API call): 4,817,451 bytes in all, 31 blocks of 3,834,664 bytes (largest 156,649, smallest 40,155), 982,787 for the rest. The same numbers as the engineer's live measure.
+- LinkedIn Post Inspector, run by the engineer on 2026-10-27: "We did not scrape the content because it's size was larger than our threshold. Maximum size for this input stream is 3145728 bytes".
+- `.github/workflows/pages.yml`, read on 2026-10-27: the build step is `uv run tracepath gallery build --out site` and the upload step's `path` is `site`.
 
 **Practices & standards**:
 - Progressive enhancement: the page works without scripts and the graph adds to it.

@@ -5,11 +5,12 @@ _Steps derived from spec 0010 acceptance criteria and its Value sourcing table. 
 Build the page once for the UI steps: `uv run tracepath gallery build --out /tmp/gallery`, then open `/tmp/gallery/index.html` in a browser. No step makes a paid call, and none opens `eval/held-out.json`.
 
 ## Commands
-- [ ] `uv run tracepath gallery build --out DIR` → writes `DIR/index.html`, prints `✓ 31 entries → …`, exits 0 → AC-55
+- [ ] `uv run tracepath gallery build --out DIR` → writes `DIR/index.html` and `DIR/graphs/<slug>.js` for each of the 31 entries, prints `✓ 31 entries → …`, exits 0 → AC-55 _(amended 2026-10-27)_
+- [ ] `wc -c DIR/index.html` → below 3145728 (about 983,000 expected), and `uv run pytest tests/test_gallery.py -k page_size` → passes → AC-78 _(added 2026-10-27; the test name is the one the build task should use)_
 - [ ] Run the build with no `.env` and no Neo4j (`env -i PATH="$PATH" HOME="$HOME" uv run tracepath gallery build --out DIR`) → exits 0 → AC-56, Security model
 - [ ] `git status --short artifacts/ corpus/` after a build → nothing changed → AC-57
 - [ ] `uv run tracepath gallery build --out artifacts/site` and `--out corpus/site` → exit 1, "never writes inside", no file written → AC-57
-- [x] `grep -c '<link\|<script[^>]*src' DIR/index.html` → 0, and every `href` is `https://…` → AC-58 _(amended 2026-10-27: inline `<script>` elements are allowed)_ · 2026-10-27: 0 hits, every `href` absolute
+- [x] `grep -c '<link\|<script[^>]*src' DIR/index.html` → 0, and every `href` is `https://…` → AC-58 _(amended 2026-10-27: inline `<script>` elements are allowed; amended again 2026-10-27: the graph data is no longer in the page, see spec 0011 AC-104)_ · 2026-10-27: 0 hits, every `href` absolute
 - [x] `grep -o 'preview.png' DIR/index.html | wc -l` → each hit sits in a `<meta>` tag, and no other file name of the site appears → AC-63, AC-64 · 2026-10-27: `preview.png` once, in the `og:image` meta tag
 - [x] `head -c 2000 DIR/index.html` shows `og:title`, `og:url`, `og:image`, `og:image:width` (1200), `og:image:height` (627), `og:description` and `<meta name="description">` with the ruled content, all before the first `<style>`, and the two descriptions are equal → AC-65 to AC-72 · 2026-10-27: all eight tags in order before the first `<style>`, the two descriptions equal
 - [x] `file gallery/preview.png` → PNG, 1200 x 627, and `ls -l` → at most 5 MB → AC-73, AC-74 · 2026-10-27: PNG, 1200 x 627, 109,150 bytes
@@ -86,5 +87,5 @@ Build the page once for the UI steps: `uv run tracepath gallery build --out /tmp
 - AC-1 to AC-4, AC-8, AC-12 to AC-27, AC-34, AC-35, AC-44 to AC-54: UI steps
 - AC-5 to AC-7, AC-9 to AC-11, AC-37 to AC-40, AC-42, AC-43: command steps (failure builds in a copy)
 - AC-28 to AC-33, AC-36, AC-41: UI steps on the real page where present, and fixture tests in `tests/test_gallery.py` and `tests/test_gallery_citations.py` where no shown record has the case
-- AC-55 to AC-58: command steps
+- AC-55 to AC-58, AC-78: command steps
 - AC-59 to AC-62: workflow file steps, and the public URL check after the merge

@@ -74,7 +74,7 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] Drag one finger across empty canvas → the graph pans → AC-56
 
 ## The build and its data (commands)
-- [ ] `uv run pytest tests/test_gallery_graph.py -k "one_data_block_per_entry or holds_every_stored"` → passes: one data block per entry with every item and link → AC-57
+- [ ] `uv run pytest tests/test_gallery_graph.py -k "one_graph_file_per_entry or holds_every_stored"` → passes: one graph file per entry with every item and link → AC-57
 - [ ] `uv run pytest tests/test_gallery_graph.py -k holds_no_stored_line` → passes → AC-58
 - [ ] `uv run pytest tests/test_gallery_graph.py -k cited_is_a_citation` → passes → AC-59
 - [ ] `uv run pytest tests/test_gallery_graph.py -k held_is_the_stored_held` → passes → AC-60
@@ -94,8 +94,8 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [ ] `uv run pytest tests/test_gallery_graph.py -k dependency_order` → passes: d3-dispatch, d3-quadtree, d3-timer, d3-force → AC-71
 - [ ] `uv run pytest tests/test_gallery_graph.py -k followed_by_its_licence` → passes → AC-72
 - [ ] `uv run pytest tests/test_gallery_graph.py -k sources_lists` → passes → AC-73
-- [ ] `uv run pytest tests/test_gallery_graph.py -k refers_to_no_script` → passes → AC-74
-- [ ] In the browser's network panel, open three graphs → no request is made → AC-75
+- [ ] `uv run pytest tests/test_gallery_graph.py -k refers_to_no_script` → passes: no tag in the HTML names a script, style or font file → AC-74 _(amended 2026-10-27)_
+- [ ] In the browser's network panel, open Eval 3 for the first time → exactly one request, for `graphs/eval-3.js` on the page's own site, and none other → AC-75 _(amended 2026-10-27; it read "open three graphs → no request is made")_
 - [ ] Note where Eval 2's dots sit, reload the page, open Eval 3 and then Eval 2 → every dot is in the same place → AC-76
 
 ## Dragging a dot (browser, desktop; Eval 2 and Eval 3)
@@ -129,5 +129,33 @@ Facts these steps lean on, measured 2026-10-25 on the 31 shown records: Eval 3 h
 - [x] On Eval 1, select `0008/AC-7` and click its location link → JobHunt opens in a new tab, and the graph stays open in the first tab with `0008/AC-7` selected → AC-103
 - [x] `uv run pytest tests/test_gallery_graph.py -k opens_in_a_new_tab` → passes: the script gives that link `target="_blank"` and `rel="noopener"` → AC-103
 
+## Graph files (added 2026-10-27; serve the build from `127.0.0.1`, since the Playwright tool refuses `file:` addresses)
+- [ ] `uv run pytest tests/test_gallery_graph.py -k no_graph_data_in_the_page` → passes: no `application/json` element in `index.html` → AC-104
+- [ ] `ls DIR/graphs` after a build into an empty folder → 31 files named `<slug>.js`, nothing else → AC-105
+- [ ] `uv run pytest tests/test_gallery_graph.py -k graph_file_shape` → passes: one `tracepathGraph(` call, the slug as a JSON string, the object, `);` and one newline → AC-106
+- [ ] Same test class → the slug is the same in the call, the object and the file name → AC-107
+- [ ] Throttle the network, press Eval 3's Graph button → the window opens at once with "Loading the graph…" where the canvas goes → AC-108
+- [ ] During that wait → previous, next, the switch, zoom in, zoom out and reset are disabled; Esc and the close button close the window → AC-109
+- [ ] When the file arrives → the words go and the graph draws as in the steps above → AC-110
+- [ ] When the file arrives → the six controls are enabled, except previous on Eval 1, next on Q22 and the switch on Q11 → AC-111
+- [ ] Delete `graphs/eval-3.js`, press Eval 3's Graph button → "This graph did not load. Close the window and open it again to try."; the window stays open → AC-112
+- [ ] Same state → the address reads `#eval-3` until the window closes → AC-113
+- [ ] Close, restore the file, press the button again → a request for the file is made and the graph opens → AC-114
+- [ ] Open Eval 3, close it, open it again; then Eval 1 → next → previous → no request for an already loaded file → AC-115
+- [ ] Throttle, set the address fragment to `#eval-1` and at once to `#eval-3` → the window ends on Eval 3, and nothing is drawn for Eval 1 when its file arrives → AC-116
+- [ ] Throttle, open `…/#q9` in a fresh tab → the window opens in the loading state, then draws Q9 → AC-117
+- [ ] By hand: double click the built `index.html` (a `file://` address) and press Eval 3's Graph button → it opens. Write the browser and the result here → AC-118
+- [ ] `uv run pytest tests/test_gallery_graph.py -k no_request_api` → passes: no `fetch(`, `XMLHttpRequest`, `import(`, `new Image` or `sendBeacon` in `graph.js` → AC-119
+- [ ] `uv run pytest tests/test_gallery_graph.py -k adds_a_script_for_a_graph_file` → passes: `createElement("script")` and `graphs/` are in `graph.js` → AC-119a
+- [ ] Throttled, press Eval 3's Graph button and press Esc at once; let the file arrive → nothing is drawn and the window does not reopen → AC-120
+- [ ] Throttled, open Eval 1 and, with its file failing (delete `graphs/eval-1.js`), reach Eval 3 before it settles → no failure words over Eval 3 → AC-121
+- [ ] In the failed state of Eval 3 → heading reads "Graph", no counter → AC-122; previous, next, switch, zoom in, zoom out and reset all disabled → AC-122a
+- [ ] Focus previous on Eval 1 with Eval 2's file not yet loaded and press it → focus moves to the close button → AC-123
+- [ ] Open Eval 2 with the switch on, then reach an unloaded graph → the dots, lines and panel of Eval 2 are gone and the switch is off → AC-124
+- [ ] `uv run pytest tests/test_gallery_graph.py -k dialog_holds_the_status_words` → passes → AC-125
+- [ ] Block a file's request so it stays pending, close the window, press the button again → a new request is made → AC-126
+- [ ] `uv run pytest tests/test_gallery_graph.py -k writes_the_page_last` → passes: `index.html` written after every graph file → AC-127; a build with a file standing where `graphs/` should be exits 1 naming that path → AC-127a
+
 ## After the merge
-- [x] The Pages workflow run on `main` succeeds, and https://ghalynho10.github.io/tracepath/ shows 31 entries, each with a Graph button; Eval 3's graph opens there with 37 dots, the network panel shows no request on opening, and the page with scripts off still shows the list with no Graph button → spec 0011 live, AC-1, AC-2, AC-12, AC-75 on the published page
+- [x] The Pages workflow run on `main` succeeds, and https://ghalynho10.github.io/tracepath/ shows 31 entries, each with a Graph button; Eval 3's graph opens there with 37 dots, the network panel shows no request on opening, and the page with scripts off still shows the list with no Graph button → spec 0011 live, AC-1, AC-2, AC-12, AC-75 on the published page _(2026-10-27 note: AC-75 was checked here against its old reading, no request on opening. It now requires exactly one request, for the entry's graph file, so it is checked again on the live site after task 11 merges.)_
+- [ ] After task 11 merges and the Pages run: on the live page open Eval 3 → one request, for `graphs/eval-3.js`; and run LinkedIn's Post Inspector on the live URL and on `…/#q9` → AC-75, spec 0010 AC-78

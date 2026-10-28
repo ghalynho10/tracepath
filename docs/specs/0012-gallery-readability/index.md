@@ -121,7 +121,7 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 *The link to one graph* (added 2026-10-26; takes in the Deferred entry "Shareable graph link" of the scope, without item selection. The address is written as in Feature design, "The link to one graph")
 - **AC-82**: Each entry's `article` carries its slug as its `id`.
 - **AC-83** (_browser_): With scripts off, opening the page with `#<slug>` scrolls to that entry.
-- **AC-84** (_browser_): With scripts running, opening the page with `#<slug>` of an entry opens that entry's graph.
+- **AC-84** (_browser_): With scripts running, opening the page with `#<slug>` of an entry opens that entry's graph. _Note 2026-10-27: since [spec 0011](../0011-answer-graph/index.md) AC-104 to AC-127a the graph's data is a file loaded on open, so the window opens at once in a loading state and draws when the file arrives (0011 AC-117). The criterion holds._
 - **AC-85** (_browser_): A click on an entry's strip replaces the address fragment with `#<slug>` and adds no history step.
 - **AC-86** (_browser_): Pressing previous or next replaces the address fragment with the slug of the graph now open and adds no history step. _Note 2026-10-27: AC-85 to AC-87 hold for the page's own address writes. A fragment the reader types adds a history entry of its own, and the next write replaces that entry, so these criteria hold as written; see AC-111 to AC-115._
 - **AC-87** (_browser_): Closing the graph, by Esc or by the close button, clears the address fragment and adds no history step.
@@ -154,7 +154,7 @@ This spec makes the answer gallery easier to read for a stranger. Stored text sh
 - **AC-110** (_browser_): A code span of several words reads as one tinted run, with the tint unbroken across its spaces and across a line break, and a word is still not split at a hyphen (AC-12).
 
 *Added 2026-10-27 after the engineer's ruling on a typed fragment* (reverses the ruling of 2026-10-26 that typing a fragment into an open page stays unhandled; see Feature design, "The link to one graph")
-- **AC-111** (_browser_): When the address fragment of an open page changes to an entry's slug, that entry's graph opens.
+- **AC-111** (_browser_): When the address fragment of an open page changes to an entry's slug, that entry's graph opens. _Note 2026-10-27: while another graph is still loading, the newest slug wins and the earlier file draws nothing ([spec 0011](../0011-answer-graph/index.md) AC-116). The criterion holds._
 - **AC-112** (_browser_): That graph replaces a graph already open, and the page holds one graph window.
 - **AC-113** (_browser_): When the address fragment of an open page changes to anything that is neither an entry's slug nor empty, the page is left as it is, with no error message. _Amended 2026-10-27: the empty fragment is AC-116._
 - **AC-114** (_browser_): The page's own address writes, on open, swap and close, fire no `hashchange` event, so the page never reacts to itself.

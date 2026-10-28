@@ -100,6 +100,27 @@ The engineer made six more calls in the conversation, each recorded in the spec:
 
 **Premise note**: none. The topic is one decision on a feature the scope already enrolled, and the data and the existing code settled most of it.
 
+### Amendment of 2026-10-27: where each graph's data lives
+
+**Why it came up.** The page was 4,817,451 bytes and LinkedIn refused it (limit 3,145,728). The 31 blocks were 3,834,664 of that. The first estimate for this data, 1.5 MB, was wrong by a factor of 2.5; this spec says so in its Consequences. The engineer ruled that each entry's data moves into its own file loaded when that graph opens. Three ways to load such a file were put to them as candidates.
+
+**Options for how the file is loaded.**
+- *Option A, a script file per graph (chosen).* `graphs/<slug>.js` calls `tracepathGraph(slug, data)`; `graph.js` adds a script element on open. Opens on `file://` (inferred: a script tag is not held to the cross origin rule), works at any path, and the page's only new request is the one file. Cost: the data is JavaScript, not a plain `.json` file, and a failure shows only as an `error` event with no HTTP status.
+- *Option B, `fetch()` of `graphs/<slug>.json`.* Cleaner file and a real status code, and a test reads it with `json.loads`. Chrome refuses `fetch()` on `file://` (inferred), so a double clicked page would show Graph buttons that cannot open. Local preview and `/check verify` would need a server. This is the runner up; it wins if AC-118 fails when tried by hand, and the Follow up says to decide again then.
+- *Option C, one combined `graphs.json` fetched on the first open.* Moves the weight (3.8 MB on the first press) rather than splitting it, and has B's `file://` problem. Not chosen.
+- Not offered: shrinking the data. The engineer had already ruled for separate files; the largest block, 156,649 bytes, shows nothing needs shrinking.
+
+**How `/check verify` and a local preview open it.** Every earlier verify served the build from `127.0.0.1:8765` and drove it in Chromium (reviews of 2026-10-25 and 2026-10-26, read on 2026-10-27), and the Playwright tool in this session refuses `file:` addresses, so browser steps run over a local server under all three options. Only Option A is expected to also open by double click, which is why AC-118 exists as a by hand step.
+
+**Other rulings.**
+- *While loading and when it fails.* The window opens at once with "Loading the graph…" and fails with a sentence that tells the reader to close and reopen. Runners up: a Try again button (more script and one more state, for a failure not yet seen), and not opening the window until loaded (no feedback inside the window on a slow connection).
+- *During a load.* Previous, next, the switch and the zoom buttons are disabled; the newest slug wins. Runner up: put label, position, previous and next on each button in the page, so navigation works during a load; it adds bytes to every entry and a second copy of facts `graph.py` already computes.
+- *The size check.* A test on the real build, spec 0010 AC-78. Runner up: a build failure, which adds an exit 1 path and a constant for a limit that is 2.1 MB away. The deploy job already waits on the build job, and a pull request must pass `check`.
+
+**Bias check.** Nothing here lets a result be shaped after it is seen: the limit is a fixed number from LinkedIn's own message, the test reads the committed records, and no mark, note or record changes. **What could break later:** the page and its files must be published together (the workflow uploads the whole `site` folder, so they are); a browser may hold an old graph file for a short while after a deploy; the user, not CI, runs AC-118. **Guards:** the size test and the file shape tests; none for the stale file or the lost race beyond the newest slug rule, because neither was seen in real output.
+
+**Reversibility**: two way door. Nothing stored changes; a switch to Option B changes the build writer, one loader in `graph.js` and the tests that read the files.
+
 ## References
 
 See [index.md](index.md) References for the sources and the web verified links. Library facts (version, release date, licence, size, whether a bundler or React is needed) were fetched from each package's own registry entry and repository on 2026-10-24. Not confirmed: gzip sizes of the larger libraries, React Flow's stylesheet size, Sigma's graphology size, and a real browser run of any library. The d3-force layout and its repeatability were run once, in Node's `vm` sandbox, by me.

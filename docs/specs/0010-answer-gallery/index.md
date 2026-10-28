@@ -89,11 +89,11 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 - **AC-54**: The page names JobHunt at the pinned commit as the source every citation points into, with a link to the repository.
 
 *The build*
-- **AC-55**: `uv run tracepath gallery build --out DIR` writes `DIR/index.html` and exits 0.
+- **AC-55** (amended 2026-10-27): `uv run tracepath gallery build --out DIR` writes `DIR/index.html` and exits 0. _It also writes one graph file per entry under `DIR/graphs/`, which [spec 0011](../0011-answer-graph/index.md) AC-105 owns._
 - **AC-56**: The build makes no network call and no API call; a test that blocks sockets still passes.
 - **AC-57**: The build never writes inside `artifacts/` or `corpus/`.
-- **AC-58** (amended 2026-10-27): `index.html` is self contained: its styles and scripts are inline, so it has no `<link>` element and no `<script>` element with a `src`.
-- **AC-63** (added 2026-10-27): The only file of the site that `index.html` refers to is the preview image `preview.png`.
+- **AC-58** (amended 2026-10-27): `index.html` has its styles and scripts inline, so it has no `<link>` element and no `<script>` element with a `src`. _Amended again 2026-10-27, ruled by the engineer: this stays true of the HTML the build writes, but the page is no longer self contained, "one file, nothing loaded separately". Each entry's graph data moved out into its own file under `graphs/`, which `graph.js` loads when that graph opens ([spec 0011](../0011-answer-graph/index.md) AC-104 to AC-127a). The reason is the size of the page (AC-78). This reverses the old reading for graph data only; the styles, libraries and the script stay inline._
+- **AC-63** (added 2026-10-27, amended 2026-10-27): The only file of the site that a tag in the HTML of `index.html` names is the preview image `preview.png`. _It said the only file `index.html` "refers to". The graph files are named by no tag; `graph.js` builds their addresses when a graph opens (spec 0011 AC-74, AC-119a)._
 - **AC-64** (added 2026-10-27): `index.html` names `preview.png` only inside `<meta>` tags.
 
 *Link preview* (added 2026-10-27; LinkedIn lists `og:title`, `og:image`, `og:description` and `og:url` as required, and an image of at least 1200 by 627 and at most 5 MB, per linkedin.com/help/linkedin/answer/46687)
@@ -111,6 +111,9 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 - **AC-76**: The build exits 1, naming `gallery/preview.png`, when that file is missing.
 - **AC-77**: The first sentence of the intro reads: tracepath "answers questions about a project's decisions from its specs and decision records", in place of "why was this built this way?".
 
+*Page size* (added 2026-10-27, ruled by the engineer; seen in real output: LinkedIn's Post Inspector refused the live page at 747365c with "Maximum size for this input stream is 3145728 bytes", the page being 4,817,451 bytes)
+- **AC-78**: The `index.html` built from the committed records and the committed marks file is smaller than 3,145,728 bytes, counted as the file's bytes, not compressed.
+
 *Publishing*
 - **AC-59**: A workflow builds the page on a push to `main`.
 - **AC-60**: That workflow deploys the built page to GitHub Pages.
@@ -126,6 +129,8 @@ _Note on AC-2, AC-3, AC-6 and AC-9: Amended 2026-10-24 by the engineer: sections
 _Note on the Decision: Amended 2026-10-26: the entry's layout, headings, verdict and mark block, note line and graph strip are specified by [spec 0012](../0012-gallery-readability/index.md), which replaces the pill look of the first visual pass (AC-14, task 8). Amended 2026-10-25: the page now also carries inline scripts, for the answer graph of [spec 0011](../0011-answer-graph/index.md). With scripts off it is still this list, and AC-58 still holds, because every script is inline._
 
 _Note on the Decision: Amended 2026-10-27: the page gains a link preview, ruled by the engineer on 2026-10-27. The live page has a `<title>` but no Open Graph tags and no meta description, so LinkedIn shows no preview. The head carries the tags of AC-65 to AC-71 before the styles, and one image, `gallery/preview.png`, which the build copies beside `index.html`, so Pages serves it at the URL in AC-67. AC-58 now allows that one image, named only in meta tags (AC-63, AC-64). The page is not split and no record moves out of it: LinkedIn documents no page size limit, and the tags sit in the first kilobyte. The `og:type` tag (`website`) is ruled too, but LinkedIn does not list it as required, so it has no criterion._
+
+_Note on the Decision: Amended 2026-10-27, correcting the note above. It said "The page is not split and no record moves out of it: LinkedIn documents no page size limit". That was wrong: LinkedIn's Post Inspector refused the live page with "We did not scrape the content because it's size was larger than our threshold. Maximum size for this input stream is 3145728 bytes". The page was 4,817,451 bytes uncompressed (768 KB gzipped, so LinkedIn counts uncompressed bytes), of which the 31 graph blocks of spec 0011 were 3,834,664. Single question links (`…/#q9`) fetch the same page, so they failed too. The engineer ruled that each entry's graph data moves into its own file, loaded when that graph opens ([spec 0011](../0011-answer-graph/index.md) AC-104 to AC-127a). No record leaves the page; the list stays whole and inline. The limit is checked by AC-78._
 
 **Follows**: static site generation from versioned data (build once, serve files) · functional core with an imperative shell, as the project's own rule.
 
@@ -161,7 +166,7 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 **Command surface**:
 | Command | Key inputs | Key outputs | Key errors |
 |---|---|---|---|
-| `tracepath gallery build` | `--out DIR` (required), `--root PATH` (default: the repository root) | `DIR/index.html`, `DIR/preview.png` (AC-75), a one line count of entries written | exit 1 with a typed message on AC-5, AC-6, AC-7, AC-10, AC-11, AC-37 to AC-40, AC-42, AC-76 |
+| `tracepath gallery build` | `--out DIR` (required), `--root PATH` (default: the repository root) | `DIR/index.html`, `DIR/preview.png` (AC-75), `DIR/graphs/<slug>.js` per entry (amended 2026-10-27, spec 0011 AC-105), a one line count of entries written | exit 1 with a typed message on AC-5, AC-6, AC-7, AC-10, AC-11, AC-37 to AC-40, AC-42, AC-76 |
 
 **Value sourcing**:
 | Action | Value produced / displayed | Source |
@@ -217,6 +222,8 @@ The build reads each named record into a frozen Pydantic model: `question`, `eva
 - Image: `gallery/preview.png` is read as a PNG of 1200 by 627 pixels and at most 5 MB, and the build copies it byte for byte to `DIR/preview.png`, verifies **AC-73, AC-74, AC-75**.
 - Failure: a build in a copy of the repository with `gallery/preview.png` removed exits 1 naming it, verifies **AC-76**.
 - Intro: the intro's first sentence holds the resume wording and no longer holds "why was this built this way?", verifies **AC-77**.
+- Size, added 2026-10-27: one test, `tests/test_gallery.py::test_page_size_is_under_linkedins_limit`, built like `test_build_from_the_committed_marks_file` (it builds from the committed records and marks file), asserts that `(out / "index.html").stat().st_size` is below 3,145,728 (the file's size in bytes, not `len()` of the decoded text), verifies **AC-78**. It runs in the `check` job, which a pull request must pass, so a change that pushes the page over the limit fails before the merge. It is a test and not a build failure: a build that exits 1 would add a failure path and a constant in code for a limit that sits 2.1 MB away, and the deploy job already waits on the build job either way.
+- Isolation, changed 2026-10-27: the test at `tests/test_gallery.py` line 636, which allows only `<script type="application/json">` to carry an attribute, now allows no `<script` with an attribute, since the page holds no JSON block; it verifies **AC-58** and **AC-63**.
 
 ## Build plan
 
@@ -236,6 +243,8 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 
 9. [x] Link preview (added 2026-10-27; built 2026-10-27, image Eval 3, see verify.md). Add the head tags before the styles and the new intro sentence in `src/tracepath/gallery/render.py`; copy `gallery/preview.png` to the output folder in the build and fail when it is missing; the engineer picks one entry, opens its graph and a screenshot of 1200 by 627 is saved as `gallery/preview.png` (checked in a browser, no CI test can judge it); add the tests for AC-58 and AC-63 to AC-77 and change the tests that name the old intro or the old AC-58 wording; satisfies **AC-58, AC-63, AC-64, AC-65, AC-66, AC-67, AC-68, AC-69, AC-70, AC-71, AC-72, AC-73, AC-74, AC-75, AC-76, AC-77**. After the merge and the Pages run, check the live URL in LinkedIn's Post Inspector.
 
+10. [ ] Page size (added 2026-10-27, ruled by the engineer; branch `feat/gallery-graph-files`). The graph files are built by [spec 0011](../0011-answer-graph/index.md) task 11; this task adds the size test, changes the one test that names the old AC-58 reading (`tests/test_gallery.py` line 636; the AC-63 test checks absolute addresses and stays as it is), and updates `verify.md`. Satisfies **AC-55, AC-58, AC-63, AC-78**. After the merge and the Pages run, run LinkedIn's Post Inspector on the live URL and on `…/#q9`, and write the result in Follow up.
+
 ## Consequences
 
 **Positive**:
@@ -254,12 +263,14 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - When the build job of the workflow fails, nothing is deployed and the previously published page stays up (AC-62).
 - _Added 2026-10-27:_ the page URL is a constant in the build, so renaming the repository or moving the Pages address breaks `og:url` and `og:image` until the constant changes. LinkedIn also keeps a preview it has already fetched, so a changed image can take a Post Inspector refresh to show.
 - _Added 2026-10-27:_ the preview image is a screenshot of one entry, so it goes stale if the entry's look changes (spec 0012). Nothing checks that it still matches.
+- _Added 2026-10-27:_ the page is no longer one file. The graphs sit in `graphs/` beside it (spec 0011), so a copy of `index.html` alone shows the list and no graphs. The Pages workflow uploads the whole `site` folder, so the live site has both.
+- _Added 2026-10-27, correcting the note on the link preview:_ the page was 4,817,451 bytes and LinkedIn refused it at 3,145,728. It is about 983 KB after the move (measured by rebuilding at 747365c and taking the blocks out), and AC-78 keeps it under the limit.
 - The page has no search, filter or graph. It is a list. _Note: Amended 2026-10-25: [spec 0011](../0011-answer-graph/index.md) adds one graph per entry, opened from the list; there is still no search or filter._
 
 **Neutral**:
 - A new package `src/tracepath/gallery/`, a new top level folder `gallery/` for the marks file, and a new workflow file.
 - GitHub Pages serves a project site from `https://<owner>.github.io/<repo>/` (inferred, not on the docs pages checked). All links on the page are absolute or in page anchors, and the styles are inline, so the path does not matter.
-- The page stays far under GitHub Pages' published limits (1 GB site, soft 100 GB per month).
+- The page stays far under GitHub Pages' published limits (1 GB site, soft 100 GB per month). _Added 2026-10-27: those are not the limit that mattered; LinkedIn's 3,145,728 bytes is (AC-78)._
 - The label key lives in the build as a step, not as a criterion.
 
 ## Follow-up
@@ -274,4 +285,5 @@ Approach: Tracer Bullet (the project default). The first slice is one real recor
 - [ ] Dark mode that follows the visitor's system setting, CSS only, with each mark pill readable in both modes; later, after launch.
 - [ ] Pick the entry for `gallery/preview.png` when build task 9 runs (the engineer's choice, 2026-10-27).
 - [ ] Run LinkedIn's Post Inspector on https://ghalynho10.github.io/tracepath/ once the tags are live (added 2026-10-27).
-- [ ] Split the page or move records out of it (added 2026-10-27). Not doing now: LinkedIn documents no page size limit and the tags sit in the first kilobyte. Revisit only if Post Inspector still fails with the tags in place.
+- [x] Split the page or move records out of it (added 2026-10-27). _Done as a spec 2026-10-27: Post Inspector did fail with the tags in place ("Maximum size for this input stream is 3145728 bytes"). The graph data moves out into `graphs/`; no record leaves the page. See the Decision note and [spec 0011](../0011-answer-graph/index.md) AC-104 to AC-127a._
+- [ ] Run LinkedIn's Post Inspector on the live URL and on `…/#q9` once the graph files are live, and write the result here (added 2026-10-27). This closes the earlier Post Inspector item too, which failed on size.
