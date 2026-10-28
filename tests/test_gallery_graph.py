@@ -1,4 +1,4 @@
-"""The answer graph (spec 0011): the data blocks, the inlined libraries and the button."""
+"""The answer graph (spec 0011): the graph files, the inlined libraries and the button."""
 
 import json
 import re
@@ -16,10 +16,11 @@ from tracepath.cli import app
 from tracepath.gallery.citations import parse_item_line
 from tracepath.gallery.graph import (
     CITED_RADIUS,
+    GRAPHS_DIR,
     OTHER_RADIUS,
     EntryGraph,
     GraphItem,
-    data_block,
+    graph_file,
     slug_of,
 )
 from tracepath.gallery.inline import has_pair, runs
@@ -33,7 +34,16 @@ from tracepath.gallery.records import (
     GalleryError,
     read_scripts,
 )
-from tracepath.gallery.render import DIALOG, GRAPH_STYLE, KEY, PANEL_STYLE, STYLE
+from tracepath.gallery.render import (
+    DIALOG,
+    FAILED_WORDS,
+    GRAPH_STYLE,
+    KEY,
+    LOADING_HEADING,
+    LOADING_WORDS,
+    PANEL_STYLE,
+    STYLE,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -45,24 +55,48 @@ VERSIONS = {
     "d3-force": "3.0.0",
 }
 
-_BLOCK = re.compile(r'<script type="application/json" id="graph-([a-z0-9-]+)">(.*?)</script>', re.S)
+#: A graph file: one `tracepathGraph` call, the slug as a JSON string, the data object, and
+#: one newline (AC-106).
+_GRAPH_FILE = re.compile(r'tracepathGraph\("([a-z0-9-]+)",(.*)\);\n', re.S)
+
+
+def _graph_data(text: str) -> tuple[str, dict[str, Any]]:
+    """A graph file's slug and its data object, the constant wrapper stripped."""
+    found = _GRAPH_FILE.fullmatch(text)
+    assert found is not None, text[:80]
+    data: dict[str, Any] = json.loads(found.group(2))
+    return found.group(1), data
+
+
+def _graph_files(site: Path) -> dict[str, str]:
+    """Each file under the site's `graphs/`, by its name."""
+    return {
+        path.name: path.read_text(encoding="utf-8")
+        for path in sorted((site / GRAPHS_DIR).iterdir())
+    }
 
 
 @pytest.fixture(scope="module")
-def page(tmp_path_factory: pytest.TempPathFactory) -> str:
-    """The page built from the committed records and marks file."""
+def site(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The site built into an empty folder from the committed records and marks file."""
     out = tmp_path_factory.mktemp("site")
     result = CliRunner().invoke(
         app, ["gallery", "build", "--out", str(out), "--root", str(PROJECT_ROOT)]
     )
     assert result.exit_code == 0, result.output
-    return (out / "index.html").read_text(encoding="utf-8")
+    return out
 
 
 @pytest.fixture(scope="module")
-def blocks(page: str) -> dict[str, dict[str, Any]]:
-    """Each data block, parsed, by its entry's label."""
-    parsed = [json.loads(data) for _, data in _BLOCK.findall(page)]
+def page(site: Path) -> str:
+    """The page built from the committed records and marks file."""
+    return (site / "index.html").read_text(encoding="utf-8")
+
+
+@pytest.fixture(scope="module")
+def blocks(site: Path) -> dict[str, dict[str, Any]]:
+    """Each graph file's data, parsed, by its entry's label."""
+    parsed = [_graph_data(text)[1] for text in _graph_files(site).values()]
     return {graph["label"]: graph for graph in parsed}
 
 
@@ -101,13 +135,41 @@ def test_every_entry_has_one_graph_button_written_hidden(page: str) -> None:
     assert "[hidden] { display: none !important; }" in STYLE
 
 
-def test_one_data_block_per_entry(page: str, blocks: dict[str, dict[str, Any]]) -> None:
-    """AC-57: each entry carries one data block, named by its slug."""
-    slugs = [slug for slug, _ in _BLOCK.findall(page)]
-
+def test_one_graph_file_per_entry(site: Path, blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-57: each entry has one graph file, named by its slug."""
     assert set(blocks) == set(_records())
-    assert len(slugs) == len(set(slugs)) == len(blocks)
+    assert len(_graph_files(site)) == len(blocks)
     assert all(blocks[label]["slug"] == slug_of(label) for label in blocks)
+
+
+def test_no_graph_data_in_the_page(page: str) -> None:
+    """AC-104: `index.html` has no `<script type="application/json">` element."""
+    assert "application/json" not in page
+
+
+def test_a_build_into_an_empty_folder_writes_one_graph_file_per_entry_and_no_other(
+    site: Path,
+) -> None:
+    """AC-105: `graphs/` holds `<slug>.js` for each entry, and nothing else."""
+    slugs = {slug_of(label) for label in _records()}
+
+    assert {path.name for path in (site / GRAPHS_DIR).iterdir()} == {f"{s}.js" for s in slugs}
+
+
+def test_graph_file_shape_is_one_call_and_one_newline(site: Path) -> None:
+    """AC-106: the call, the slug as a JSON string, the object, `);` and one newline only."""
+    for name, text in _graph_files(site).items():
+        assert _GRAPH_FILE.fullmatch(text), name
+        assert text.startswith("tracepathGraph(") and text.endswith("});\n"), name
+        assert text.count("\n") == 1, name
+
+
+def test_graph_file_shape_names_one_slug(site: Path) -> None:
+    """AC-107: the slug in the call, in the object and in the file's name are the same."""
+    for name, text in _graph_files(site).items():
+        slug, data = _graph_data(text)
+        assert name == f"{slug}.js"
+        assert data["slug"] == slug
 
 
 def test_data_block_holds_every_stored_item_and_no_other(
@@ -132,8 +194,8 @@ def test_data_block_holds_every_stored_link_in_order(blocks: dict[str, dict[str,
         ], label
 
 
-def test_data_block_holds_no_stored_line(page: str, blocks: dict[str, dict[str, Any]]) -> None:
-    """AC-58: no item carries its stored `line`, and no stored line is in any block."""
+def test_data_block_holds_no_stored_line(blocks: dict[str, dict[str, Any]]) -> None:
+    """AC-58: no item carries its stored `line`, and no stored line is in any graph file."""
     data = "".join(json.dumps(graph, ensure_ascii=False) for graph in blocks.values())
 
     assert all("line" not in item for graph in blocks.values() for item in graph["items"])
@@ -193,14 +255,8 @@ def test_sources_lists_each_vendored_file_once(page: str) -> None:
 
 
 def test_page_refers_to_no_script_style_or_font_file(page: str) -> None:
-    """AC-74: every script and style is inline; nothing names another file."""
-    assert sorted(re.findall(r"<script[^>]*>", page)) == sorted(
-        ["<script>"] * 5
-        + [
-            f'<script type="application/json" id="graph-{slug}">'
-            for slug, _ in _BLOCK.findall(page)
-        ]
-    )
+    """AC-74: no tag in the HTML names a script, style or font file; all five are inline."""
+    assert re.findall(r"<script[^>]*>", page) == ["<script>"] * 5
     assert "<link" not in page
     assert "@import" not in page
     assert not re.search(r"url\((?!#)", page)
@@ -479,12 +535,29 @@ def test_items_come_in_a_fixed_order(blocks: dict[str, dict[str, Any]]) -> None:
         assert keys == sorted(keys), graph["label"]
 
 
-def test_script_makes_no_request() -> None:
-    """AC-75: the script fetches nothing; everything it reads is in the page."""
+def test_the_script_uses_no_request_api() -> None:
+    """AC-119: no `fetch(`, `XMLHttpRequest`, `import(`, `new Image` or `sendBeacon`."""
     script = GRAPH_SCRIPT.read_text(encoding="utf-8")
 
-    for request in ("fetch(", "XMLHttpRequest", "import(", "new Image", "sendBeacon", "src"):
+    for request in ("fetch(", "XMLHttpRequest", "import(", "new Image", "sendBeacon"):
         assert request not in script
+
+
+def test_the_script_adds_a_script_for_a_graph_file() -> None:
+    """AC-119a: the one request the script makes is a script element for a graph file."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+
+    assert 'createElement("script")' in script
+    assert f'"{GRAPHS_DIR}/"' in script
+
+
+def test_dialog_holds_the_status_words() -> None:
+    """AC-125: both sentences and the loading heading word are in the dialog's markup."""
+    status = DIALOG.split("</svg>", 1)[1]
+
+    assert f'<p class="gw-status" data-gw="loading" hidden>{LOADING_WORDS}</p>' in status
+    assert f'<p class="gw-status" data-gw="failed" hidden>{FAILED_WORDS}</p>' in status
+    assert f'data-loading-heading="{LOADING_HEADING}"' in DIALOG
 
 
 #: Two real records for the guard fixtures: eval question 1, and held out question 3.
@@ -659,8 +732,8 @@ def _hostile_graph() -> EntryGraph:
 
 
 def test_a_data_block_writes_markup_characters_as_escapes() -> None:
-    """AC-69: `<`, `>`, `&`, U+2028 and U+2029 never appear raw in a data block."""
-    block = data_block(_hostile_graph())
+    """AC-69: `<`, `>`, `&`, U+2028 and U+2029 never appear raw in a graph file."""
+    block = graph_file(_hostile_graph())
 
     for raw in ("<", ">", "&", "\u2028", "\u2029"):
         assert raw not in block
@@ -669,15 +742,15 @@ def test_a_data_block_writes_markup_characters_as_escapes() -> None:
 
 
 def test_a_data_block_parses_back_to_the_stored_text() -> None:
-    """AC-70: parsing the block gives each stored text back exactly."""
-    parsed = json.loads(data_block(_hostile_graph()))
+    """AC-70: parsing the graph file's data object gives each stored text back exactly."""
+    _, parsed = _graph_data(graph_file(_hostile_graph()))
 
     assert parsed["items"][0]["text"] == HOSTILE
     assert parsed["label"] == "Q1 <b>&"
 
 
 def test_hostile_stored_text_survives_the_page(tmp_path: Path) -> None:
-    """AC-53, AC-70 through a build: the text comes back whole from the page's data block."""
+    """AC-53, AC-70 through a build: the text comes back whole from the entry's graph file."""
     root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
 
     def hostile(record: dict[str, Any]) -> None:
@@ -686,7 +759,7 @@ def test_hostile_stored_text_survives_the_page(tmp_path: Path) -> None:
     _edit(root, DEV, hostile)
     code, output = _build_at(root, tmp_path / "site")
     page = (tmp_path / "site" / "index.html").read_text(encoding="utf-8")
-    graph = json.loads(_BLOCK.findall(page)[0][1])
+    _, graph = _graph_data(_graph_files(tmp_path / "site")["eval-1.js"])
 
     assert code == 0, output
     assert HOSTILE in [item["text"] for item in graph["items"]]
@@ -744,17 +817,18 @@ def _set_place(item: dict[str, Any], place: str) -> None:
     item["line"] = "  ".join([*fields[:-2], place, fields[-1]])
 
 
-def _fixture_items(tmp_path: Path, change: Callable[[dict[str, Any]], None]) -> str:
-    """Eval 1 alone, changed by `change`, built; returns the built page."""
+def _fixture_items(tmp_path: Path, change: Callable[[dict[str, Any]], None]) -> Path:
+    """Eval 1 alone, changed by `change`, built; returns the built site's folder."""
     root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
     _edit(root, DEV, change)
     code, output = _build_at(root, tmp_path / "site")
     assert code == 0, output
-    return (tmp_path / "site" / "index.html").read_text(encoding="utf-8")
+    return tmp_path / "site"
 
 
-def _block_items(page: str) -> dict[str, dict[str, Any]]:
-    return {item["id"]: item for item in json.loads(_BLOCK.findall(page)[0][1])["items"]}
+def _block_items(site: Path) -> dict[str, dict[str, Any]]:
+    _, graph = _graph_data(_graph_files(site)["eval-1.js"])
+    return {item["id"]: item for item in graph["items"]}
 
 
 def test_an_item_with_no_file_shows_no_link_and_a_file_with_no_line_shows_whole_file(
@@ -790,8 +864,9 @@ def test_a_rejected_or_repeated_citation_counts_once_and_only_where_not_rejected
         second["cites"].append("0008/AC-7")
         fourth["cites"].append(rejected_then_cited)
 
-    page = _fixture_items(tmp_path, change)
-    items = _block_items(page)
+    site = _fixture_items(tmp_path, change)
+    page = (site / "index.html").read_text(encoding="utf-8")
+    items = _block_items(site)
 
     assert items[only_rejected]["cited"] is False
     assert items[only_rejected]["cited_by"] == []
@@ -813,6 +888,40 @@ def test_build_fails_on_a_label_that_makes_no_slug(tmp_path: Path) -> None:
 
     assert code == 1
     assert "'***': its label makes an empty slug" in output
+
+
+def test_writes_the_page_last(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-127: `index.html` is written after every graph file."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"), (HELD, "Held out 3", "held out")))
+    written: list[str] = []
+    write_text = Path.write_text
+
+    def recording(self: Path, *args: Any, **kwargs: Any) -> int:
+        written.append(self.name)
+        return write_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", recording)
+    code, output = _build_at(root, tmp_path / "site")
+
+    assert code == 0, output
+    assert written[-1] == "index.html"
+    assert sorted(written[:-1]) == ["eval-1.js", "held-out-3.js"]
+
+
+def test_writes_the_page_last_so_a_graph_file_it_cannot_write_leaves_no_page(
+    tmp_path: Path,
+) -> None:
+    """AC-127a: a file standing where `graphs/` goes: exit 1 naming the path, and no page."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"),))
+    out = tmp_path / "site"
+    out.mkdir()
+    (out / GRAPHS_DIR).write_text("a file, not a folder", encoding="utf-8")
+
+    code, output = _build_at(root, out)
+
+    assert code == 1
+    assert f"{out / GRAPHS_DIR / 'eval-1.js'}: could not be written" in output
+    assert not (out / "index.html").exists()
     assert not (tmp_path / "site" / "index.html").exists()
 
 

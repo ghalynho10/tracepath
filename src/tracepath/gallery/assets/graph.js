@@ -1,6 +1,6 @@
 // The answer graph of the gallery page (spec 0011): places, draws and selects.
-// Every item's state is decided by the build and read from its data block;
-// this script decides nothing about an item.
+// Every item's state is decided by the build and read from the entry's graph file,
+// loaded when its graph opens; this script decides nothing about an item.
 (function () {
   "use strict";
 
@@ -37,10 +37,24 @@
   const foot = dialog.querySelector(".gw-foot");
   const keyToggle = dialog.querySelector("[data-gw=key]");
   const zoomStrip = dialog.querySelector(".gw-zoom");
+  const zoomInButton = dialog.querySelector("[data-gw=zoom-in]");
+  const zoomOutButton = dialog.querySelector("[data-gw=zoom-out]");
+  const resetButton = dialog.querySelector("[data-gw=reset]");
+  const loadingWords = dialog.querySelector("[data-gw=loading]");
+  const failedWords = dialog.querySelector("[data-gw=failed]");
+  // Disabled while a graph's file loads or after it failed (AC-109, AC-122a).
+  const controls = [previousButton, nextButton, toggle, zoomInButton, zoomOutButton, resetButton];
 
   const buttons = new Map(); // slug to its Graph button
-  const laid = new Map(); // slug to its parsed graph and positions
-  let state = null; // the open graph
+  const laid = new Map(); // slug to its graph and positions
+  const arrived = new Map(); // slug to the graph its file handed over, until laid out
+  const pending = new Map(); // slug to the script element loading its file
+  let state = null; // the open graph; its `graph` is null while the file loads
+
+  // Each graph file is one call of this (AC-106).
+  window.tracepathGraph = function (slug, graph) {
+    arrived.set(slug, graph);
+  };
 
   function element(name, attributes, text) {
     const node = document.createElementNS(SVG, name);
@@ -545,31 +559,19 @@
     place();
   }
 
-  // Open the graph `slug`, or swap the open one for it; switch and selection start clear.
-  function open(slug) {
-    let found = laid.get(slug);
-    if (!found) {
-      const graph = JSON.parse(document.getElementById("graph-" + slug).textContent);
-      found = { graph: graph, positions: layout(graph) };
-      laid.set(slug, found);
-    }
-    stopLive();
-    state = {
-      slug: slug,
-      graph: found.graph,
-      positions: standard(found.positions),
-      article: buttons.get(slug).closest("article"),
-      selected: null,
-    };
+  // Draw the graph `found` in the open window; switch and selection start clear.
+  function show(found) {
+    state.graph = found.graph;
+    state.positions = standard(found.positions);
+    loadingWords.hidden = true;
+    failedWords.hidden = true;
     heading.textContent = found.graph.label;
     counter.textContent = found.graph.position + " / " + found.graph.total;
     previousButton.disabled = found.graph.previous === null;
     nextButton.disabled = found.graph.next === null;
-    // The address names the open graph, replaced so no history step is added (spec 0012
-    // AC-85, AC-86, AC-91, AC-92).
-    history.replaceState(history.state, "", "#" + slug);
-    const swapped = dialog.open;
-    if (!swapped) dialog.showModal();
+    zoomInButton.disabled = false;
+    zoomOutButton.disabled = false;
+    resetButton.disabled = false;
     state.fit = fitted();
     state.view = Object.assign({}, state.fit);
     state.size = canvas.getBoundingClientRect();
@@ -577,6 +579,76 @@
     toggle.disabled = found.graph.cited_count === 0;
     filter(false);
     select(null);
+  }
+
+  // The window with no graph in it: loading, or failed (AC-108, AC-109, AC-112, AC-122,
+  // AC-124). The heading word comes from the page, so its words stay in Python (AC-125).
+  function waiting(failed) {
+    hover(null);
+    linkLayer.replaceChildren();
+    nodeLayer.replaceChildren();
+    panel.replaceChildren();
+    toggle.checked = false;
+    for (const control of controls) control.disabled = true;
+    heading.textContent = dialog.dataset.loadingHeading;
+    counter.textContent = "";
+    loadingWords.hidden = failed;
+    failedWords.hidden = !failed;
+  }
+
+  // Ask for the file of `slug` by a script element, at `graphs/<slug>.js` beside the page.
+  // Its arrival draws only when the window is still open and still waiting on this slug,
+  // so the newest open wins and a closed window stays shut (AC-116, AC-120, AC-121).
+  function request(slug) {
+    if (pending.has(slug)) return;
+    const script = document.createElement("script");
+    script.src = new URL("graphs/" + slug + ".js", document.baseURI).href;
+    const settle = () => {
+      script.remove();
+      const current = pending.get(slug) === script;
+      if (current) pending.delete(slug);
+      const graph = arrived.get(slug);
+      arrived.delete(slug);
+      if (graph !== undefined && !laid.has(slug)) {
+        laid.set(slug, { graph: graph, positions: layout(graph) });
+      }
+      if (!dialog.open || state === null || state.slug !== slug || state.graph !== null) return;
+      if (laid.has(slug)) show(laid.get(slug));
+      else if (current) waiting(true);
+    };
+    script.addEventListener("load", settle);
+    script.addEventListener("error", settle);
+    pending.set(slug, script);
+    document.head.append(script);
+  }
+
+  // Open the graph `slug`, or swap the open one for it. A graph already loaded draws at
+  // once (AC-115); any other opens in the loading state while its file is asked for.
+  function open(slug) {
+    const swapped = dialog.open;
+    endDrag();
+    drag = null;
+    stopLive();
+    state = {
+      slug: slug,
+      graph: null,
+      article: buttons.get(slug).closest("article"),
+      selected: null,
+    };
+    // The address names the open graph, replaced so no history step is added (spec 0012
+    // AC-85, AC-86, AC-91, AC-92).
+    history.replaceState(history.state, "", "#" + slug);
+    if (!swapped) dialog.showModal();
+    const found = laid.get(slug);
+    if (found === undefined) {
+      const focused = document.activeElement;
+      waiting(false);
+      // Previous and next are now disabled, so focus leaves them for close (AC-123).
+      if (!swapped || focused === previousButton || focused === nextButton) closeButton.focus();
+      request(slug);
+      return;
+    }
+    show(found);
     if (!swapped) closeButton.focus();
     // A focused previous or next button that is now disabled hands focus to the other.
     else if (document.activeElement === previousButton && previousButton.disabled) {
@@ -586,12 +658,18 @@
     }
   }
 
+  // Whether a graph is drawn in the window; while its file loads, the canvas, the panel
+  // and the resize keep still.
+  function ready() {
+    return state !== null && state.graph !== null;
+  }
+
   // Under CLICK pixels of travel is a click that selects or clears. More, from a dot,
   // drags that dot and its neighbours follow; from empty canvas, it pans. Neither
   // selects (AC-27, AC-35).
   let drag = null;
   canvas.addEventListener("pointerdown", (event) => {
-    if (!event.isPrimary || event.button !== 0) return;
+    if (!ready() || !event.isPrimary || event.button !== 0) return;
     const item = nearest(event);
     drag = {
       pointer: event.pointerId,
@@ -618,6 +696,7 @@
   });
 
   canvas.addEventListener("pointermove", (event) => {
+    if (!ready()) return;
     if (drag === null && event.pointerType !== "touch") hover(nearest(event));
     if (drag === null || event.pointerId !== drag.pointer) return;
     const dx = event.clientX - drag.x;
@@ -650,7 +729,7 @@
     canvas.classList.remove("is-dragging");
   }
   canvas.addEventListener("pointerup", (event) => {
-    if (drag === null || event.pointerId !== drag.pointer) return;
+    if (!ready() || drag === null || event.pointerId !== drag.pointer) return;
     const moved = drag.moving;
     const item = drag.item;
     endDrag();
@@ -658,6 +737,7 @@
     if (!moved) select(item);
   });
   canvas.addEventListener("pointercancel", () => {
+    if (!ready()) return;
     endDrag();
     drag = null;
   });
@@ -666,6 +746,7 @@
     "wheel",
     (event) => {
       event.preventDefault();
+      if (!ready()) return;
       const box = canvas.getBoundingClientRect();
       const lines = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? box.height : 1;
       const factor = Math.exp(-event.deltaY * lines * 0.002);
@@ -673,11 +754,9 @@
     },
     { passive: false }
   );
-  dialog.querySelector("[data-gw=zoom-in]").addEventListener("click", () => zoomAtCentre(STEP));
-  dialog
-    .querySelector("[data-gw=zoom-out]")
-    .addEventListener("click", () => zoomAtCentre(1 / STEP));
-  dialog.querySelector("[data-gw=reset]").addEventListener("click", reset);
+  zoomInButton.addEventListener("click", () => zoomAtCentre(STEP));
+  zoomOutButton.addEventListener("click", () => zoomAtCentre(1 / STEP));
+  resetButton.addEventListener("click", reset);
   previousButton.addEventListener("click", () => open(state.graph.previous));
   nextButton.addEventListener("click", () => open(state.graph.next));
 
@@ -685,7 +764,7 @@
   // it, and keep a citation from leaving for JobHunt (AC-39, AC-51, AC-52).
   panel.addEventListener("click", (event) => {
     const link = event.target.closest("[data-item]");
-    if (!link || !panel.contains(link)) return;
+    if (!ready() || !link || !panel.contains(link)) return;
     event.preventDefault();
     const item = state.byId.get(link.dataset.item);
     if (item) choose(item);
@@ -704,13 +783,15 @@
   dialog.addEventListener("close", () => {
     stopLive();
     drag = null;
+    // A file still loading is asked for again on the next open (AC-126).
+    pending.clear();
     history.replaceState(history.state, "", location.pathname + location.search);
     const button = state && buttons.get(state.slug);
     if (button) button.focus();
   });
   // A resize keeps the reader's scale and the point at the canvas centre.
   window.addEventListener("resize", () => {
-    if (!dialog.open || state === null) return;
+    if (!dialog.open || !ready()) return;
     const box = canvas.getBoundingClientRect();
     state.view.x += (box.width - state.size.width) / 2;
     state.view.y += (box.height - state.size.height) / 2;

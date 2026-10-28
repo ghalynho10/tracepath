@@ -83,7 +83,7 @@ from tracepath.extract.metered import (
     summary_lines,
 )
 from tracepath.extract.records import RecordError
-from tracepath.gallery.graph import entry_graphs
+from tracepath.gallery.graph import GRAPHS_DIR, entry_graphs, graph_file
 from tracepath.gallery.records import (
     GalleryError,
     count_records,
@@ -1266,10 +1266,23 @@ def gallery_build(
     page = out / "index.html"
     try:
         out.mkdir(parents=True, exist_ok=True)
-        page.write_text(
-            render_page(entries, count_records(base), graphs, scripts), encoding="utf-8"
-        )
-        (out / PREVIEW_NAME).write_bytes(preview)
     except OSError as exc:
         _fail(f"{page}: could not be written ({exc}).")
+    # The page goes last, so a failure partway leaves no page naming missing files (AC-127).
+    for graph in graphs:
+        _write_site_file(out / GRAPHS_DIR / f"{graph.slug}.js", graph_file(graph))
+    _write_site_file(out / PREVIEW_NAME, preview)
+    _write_site_file(page, render_page(entries, count_records(base), graphs, scripts))
     _say(f"✓ {len(entries)} entries → {page}")
+
+
+def _write_site_file(path: Path, content: str | bytes) -> None:
+    """Write one file of the gallery site, failing with its path when it cannot (AC-127a)."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if isinstance(content, bytes):
+            path.write_bytes(content)
+        else:
+            path.write_text(content, encoding="utf-8")
+    except OSError as exc:
+        _fail(f"{path}: could not be written ({exc}).")
