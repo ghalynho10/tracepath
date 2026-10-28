@@ -625,15 +625,15 @@ def test_build_refuses_an_out_folder_inside_artifacts_or_corpus(root: Path, insi
     assert not (root / inside / "index.html").exists()
 
 
-def test_page_is_self_contained(root: Path, tmp_path: Path) -> None:
-    """AC-58: inline styles and scripts, so no `<link>` and no `<script>` with a `src`
-    (scripts are inline since spec 0011, its AC-74)."""
+def test_page_inlines_its_styles_and_scripts(root: Path, tmp_path: Path) -> None:
+    """AC-58, AC-63: inline styles and scripts, so no `<link>` and no `<script>` with a `src`
+    or any other attribute (the graph data sits in `graphs/` since spec 0011 AC-104)."""
     page = _build(root, tmp_path / "site")
 
     assert "<style>" in page
     assert "<link" not in page
     assert not re.search(r"<script[^>]*\ssrc=", page)
-    assert not re.search(r"<script(?! type=\"application/json\")[^>]", page)
+    assert not re.search(r"<script[^>]", page)
     assert not re.search(r'\b(src|href)="(?!https://|#)', page)
 
 
@@ -804,6 +804,14 @@ def test_build_from_the_committed_marks_file(tmp_path: Path) -> None:
     page = _build(PROJECT_ROOT, tmp_path / "site")
 
     assert len(_ARTICLE.findall(page)) == len(marks) > 0
+
+
+def test_page_size_is_under_linkedins_limit(tmp_path: Path) -> None:
+    """AC-78: the page built from the committed records and marks file is under the
+    3,145,728 bytes LinkedIn's Post Inspector reads, counted as the file's bytes."""
+    _build(PROJECT_ROOT, tmp_path / "site")
+
+    assert (tmp_path / "site" / "index.html").stat().st_size < 3_145_728
 
 
 def test_cited_item_links_to_its_line_in_jobhunt(root: Path, tmp_path: Path) -> None:
