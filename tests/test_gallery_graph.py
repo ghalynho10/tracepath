@@ -560,6 +560,18 @@ def test_dialog_holds_the_status_words() -> None:
     assert f'data-loading-heading="{LOADING_HEADING}"' in DIALOG
 
 
+def test_the_script_reads_the_names_the_build_writes() -> None:
+    """AC-106, AC-108, AC-112, AC-122: the call a graph file makes is the one the script
+    defines, and the script finds the status words and heading word by the dialog's names."""
+    script = GRAPH_SCRIPT.read_text(encoding="utf-8")
+    call = graph_file(_hostile_graph()).split("(", 1)[0]
+
+    assert f"window.{call} = function (slug, graph)" in script
+    assert 'data-gw="loading"' in DIALOG and "[data-gw=loading]" in script
+    assert 'data-gw="failed"' in DIALOG and "[data-gw=failed]" in script
+    assert "data-loading-heading=" in DIALOG and "dataset.loadingHeading" in script
+
+
 #: Two real records for the guard fixtures: eval question 1, and held out question 3.
 DEV = "2026-10-20T17-36-09Z-eval-linked-records-research-q1.json"
 HELD = "2026-10-19T22-17-49Z-eval-held-out-q3.json"
@@ -888,6 +900,7 @@ def test_build_fails_on_a_label_that_makes_no_slug(tmp_path: Path) -> None:
 
     assert code == 1
     assert "'***': its label makes an empty slug" in output
+    assert not (tmp_path / "site" / "index.html").exists()
 
 
 def test_writes_the_page_last(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -922,7 +935,21 @@ def test_writes_the_page_last_so_a_graph_file_it_cannot_write_leaves_no_page(
     assert code == 1
     assert f"{out / GRAPHS_DIR / 'eval-1.js'}: could not be written" in output
     assert not (out / "index.html").exists()
-    assert not (tmp_path / "site" / "index.html").exists()
+
+
+def test_a_graph_file_it_cannot_write_is_the_one_named(tmp_path: Path) -> None:
+    """AC-127a, with a second entry: the path named is the file that failed, and the
+    graph file written before it leaves no page behind."""
+    root = _fixture(tmp_path, ((DEV, "Eval 1", "development"), (HELD, "Held out 3", "held out")))
+    out = tmp_path / "site"
+    (out / GRAPHS_DIR / "held-out-3.js").mkdir(parents=True)
+
+    code, output = _build_at(root, out)
+
+    assert code == 1
+    assert f"{out / GRAPHS_DIR / 'held-out-3.js'}: could not be written" in output
+    assert "eval-1.js" not in output
+    assert not (out / "index.html").exists()
 
 
 def _flags(text: str) -> list[list[Any]] | None:
