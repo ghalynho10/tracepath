@@ -33,6 +33,9 @@ _NOT_SLUG = re.compile(r"[^a-z0-9]+")
 #: is code and flag 2 is bold, so 3 is bold code (spec 0012).
 Runs = tuple[tuple[str, int], ...]
 
+#: The folder beside `index.html` that holds one graph file per entry (AC-105).
+GRAPHS_DIR = "graphs"
+
 #: Characters a data block writes as `\u` escapes, so stored text cannot close the
 #: script element or end a line inside it (AC-69).
 _ESCAPES = str.maketrans(
@@ -240,3 +243,8 @@ def data_block(graph: EntryGraph) -> str:
     """The graph as JSON safe inside a script element: no `<`, `>`, `&` or line separator."""
     text = json.dumps(graph.model_dump(mode="json"), ensure_ascii=False, separators=(",", ":"))
     return text.translate(_ESCAPES)
+
+
+def graph_file(graph: EntryGraph) -> str:
+    """The text of the entry's graph file: one `tracepathGraph` call and a newline (AC-106)."""
+    return f"tracepathGraph({json.dumps(graph.slug)},{data_block(graph)});\n"

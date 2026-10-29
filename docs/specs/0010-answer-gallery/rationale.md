@@ -90,6 +90,10 @@ Trimmed by the engineer after the cross check, because none protects against a f
 
 It read all 44 records and the ask code and found 17 gaps. The ones that changed the design: the item line has an optional sixth field (verified in `retrieve.py:322-331`; 97 items), so the first grammar in this spec was wrong; `rejected_ids` means cited ids not in the pack (verified in `answer.py:180`), so a check that every cited id is in the pack contradicted the rejected label; the terminal prints more labels than the first draft listed; the records lack some keys; every linked file is markdown, which GitHub renders; stored text holds raw markup; and the workflow and its path filter were under specified. The engineer applied the factual fixes and the recommended picks for escaping, source links, workflow details, the wider path filter and inline styles.
 
+### Correction of 2026-10-27: the page size
+
+The note on the link preview (2026-10-27) held that "LinkedIn documents no page size limit" and left the page whole. The next run of Post Inspector showed otherwise: it refused the page for size, with a threshold of 3,145,728 bytes. The page was 4,817,451 bytes, of which 3,834,664 were the 31 graph blocks of spec 0011; the rest was 982,787, found again by rebuilding at 747365c on 2026-10-27. The Follow up said to revisit "only if Post Inspector still fails", and it did. The engineer ruled that each entry's graph data moves out into its own file (spec 0011 AC-104 to AC-127a, with the options and the rulings in its `rationale.md`), and that the size limit gets one test (AC-78). The earlier ruling was a reading of LinkedIn's help page, which lists the tags and the image and says nothing of page size; absence of a documented limit was taken as no limit, which the measured failure disproves.
+
 ## Evidence
 
 ### Records checked, 2026-10-23

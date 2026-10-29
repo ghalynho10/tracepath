@@ -27,7 +27,6 @@ from tracepath.gallery.graph import (
     OTHER_RADIUS,
     RING_GAP,
     EntryGraph,
-    data_block,
 )
 from tracepath.gallery.inline import runs, to_html
 from tracepath.gallery.records import (
@@ -354,6 +353,8 @@ dialog.gw::backdrop { background: var(--paper); }
   touch-action: none; user-select: none; cursor: grab; }
 .gw-canvas.is-dragging, .gw-canvas.is-dragging .gw-node { cursor: grabbing; }
 .gw-zoom { position: absolute; right: 20px; bottom: 16px; display: flex; gap: 8px; }
+.gw-status { position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; margin: 0; padding: 24px; text-align: center; color: var(--ink-82); }
 .gw-link { stroke: var(--ink); stroke-opacity: .3; stroke-width: 1; }
 .gw-link.is-held { stroke-opacity: .5; stroke-dasharray: 4 3; }
 .gw-link.is-active { stroke-opacity: 1; }
@@ -471,10 +472,19 @@ KEY = (
     ),
 )
 
+#: The heading row's word while a graph's file loads or after it failed (AC-122, AC-125).
+LOADING_HEADING = "Graph"
+
+#: What the canvas's place reads while a graph's file loads (AC-108).
+LOADING_WORDS = "Loading the graph…"
+
+#: What the canvas's place reads when a graph's file did not load (AC-112).
+FAILED_WORDS = "This graph did not load. Close the window and open it again to try."
+
 #: The one graph window, filled by the script for whichever graph is open (spec 0011).
 DIALOG = (
     f'<dialog class="gw" aria-labelledby="gw-heading" data-held-gap="{HELD_GAP}" '
-    f'data-ring-gap="{RING_GAP}">'
+    f'data-ring-gap="{RING_GAP}" data-loading-heading="{escape(LOADING_HEADING)}">'
     '<div class="gw-stage"><div class="gw-head">'
     '<p class="gw-heading"><span id="gw-heading"></span> <span class="gw-count"></span></p>'
     '<button type="button" class="gw-button" data-gw="previous" aria-label="Previous graph">'
@@ -488,6 +498,8 @@ DIALOG = (
     '<defs><marker id="gw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" '
     'markerHeight="7" orient="auto"><path class="gw-arrow" d="M0 0L10 5L0 10z"/></marker></defs>'
     '<g class="gw-links"></g><g class="gw-nodes"></g></svg>'
+    f'<p class="gw-status" data-gw="loading" hidden>{escape(LOADING_WORDS)}</p>'
+    f'<p class="gw-status" data-gw="failed" hidden>{escape(FAILED_WORDS)}</p>'
     '<div class="gw-zoom">'
     '<button type="button" class="gw-button" data-gw="zoom-in" aria-label="Zoom in">+</button>'
     '<button type="button" class="gw-button" data-gw="zoom-out" aria-label="Zoom out">'
@@ -705,11 +717,6 @@ def _strip(entry: Entry, graph: EntryGraph) -> str:
     )
 
 
-def _graph_data(graph: EntryGraph) -> str:
-    """The entry's graph data, parsed only when its graph is opened (AC-57)."""
-    return f'<script type="application/json" id="graph-{graph.slug}">{data_block(graph)}</script>'
-
-
 def _entry(entry: Entry, graph: EntryGraph) -> str:
     """One entry, flat: its title, details, then each section's `h4` and its parts.
 
@@ -728,7 +735,6 @@ def _entry(entry: Entry, graph: EntryGraph) -> str:
         f"{_claims(entry)}"
         f"{_missing(entry)}"
         f"{_items_sent(entry)}"
-        f"{_graph_data(graph)}"
         "</article>"
     )
 
